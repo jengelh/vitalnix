@@ -1,7 +1,8 @@
 #!/usr/bin/perl
-# Zu allen Benutzern in /etc/passwd mit grp_id >= $grenze
+# Zu allen Benutzern in /etc/passwd mit grp_id im Bereich [$von,$bis]
 
-$grenze=50;
+$von=50;
+$bis=999;
 
 # Korrekturen vornehmen
 
@@ -22,9 +23,12 @@ sub durchlauf {
 	chop;
 	($name,$x,$user,$group,$gcos)=split(/:/);
 	($fullname)=split(/,/,$gcos);
-	if ($group>=$grenze) {
+	if (($group>=$von) && ($group<=$bis)) {
 	    print "        $name\n";
-	    &anpassen;
+#           &verzeichnisse;
+#           &dateien;
+	    &netscape;
+	    &rechte;
 	}    
     }
     close(IN);
@@ -32,18 +36,30 @@ sub durchlauf {
 
 # --------------------------------------------------------------------
 
-sub anpassen1 {
-
-    system("chown root /home/$name/system/netscape.ini");
-    system("chgrp root /home/$name/system/netscape.ini");
-    system("chmod a+rwx /home/$name/system/netscape.ini");
-    system("chmod go-wx /home/$name/system/netscape.ini");
-
+sub rechte {
+    # HOME-Verzeichnis
+    system("chmod go-rw /home/$name");
+    # SYSTEM-Verzeichnis
+    system("chown -R $name /home/$name/system");
+    system("chgrp -R $group /home/$name/system");
+    # NETSCAPE.INI
+    # user ist root
+    system("chmod a-wx /home/$name/system/netscape.ini");
+    system("chmod a+r /home/$name/system/netscape.ini");
 }
 
-sub anpassen {
+sub verzeichnisse {
+    system("mkdir /home/$name/system");
+    system("mkdir /home/$name/system/mail");
+    system("mkdir /home/$name/system/news");
+}
 
-    #Netscape
+sub dateien {
+    system("cp -bu address.htm /home/$name/system");
+    system("cp -bu bookmark.htm /home/$name/system");
+}
+
+sub netscape {
     open(N_IN,"netscape.ini");
     open(N_OUT,">/home/$name/system/netscape.ini");
     while (<N_IN>) {
@@ -63,9 +79,6 @@ sub anpassen {
     }
     close(N_IN);
     close(N_OUT);
-
-#    system("chown $name /home/$name/system/netscape.ini");
-#    system("chgrp $group /home/$name/system/netscape.ini");
 }
 
 # --------------------------------------------------------------------

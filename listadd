@@ -1,15 +1,6 @@
-#!/usr/bin/perl -w
-#
-#			listadd
-#
+#!/usr/bin/perl
 # Benutzer in /etc/passwd eintragen und Verzeichnise/Dateien kopieren
 # von Eike Teiwes
-#
-# kleine Korrekturen und viele Aenderungen von Markus Boie
-
-# benoetigte Routinen
-require "bvw.pl";
-
 
 print "------------------------------------------------------\n";
 print "Benutzer in /etc/passwd eintragen und Dateien kopieren\n"; 
@@ -29,23 +20,30 @@ print "    Kennworte eintragen (datpwd >>> /etc/shadow)\n";
 
 print "    Kennworte festhalten (datadd/datpwd >>> $datpwd)\n";
 &kennworte_festhalten;
-
-# nach "Kurs" sortieren
 system("sort -o $datpwd -df $datpwd");
 
 print "Drucken Sie Serienbriefe mit $datpwd und\n";
 print "... löschen Sie $datpwd wegen lesbarer Kennworte\n";
-unlink('datpwd');
+unlink("datpwd");
 
 # --------------------------------------------------------------------
 
 sub vorbereitung {
-    ($domain, $usergroup, $usershell, $staffgroup, $quotausr, $dflt_filename, $dflt_delimiter) = Initialize();
-    $gruppe = group($usergroup);
-    $index = max_index('datadd.*');
-    $datadd = "datadd.$index";
-    $datpwd = "datpwd.$index";
-    if ($index eq '000') {
+    @f=`find *.goe 2>/dev/null`;
+    if ($f[0] eq "") {
+	print "\nDer Name der Schule kann nicht ermittelt werden.\n";
+        print "Bitte im lokalen Verzeichnis ein Verzeichnis oder eine Datei\n";
+        print "xxx.goe anlegen, wobei xxx den Namen angibt.\n";
+    } else {
+        $domain=$f[0];
+        chop($domain);
+	$domain=$domain.".ni.schule.de";
+    }
+    $gruppe=group("schueler");
+    $index=max_index("datadd.*");
+    $datadd="datadd.".$index;
+    $datpwd="datpwd.".$index;
+    if ($index eq "000") {
 	print "\nFEHLER: Datei datadd.??? nicht gefunden.\n";
 	print "Starten Sie zuerst das Programm listcmp.\n";
 	exit;
@@ -55,14 +53,11 @@ sub vorbereitung {
 # --------------------------------------------------------------------
 
 sub start_oder_stop {
-
-    local $i;
-
     print "        Quelle: $datadd\n";
-    print '        Fortsetzen? (j/n) ';
-    $i = <STDIN>;
+    print "        Fortsetzen? (j/n) ";
+    $i=<STDIN>;
     chop($i);
-    if ( !($i eq "j") && !($i eq "ja") ) {
+    if (! ($i eq "j") && ! ($i eq "ja")) {
 	print "abgebrochen\n";
 	exit;
     }
@@ -71,17 +66,13 @@ sub start_oder_stop {
 # --------------------------------------------------------------------
 
 sub passwd_ergaenzen {
-    open(IN, $datadd);
+    open (IN,$datadd);
     while (<IN>) {
 	chop;
-	($name, $gcos) = split(/:/);
-	($fullname) = split(/,/, $gcos);
-	$ush = '';
-        if ($usershell) {
-            $ush = "-s '$usershell'";
-        }
+	($name,$gcos)=split(/:/);
+	($fullname)=split(/,/,$gcos);
 	print "        $fullname\n";
-        system("useradd -c '$gcos' -g $gruppe -m $name $ush");
+        system("useradd -c '$gcos' -g $gruppe -m -k skel $name");
         &kopieren_und_anpassen;
         system("./pwd $name >> datpwd");
     }
@@ -91,17 +82,21 @@ sub passwd_ergaenzen {
 # --------------------------------------------------------------------
 
 sub kopieren_und_anpassen {
-    unlink("/home/$name/netscape/netscape.ini");
-    open(N_IN, "/etc/skel/netscape/netscape.ini");
-    open(N_OUT, ">/home/$name/netscape/netscape.ini");
+    # Verzeichnisse
+    system("mkdir /home/$name/system");
+    system("mkdir /home/$name/system/mail");
+    system("mkdir /home/$name/system/news");
+    # Dateien
+    system("cp address.htm /home/$name/system");
+    system("cp bookmark.htm /home/$name/system");
+    open(N_IN,"netscape.ini");
+    open(N_OUT,">/home/$name/system/netscape.ini");
     while (<N_IN>) {
-        $_ =~ s/\r+\Z//m;       # remove any trailing return chars
-
+	if ($_ eq "") {
+	    next;
+	}
 	if (/User_Addr=/) {
 	    s/User_Addr=.*/User_Addr=$name\@$domain/;
-	}
-	if (/Reply_To=/) {
-	    s/Reply_To=.*/Reply_To=$name\@$domain/;
 	}
 	if (/User_Name=/) {
 	    s/User_Name=.*/User_Name=$fullname/;
@@ -113,41 +108,34 @@ sub kopieren_und_anpassen {
     }
     close(N_IN);
     close(N_OUT);
-
-    # Rechte fuer netscape.ini
-    chown_by_name('root', "/home/$name/netscape/netscape.ini");
-    chmod 0644, "/home/$name/netscape/netscape.ini";
-
-    # Rechte fuer Login-Verzeichnis
-    chmod 0700, "/home/$name";
-
-    # Filesystem-Quota kopieren
-    system("edquota -p $quotausr $name");
+    # Rechte
+#    system("chown -R $name /home/$name/system");
+#    system("chgrp -R $gruppe /home/$name/system");
 }
 
 # --------------------------------------------------------------------
 
 sub kennworte_eintragen {
-    system('chpasswd < datpwd');
+    system("chpasswd < datpwd");
 }
 
 # --------------------------------------------------------------------
 
 sub kennworte_festhalten {
-    open (IN, 'datpwd');
+    open (IN,"datpwd");
     while (<IN>) {
 	chop;
-	($name, $passwd) = split(/:/);
-	$feld{$name} = $passwd;
+	($name,$passwd)=split(/:/);
+	$feld{$name}=$passwd;
     }
     close(IN);
-    open (OUT, ">$datpwd");
-    print OUT " kurs;vollname;benutzername;kennwort;\n";
-    open (IN, $datadd);
+    open (OUT,">".$datpwd);
+    print OUT " klasse;vollname;benutzername;kennwort;\n";
+    open (IN,$datadd);
     while (<IN>) {
 	chop;
-	($name, $gcos, $class) = split(/:/);
-	($fullname) = split(/,/, $gcos);
+	($name,$gcos,$class)=split(/:/);
+	($fullname)=split(/,/,$gcos);
 	print OUT "$class;$fullname;$name;$feld{$name};\n";
     }
     close(IN);
@@ -157,50 +145,64 @@ sub kennworte_festhalten {
 # --------------------------------------------------------------------
 
 sub next_index {
-    $_ = sprintf("%03d", max_index(@_)+1);
-    return $_;
+    $_=sprintf("%03d",max_index(@_)+1);
+    $_;
 }
 
 # --------------------------------------------------------------------
 
 sub max_index {
-    local($max) = '000';
+    local($max)="000";
     foreach (`find @_ 2>/dev/null`) {
-	$i = substr($_, -3, 3);
-	if ($i > $max) {
-	    $max = $i;
+	$i=substr($_,-3,3);
+	if ($i>$max) {
+	    $max=$i;
 	}
     }	
-    $_ = sprintf("%03d", $max);
-    return $_;
+    $_=sprintf("%03d",$max);
+    $_;
 }
 
 # --------------------------------------------------------------------
 
 sub code {
-    local($date) = @_;
-    $date = substr($date, 6, 2) . substr($date, 3, 2)
-				. substr($date, 0, 2);
-    return $date * 937;
+    local($date)=@_;
+    $date=substr($date,6,2).substr($date,3,2).substr($date,0,2);
+    $date*937;
 }
 
 # --------------------------------------------------------------------
 
 sub decode {
-    local($code) = @_;
-    $code = $code / 937;
-    return substr($code, 4, 2) . "." . substr($code, 2, 2)
-			       . "." . substr($code, 0, 2);
+    local($code)=@_;
+    $code=$code/937;
+    substr($code,4,2).".".substr($code,2,2).".".substr($code,0,2);
 }
 
 # --------------------------------------------------------------------
 
 sub group {
-    local($name) = @_;
-    $_ = `grep $name /etc/group`;
+    local($name)=@_;
+    $_=`grep $name /etc/group`;
     /(\w+)\W+(\w+)\W+(\w+)/;
-    return $3;
+    $3;
 }
 
-#
-# end listadd
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

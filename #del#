@@ -3,14 +3,10 @@
 # Verzeichnise/Dateien löschen
 # von Eike Teiwes
 
-#
-require "bvw.pl";
-
-
 print "------------------------------------------------------\n";
-print "Benutzer aus /etc/passwd loeschen und Dateien loeschen\n"; 
-$domain = GetDomain;
-$schueler = group("schueler");
+print "Benutzer in /etc/passwd eintragen und Dateien kopieren\n"; 
+$domain="ohg.goe.ni.schule.de";
+$schueler=group("schueler");
 
 &start_oder_stop;
 
@@ -40,8 +36,7 @@ sub start_oder_stop {
 	print "    Welche Datei datdel.xxx soll benutzt werden?\n";
 	print "        Index: ";
 	$i=<STDIN>;
-	$datdel=sprintf("datdel.%03d",$i);
-    } else {
+	$datdel=sprintf("datdel.%03d",$i);    } else {
 	$datdel=$liste[0];
 	chop($datdel);
     }
@@ -117,3 +112,14 @@ sub group {
     /(\w+)\W+(\w+)\W+(\w+)/;
     $3;
 }
+
+
+
+
+
+
+
+
+
+
+
