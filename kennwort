@@ -1,0 +1,25 @@
+#!/usr/bin/perl
+
+$_ = $ARGV[0];
+
+@liste = `grep -e $_ ./daten.sdf`;
+print " Vorläufige Kennwörter der Schüler der $_\n";
+print "---------------------------------------------\n\n";
+
+while (@liste) {
+	$_ = $liste[1];
+	shift(@liste);
+	if ($_ eq "") {
+		print "\...\n";
+		exit;
+	}
+	($nachname,$vorname) = split(/;/);
+	$nachname =~ s/ /-/g;
+	$vorname =~ s/ /-/g;
+	$name = "\"".$vorname." ".$nachname."\"";
+	$_ = `grep -e $name ./datpwd.003`;
+	s/;/|/g;
+	print $_;
+#	print $_."\n";
+}
+

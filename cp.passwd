@@ -1,15 +1,15 @@
 #!/usr/bin/perl
-# In der SHADOW-Datei das Ändern des Kennworts erlauben
+# In der PASSWD-Datei das + Zeichen löschen
 
 # von Eike Teiwes
 
 print "------------------------------------------------------\n";
-print "SHADOW-Datei anpassen \n"; 
+print "PASSWD-Datei anpassen \n"; 
 
-#	$index=next_index("/etc/shadow.*");
-#	$datei="shadow.".$index;
-$datei = "shadow.003";
-	print "Sicherheitskopie von shadow in $datei\n";
+#	$index=next_index("/etc/passwd.*");
+#	$datei="passwd.".$index;
+$datei = "passwd.003";
+	print "Sicherheitskopie von passwd in $datei\n";
 
 &durchfuehrung; # und Dateien kopieren und anpassen
 
@@ -18,23 +18,27 @@ exit;
 # --------------------------------------------------------------------
 
 sub durchfuehrung {
-#	system("cp /etc/shadow /etc/$datei");
-    system("mv /etc/shadow.002 /etc/shadow.001");
-    system("mv /etc/shadow.003 /etc/shadow.002");
-    system("mv /etc/shadow /etc/$datei");
+#	system("cp /etc/passwd /etc/$datei");
+    system("mv /etc/passwd.002 /etc/passwd.001");
+    system("mv /etc/passwd.003 /etc/passwd.002");
+    system("mv /etc/passwd /etc/$datei");
     open (IN, "/etc/$datei");
-    open (OUT,">/etc/shadow");
+    open (OUT,">/etc/passwd");
+    $gefunden=0;
     while (<IN>) {
-	chop;
 	($name,$passwd,$a,$b)=split(/:/);
-	if ($b eq 0) {
-	    print OUT "$_\n";
+	if ($_ ne "+\n") {
+	    print OUT "$_";
 	} else {    
-	    print OUT "$name:$passwd:$a\:0\:$b\:\:\:\:\n";
+	    $gefunden=1;	
+	    print "Plus-Zeichen gelöscht\n";
 	}    
     }
     close(OUT);
     close(IN);
+    if ($gefunden eq 0) {
+	print "kein Plus-Zeichen vorhanden\n";
+    }
 }
  
  

@@ -3,6 +3,9 @@
 # von Eike Teiwes 20.03.97
 
 # Für Test setze $test=1, sonst setze $test=0
+#
+#     |
+#     |
 $test=0;
 
 if ($ARGV[0] eq "") {
@@ -257,7 +260,7 @@ sub passwd_auslesen {
     while (<PWD>) {
 	chop;
         ($name,$passwd,$uid,$gid,$gcos)=split(/:/);
-        #($fullname,$code)=split(/,/,$gcos);
+#	($fullname,$code)=split(/,/,$gcos);
 	$feld{$name}=$gcos;
 	if ($gid eq $gruppe) {
             ++$i;
@@ -311,7 +314,7 @@ sub passwd_ergaenzen {
     $_=$neu;
     ($name,$gcos)=split(/:/);
     ($fullname)=split(/,/,$gcos);
-    if ($u=1) {
+    if ($u eq 1) {
 	$gcos=substr($gcos,1,length($gcos));
     }
     print "useradd -c '$gcos' -g $gruppe -m -k skel $name\n";
