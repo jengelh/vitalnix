@@ -1,0 +1,21 @@
+Name: WebPass                 Sektion: 8                  Datum: 31. Juil 2002
+------------------------------------------------------------------------------
+Copyright (C) by Jan Engelhardt <jengelh@gmx.de>, 2001, 2002
+
+Web-Frontend zur Änderung eiens Benutzerpasswortes. Beim Kopieren nach
+/usr/www/cgi/ (bzw. /usr/local/httpd/cgi-bin/) bitte noch den SUID setzen (mit
+`chmod 4755 /usr/www/cgi/webpass.pl /usr/bin/suidperl`).
+
+ACHTUNG: Mit (suid)perl 5.003 gibt es Sicherheitsrisiken - also besser
+v5.6.0 benutzen.
+
+Es bedarf einer Änderung in </etc/permissions.*>. Aus
+
+  /usr/bin/suidperl                       root.root       0755
+
+soll
+
+  /usr/bin/suidperl                       root.root       6755
+
+gemacht werden, damit beim nächsten SuSEconfig das suidperl nicht wieder
+zurückgesetzt wird.

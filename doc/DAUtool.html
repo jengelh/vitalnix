@@ -1,0 +1,335 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15" />
+<meta http-equiv="Content-Style-Type"
+content="text/css; charset=ISO-8859-15" />
+<meta name="Content-Language" content="DE" />
+<title>DAUtool v1.42</title>
+<style type="text/css">
+  .block { text-align: justify; }
+  .m45 { margin-left: 45pt; }
+  .sh { background-color: #C0C0C0; color: #000000; }
+  a { color: #FFFFFF; }
+  a:hover { color: #00C0FF; }
+  body { background-color: #000080; color: #C0C0C0; }
+  b { color: #FFFF00; }
+  i { color: #FF0000; }
+  h1 { color: #FFFF00; font-size: 10pt; }
+  h2 { color: #FFFF00; font-size: 10pt; margin-left: 15pt; }
+  p, .m30 { margin-left: 30pt; }
+  table { border: 0px; }
+</style>
+</head>
+
+<body bgcolor="#000080" text="#C0C0C0" link="#FFFFFF" vlink="#FFFFFF"
+alink="#FFFFFF" hover="#00C0FF">
+
+<a name="top"></a>
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+  <tr>
+    <td valign="bottom"><b>Name:</b> DAUtool</td>
+    <td align="center" valign="bottom"><b>Sektion:</b> 8</td>
+    <td align="right" valign="bottom">v1.42<br />
+      28. August 2002</td>
+  </tr>
+</table>
+
+<hr size="1" color="#FFFFFF" />
+
+<h1><a name="toc"></a>Inhaltsverzeichnis</h1>
+
+<ul type="dash" class="block">
+  <li><a href="#toc">Inhaltsverzeichnis</a></li>
+  <li><a href="#desc">Beschreibung</a></li>
+  <li><a href="#aufruf">Aufruf</a><ul type="dash" class="block">
+      <li><a href="#aufruf_arg">Argumente</a></li>
+      <li><a href="#aufruf_sys">Systemvorraussetzungen</a></li>
+      <li><a href="#aufruf_bundle">Gruppierung</a></li>
+      <li><a href="#aufruf_conf">Konfigurationsdatei</a></li>
+    </ul></li>
+  <li><a href="#start">Los geth's</a></li>
+  <li><a href="#nz6">Notiz zu [6] Konvertieren</a></li>
+  <li><a href="#statbar">Statusanzeige</a></li>
+  <li><a href="#nz2">Notiz zu [2] Änderungen finden</a></li>
+  <li><a href="#sighash">%SIG</a></li>
+  <li><a href="#y2k">Jahr-2000-Kompatibilität</a></li>
+  <li><a href="#dateien">Dateien</a></li>
+  <li><a href="Changelog.txt">Changelog</a></li>
+  <li><a href="#sieheauch">Siehe auch</a></li>
+  <li><a href="#utils">Utilities in <i>utils/</i></a></li>
+  <li><a href="#bugs">Bugs</a></li>
+  <li><a href="#autor">Autor</a></li>
+</ul>
+
+<hr size="1" color="#FFFFFF" />
+
+<h1><a name="desc"></a>Beschreibung</h1>
+
+<p class="block">DAUtool ist ein Programm zur Synchronisation der
+<i>/etc/passwd</i> mit einer Liste von Usern. Somit entfällt das Hinzufügen und
+Entefernen jenes einzelnen Benutzers.</p>
+
+<p class="block">Bietet auch limitierten Support für einzelne User. DAUtool
+wird unter der <a href="GPL-v2.0.txt" target="_blank">GPL</a> >= v2.0
+vertrieben.</p>
+
+<hr size="1" color="#C0C0C0" />
+
+<h1><a name="aufruf"></a>Aufruf</h1>
+
+<h2><a name="aufruf_arg"></a>Argumente</h2>
+
+<p>dautool <b>[</b>-c <i>Konfig.</i><b>]+</b> <b>[</b>-p<b>]</b></p>
+
+<table border="1" cellpadding="2" cellspacing="0" class="m30">
+  <tr>
+    <td valign="top">-c <i>Konfig</i></td>
+    <td valign="top">Lese Konfigurationsdatei auf die Voreinstellungen drauf.
+      Mehrere Konfigurationsdatei können durch &quot;-c FILE -c FILE&quot;
+      angegeben werden. Wenn -c spezifiziert wird, so wird
+      <i>base/dautool.cfg</i> nicht eingelesen, es sei denn, es wird extra
+      angegeben. (<a href="#aufruf_conf">&gt;&gt; mehr</a>)</td>
+  </tr>
+  <tr>
+    <td valign="top">-p<b>|</b>--nopid</td>
+    <td valign="top">Übergehe die PID-Lock-Prüfung (<a href="#chk_pid">&gt;&gt;
+      mehr</a>)</td>
+  </tr>
+</table>
+
+<h2><a name="aufruf_sys"></a>Systemvorraussetzungen</h2>
+
+<p class="block">Linux oder ähnliche Unix-Varianten, mindestens 16 MB RAM,
+mindestens Perl v5.6.0, die Module <i>Fcntl</i> und <i>Getopt::Long</i>.</p>
+
+<h2><a name="aufruf_conf"></a>Konfigurationsdatei</h2>
+
+<p class="block">Die Konfigurationsdatei wird im Perl-Stil verfasst (da es mit
+`<span class="sh">do</span>` eingebunden wird). Zeilen sind Anweisungen.
+&quot;C!&quot; (in dieser Doku) besagt, dass diese Variable besser nicht
+geändert werden sollte. Mögliche Optionen in <i>base/dautool.cfg</i>:</p>
+
+<table border="1" cellpadding="2" cellspacing="0" class="m45">
+  <tr>
+    <td valign="top">$OPT{&quot;b_nopid&quot;} = 1;</td>
+    <td valign="top">übergeht den <a href="#chk_pid">PID-Lock</a>-Check</td>
+  </tr>
+  <tr>
+    <td valign="top">$OPT{&quot;f_passwd&quot;} =
+      &quot;/etc/passwd&quot;;</td>
+    <td valign="top">Benutzerdefinitionsdatei</td>
+  </tr>
+  <tr>
+    <td valign="top">$OPT{&quot;f_shadow&quot;} =
+      &quot;/etc/shadow&quot;;</td>
+    <td valign="top">Passwortdefinitionsdatei</td>
+  </tr>
+  <tr>
+    <td valign="top">$OPT{&quot;f_group&quot;} = &quot;/etc/group&quot;;</td>
+    <td valign="top">Gruppendefinitionsdatei</td>
+  </tr>
+  <tr>
+    <td valign="top">$OPT{&quot;f_skeldir&quot;} =
+      &quot;/tmp/dautool.skel&quot;;</td>
+    <td valign="top">Skelettverzeichnis für neue Benutzer (generell leer)</td>
+  </tr>
+  <tr>
+    <td valign="top">$OPT{&quot;f_trhome&quot;} =
+      &quot;/home/_trash&quot;;</td>
+    <td valign="top">Die Home-Verzeichnisse gelöschter Benutzer dorthin
+      archivieren</td>
+  </tr>
+  <tr>
+    <td valign="top">$OPT{&quot;b_zpack&quot;} = 1;</td>
+    <td valign="top">Legt fest, durch welchen Kompressor die archivierten
+      Verzeichnisse gelöschter Benutzer gefiltert werden sollen. 0=tar,
+      1=tar-bzip2</td>
+  </tr>
+  <tr>
+    <td valign="top">$OPT{&quot;s_passlen&quot;} = 8;</td>
+    <td valign="top">Länge für neue Passwörter</td>
+  </tr>
+  <tr>
+    <td valign="top">$OPT{&quot;s_termwx&quot;} = 80;</td>
+    <td valign="top"><b>[C!]</b> Setzt die Terminalbreite manuell. Standard ist
+      80, wenn `<span class="sh">stty size</span>` nichts erzielt.</td>
+  </tr>
+  <tr>
+    <td valign="top">$OPT{&quot;s_termwy&quot;} = 25;</td>
+    <td valign="top"><b>[C!]</b> Setzt die Terminalhöhe manuell. Standard ist
+      25, wenn `<span class="sh">stty size</span>` nichts erzielt.</td>
+  </tr>
+  <tr>
+    <td valign="top">$OPT{&quot;s_dgrp&quot;} =
+      &quot;dautool&quot;;</td>
+    <td valign="top">Zielgruppe (meist &quot;schueler&quot;). Muss eine Gruppe
+      sein, und nicht eine GID</td>
+  </tr>
+  <tr>
+    <td valign="top">$OPT{&quot;p_pager&quot;&quot;} =
+      &quot;/usr/bin/less&quot;;</td>
+    <td valign="top">Anzeigeprogramm für Files</td>
+  </tr>
+  <tr>
+    <td valign="top">$OPT{&quot;p_useradd&quot;} =
+      &quot;/usr/sbin/useradd&quot;;</td>
+    <td valign="top">Pfad zu useradd</td>
+  </tr>
+  <tr>
+    <td valign="top">$OPT{&quot;p_userdel&quot;} =
+      &quot;/usr/sbin/userdel&quot;;</td>
+    <td valign="top">Pfad zu userdel</td>
+  </tr>
+  <tr>
+    <td valign="top">$OPT{&quot;p_postadd&quot;} = &quot;script&quot;;</td>
+    <td valign="top">Ein benutzerdefiniertes Programm, dass nach dem Hinzufügen
+      eines Users ausgeführt werden soll. (Wenn leer, dann nicht.) Das Skript
+      erhält als erstes Argument den Usernamen.</td>
+  </tr>
+  <tr>
+    <td valign="top">$OPT{&quot;p_predel&quot;} = &quot;script&quot;;</td>
+    <td valign="top">Ein benutzerdefiniertes Programm, dass vor dem Löschen
+      eines Users ausgeführt werden soll. (Wenn leer, dann nicht.) Das Skript
+      erhält als erstes Argument den Usernamen.</td>
+  </tr>
+  <tr>
+    <td valign="top">$OPT{&quot;p_postdel&quot;} = &quot;script&quot;;</td>
+    <td valign="top">Ein benutzerdefiniertes Programm, dass nach dem Löschen
+      eines Users ausgeführt werden soll. (Wenn leer, dann nicht.) Das Skript
+      erhält als erstes Argument den Usernamen.</td>
+  </tr>
+</table>
+
+<hr size="1" color="#C0C0C0" />
+
+<h1>Los geht's</h1>
+
+<p class="block">Wer jetzt eine detaillierte Beschreibung erwartet hat, wird
+an dieser Stelle [in dieser Datei] nicht fündig. Wer sowas braucht, sollte den
+Assistenten (Wahl 1 aus dem Hauptmenü) benutzen.</p>
+
+<h1><a name="nz6"></a>Notiz zu [6] Konvertieren</h1>
+
+<p class="block">SDF-Dateien enthalten die Jahre als z.B. &quot;84&quot; für
+1984 und &quot;01&quot; für 2001. Beim Formatieren der SDF-Dateien wird
+automatisch +1900 gemacht, sodass alles weitere Y2k-kompatibel ist.</p>
+
+<p class="block">Unter Linux mag jede Datei in der SDF mit einem CR (\x0D oder
+erleuchtetes &quot;M&quot;) haben, dann wird es als MS-DOS angesehen, und es
+wird zusätzlich noch eine ASCII 2 ANSI - Konvertierung durchgeführt. Fehlt das
+CR, so werden eventuelle DOS-Zeichen nicht korrekt übersetzt. Also entweder die
+SDF so lassen wie sie ist, oder `<span class="sh">recode ibmpc..lat1</span>`
+eingeben, statt die \x0D's zu entfernen.</p>
+
+<hr size="1" color="#C0C0C0" />
+
+<h1><a name="statbar"></a>Statusanzeige</h1>
+
+<p class="block">In der Statusanzeige wird folgendes angezeigt:</p>
+
+<p class="m45"><b>*</b> von <b>*</b> (<b>**.**</b>%) [elap: <b>*</b>s, est:
+<b>*</b>s, ajps: <b>*</b>]</p>
+
+<p class="block">wobei die ersten Felder anzeigen, wieviele Jobs von * bereits
+fertig sind, und wieviel das in Prozent ist. &quot;elap&quot; meint hier
+&quot;elapsed&quot (bereits verstrichene Zeit), dahinter &quot;est&quot;
+(estimated), die vorraussichtlich benötigte Zeit, um die ganze Aufgabe (nicht
+den einzelnen Job) zu bewältigen. &quot;ajps&quot; ist &quot;average jobs per
+second&quot; und meint die Anzahl der durchschnittlich durchgeführten Jobs pro
+Sekunde.</p>
+
+<hr size="1" color="#C0C0C0" />
+
+<h1><a name="nz2"></a>Notiz zu [2] Änderungen finden</h1>
+
+<p class="block">Wegen der Sicherheit werden die durch Schritt 2 ermittelten
+Benutzer nur im Speicher gehalten, d.h. sie werden nicht auf der Festplatte
+o.ä. gespeichert, bzw. zum Abruf angeboten. Dies wird so gehandhabt, da sonst
+Benutzer fälschlischerweise hinzugefügt / entfernt werden könnten.</p>
+
+<hr size="1" color="#C0C0C0" />
+
+<h2><a name="sighash"></a>%SIG</h2>
+
+<p class="block">Einige Signale (HUP, INT, QUIT, ILL, SEGV, TERM) werden
+aufgefangen und das Programm versucht, sich friedvoll zu beenden.</p>
+
+<hr size="1" color="#C0C0C0" />
+
+<h1><a name="y2k"></a>Jahr-2000-Kompatibilität</h1>
+
+<p class="block">Ja, DAUtool (ab v1.02 Alpha *) ist Y2k-kompatibel
+(benutzt 1984 und 2001 statt 84 und 01), und managt das (nur) 2-stellige
+Datumsformat in SDF-Dateien.</p>
+
+<hr size="1" color="#C0C0C0" />
+
+<h1><a name="sieheauch"></a>Siehe auch</h1>
+
+<h2>useradd(8), usermod(8), userdel(8)</h2>
+
+<p class="block">Benutzer hinzufügen, ändern, löschen</p>
+
+<h2>groupadd(8), groupmod(8), groupdel(8)</h2>
+
+<p class="block">Gruppen hinzufügen, ändern, löschen</p>
+
+<h2>yast(8)</h2>
+
+<p class="block">Konfigurierungsfrontend, u.a. auch mit Benutzerverwaltung (nur
+einzeln eintragen möglich)</p>
+
+<h2>false(1) less(1) more(1) stty(1) true(1) w3m(1)</h2>
+
+<p class="block">Programme, die im DAUtool-Sourcecode auftauchen</p>
+
+<hr size="1" color="#C0C0C0" />
+
+<h1><a name="utils"></a>Utilities in <i>utils/</i></h1>
+
+<p class="block">Die Anleitung zu den Programmen in <i>utils/</i> befinden sich
+nun in den Programmen. Also um Hilfe für <b>cnvep</b> zu bekommen `<span
+class="sh">cnvep -h</span>` aufrufen.</p>
+
+<hr size="1" color="#C0C0C0" />
+
+<h1><a name="bugs"></a>Bugs</h1>
+
+<p class="block">Falls irgendwelche Bugs in DAUtool (und zugehörigen
+Utilities) auftreten, sende diese bitte an den aktuellen Maintainer. Gib auch
+dein Betriebssystem und dessen Version / Revision, die Version von
+DAUtool an, und beschreibe das Problem.</p>
+
+<p class="block">Bevor du sendest, tu' bitte zwei Dinge. Als erstes, stelle
+sicher, dass du die neuste Version von DAUtool hast. Viele Bugs (meist
+kleine) werden bei jedem Release gefunden und eliminiert und inzwischen könnte
+das Problem schon längst behoben sein. Zweitens lies das Manual und die
+Referenz, um sicher zu sein, dass es sich um einen Bug handelt, und nicht um
+einen Ausdrucksfehler in der Sprache.</p>
+
+<p class="block">Das das &quot;Große Hinzufügen&quot; nur jährlich geschieht,
+werden auch zu Schulneubeginn die meisten Bugs gefunden und sofort entfernt.
+Zwischen zwei Patches liegen dann meist zwischen 2 Minuten und 72 Stunden.</p>
+
+<hr size="1" color="#C0C0C0" />
+
+<h1><a name="autor"></a>Autor</h1>
+
+<p class="block">Jan Engelhardt &lt;<a
+href="mailto:jengelh@gmx.de">jengelh@gmx.de</a>&gt; - Core Developer von
+DAUtool ab v1.01<br />
+Christoph Thiel &lt;<a
+href="mailto:cthiel1@linux01.gwdg.de">cthiel1@linux01.gwdg.de</a>&gt; -
+Betatester, Minor-Developer und Vendor (Promoter)</p>
+
+<p class="block">v0.80 von Eike Teiwes &lt;<a
+href="mailto:eteiwes@ohg.goe.net">eteiwes@ohg.goe.net</a>&gt;</p>
+
+<p class="block">(Hier warten noch einige Bytes darauf, dass sie eingetragen
+werden :p)</p>
+
+<hr size="1" color="#C0C0C0" />
+
+<p class="block"><a href="#top">^ Zum Dokumentanfang</a></p>
+</body>
+</html>

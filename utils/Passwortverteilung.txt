@@ -1,0 +1,16 @@
+Tipps zur Passwortverteilung
+
+MÖGLICHKEIT 1
+=============
+In DAUtool den Punkt 4 "Passwortlisten ausdrucken" wählen, "Verfahren" 1
+(sortiert nach Klassen) auswählen. Die entstandene TXT-Datei ausdrücken und
+entsprechend zerschneiden. Auf den Tisch legen, nach dem Motto "jeder muss sich
+erstmal selbst retten".
+Idee: E. Teiwes <eteiwes@ohg.goe.net>
+
+MÖGLICHKEIT 2
+=============
+Utility "sbrief" in <utils/sbrief> ausführen, welches aus der DTR-Datei eine
+PDF-Datei mit vielen Seiten erstellt, die dann ausgedruckt und als Serienbrief
+gehandelt werden kann.
+Idee / Mail: Cristoph Thiel <cthiel1@linux01.gwdg.de>
