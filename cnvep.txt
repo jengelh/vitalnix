@@ -4,22 +4,25 @@ NAME
     cnvep(8) - Konvertierung der Datumskodierung in /etc/passwd
 
 SYNTAX
-        cnvep [-1|-2] -i INPUTFILE -o OUTPUTFILE
+        cnvep [-f FORMAT] [-i INPUTFILE] [-o OUTPUTFILE]
 
     INPUTFILE und OUTPUTFILE sollten nicht dasselbe sein, sonst führt es dazu,
-    dass INPUTFILE überschrieben wird.
+    dass OUTPUTFILE überschrieben wird, bevor aus INPUTFILE etwas gelesen
+    werden kann.
 
 BESCHREIBUNG
     Sollte es noch alte Datumskodierungen in der /etc/passwd geben, so können
     diese mit dem cnvep.pl Script geändert werden.
 
-    Handelt es sich dabei um v1-Kodierungen (bv-0.x) in der /etc/passwd,
-    so ist die Option -1 hinzuzufügen:
+    Je nachdem, um welches Codierungsformat es sich handelt, muss die
+    entsprechende Versionsnummer der Codierung mit dem -f Parameter
+    übergeben, z.B. von Format version 1:
 
-        cnvep -1 -i /etc/passwd -o tempfile
+        cnvep -f1 -i/etc/passwd -otmp
+        mv /etc/passwd /etc/passwd.orig
+        mv tmp /etc/passwd
 
-    Gibt es noch Kodierungen v2 (bis einschl. DAUtool v1.71), so ist die Option
-    -2 anzuwenden.
+    Es gibt kein sofort sichtbares Anzeichen für jene Kodierung in /etc/passwd.
 
 SYSTEMANFORDERUNGEN
     Perl >= v5.6

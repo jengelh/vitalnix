@@ -1,49 +1,55 @@
+To v1.73.3 (August 10 2003)
+===========================
+- fixed the assistant help text to reflect changes of recent versions
+- removed v3 date codec (year-2038 bug), v4 is alias for v2
+
 To v1.73 (July 22 2003)
 =======================
-    - fixed: users with duplicate real name (but though different birthdate)
-      were ignored and only one was added to the Addition List.
-    - fixed: the 7th parameter (skeleton dir) was never passed to useradd and
-      friends
-    - added: running a preadd script is now possible when adding a single user
-    - added: running a postdel script is now possible when deleting a single
-      user
-    - fixed: when adding a single user:
-      - "useradd" was always run, ignoring p_useradd and pa_useradd
-      - a possible postadd script was not executed properly
-    - fixed: when deleting a single user:
-      - "userdel" was always run, ignoring p_userdel and pa_userdel
-      - a possible predel script was not executed properly
-    - fixed: a varname difference rejected archiving a user home directory
-      (single user delete); plus more
-    - fixed a memory leak (add/keep/del lists were not reset correctly)
-    - using new date v3 scrambler
-    - fixed: logic error, was using scalar context where list context was
-      needed
-    - fixed: worked around an unusual sprintf behavior
-    - fixed a copy and paste error
-    - added: moved addition of users before deletion so UIDs do not get reused
-      that fast
-    - fixed: default compression was not .tbz2 but .tar
+- fixed: users with duplicate real name (but though different birthdate) were
+  ignored and only one was added to the Addition List.
+- fixed: the 7th parameter (skeleton dir) was never passed to useradd and
+  friends
+- added: running a preadd script is now possible when adding a single user
+- added: running a postdel script is now possible when deleting a single user
+- fixed: when adding a single user:
+  - "useradd" was always run, ignoring p_useradd and pa_useradd
+  - a possible postadd script was not executed properly
+- fixed: when deleting a single user:
+  - "userdel" was always run, ignoring p_userdel and pa_userdel
+  - a possible predel script was not executed properly
+- fixed: a varname difference rejected archiving a user home directory
+  (single user delete); plus more
+- fixed a memory leak (add/keep/del lists were not reset correctly)
+- using new date v3 scrambler
+- fixed: logic error, was using scalar context where list context was
+  needed
+- fixed: worked around an unusual sprintf behavior
+- fixed a copy and paste error
+- added: moved addition of users before deletion so UIDs do not get reused
+  that fast
+- fixed: default compression was not .tbz2 but .tar
 
 To v1.71 (July 04 2003)
 =======================
-    - fixed: base config (dautool.cfg) file did not got read (since v1.70)
-    - fixed: if the destination group did not exist, a warning was
-      displayed -- but without the group's name
-    - fixed: crontabs of users-to-be-deleted were not properly removed
-    - added: user-defined args for useradd, userdel and additional progs
-    - fixed: various logic errors in config file
-    - removed: since the accepted file formats are only SDF, the format
-      enum query has been commented out
-    - various variable fixes
-    * v1.70 UNUSABLE
+- fixed: base config (dautool.cfg) file did not got read (since v1.70)
+- fixed: if the destination group did not exist, a warning was
+  displayed -- but without the group's name
+- fixed: crontabs of users-to-be-deleted were not properly removed
+- added: user-defined args for useradd, userdel and additional progs
+- fixed: various logic errors in config file
+- removed: since the accepted file formats are only SDF, the format enum query
+  has been commented out
+- various variable fixes
+* v1.70 HAS BEEN MARKED AS UNSTABLE + UNUSABLE. Unstable: Changed variable
+  names were not updated in certain parts of the code, leading to incomplete
+  system() calls. Unusable: Luckily, exactly this lead to a conditional always
+  being false and thus never let you do anything.
 
 To v1.70 (June 28 2003)
 =======================
-    - fixed: genpass() generated a wrong salt in some cases (it used
-      unallowed characters)
-      (btw... this was the 3rd salt problem since the beginning)
-    - reordered a2a.pm and codec.pm
+- fixed: genpass() generated a wrong salt in some cases (it used unallowed
+  characters) (btw... this was the 3rd salt problem since the beginning)
+- reordered a2a.pm and codec.pm
 
 To v1.60
 ========

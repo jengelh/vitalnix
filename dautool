@@ -13,8 +13,8 @@ BEGIN { push(@INC, "src"); }
 %OPT = (
   "PROGF" => "dautool",
   "PROGN" => "dautool",
-  "PROGV" => "v1.73.2",
-  "PROGD" => "04. August 2003",
+  "PROGV" => "v1.73.3",
+  "PROGD" => "10. August 2003",
   "a_cfgf" => ["dautool.cfg"],
   "b_saupw" => 0,
   "b_zpack" => 2,
@@ -117,99 +117,97 @@ sub hmenu {
 sub assistant {
   my $temp;
   print "\n\n\n", &hbar("="), "\n\e[1mAssistent\e[0m\n", &hbar("="), "\n";
-  print &tssqueeze("Das Programm kann jederzeit mit STRG+C (oder spez. ".
-   "Signalen) unter- oder abgebrochen werden. Es entstehen dabei keinerlei ".
-   "Schäden, d.h. es müssen zwar Aktionen wiederholt werden, diese Aktionen ".
-   "erkennen aber schon erfüllte Aufgaben."), "\n";
+  print &tssqueeze("Wird das Programm zwischendurch unter-/abgebrochen,".
+   "so erkennt es bei erneuter Ausführung bereits erledigte Aufgaben."), "\n";
   print &tssqueeze("In [] befinden sich alle wählbaren Möglichkeiten, ".
    "diejenige die in ()-Klammern ist, wird angenommen wenn die Eingabe leer ".
-   "bleibt, ist also praktisch Standard. Gib den Großbuchstaben der ".
-   "gewünschten Möglichkeit ein (oder auch nicht)."), "\n\n";
-  print &tssqueeze("Willst du einen Einzelbenutzer oder mehrere hinzufügen?"),
+   "bleibt, ist also praktisch Standard. Es ist der Großbuchstaben der ".
+   "gewünschten Möglichkeit einzugeben (oder auch nicht)."), "\n\n";
+  print &tssqueeze("Einzelbenutzer oder mehrere hinzufügen?"),
    "\n\n\n";
 
   print "[Einzelbenutzer/(Mehrere)/Abbrechen] > ";
   chomp($temp = <STDIN>);
 
   if($temp =~ /^e(?:inzelbenutzer)?$/io) {
-    print uc("\nEinzelbenutzer hinzufügen\n\n");
-    print &tssqueeze("Wen vergessen? Kein Problem. Es wird nur nach dem ".
-     "Namen, Geburtsdatum (0.0.0000 für leere Angabe) sowie Klasse und ".
-     "einer Zielgruppe gefragt. Standardmäßig ist die Zielgruppe das, was ".
-     "unter \$OPT{\"s_dgrp\"} in der Konfigurationsdatei eingestellt worden ".
-     "ist."), "\n\n\n";
+    print uc "\nEinzelbenutzer hinzufügen\n\n";
+    print &tssqueeze("Wen vergessen? Kein Problem. Es wird nur nach dem".
+     " Namen, Geburtsdatum (0.0.0000 für leere Angabe) sowie Klasse und".
+     " einer Zielgruppe gefragt. Standardmäßig ist die Zielgruppe das, was".
+     " unter \$OPT{\"s_dgrp\"} in der Konfigurationsdatei eingestellt worden".
+     " ist."), "\n\n";
+    print "s_dgrp ist z.Z: ", $OPT{"s_dgrp"}, "\n\n\n";
     print "Weiter >> (Return drücken)\n";
     <STDIN>;
     print "\n";
 
     if(!&useradd()) {
-      print &tssqueeze("Das Hinzufügen eines Einzelbenutzers ist nicht ".
-       "fehlerfrei abgelaufen. Wiederhole die Prozedur, falls nötig. Der ".
-       "beendet sich nun und kehrt zum Hauptmenü zurück."), "\n";
+      print &tssqueeze("Das Hinzufügen eines Einzelbenutzers ist nicht".
+       " fehlerfrei abgelaufen. Bitte Prozedur wiederholen, falls nötig. Der".
+       " Assistent beendet sich nun und kehrt zum Hauptmenü zurück."), "\n";
       return 0;
     }
   } elsif($temp =~ /^m(?:ehrere)?$/io) {
-    print uc("\nSchritt 1 - Änderungen finden\n\n");
-    print &tssqueeze("In diesem Teil wird eine Datei beliebigen Typs ".
-     "(z.z. nur SDF-4field unterstützt) eingelesen, und mit die Änderungen ".
-     "herausgefunden."), "\n\n";
-    print &tssqueeze("Es wird gleich nach einem Dateinamen und einem ".
-     "Dateityp gefragt; es gibt jetzt also die Möglichkeit, eine Diskette zu ".
-     "mounten, falls nötig. Kopiere die zu konvertierende Datei am besten in ".
-     "ein Unterverzeichnis des ".$OPT{"PROGN"}."-Wurzelverzeichnisses. (Z.B. ".
-     "/usr/local/".$OPT{"PROGF"}."/DATUM_VON_HEUTE/)"), "\n\n\n";
+    print uc "\nSchritt 1 - Änderungen finden\n\n";
+    print &tssqueeze("In diesem Teil wird eine Datei beliebigen Typs".
+     " (z.z. nur \"SDF-4/5-field\" unterstützt) eingelesen, und mit die".
+     " Änderungen herausgefunden."), "\n\n";
+    print &tssqueeze("Es wird gleich nach einem Dateinamen gefragt; es gibt".
+     " jetzt (in diesem Augenblick) also die Möglichkeit, eine Diskette zu".
+     " mounten, falls nötig. Datei am besten in ein Unterverzeichnis des".
+     " ".$OPT{"PROGN"}."-Wurzelverzeichnisses. (Z.B. /usr/local/".
+     $OPT{"PROGF"}."/DATUM_VON_HEUTE/)"), "\n\n\n";
     print "Änderungen finden [(Ja)/Abbrechen] > ";
     chomp($temp = <STDIN>);
-    if($temp =~ /^j(?:a)?/io) {
-      print "\n";
-      if(!&find_changes()) {
-        print &tssqueeze("Die Prozedur um die nötigen Änderungen zu finden ".
-         "ist nicht fehlerfrei abgelaufen. Wiederhole die Prozedur, falls ".
-         "nötig. Der Assistent beendet sich nun und kehrt zum Hauptmenü ".
-         "zurück."), "\n";
-        return 0;
-      }
-      
-      print &tssqueeze("\"Änderungen finden\" erfolgreich."), "\n\n";
+    if($temp !~ /^j(?:a)?/io) { return 1; }
 
-      print uc("Schritt 2 - Änderungen zuweisen\n\n");
-      print &tssqueeze("Es werden nun die Änderungen vollzogen, die im ".
-       "zuvorgehendem Schritt erarbeitet wurden. Die nötige Zeit, um jene ".
-       "Benutzer zu löschen variiert je nach eingestellter Kompression bei ".
-       "der Archivierung der alten Home-Verzeichnisse."), "\n\n\n";
-
-      print "Änderungen zuweisen [(Ja)/Abbrechen] > ";
-      chomp($temp = <STDIN>);
-      if($temp =~ /^j(?:a)?/io) {
-        print "\n";
-        if(!&apply_changes()) {
-          print &tssqueeze("Die Prozedur um die nötigen Änderungen zu ".
-           "vollziehen ist nicht fehlerfrei abgelaufen. Wiederhole die ".
-           "Prozedur, falls nötig. Der Assistent beendet sich nun und ".
-           "kehrt zum Hauptmenü zurück."), "\n";
-          return 0;
-        }
-
-        print &tssqueeze("Änderungen wurden erfolgreich zugewiesen."), "\n\n";
-
-        print uc("Schritt 3 - Passwortlisten drucken\n\n");
-        print &tssqueeze("Sollen noch formatierte Passwortlisten erstellt ".
-         "werden?"), "\n\n\n";
-
-        print "Passwortlisten erstellen [(Ja)/Nein] > ";
-        chomp($temp = <STDIN>);
-        if($temp =~ /^j(?:a)?/io) {
-          print "\n";
-          if(!&prlist) {
-            print &tssqueeze("Die Erstellung der Passwortlisten ist ".
-             "nicht fehlerfrei abgelaufen."), "\n";
-          }
-
-          print &tssqueeze("Der Assistent ist jetzt fertig, beendet sich ".
-           "und kehrt zum Hauptmenü zurück."), "\n\n";
-        }
-      }
+    print "\n";
+    if(!&find_changes()) {
+      print &tssqueeze("Die Prozedur, um die nötigen Änderungen zu finden".
+       " ist nicht ganz fehlerfrei abgelaufen. Bitte Prozedur wiederholen,".
+       " falls nötig. Der Assistent beendet sich nun und kehrt zum".
+       " Hauptmenü zurück."), "\n";
+      return 0;
     }
+      
+    print &tssqueeze("\"Änderungen finden\" erfolgreich."), "\n\n";
+
+    print uc("Schritt 2 - Änderungen zuweisen\n\n");
+    print &tssqueeze("Es werden nun die Änderungen vollzogen, die im".
+     " zuvorgehendem Schritt erarbeitet wurden. Die nötige Zeit, um jene".
+     " Benutzer zu löschen variiert je nach eingestellter Kompression bei".
+     " der Archivierung der alten Home-Verzeichnisse."), "\n\n\n";
+    print "Änderungen zuweisen [(Ja)/Abbrechen] > ";
+    chomp($temp = <STDIN>);
+    if($temp !~ /^j(?:a)?/io) { return 1; }
+
+    print "\n";
+    if(!&apply_changes()) {
+      print &tssqueeze("Die Prozedur um die nötigen Änderungen zu vollziehen".
+       " ist nicht fehlerfrei abgelaufen. Bitte Prozedur wiederholen, falls".
+       " nötig. Der Assistent beendet sich nun und kehrt zum Hauptmenü".
+       " zurück."), "\n";
+      return 0;
+    }
+
+    print &tssqueeze("Änderungen wurden erfolgreich zugewiesen."), "\n\n";
+
+    print uc("Schritt 3 - Passwortlisten drucken\n\n");
+    print &tssqueeze("Sollen noch formatierte Passwortlisten erstellt ".
+     "werden?"), "\n\n\n";
+
+    print "Passwortlisten erstellen [(Ja)/Nein] > ";
+    chomp($temp = <STDIN>);
+    if($temp !~ /^j(?:a)?/io) { return 1; }
+
+    print "\n";
+    if(!&prlist) {
+      print &tssqueeze("Die Erstellung der Passwortlisten ist nicht".
+       " fehlerfrei abgelaufen."), "\n";
+    }
+
+    print &tssqueeze("Der Assistent ist jetzt fertig, beendet sich und kehrt".
+     " zum Hauptmenü zurück."), "\n\n";
   }
 
   return 1;

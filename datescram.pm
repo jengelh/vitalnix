@@ -9,7 +9,12 @@
 #==============================================================================
 use Time::Local;
 
-sub date_scramble { # v3
+sub date_scramble { return &date4_scramble(@_); }
+sub date_unscramble { return &date4_unscramble(@_); }
+sub date4_scramble { return &date2_scramble(@_); }
+sub date4_unscramble { return &date2_unscramble(@_); }
+
+sub date3_scramble { # v3
   my($day, $month, $year);
   if($_[0] =~ /\./so) {
    ($day, $month, $year) = ($_[0] =~ /^(\d\d?)\.(\d\d?)\.(\d{2,4})/so); }
@@ -21,7 +26,7 @@ sub date_scramble { # v3
   return sprintf "%08X", timelocal(0, 0, 12, $day, $month - 1, $year);
 }
 
-sub date_unscramble {
+sub date3_unscramble {
   my(undef, undef, undef, $day, $month, $year) = localtime hex $_[0];
 
   my $ty = (localtime())[5];
@@ -47,13 +52,8 @@ sub date2_scramble {
 }
 
 sub date2_unscramble {
-  my($year, $month, $day) =
-   (hex(substr($_[0], 0, 4)), hex(substr($_[0], 4, 2)),
-   hex(substr($_[0], 6, 2)));
-  if($_[0] eq "/") { return sprintf "%02d/%02d/%04d", $month, $day, $year; }
-  elsif($_[0] eq "-") {
-   return sprintf "%04d-%02d-%02d", $year, $month, $year; }
-  else { return sprintf "%02d.%02d.%04d", $day, $month, $year; }
+  return sprintf "%02d.%02d.%04d", hex(substr($_[0], 6, 2)),
+   hex(substr($_[0], 4, 2)), hex(substr($_[0], 0, 4));
 }
 
 sub date1_scramble {

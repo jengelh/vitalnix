@@ -4,10 +4,9 @@
 #   Copyright (C) Jan Engelhardt <jengelh at gmx de>, 2001 - 2003
 #   -- distributed under the GPL >= v2.0, --
 #   -- see doc/GPL-v2.0.txt               --
-#   v1.06 (24. August 2002)
+#   v1.10 (10. August 2003)
 #
-#   Konvertierung der Datumskodierung v1 (bv-0.x) oder v2 (bis einschl.
-#   v1.71) in der /etc/passwd ins neue v3 Format.
+# Help see cnvep.txt
 #==============================================================================
 use Getopt::Long;
 require "datescram.pm";
@@ -18,19 +17,15 @@ select((select(STDERR), $| = 1)[0]);
 
 ($inputf, $outputf, $scangid) = ("/etc/passwd", "-", ".*?");
 &Getopt::Long::Configure(qw(bundling pass_through));
-&GetOptions("1" => \$format1, "2" => \$format2, "i|inputf=s" => \$inputf,
- "o|outputf=s" => \$outputf, "g|gid=i" => \$scangid);
+&GetOptions("f" => \$format, "i|inputf=s" => \$inputf, "o|outputf=s" =>
+ \$outputf, "g|gid=i" => \$scangid);
 
-if($format1 && $format2) {
-  print STDERR "Es kann nur eine der beiden Optionen -1 und -2 angegeben ",
-   "werden!\n";
-  exit 1;
+if($format == 1) { *unscramble = \&date1_unscramble; }
+elsif($format == 2 || $format == 4) {
+  print "/etc/passwd already ok\n";
+  exit 0;
 }
-if(!$format1 && !$format2) {
-  print STDERR "Keine Formatoption (-1,-2) ausgew‰hlt,\n",
-   "standardm‰ﬂig jetzt -2 angenommen.\n";
-}
-if($format1) { *unscramble = \&date1_unscramble; }
+elsif($format == 3) { *unscramble = \&date3_unscramble; }
 
 if($scangid eq "") {
   print STDERR "Keine zu durchsuchende Gruppe angegeben.\n",
