@@ -8,16 +8,13 @@
 #   Chistoph Thiel <cthiel1@linux01.gwdg.de>, 2001 - 2003
 #   <acb@kki.org>, 2002
 #==============================================================================
-BEGIN {
-  push(@INC, "src");
-  if($^V lt v5.8.0) { die "Needing Perl v5.8.0 or newer!\n"; }
-}
+BEGIN { push(@INC, "src"); }
 
 %OPT = (
   "PROGF" => "dautool",
   "PROGN" => "dautool",
-  "PROGV" => "v1.73",
-  "PROGD" => "22. Juli 2003",
+  "PROGV" => "v1.73.2",
+  "PROGD" => "04. August 2003",
   "a_cfgf" => ["dautool.cfg"],
   "b_saupw" => 0,
   "b_zpack" => 2,
@@ -85,8 +82,7 @@ foreach my $f (@{$OPT{"a_cfgf"}}) {
  if(do $f) { printf "Lade Konfiguration aus Datei %s\n", $f; } }
 
 # ----------------------------------------
-@SIG{"HUP","INT","QUIT","ILL","TRAP","ABRT","BUS","FPE","USR1","SEGV",
- "USR2","PIPE","ALRM","TERM"} = ((\&SIG_EXIT) x 14);
+@SIG{"HUP","INT","TERM"} = ((\&SIG_EXIT) x 3);
 
 &hmenu();
 sub SIG_EXIT { unlink "/var/run/".$OPT{"PROGF"}.".pid"; print "\n"; exit 1; }
@@ -121,7 +117,6 @@ sub hmenu {
 sub assistant {
   my $temp;
   print "\n\n\n", &hbar("="), "\n\e[1mAssistent\e[0m\n", &hbar("="), "\n";
-  print &tssqueeze("Fragen an <jengelh\@gmx.de>"), "\n";
   print &tssqueeze("Das Programm kann jederzeit mit STRG+C (oder spez. ".
    "Signalen) unter- oder abgebrochen werden. Es entstehen dabei keinerlei ".
    "Schäden, d.h. es müssen zwar Aktionen wiederholt werden, diese Aktionen ".
@@ -229,7 +224,7 @@ sub find_changes {
   $CURR{"a_udel"} = [];
   $CURR{"b_cmpd"} = 0;
 
-  print "\n", &hbar("="), "\n\e[1mListen vergleichen\e[0m\n", &hbar("="), "\n";
+  print "\n", &hbar("="), "\n\e[1mÄnderungen finden\e[0m\n", &hbar("="), "\n";
   my $dgid = $OPT{"s_dgrp"};
   if($dgid =~ /\D/iso) { $dgid = &getgrent($dgid, $OPT{"f_group"}); }
   if($dgid eq "") {
@@ -246,7 +241,7 @@ sub find_changes {
 
     local *IN;
     if(!open(IN, "<".$inputf)) {
-      printf "FEHLER: Konnte %s nicht öffnen: %s\n", $inputf, $!;
+      printf "FEHLER: %s konnte nicht geöffnet werden: %s\n", $inputf, $!;
       return 0;
     }
 
@@ -353,7 +348,8 @@ sub find_changes {
 }
 
 sub apply_changes {
-  print "\n\n\n", &hbar("="), "\n\e[1mModifizieren\e[0m\n", &hbar("="), "\n";
+  print "\n\n\n", &hbar("="), "\n\e[1mÄnderungen zuweisen\e[0m\n",
+   &hbar("="), "\n";
 
   # ----------------------------------------
   if(!$CURR{"b_cmpd"}) {
@@ -368,14 +364,6 @@ sub apply_changes {
   system "cp", "-ai", $OPT{"f_shadow"}, $CURR{"s_basefile"}.".oshadow";
   $CURR{"s_dqrfile"} = $CURR{"s_basefile"}.".dqr";
   my $logfile = $CURR{"s_basefile"}.".log";
-
-  local *LOG;
-  if(!open(LOG, ">".$logfile)) {
-   printf "WARNUNG: Konnte %s nicht öffnen: %s\n", $logfile, $!; }
-  select((select(LOG), $| = 1)[0]);
-  printf LOG "%s (%s) - LOG\n", @OPT{"PROGN","PROGV"};
-  print LOG "*passwd:", $CURR{"s_basefile"}, ".opasswd\n";
-  print LOG "*shadow:", $CURR{"s_basefile"}, ".oshadow\n";
 
   for(my $c = 2; $c >= 0; --$c) {
     printf "\rWeiter in %d Sekunde%s\e[K", $c, (($c != 1) ? "n" : "");
@@ -408,7 +396,6 @@ sub apply_changes {
        $OPT{"s_dgrp"}, join(",", $gcname, $gcdate), "/bin/bash",
        $OPT{"f_skeldir"};
       printf DQR "%s:%s:%s:%s\n", $klasse, $gcname, $lname, $pass;
-      print LOG "+".$lname."\n";
 
       if($OPT{"p_postadd"} ne "") {
        system sprintf $OPT{"pa_postadd"}, $OPT{"p_postadd"}, $lname; }
@@ -450,7 +437,6 @@ sub apply_changes {
     {
       chomp(my $date = `date +\%Y-\%m-\%d.\%H-\%M`);
       mkdir sprintf "%s/%s", $OPT{"f_trhome"}, $date;
-      print LOG "*trashd:".$OPT{"f_trhome"}."/".$date."\n";
       print "Entfernen der Benutzer (2 / 2)\n";
 
       my($count, $max, $t_start) = (0, scalar(@{$CURR{"a_udel"}}), time());
@@ -467,7 +453,6 @@ sub apply_changes {
          system sprintf $OPT{"pa_predel"}, $OPT{"p_predel"}, $l; }
 
         system sprintf $OPT{"pa_userdel"}, $OPT{"p_userdel"}, $l;
-        print LOG "-".$l."\n";
 
         if($OPT{"p_postdel"} ne "") {
          system sprintf $OPT{"pa_postdel"}, $OPT{"p_postdel"}, $l; }
@@ -475,9 +460,8 @@ sub apply_changes {
         print &pstat(++$count, $max, 5, $t_start, time());
       }
     }
-  } else { print LOG "*trashd:(NULL)\n"; }
+  }
 
-  close LOG;
   return 1;
 }
 
@@ -1135,6 +1119,12 @@ sub tssqueeze {
   my @rv;
   while($t =~ s/(.{1,$x})(\s+|\z)/push(@rv, $1), ""/egs) { }
   return join("\n", @rv);
+}
+
+sub die {
+  printf STDERR @_;
+  printf STDERR "\n";
+  exit 1;
 }
 
 #==[ End of file ]=============================================================

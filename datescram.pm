@@ -9,7 +9,7 @@
 #==============================================================================
 use Time::Local;
 
-sub date_scramble {
+sub date_scramble { # v3
   my($day, $month, $year);
   if($_[0] =~ /\./so) {
    ($day, $month, $year) = ($_[0] =~ /^(\d\d?)\.(\d\d?)\.(\d{2,4})/so); }
@@ -24,9 +24,9 @@ sub date_scramble {
 sub date_unscramble {
   my(undef, undef, undef, $day, $month, $year) = localtime hex $_[0];
 
-  my $ty = (localtime())[5]; # 103
-  my $bp = ($ty + 50) % 100; # 53
-  my $nc = $ty - $ty % 100; # 103 - 03 = 100
+  my $ty = (localtime())[5];
+  my $bp = ($ty + 50) % 100;
+  my $nc = $ty - $ty % 100;
   if($bp < 50) { $nc += 100; }
   my $ct = $nc - 100;
 
@@ -67,14 +67,13 @@ sub date1_scramble {
 
 sub date1_unscramble {
   my $code = shift @_;
-  my($tag, $monat, $jahr) =
-   (substr($code, 0, 3), substr($code, 3, 3), substr($code, 6, 3));
+  my($tag, $monat, $jahr) = ($code =~ /^(\d\d\d)(\d\d\d)(\d\d\d)/s);
   $tag = ($tag - 113) / 26;
   $monat = ($monat - 113) / 73;
   $jahr = ($jahr - 113) / 29 + 75;
   if($jahr > 100) { $jahr -= 100; }
   $jahr += 1900;
-  return join(".", $tag, $monat, $jahr);
+  return sprintf "%02d.%02d.%04d", $tag, $monat, $jahr;
 }
 
 1;
