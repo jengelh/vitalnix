@@ -12,4 +12,4 @@ BESCHREIBUNG
 
 SYSTEMANFORDERUNGEN
     Linux-Kernel v2.4.x
-    Perl v5.8.0
+    Perl >= v5.6.0

@@ -5,7 +5,7 @@
 #   Copyright (C) Jan Engelhardt <jengelh at gmx de>, 2001 - 2003
 #   -- distributed under the GPL >= v2.0, --
 #   -- see doc/GPL-v2.0.txt               --
-#   v1.082 :: 08. März 2003
+#   v1.10 :: 22. Juli 2003
 #==============================================================================
 $VERSION = "1.082";
 use Getopt::Long;
@@ -20,7 +20,7 @@ select((select(STDERR), $| = 1)[0]);
 if($inputf eq "-") {
  print STDERR "Achtung: Input wird von STDIN gelesen.\n"; }
 
-open(TPL, "<".$tpl) || die sprintf "Konnte <%s> nicht öffnen: %s\n", $tpl, $!;
+open(TPL, "<".$tpl) || die sprintf "Konnte %s nicht öffnen: %s\n", $tpl, $!;
 $brief = join("", <TPL>);
 close TPL;
 
@@ -40,7 +40,7 @@ print OUT <<"--EOT";
 
 --EOT
 
-while(defined(my $l = <UPW>)) {
+while(defined(my $l = <DQR>)) {
   ++$count;
   if($count > 2) { print OUT "\\newpage\n"; }
   if($count == 1) { next; }

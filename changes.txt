@@ -1,8 +1,9 @@
-To v1.72 (July 21 2003)
+To v1.73 (July 22 2003)
 =======================
-    - removed: birthdate. the new algorithms (since v1.50) do not require it
-      anymore.
-    - fixed: the 7th parameter (skeleton dir) was never passed
+    - fixed: users with duplicate real name (but though different birthdate)
+      were ignored and only one was added to the Addition List.
+    - fixed: the 7th parameter (skeleton dir) was never passed to useradd and
+      friends
     - added: running a preadd script is now possible when adding a single user
     - added: running a postdel script is now possible when deleting a single
       user
@@ -12,12 +13,17 @@ To v1.72 (July 21 2003)
     - fixed: when deleting a single user:
       - "userdel" was always run, ignoring p_userdel and pa_userdel
       - a possible predel script was not executed properly
-    - fixed: a var aclash rejected archiving a user home directory (single user
-      delete); plus more
-    - eliminated perl-generated warnings (perl -cwT)
+    - fixed: a varname difference rejected archiving a user home directory
+      (single user delete); plus more
     - fixed a memory leak (add/keep/del lists were not reset correctly)
-    - removed "cnvep" and "codec.pm" from the tree, with the absence of the
-      birthdate it is not needed anymore too
+    - using new date v3 scrambler
+    - fixed: logic error, was using scalar context where list context was
+      needed
+    - fixed: worked around an unusual sprintf behavior
+    - fixed a copy and paste error
+    - added: moved addition of users before deletion so UIDs do not get reused
+      that fast
+    - fixed: default compression was not .tbz2 but .tar
 
 To v1.71 (July 04 2003)
 =======================

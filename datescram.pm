@@ -4,9 +4,38 @@
 #   by Jan Engelhardt <jengelh at gmx de>, 1999 - 2003
 #   -- distributed under the GPL >= v2.0, --
 #   -- see doc/GPL-v2.0.txt               --
-#   Also includes old "version 1" used in original bv-0.x
+#   Also includes old version 1 used in original bv-0.x
+#   and version 2 used in up to (including) v1.72
 #==============================================================================
+use Time::Local;
+
 sub date_scramble {
+  my($day, $month, $year);
+  if($_[0] =~ /\./so) {
+   ($day, $month, $year) = ($_[0] =~ /^(\d\d?)\.(\d\d?)\.(\d{2,4})/so); }
+  elsif($_[0] =~ /\//so) {
+   ($month, $day, $year) = ($_[0] =~ /^(\d\d?)\/(\d\d?)\/(\d{2,4})/so); }
+  elsif($_[0] =~ /-/so) {
+   ($year, $month, $day) = ($_[0] =~ /^(\d{2,4})-(\d\d?)-(\d\d?)/so); }
+  else { return sprintf "%08X", $_[0] + 0; }
+  return sprintf "%08X", timelocal(0, 0, 12, $day, $month - 1, $year);
+}
+
+sub date_unscramble {
+  my(undef, undef, undef, $day, $month, $year) = localtime hex $_[0];
+
+  my $ty = (localtime())[5]; # 103
+  my $bp = ($ty + 50) % 100; # 53
+  my $nc = $ty - $ty % 100; # 103 - 03 = 100
+  if($bp < 50) { $nc += 100; }
+  my $ct = $nc - 100;
+
+  if($year >= 1000) { $year -= 1900; }
+  elsif($year < 100 && $year >= 0) { $year += ($year > $bp) ? $ct : $nc; }
+  return sprintf "%02d.%02d.%04d", $day, ++$month, $year += 1900;
+}
+
+sub date2_scramble {
   if($_[0] =~ /\./so) {
    ($day, $month, $year) = ($_[0] =~ /^(\d\d?)\.(\d\d?)\.(\d{4})/so); }
   elsif($_[0] =~ /\//so) {
@@ -17,7 +46,7 @@ sub date_scramble {
   return sprintf "%04X%02X%02X", $year, $month, $day;
 }
 
-sub date_unscramble {
+sub date2_unscramble {
   my($year, $month, $day) =
    (hex(substr($_[0], 0, 4)), hex(substr($_[0], 4, 2)),
    hex(substr($_[0], 6, 2)));

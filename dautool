@@ -16,11 +16,11 @@ BEGIN {
 %OPT = (
   "PROGF" => "dautool",
   "PROGN" => "dautool",
-  "PROGV" => "v1.72",
-  "PROGD" => "21. Juli 2003",
+  "PROGV" => "v1.73",
+  "PROGD" => "22. Juli 2003",
   "a_cfgf" => ["dautool.cfg"],
   "b_saupw" => 0,
-  "b_zpack" => 1,
+  "b_zpack" => 2,
   "f_group" => "/etc/group",
   "f_passwd" => "/etc/passwd",
   "f_shadow" => "/etc/shadow",
@@ -72,7 +72,10 @@ select((select(STDERR), $| = 1)[0]);
 
 use Getopt::Long;
 require "a2a.pm";
-require "codec.pm";
+require "datescram.pm";
+
+*enday = \&date_scramble;
+*deday = \&date_unscramble;
 
 # ----------------------------------------
 &Getopt::Long::Configure(qw(bundling pass_through));
@@ -265,16 +268,16 @@ sub find_changes {
       if((split(/;/o, $l))[0] !~ /\D/) {
        (undef, $nname, $vname, $gebd, $klasse) = split(/;/o, $l); }
       else { ($nname, $vname, $gebd, $klasse) = split(/;/o, $l); }
-      if($nname eq "" || $vname eq "") {
+      if($nname eq "" || $vname eq "" || $gebd eq "") {
         printf "FEHLER: Datenfehler in der SDF-Datei, Zeile %d\n", $count;
-        print "[Assertion: nname eq \"\" || vname eq \"\"\n";
+        print "[Assertion: nname eq \"\" || vname eq \"\" || gebd eq \"\"\n";
         close IN;
         print "\n";
         return 0;
       }
 
       my $lname = &name2user($nname, $vname);
-      $dtf{$vname." ".$nname} = [$lname, $klasse];
+      $dtf{$vname." ".$nname.",".&enday($gebd)} = [$lname, $klasse];
       print &pstat($count, $max, 5, $t_start, time());
     }
 
@@ -303,14 +306,14 @@ sub find_changes {
       chomp $l;
       if(substr($l, 0, 1) eq "#" || $l eq "") { next; }
       my($lname, undef, undef, $gid, $gcos) = split(/:/o, $l);
-      my($gcname) = split(/,/o, $gcos);
+      my($gcname, $gcdate, $gcrest) = split(/,/o, $gcos, 3);
       $ph{$lname} = 1;
 
       if($gid == $dgid) {
         ++$users_g;
-        if(defined $dtf{$gcname}) {
+        if(defined $dtf{$gcname.",".$gcdate}) {
           ++$users_k;
-          delete $dtf{$gcname};
+          delete $dtf{$gcname.",".$gcdate};
         } else { push(@{$CURR{"a_udel"}}, $lname); }
       }
 
@@ -328,8 +331,9 @@ sub find_changes {
 
   # ----------------------------------------
   {
-    foreach my $gcname (sort keys %dtf) {
-      my($lname, $klasse) = @{$dtf{$gcname}};
+    foreach my $gcnd (sort keys %dtf) {
+      my($lname, $klasse) = @{$dtf{$gcnd}};
+      my($gcname, $gcdate) = split(/,/o, $gcnd);
       my($i, $llname) = ("", $lname);
 
       while($ph{$llname} ne "") {
@@ -338,7 +342,7 @@ sub find_changes {
       }
 
       $ph{$llname} = 1;
-      push(@{$CURR{"a_unew"}}, [$llname, $gcname, $klasse]);
+      push(@{$CURR{"a_unew"}}, [$llname, $gcname, $gcdate, $klasse]);
     }
 
     printf "(Bestätigt: %d neue Benutzer)\n", scalar @{$CURR{"a_unew"}};
@@ -377,6 +381,44 @@ sub apply_changes {
     printf "\rWeiter in %d Sekunde%s\e[K", $c, (($c != 1) ? "n" : "");
     sleep 1;
   }
+  printf "\n";
+
+  # ----------------------------------------
+  if(@{$CURR{"a_unew"}} > 0) {
+    local *DQR;
+    if(!open(DQR, ">".$CURR{"s_dqrfile"})) {
+      printf "FEHLER: Konnte %s nicht öffnen: %s\n", $CURR{"s_dqrfile"}, $!;
+      return 0;
+    }
+
+    printf DQR "%s (%s) - DQR\n", @OPT{"PROGN","PROGV"};
+    print "Hinzufügen der neuen Benutzer\n";
+
+    my($count, $max, $t_start) = (0, scalar(@{$CURR{"a_unew"}}), time());
+    foreach my $l (@{$CURR{"a_unew"}}) {
+      my($lname, $gcname, $gcdate, $klasse) = @$l;
+      my($encpass, $pass) = &genpass();
+      if($OPT{"p_preadd"} ne "") {
+        system sprintf $OPT{"pa_preadd"}, $OPT{"p_preadd"}, $lname, $encpass,
+         $OPT{"s_dgrp"}, join(",", $gcname, $gcdate), "/bin/bash",
+         $OPT{"f_skeldir"};
+      }
+
+      system sprintf $OPT{"pa_useradd"}, $OPT{"p_useradd"}, $lname, $encpass,
+       $OPT{"s_dgrp"}, join(",", $gcname, $gcdate), "/bin/bash",
+       $OPT{"f_skeldir"};
+      printf DQR "%s:%s:%s:%s\n", $klasse, $gcname, $lname, $pass;
+      print LOG "+".$lname."\n";
+
+      if($OPT{"p_postadd"} ne "") {
+       system sprintf $OPT{"pa_postadd"}, $OPT{"p_postadd"}, $lname; }
+
+      print &pstat(++$count, $max, 5, $t_start, time());
+    }
+
+    print &pstat($count, $max, 3, $t_start, time());
+    close DQR;
+  }
 
   # ----------------------------------------
   if(@{$CURR{"a_udel"}} > 0) {
@@ -407,68 +449,33 @@ sub apply_changes {
     # ----------------------------------------
     {
       chomp(my $date = `date +\%Y-\%m-\%d.\%H-\%M`);
-      mkdir sprintf("%s/%s", $OPT{"f_trhome"}, $date);
+      mkdir sprintf "%s/%s", $OPT{"f_trhome"}, $date;
       print LOG "*trashd:".$OPT{"f_trhome"}."/".$date."\n";
       print "Entfernen der Benutzer (2 / 2)\n";
 
       my($count, $max, $t_start) = (0, scalar(@{$CURR{"a_udel"}}), time());
       foreach my $l (@{$CURR{"a_udel"}}) {
         if($OPT{"b_zpack"} == 1) {
-          system sprintf "tar -Pcf \"%s/%s/%s.tar\" ~%s 2>/dev/null",
+          system sprintf "tar -cf \"%s/%s/%s.tar\" ~%s 2>/dev/null",
            $OPT{"f_trhome"}, $date, $l, $l;
         } elsif($OPT{"b_zpack"} == 2) {
-          system sprintf "tar -Pcjf \"%s/%s/%s.tbz2\" ~%s 2>/dev/null",
+          system sprintf "tar -cjf \"%s/%s/%s.tbz2\" ~%s 2>/dev/null",
            $OPT{"f_trhome"}, $date, $l, $l;
         }
 
         if($OPT{"p_predel"} ne "") {
-         system sprintf $OPT{"pa_predel","p_predel"}, $l; }
+         system sprintf $OPT{"pa_predel"}, $OPT{"p_predel"}, $l; }
 
-        system sprintf $OPT{"pa_userdel","p_userdel"}, $l;
+        system sprintf $OPT{"pa_userdel"}, $OPT{"p_userdel"}, $l;
         print LOG "-".$l."\n";
 
         if($OPT{"p_postdel"} ne "") {
-         system sprintf $OPT{"pa_predel","p_predel"}, $l; }
+         system sprintf $OPT{"pa_postdel"}, $OPT{"p_postdel"}, $l; }
 
         print &pstat(++$count, $max, 5, $t_start, time());
       }
     }
   } else { print LOG "*trashd:(NULL)\n"; }
-
-  # ----------------------------------------
-  if(@{$CURR{"a_unew"}} > 0) {
-    local *DQR;
-    if(!open(DQR, ">".$CURR{"s_dqrfile"})) {
-      printf "FEHLER: Konnte %s nicht öffnen: %s\n", $CURR{"s_dqrfile"}, $!;
-      return 0;
-    }
-
-    printf DQR "%s (%s) - DQR\n", @OPT{"PROGN","PROGV"};
-    print "Hinzufügen der neuen Benutzer\n";
-
-    my($count, $max, $t_start) = (0, scalar(@{$CURR{"a_unew"}}), time());
-    foreach my $l (@{$CURR{"a_unew"}}) {
-      my($lname, $gcname, $klasse) = @$l;
-      my($encpass, $pass) = &genpass();
-      if($OPT{"p_preadd"} ne "") {
-        system sprintf $OPT{"pa_preadd","p_preadd"}, $lname, $encpass,
-         $OPT{"s_dgrp"}, $gcname, "/bin/bash", $OPT{"f_skeldir"};
-      }
-
-      system sprintf $OPT{"pa_useradd","p_useradd"}, $lname, $encpass,
-       $OPT{"s_dgrp"}, $gcname, "/bin/bash", $OPT{"f_skeldir"};
-      printf DQR "%s:%s:%s:%s\n", $klasse, $gcname, $lname, $pass;
-      print LOG "+".$lname."\n";
-
-      if($OPT{"p_postadd"} ne "") {
-       system sprintf $OPT{"pa_postadd","p_postadd"}, $lname; }
-
-      print &pstat(++$count, $max, 5, $t_start, time());
-    }
-
-    print &pstat($count, $max, 3, $t_start, time());
-    close DQR;
-  }
 
   close LOG;
   return 1;
@@ -577,12 +584,19 @@ sub useradd {
    &hbar("="), "\n";
 
   # ----------------------------------------
-  my($dgid, $nname, $vname) = ($OPT{"s_dgrp"});
+  my($dgid, $gebd, $nname, $vname) = ($OPT{"s_dgrp"});
 
   while($nname eq "") {
     print "Nachname > ";
     chomp($nname = <STDIN>);
     if($nname eq "") { print "Kein Vornamen angegeben!\n"; }
+  }
+
+  while($gebd eq "") {
+    print "Geburtsdatum > ";
+    chomp($gebd = <STDIN>);
+    if($gebd !~ /^\d\d?\.\d\d?\.\d{4}/o) {
+     print "Geburtsdatum entspricht nicht dem Schema T.M.YYYY!\n"; }
   }
 
   while($vname eq "") {
@@ -600,7 +614,7 @@ sub useradd {
 
   # ----------------------------------------
   $lname = &name2user($nname, $vname);
-  $dtfline = sprintf "%s:%s %s:%s", $lname, $vname, $nname, $klasse;
+  $dtfline = sprintf "%s:%s %s:%s:%s", $lname, $vname, $nname, $gebd, $klasse;
 
   if($dgid =~ /\D/iso) { $dgid = &getgrent($dgid); }
   if($dgid eq "") {
@@ -629,7 +643,8 @@ sub useradd {
       chomp $l;
       if(substr($l, 0, 1) eq "#" || $l eq "") { next; }
       my($lname, undef, undef, $gid, $gcos) = split(/:/o, $l);
-      my($gcname) = split(/,/o, $gcos);
+      my($gcname, $gcdate, $gcrest) = split(/,/o, $gcos, 3);
+#ATTN
       $ph{$lname} = 1;
       if($gid == $dgid) { ++$users_g; }
       print &pstat($count, $max, 5, $t_start, time());
@@ -644,7 +659,7 @@ sub useradd {
   my $ud;
 
   {
-    my($lname, $gcname, $klasse) = split(/:/o, $dtfline);
+    my($lname, $gcname, $gcdate, $klasse) = split(/:/o, $dtfline);
     my($i, $llname) = ("", $lname);
 
     while($ph{$llname} ne "") {
@@ -653,19 +668,23 @@ sub useradd {
     }
 
     $ph{$llname} = 1;
-    $ud = [$llname, $gcname, $klasse];
+    $ud = [$llname, $gcname, $gcdate, $klasse];
   }
 
   push(@$ud, &genpass());
   if($OPT{"p_preadd"} ne "") {
-    system sprintf $OPT{"pa_preadd","p_preadd"}, $ud->[0], $ud->[4],
-     $OPT{"s_dgrp"}, $ud->[1], "/bin/bash", $OPT{"f_skeldir"};
+    system sprintf $OPT{"pa_preadd"}, $OPT{"p_preadd"}, $ud->[0], $ud->[5],
+     $OPT{"s_dgrp"}, join(",", $ud->[1], $ud->[2]), "/bin/bash",
+     $OPT{"f_skeldir"};
     print "Preadd-Befehl ausgeführt.\n";
   }
-  system sprintf $OPT{"pa_useradd","p_useradd"}, $ud->[0], $ud->[4],
-   $OPT{"s_dgrp"}, $ud->[1], "/bin/bash", $OPT{"f_skeldir"};
+
+  system sprintf $OPT{"pa_useradd"}, $OPT{"p_useradd"}, $ud->[0], $ud->[5],
+   $OPT{"s_dgrp"}, join(",", $ud->[1], $ud->[2]), "/bin/bash",
+   $OPT{"f_skeldir"};
+
   if($OPT{"p_postadd"} ne "") {
-    system sprintf $OPT{"pa_postadd","p_postadd"}, $ud->[0];
+    system sprintf $OPT{"pa_postadd"}, $OPT{"p_postadd"}, $ud->[0];
     print "Postadd-Befehl ausgeführt.\n";
   }
 
@@ -680,7 +699,7 @@ sub useradd {
     print "singleadd-".$date.".dqr wird generiert\n";
     open(DQR, ">singleadd-".$date.".dqr");
     printf DQR "%s (%s) - DQR\n", @OPT{"PROGN","PROGV"};
-    printf DQR "%s:%s %s:%s:%s\n", "-", @$ud[3,1,0,4];
+    printf DQR "%s:%s %s:%s:%s\n", "-", @$ud[3,1,0,5];
     close DQR;
   }
 
@@ -736,7 +755,7 @@ sub userdetails {
       chomp $l;
       if($l =~ /^$CURR{"r_lname"}:.*?:$CURR{"r_uid"}:$CURR{"r_gid"}:$CURR{"r_rname"}(,.*?)?:$CURR{"r_homedir"}:$CURR{"r_shell"}$/is) {
         my($lname, undef, $uid, $gid, $gcos, $home, $shell) = split(/:/o, $l);
-        my($rname, $rgcos) = split(/,/o, $gcos, 2);
+        my($rname, $gebd, $rgcos) = split(/,/o, $gcos, 2);
         $ph[$count] = $lname;
         $ph{$lname} = $l;
         printf "%4d  %-21s  %-35s\n", ++$count,
@@ -757,7 +776,7 @@ sub userdetails {
   # ----------------------------------------
   my($lname, undef, $uid, $gid, $gcos, $home, $shell) =
    split(/:/o, $ph{$ln});
-  my($rname, $rgcos) = split(/,/o, $gcos, 2);
+  my($rname, $gebd, $rgcos) = split(/,/o, $gcos, 3);
   my $accstat = "UNAVAILABLE";
 
   @_ = &getpwent($lname);
@@ -839,23 +858,23 @@ sub userdetails {
      " -o pid` 2>/dev/null";
 
     chomp(my $date = `date +\%Y-\%m-\%d.\%H-\%M`);
-    mkdir sprintf("%s/%s", $OPT{"f_trhome"}, $date);
+    mkdir sprintf "%s/%s", $OPT{"f_trhome"}, $date;
 
     if($OPT{"b_zpack"} == 1) {
-      system sprintf("tar -cf \"%s/%s/%s.tar\" ~%s 2>/dev/null",
-       $OPT{"f_trhome"}, $date, $lname, $lname);
+      system sprintf "tar -cf \"%s/%s/%s.tar\" ~%s 2>/dev/null",
+       $OPT{"f_trhome"}, $date, $lname, $lname;
     } elsif($OPT{"b_zpack"} == 2) {
-      system sprintf("tar -cjf \"%s/%s/%s.tbz2\" ~%s 2>/dev/null",
-       $OPT{"f_trhome"}, $date, $lname, $lname);
+      system sprintf "tar -cjf \"%s/%s/%s.tbz2\" ~%s 2>/dev/null",
+       $OPT{"f_trhome"}, $date, $lname, $lname;
     }
 
     if($OPT{"p_predel"} ne "") {
-     system sprintf $OPT{"pa_predel","p_predel"}, $lname; }
+     system sprintf $OPT{"pa_predel"}, $OPT{"p_predel"}, $lname; }
 
-    system sprintf $OPT{"pa_userdel","p_userdel"}, $lname;
+    system sprintf $OPT{"pa_userdel"}, $OPT{"p_userdel"}, $lname;
 
     if($OPT{"p_postdel"} ne "") {
-     system sprintf $OPT{"pa_predel","p_predel"}, $lname; }
+     system sprintf $OPT{"pa_postdel"}, $OPT{"p_postdel"}, $lname; }
     ($ed_p, $ed_s, $ed_h) = (0, 0, 0);
   }
 
@@ -893,7 +912,7 @@ sub userdetails {
 
     for(my $l = 0; $l < scalar @$pwa; ++$l) {
       chomp $pwa->[$l];
-      my $fgcos = join(",", $rname, $rgcos);
+      my $fgcos = join(",", $rname, $gebd, $rgcos);
       $fgcos =~ s/,+$//go;
       $pwa->[$l] =~ s/^$lname:.*/join(":", $lname, "x", $uid, $gid, $fgcos,
        $home, $shell)/egis;
