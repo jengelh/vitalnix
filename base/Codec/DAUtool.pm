@@ -1,7 +1,9 @@
 #!/usr/bin/perl
 #==============================================================================
 # Standard DAUtool date scrambling v1.x
-#   by Jan Engelhardt <jengelh@gmx.de>, 1999 - 2002
+#   by Jan Engelhardt <jengelh at gmx de>, 1999 - 2003
+#   -- distributed under the GPL >= v2.0, --
+#   -- see doc/GPL-v2.0.txt               --
 #------------------------------------------------------------------------------
 # DESCRIPTION
 #   This is no real "codec"; these two methods are just used to scramble the

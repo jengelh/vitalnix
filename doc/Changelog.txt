@@ -87,70 +87,14 @@ To v1.40
     - fixed wrong var name near "TO BE DELETED" ($_ => $lname)
     - fixed wrong var name near "for(my $l" ($_ => $l)
 
-[DE] Von v0.80 auf v1.41 (GRAND CHANGES)
-  Startup:
-    - aufgeräumter Verzeichnisbaum
-    - externe Konfigurationsdatei(en) statt in-Programm-Veränderung
-    - PID-Lock-System
-
-  Optik:
-    - Aussehen verbessert, 1000e von Newlines entfernt (außen sowie im Code)
-    - Menüs, alle Programmteile in einem
-    - Statusanzeigen
-    - korrekte Grammatik (0 ~er, 1 ~, 2 ~er) und keine billigen Multilösung wie
-      "1 Datei(en) kopiert"
-
-  (5,7)Formatieren
-    - SDF-Datei kann im MS-DOS-Format (ASCII + CRLF) oder im UNIX-Format
-      (ANSI + LF) sein
-    - Realname -> Loginnamen - Squishing verbessert nach Logik
-    - Umlaute / Akzente im Namen werden beibehalten, nur im Kürzel werden sie
-      angepasst. Unterstützung für viele andere Akzente des ISO-8859-1.
-    - Statt GID-Angabe jetzt (nur) Gruppenname möglich
-    - Neue Datumscodierungsroutine (auch Y2k-kompatibel)
-
-  (2)Änderungen finden
-    - Header in FMT- und UPW-Dateien (inkl. Versionsnummer)
-    - Prüfung der GID zu / von der hinzugefügt / gelöscht werden soll
-    - Benutzerindex (z.B. dumbusr1) läuft jetzt unendlich weiter, also
-      dumbus10, dumbu100, etc.
-    - Vergleichsroutinen gefixt, vereinfacht
-
-  (3)Änderungen zuweisen
-    - Warteschleife statt Prompt vor Modifizieren (wie bei cdrecord)
-    - kleines Sicherheitsloch für Modifizieren gestopft
-    - SID für </home/_trash/>
-    - Passwortgenerierungsroutine ist nun immer zufällig
-    - Passwortlänge ist variabel bis 8 Buchstaben
-    - Benutzer werden nach strengen Sicherheitsmaßnahmen entfernt
-    - Kompression bei Archivierung der Homeverzeichnisse zu löschender Benutzer
-
-  (4)Passwortlisten drucken
-    - Suchmuster für alle Felder
-    - Perl-Regexp-style-Suchmuster
-    - Output in Datei oder auf Bildschirm
-    - sofort klassensortierte Ausgabe
-
-  (6)Benutzerdetails
-    - alle Felder sind suchbar (Muster: &&/L_AND)
-
-  Generell:
-    - (ordentliches) Manual geschrieben, für Textconsolen- oder Grafikbrowser
-    - alles besser
-
-  Intern:
-    - komplett neu geschrieben (u.a. auch %OPT, %__ und %CURR-style)
-    - %SIG-Implementation
-    - Argumenterfassung besser
-    - Defaults bei einigen Prompts
-    - ein einziges Programm
-
 To v1.22-post1 [v1.23]
+======================
   Mainmenu:
     - fixed typo that lead to crash when exiting DAUtool (so this one did not
       matter at all)
 
 To v1.22
+========
   Startup:
     - "base" dir_struct
     - tables directory squished
@@ -187,11 +131,13 @@ To v1.22
     - some "edged" SAMBA support (??) You could call smbpasswd if needed to
 
 To v1.21
+========
   - internal style change
   - $OPT{"s_saddmkupw"} is now $OPT{"s_saupw"}
   - added coreloader progressbar
 
 To v1.20
+========
   - DAUtool now uses real atomic file locking (secure)
   - optimized, saving lots of RAM during procession
   - optimized line calculating code
@@ -202,6 +148,7 @@ To v1.20
   - fixed an RPM package error
 
 To v1.11
+========
   - fixed some fux0r3d A2A and DAUtool-date converting routines
   - moved some data into modules
   - removed unused $OPT{"PROGNL"}
@@ -221,12 +168,14 @@ To v1.11
   - webpass updated
 
 To v1.10
+========
   - v1.02 shudda have been v1.10, 'cause of thy deep changes, respectively;
     well, now _this_ is v1.10, with some minor changes.
-  - got rid of historic packages. they suck.
+  - got rid of historic packages
   - section "runtime settings" could not be called, fixed
 
 To v1.02 Final
+==============
   - removed typos, leftovers
   - changed INET file positions
   - enquoted auto-return hash thingies
@@ -239,6 +188,7 @@ To v1.02 Final
   - deleted unused "eval" in &gid2group() and &group2gid()
 
 To v1.02 Beta 12
+================
   - TTY to fork is also only set when on direct consoles
   - init style reformed
   - added zero-doing boolean vars
@@ -250,12 +200,14 @@ To v1.02 Beta 12
   - added missing documentation for some vars
 
 To v1.02 Beta 11
+================
   - (5)useradd optionally outputs to an UPW, which may be filtered thru
     sbrief then, to use it, change the if(0) occurance in line 607 to
     if(1)
   - some sbrief fixes
 
 To v1.02 Beta 10
+================
   - deleted unused initial $OPT{"f_cfgf"}
   - removed "/bin/cat" from the pager list
   - fixed reaping, better: installed proper reaping for multipids
@@ -271,6 +223,7 @@ To v1.02 Beta 10
   - reformatted config file for dumbs
 
 To v1.02 Beta 9
+===============
   - added $DB::fork_TTY for debug issues, and it is only defined if
     $ENV{"DISPLAY"} is not set
   - added $OPT{"s_termsd"}, cumulative into scalar
@@ -288,8 +241,8 @@ To v1.02 Beta 9
   - updated src/res/versort.ph with the bugfix
 
 To v1.02 Beta 8
+===============
   "Special XMas Edition 2001"
-  - added SNOWMAKER for SE_XMAS_2001! (idea by cthiel)
   - $OPT{"zch"} => $OPT{"s_zch"} fix
   - INIT_cupd: fixed possible 404 in future
   - fixed the VerSort routine that did not catch "v1.02a999 <=> v1.02"
@@ -300,6 +253,7 @@ To v1.02 Beta 8
   - filetree/sbrief: fixed diffs, worked
 
 To v1.02 Beta 7
+===============
   - INIT:
     - $OPT{PROG*} fixes
     - $OPT{"sape"} added for extra searches
@@ -353,6 +307,7 @@ To v1.02 Beta 7
       The BASH on * waits for DAUtool to finish on tty9
 
 To v1.02 Beta 6
+===============
   - added multiple archive compression methods (bzip2, gzip, none, compress)
   - to-be-removed-users are printed on demand (thru schueler_4beta.cfg)
   - $OPT{PROG*}-fixes
@@ -362,6 +317,7 @@ To v1.02 Beta 6
   - documentation changes
 
 To v1.02 Beta 5
+===============
   - corrected $OPT{c_*} to $OPT{b_*} (for "boolean" instead of "config")
   - added user-given password length
   - cosmetic bugs on update checker
@@ -373,6 +329,7 @@ To v1.02 Beta 5
   - more documentation changes
 
 To v1.02 Beta 4
+===============
   - added an update checker
   - DAUtool needs IO::Socket::INET
   - intended and reformatted code
@@ -380,11 +337,13 @@ To v1.02 Beta 4
   - various documentation changes
 
 To v1.02 Beta 3
+===============
   - added $OPT{"p_postadd"} method
   - after adding single user (asking for showing password or not)
   - fixed text browser display bug (>/dev/null, did not work with w3m)
   - various documentation changes
 
 To v1.02 Beta 2
+===============
   - added w3m as a pager
   - fixed the salt generation routine

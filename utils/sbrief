@@ -1,8 +1,10 @@
 #!/usr/bin/perl
 #==============================================================================
 # Serienbrieferstellung
-#   Copyright (C) Cristoph Thiel <cthiel1@linux01.gwdg.de>, 2001 - 2003
-#   Copyright (C) Jan Engelhardt <jengelh@gmx.de>, 2001 - 2003
+#   Copyright (C) Cristoph Thiel <cthiel1 at linux01 org>, 2001 - 2003
+#   Copyright (C) Jan Engelhardt <jengelh at gmx de>, 2001 - 2003
+#   -- distributed under the GPL >= v2.0, --
+#   -- see doc/GPL-v2.0.txt               --
 #   v1.081 :: 31. Juli 2002
 #==============================================================================
 $VERSION = "1.081";

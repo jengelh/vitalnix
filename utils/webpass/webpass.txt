@@ -1,6 +1,6 @@
 Name: WebPass                 Sektion: 8             Datum: 07. September 2002
 ------------------------------------------------------------------------------
-Copyright (C) by Jan Engelhardt <jengelh@gmx.de>, 2001, 2002
+Copyright (C) by Jan Engelhardt <jengelh at gmx de>, 2001 - 2003
 Lizenz: GPL >= v2.0
 
 Web-Frontend zur Änderung eiens Benutzerpasswortes. Beim Kopieren nach

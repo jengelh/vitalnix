@@ -1,8 +1,9 @@
 #!/usr/bin/perl
 #==============================================================================
 # WebPass
-#   Copyright (C) Jan Engelhardt <jengelh@gmx.de>, 2001 - 2003
-#   -- distributed under the GPL >= v2.0 --
+#   Copyright (C) Jan Engelhardt <jengelh at gmx de>, 2001 - 2003
+#   -- distributed under the GPL >= v2.0, --
+#   -- see doc/GPL-v2.0.txt               --
 #==============================================================================
 %OPT = (
   "PROGF" => "webpass",

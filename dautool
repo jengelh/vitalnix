@@ -20,8 +20,8 @@ sub init {
   %OPT = (
     "PROGF" => "dautool",
     "PROGN" => "DAUtool",
-    "PROGV" => "v1.60",
-    "PROGD" => "29. Dezember 2002",
+    "PROGV" => "v1.61",
+    "PROGD" => "18. Januar 2003",
     "a_cfgf" => ["base/dautool.cfg"],
     "b_saupw" => 0,
     "b_zpack" => 1,
@@ -109,7 +109,6 @@ sub hmenu {
     print "< 6 >  Benutzerdetails\n";
     print "-" x 40, "\n";
     print "< 7 >  Wiederherstellen\n";
-    print "< 8 >  crypt() Test (DEBUG/EXPERT)\n";
     print "< 9 >  Preview DAUtool2\n";
     print "< 0 >  Beenden\n\n";
     print "WAHL>  ";
@@ -122,7 +121,6 @@ sub hmenu {
     elsif($INKEY eq "5") { &useradd(); }
     elsif($INKEY eq "6") { &userdetails(); }
     elsif($INKEY eq "7") { &recover(); }
-    elsif($INKEY eq "8") { &crypt_test(); }
     elsif($INKEY eq "9") { &preview(); }
     elsif($INKEY =~ /^[0q]$/io) { last; }
     print "\n\n\n";
@@ -1001,16 +999,6 @@ sub recover {
 
   close LOG;
   return 1;
-}
-
-sub crypt_test {
-  for(my $i = 0; $i < 10E6; ++$i) { # million
-    my($ep, $pw) = &genpass();
-    my $sa = substr($ep, 0, 2);
-    printf("We get ep=%s pw=%s sa=%s  crypt(pw,sa)=%s\n", $ep, $pw, $sa,
-     crypt($pw, $sa));
-    if(crypt($pw, $sa) ne $ep) { printf("** Error **\n"); }
-  }
 }
 
 sub preview {
