@@ -1,0 +1,47 @@
+To v1.71
+========
+    - fixed: base config (dautool.cfg) file did not got read (since v1.70)
+    - fixed: if the destination group did not exist, a warning was
+      displayed -- but without the group's name
+    - fixed: crontabs of users-to-be-deleted were not properly removed
+    - added: user-defined args for useradd, userdel and additional progs
+    - fixed: various logic errors in config file
+    - removed: since the accepted file formats are only SDF, the format
+      enum query has been commented out
+    - various variable fixes
+    * v1.70 UNUSABLE
+
+To v1.70 (June 28 2003)
+=======================
+    - fixed: genpass() generated a wrong salt in some cases (it used
+      unallowed characters)
+      (btw... this was the 3rd salt problem since the beginning)
+    - reordered a2a.pm and codec.pm
+
+To v1.60
+========
+    - fixed: password generation routine generated illegal one-char salts
+      (probability 3.149%)
+
+To v1.50
+========
+    - fixed: naughty typo around line 489 ($CURR{"s_dtrfile"} => $dtrfile)
+    - added: p_preadd, p_postdel program possibilities
+
+To v1.42
+========
+    - fixed: sig handler
+    - fixed: &getgrent ... routines and their implementation
+    - if an error/warning occurs, we print either "ERROR:" or "WARNING:",
+      following their meaning (warning => continue, error => stop)
+    - &assitant: finished it
+    - &apply_changes: first creating backups then wait
+    - &apply_changes: waiting 2 secs instead of 3 now
+    - &apply_changes: users to be added / removed are logged to $proj.log
+    - &apply_changes: user first removed, then added
+    - &apply_changes: shifted compression type:
+      0 => do not backup homedir
+      1 => tar
+      2 => tar-bzip2 (standard in base/dautool.cfg)
+    - &useradd: fixed typo "UPW" to "DTR"
+    - &recover: is untested

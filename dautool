@@ -8,14 +8,17 @@
 #   Chistoph Thiel <cthiel1@linux01.gwdg.de>, 2001 - 2003
 #   <acb@kki.org>, 2002
 #==============================================================================
-BEGIN { if($^V lt v5.8.0) { die "Needing Perl v5.8.0 or newer!\n"; } }
+BEGIN {
+  push(@INC, "src");
+  if($^V lt v5.8.0) { die "Needing Perl v5.8.0 or newer!\n"; }
+}
 
 %OPT = (
   "PROGF" => "dautool",
   "PROGN" => "dautool",
-  "PROGV" => "v1.70",
-  "PROGD" => "28. Juni 2003",
-  "a_cfgf" => ["./dautool.cfg"],
+  "PROGV" => "v1.71",
+  "PROGD" => "04. Juli 2003",
+  "a_cfgf" => ["dautool.cfg"],
   "b_saupw" => 0,
   "b_zpack" => 1,
   "f_group" => "/etc/group",
@@ -29,12 +32,18 @@ BEGIN { if($^V lt v5.8.0) { die "Needing Perl v5.8.0 or newer!\n"; } }
     (-e "/usr/bin/less") ? "/usr/bin/less" :
     (-e "/usr/bin/w3m") ? "/usr/bin/w3m" :
     (-e "/bin/more") ? "/bin/more" : "/bin/true",
-  "p_postadd" => "",
-  "p_postdel" => "",
-  "p_preadd" => "",
-  "p_predel" => "",
   "p_useradd" => "/usr/sbin/useradd",
+  "pa_useradd" => "\"%1\$s\" -c \"%5\$s\" -g \"%4\$s\" -mk \"%7\$s\" -p \"%3\$s\" -s \"%6\$s\" \"%2\$s\"",
   "p_userdel" => "/usr/sbin/userdel",
+  "pa_userdel" => "\"%1\$s\" -r \"%2\$s\"",
+  "p_preadd" => "",
+  "pa_preadd" => "\"%1\$s\" -c \"%5\$s\" -g \"%4\$s\" -mk \"%7\$s\" -p \"%3\$s\" -s \"%6\$s\" \"%2\$s\"",
+  "p_predel" => "",
+  "pa_predel" => "\"%1\$s\"",
+  "p_postadd" => "",
+  "pa_postadd" => "\"%1\$s\"",
+  "p_postdel" => "",
+  "pa_postdel" => "\"%1\$s\"",
 );
 
 %CURR = (
@@ -57,6 +66,7 @@ $OPT{"s_termwx"} ||= 80; $OPT{"s_termwy"} ||= 25;
 
 # ----------------------------------------
 print "\e[1m", $OPT{"PROGN"}, " ", $OPT{"PROGV"}, "\e[0m\n";
+print "by Jan Engelhardt <jengelh at gmx de>, 1999 - 2003\n";
 print "=" x 40, "\n";
 select((select(STDOUT), $| = 1)[0]);
 select((select(STDERR), $| = 1)[0]);
@@ -73,7 +83,7 @@ require "codec.pm";
 &GetOptions("c=s" => $OPT{"a_cfgf"});
 
 foreach my $f (@{$OPT{"a_cfgf"}}) {
- if(do $f) { printf "Lade Konfiguration aus Datei <%s>\n", $f; } }
+ if(do $f) { printf "Lade Konfiguration aus Datei %s\n", $f; } }
 
 # ----------------------------------------
 @SIG{"HUP","INT","QUIT","ILL","TRAP","ABRT","BUS","FPE","USR1","SEGV",
@@ -220,58 +230,53 @@ sub find_changes {
   my $dgid = $OPT{"s_dgrp"};
   if($dgid =~ /\D/iso) { $dgid = &getgrent($dgid, $OPT{"f_group"}); }
   if($dgid eq "") {
-    printf "FEHLER: \"%s\" hat keine GID oder existiert nicht\n";
+    printf "FEHLER: Gruppe \"%s\" hat keine GID oder existiert nicht\n",
+     $OPT{"s_dgrp"};
     return 0;
   }
 
   # ----------------------------------------
   my %dtf = ();
   {
-    print "Input > ";
+    print "Input-Datei > ";
     chomp(my $inputf = <STDIN>);
 
     local *IN;
     if(!open(IN, "<".$inputf)) {
-      printf "FEHLER: Konnte <%s> nicht öffnen: %s\n", $inputf, $!;
+      printf "FEHLER: Konnte %s nicht öffnen: %s\n", $inputf, $!;
       return 0;
     }
 
-    print "Format (1=SDF,2=) > ";
-    chomp(my $enumfmt = <STDIN>);
+    $CURR{"s_basefile"} = $inputf;
+    $CURR{"s_basefile"} =~ s/\.sdf$//go;
+    my($buf, $max);
+    while(read(IN, $buf, 4096)) { $max += ($buf =~ tr/\x0A//); }
+    seek(IN, 0, 0);
 
-    if($enumfmt == 1) {
-      my($buf, $max);
-      while(read(IN, $buf, 4096)) { $max += ($buf =~ tr/\x0A//); }
-      seek(IN, 0, 0);
-
-      # ----------------------------------------
-      my($count, $t_start) = (0, time());
-      while(defined(my $l = <IN>)) {
-        ++$count;
-        if($l =~ /^\(\*.*?\*\)/so || $l =~ /^(?:[\#;]|\/\/)/so || $l eq "") {
-         next; }
-        if(substr($l, -2, 2) eq "\x0D\x0A") { $l = &to_ansi($l); }
-
-        chomp $l;
-        my($nname, $vname, $gebd, $klasse);
-        if((split(/;/o, $l))[0] !~ /\D/) {
-         (undef, $nname, $vname, $gebd, $klasse) = split(/;/o, $l); }
-        else { ($nname, $vname, $gebd, $klasse) = split(/;/o, $l); }
-        if($nname eq "" || $vname eq "" || $gebd eq "") {
-          printf "Fehler in der SDF-Datei, Zeile %d\n", $count;
-          close IN;
-          print "\n";
-          return 0;
-        }
-
-        my $lname = &name2user($nname, $vname);
-        $gebd =~ s/^(.*?\..*?\.)(..)$/$1.(1900 + $2)/egis;
-        $dtf{$vname." ".$nname} = [$lname, &enday($gebd), $klasse];
-        print &pstat($count, $max, 5, $t_start, time());
+    # ----------------------------------------
+    my($count, $t_start) = (0, time());
+    while(defined(my $l = <IN>)) {
+      ++$count;
+      if($l =~ /^\(\*.*?\*\)/so || $l =~ /^(?:[\#;]|\/\/)/so || $l eq "") {
+       next; }
+      if(substr($l, -2, 2) eq "\x0D\x0A") { $l = &to_ansi($l); }
+      chomp $l;
+      my($nname, $vname, $gebd, $klasse);
+      if((split(/;/o, $l))[0] !~ /\D/) {
+       (undef, $nname, $vname, $gebd, $klasse) = split(/;/o, $l); }
+      else { ($nname, $vname, $gebd, $klasse) = split(/;/o, $l); }
+      if($nname eq "" || $vname eq "" || $gebd eq "") {
+        printf "FEHLER: Datenfehler in der SDF-Datei, Zeile %d\n", $count;
+        print "[Assertion: nname eq \"\" || vname eq \"\" || gebd eq \"\"\n";
+        close IN;
+        print "\n";
+        return 0;
       }
-    } else {
-      printf "Ungültige Eingabe\n";
-      return 0;
+
+      my $lname = &name2user($nname, $vname);
+      $gebd =~ s/^(.*?\..*?\.)(..)$/$1.(1900 + $2)/egis;
+      $dtf{$vname." ".$nname} = [$lname, &enday($gebd), $klasse];
+      print &pstat($count, $max, 5, $t_start, time());
     }
 
     close IN;
@@ -283,7 +288,7 @@ sub find_changes {
   {
     local *PASSWD;
     if(!open(PASSWD, "<".$OPT{"f_passwd"})) {
-      printf "FEHLER: <%s> konnte nicht geöffnet werden: %s\n",
+      printf "FEHLER: %s konnte nicht geöffnet werden: %s\n",
        $OPT{"f_passwd"}, $!;
       return 0;
     }
@@ -293,7 +298,7 @@ sub find_changes {
     seek(PASSWD, 0, 0);
 
     my($count, $users_g, $users_k, $t_start) = (0, 0, 0, time());
-    printf "Lese <%s>:\n", $OPT{"f_passwd"};
+    printf "Lese %s:\n", $OPT{"f_passwd"};
     while(defined(my $l = <PASSWD>)) {
       ++$count;
       chomp $l;
@@ -355,21 +360,18 @@ sub apply_changes {
   $CURR{"b_cmpd"} = 0;
   &INIT_genstuff();
   print "\nErstelle Backups\n";
-  system "cp", "-ai", $OPT{"f_passwd"},
-   &modext($CURR{"s_dtffile"}, ".dtf", ".opasswd");
-  system "cp", "-ai", $OPT{"f_shadow"},
-   &modext($CURR{"s_dtffile"}, ".dtf", ".oshadow");
-
-  my $dtrfile = &modext($CURR{"s_dtffile"}, ".dtf", ".dtr");
-  my $logfile = &modext($CURR{"s_dtffile"}, ".dtf", ".log");
+  system "cp", "-ai", $OPT{"f_passwd"}, $CURR{"s_basefile"}.".opasswd";
+  system "cp", "-ai", $OPT{"f_shadow"}, $CURR{"s_basefile"}.".oshadow";
+  $CURR{"s_dqrfile"} = $CURR{"s_basefile"}.".dqr";
+  my $logfile = $CURR{"s_basefile"}.".log";
 
   local *LOG;
   if(!open(LOG, ">".$logfile)) {
-   printf "WARNUNG: Konnte <%s> nicht öffnen: %s\n", $logfile, $!; }
+   printf "WARNUNG: Konnte %s nicht öffnen: %s\n", $logfile, $!; }
   select((select(LOG), $| = 1)[0]);
   printf LOG "%s (%s) - LOG\n", @OPT{"PROGN","PROGV"};
-  print LOG "*passwd:".&modext($CURR{"s_dtffile"}, ".dtf", ".opasswd")."\n";
-  print LOG "*shadow:".&modext($CURR{"s_dtffile"}, ".dtf", ".oshadow")."\n";
+  print LOG "*passwd:", $CURR{"s_basefile"}, ".opasswd\n";
+  print LOG "*shadow:", $CURR{"s_basefile"}, ".oshadow\n";
 
   for(my $c = 2; $c >= 0; --$c) {
     printf "\rWeiter in %d Sekunde%s\e[K", $c, (($c != 1) ? "n" : "");
@@ -385,7 +387,9 @@ sub apply_changes {
       foreach my $l (@{$CURR{"a_udel"}}) {
         system "passwd -l ".$l." >/dev/null 2>&1";
         if(-e "/var/spool/cron/tabs/".$l) {
-         system "mv /var/spool/cron/tabs/".$l." ~".$l."/._crontab"; }
+          system "cp /var/spool/cron/tabs/".$l." ~".$l."/._crontab";
+          system "crontab -eu $l";
+        }
         if(-e "/var/spool/mail/".$l) {
          system "mv /var/spool/mail/".$l." ~".$l."/._mailbox"; }
         print &pstat(++$count, $max, 5, $t_start, time());
@@ -410,17 +414,22 @@ sub apply_changes {
       my($count, $max, $t_start) = (0, scalar(@{$CURR{"a_udel"}}), time());
       foreach my $l (@{$CURR{"a_udel"}}) {
         if($OPT{"b_zpack"} == 1) {
-          system sprintf("tar -Pcf \"%s/%s/%s.tar\" ~%s 2>/dev/null",
-           $OPT{"f_trhome"}, $date, $l, $l);
+          system sprintf "tar -Pcf \"%s/%s/%s.tar\" ~%s 2>/dev/null",
+           $OPT{"f_trhome"}, $date, $l, $l;
         } elsif($OPT{"b_zpack"} == 2) {
-          system sprintf("tar -Pcjf \"%s/%s/%s.tbz2\" ~%s 2>/dev/null",
-           $OPT{"f_trhome"}, $date, $l, $l);
+          system sprintf "tar -Pcjf \"%s/%s/%s.tbz2\" ~%s 2>/dev/null",
+           $OPT{"f_trhome"}, $date, $l, $l;
         }
 
-        if($OPT{"p_predel"} ne "") { system $OPT{"p_predel"}, $lname; }
-        system $OPT{"p_userdel"}, "-r", $l;
+        if($OPT{"p_predel"} ne "") {
+         system sprintf $OPT{"pa_predel","p_predel"}, $l; }
+
+        system sprintf $OPT{"pa_userdel","p_userdel"}, $l;
         print LOG "-".$l."\n";
-        if($OPT{"p_postdel"} ne "") { system $OPT{"p_predel"}, $lname; }
+
+        if($OPT{"p_postdel"} ne "") {
+         system sprintf $OPT{"pa_predel","p_predel"}, $l; }
+
         print &pstat(++$count, $max, 5, $t_start, time());
       }
     }
@@ -428,31 +437,37 @@ sub apply_changes {
 
   # ----------------------------------------
   if(@{$CURR{"a_unew"}} > 0) {
-    local *DTR;
-    if(!open(DTR, ">".$dtrfile)) {
-      printf "FEHLER: Konnte <%s> nicht öffnen: %s\n", $dtrfile, $!;
+    local *DQR;
+    if(!open(DQR, ">".$CURR{"s_dqrfile"})) {
+      printf "FEHLER: Konnte %s nicht öffnen: %s\n", $CURR{"s_dqrfile"}, $!;
       return 0;
     }
 
-    printf DTR "%s (%s) - DTR\n", @OPT{"PROGN","PROGV"};
+    printf DQR "%s (%s) - DQR\n", @OPT{"PROGN","PROGV"};
     print "Hinzufügen der neuen Benutzer\n";
 
     my($count, $max, $t_start) = (0, scalar(@{$CURR{"a_unew"}}), time());
     foreach my $l (@{$CURR{"a_unew"}}) {
       my($lname, $gcname, $gcdate, $klasse) = @$l;
       my($encpass, $pass) = &genpass();
-      if($OPT{"p_preadd"} ne "") { system $OPT{"p_preadd"}, $lname; }
-      system $OPT{"p_useradd"}, "-c", join(",", $gcname, $gcdate), "-g",
-       $OPT{"s_dgrp"}, "-mk", $OPT{"f_skeldir"}, "-p", $encpass, "-s",
-       "/bin/bash", $lname;
-      printf DTR "%s:%s:%s:%s\n", $klasse, $gcname, $lname, $pass;
+      if($OPT{"p_preadd"} ne "") {
+        system sprintf $OPT{"pa_preadd","p_preadd"}, $lname, $encpass,
+         $OPT{"s_dgrp"}, join(",", $gcname, $gcdate), "/bin/bash";
+      }
+
+      system sprintf $OPT{"pa_useradd","p_useradd"}, $lname, $encpass,
+       $OPT{"s_dgrp"}, join(",", $gcname, $gcdate), "/bin/bash";
+      printf DQR "%s:%s:%s:%s\n", $klasse, $gcname, $lname, $pass;
       print LOG "+".$lname."\n";
-      if($OPT{"p_postadd"} ne "") { system $OPT{"p_postadd"}, $lname; }
+
+      if($OPT{"p_postadd"} ne "") {
+       system sprintf $OPT{"pa_postadd","p_postadd"}, $lname; }
+
       print &pstat(++$count, $max, 5, $t_start, time());
     }
 
     print &pstat($count, $max, 3, $t_start, time());
-    close DTR;
+    close DQR;
   }
 
   close LOG;
@@ -464,26 +479,26 @@ sub prlist {
    &hbar("="), "\n";
 
   # ----------------------------------------
-  local *DTR;
+  local *DQR;
 
-  print "DTR-Datei [".$CURR{"s_dtrfile"}."] > ";
+  print "DQR-Datei [".$CURR{"s_dqrfile"}."] > ";
   chomp(my $inputf = <STDIN>);
-  if($inputf ne "") { $CURR{"s_dtrfile"} = $inputf; }
+  if($inputf ne "") { $CURR{"s_dqrfile"} = $inputf; }
 
-  if(!open(DTR, "<".$CURR{"s_dtrfile"})) {
-    printf "FEHLER: Konnte <%s> nicht öffnen: %s\n", $CURR{"s_dtrfile"}, $!;
+  if(!open(DQR, "<".$CURR{"s_dqrfile"})) {
+    printf "FEHLER: Konnte %s nicht öffnen: %s\n", $CURR{"s_dqrfile"}, $!;
     return 0;
   }
 
-  if(<DTR> !~ /^$OPT{"PROGN"} \($OPT{"PROGV"}\) - DTR\x0A?$/so) {
-    printf "FEHLER: <%s>: das Format wird nicht unterstützt\n",
-     $CURR{"s_dtrfile"};
+  if(<DQR> !~ /^$OPT{"PROGN"} \($OPT{"PROGV"}\) - DQR\x0A?$/so) {
+    printf "FEHLER: %s: das Format wird nicht unterstützt\n",
+     $CURR{"s_dqrfile"};
     return 0;
   }
 
   # ----------------------------------------
   my($pm, $temp, $txtfile) =
-   (0, "", &modext($CURR{"s_dtrfile"}, ".dtr", ".txt"));
+   (0, "", &modext($CURR{"s_dqrfile"}, ".dqr", ".txt"));
   local *OUT;
 
   printf "Schreiben in [%s] > ", $txtfile;
@@ -491,7 +506,7 @@ sub prlist {
   if($temp ne "") { $txtfile = $temp; }
 
   if(!open(OUT, ">".$txtfile)) {
-    printf "FEHLER: Konnte <%s> nicht öffnen: %s\n", $txtfile, $!;
+    printf "FEHLER: Konnte %s nicht öffnen: %s\n", $txtfile, $!;
     return 0;
   }
 
@@ -521,7 +536,7 @@ sub prlist {
     printf OUT "\n%-6s   %-26s   %-12s   %-8s\n%s\n",
      "Klasse", "Name", "Benutzername", "Passwort", "-" x 61;
 
-    while(defined(my $l = <DTR>)) {
+    while(defined(my $l = <DQR>)) {
       chomp $l;
       if($l =~ /^$CURR{"r_klasse"}:$CURR{"r_rname"}:$CURR{"r_lname"}:.*/is) {
         ++$e;
@@ -531,7 +546,7 @@ sub prlist {
   } elsif($pm == 1) {
     my $prev;
 
-    foreach my $e (sort _prlist_sort <DTR>) {
+    foreach my $e (sort _prlist_sort <DQR>) {
       chomp $e;
       my @e = split(/:/o, $e);
       if($e[0] ne $prev) {
@@ -544,33 +559,33 @@ sub prlist {
     }
   }
 
-  close DTR;
+  close DQR;
   close OUT;
   return 1;
 }
 
 sub useradd {
-  $CURR{"a_ukeep","a_unew","a_udel","b_cmpd","s_dtffile"} =
-   ([], [], [], 0, "");
+  $CURR{"a_ukeep","a_unew","a_udel","b_cmpd","s_basefile","s_dqrfile"} =
+   ([], [], [], 0, "", "");
   print "\n\n\n", &hbar("="), "\n", "\e[1mEinzelbenutzer hinzufügen\e[0m\n",
    &hbar("="), "\n";
 
   # ----------------------------------------
   my($dgid, $gebd, $nname, $vname) = ($OPT{"s_dgrp"});
 
-  for(; $nname eq ""; ) {
+  while($nname eq "") {
     print "Nachname > ";
     chomp($nname = <STDIN>);
     if($nname eq "") { print "Kein Vornamen angegeben!\n"; }
   }
 
-  for(; $vname eq ""; ) {
+  while($vname eq "") {
     print "Vorname > ";
     chomp($vname = <STDIN>);
     if($vname eq "") { print "Kein Vorname angegeben!\n"; }
   }
 
-  for(; $gebd eq ""; ) {
+  while($gebd eq "") {
     print "Geburtsdatum > ";
     chomp($gebd = <STDIN>);
     if($gebd !~ /^\d\d?\.\d\d?\.\d{4}/o) {
@@ -601,7 +616,7 @@ sub useradd {
   {
     local *PASSWD;
     if(!open(PASSWD, "<".$OPT{"f_passwd"})) {
-      printf "FEHLER: Konnte <%s> nicht öffnen: %s\n", $OPT{"f_passwd"}, $!;
+      printf "FEHLER: Konnte %s nicht öffnen: %s\n", $OPT{"f_passwd"}, $!;
       return 0;
     }
 
@@ -610,7 +625,7 @@ sub useradd {
     seek(PASSWD, 0, 0);
 
     my($count, $users_g, $users_k, $t_start) = (0, 0, 0, time());
-    printf "Lese <%s>:\n", $OPT{"f_passwd"};
+    printf "Lese %s:\n", $OPT{"f_passwd"};
     while(defined(my $l = <PASSWD>)) {
       ++$count;
       chomp $l;
@@ -657,13 +672,13 @@ sub useradd {
    print "Passwort ist \e[1;30m".$ud->[5]."\e[0m\n"; }
 
   {
-    local *DTR;
+    local *DQR;
     chomp(my $date = `date "+\%Y\%m\%d\%H\%M\%S"`);
-    print "<singleadd-".$date.".dtr> wird generiert\n";
-    open(DTR, ">singleadd-".$date.".dtr");
-    printf DTR "%s (%s) - DTR\n", @OPT{"PROGN","PROGV"};
-    printf DTR "%s:%s %s:%s:%s\n", "-", @$ud[3,1,0,5];
-    close DTR;
+    print "singleadd-".$date.".dqr wird generiert\n";
+    open(DQR, ">singleadd-".$date.".dqr");
+    printf DQR "%s (%s) - DQR\n", @OPT{"PROGN","PROGV"};
+    printf DQR "%s:%s %s:%s:%s\n", "-", @$ud[3,1,0,5];
+    close DQR;
   }
 
   return 1;
@@ -708,7 +723,7 @@ sub userdetails {
   {
     local *PASSWD;
     if(!open(PASSWD, "<".$OPT{"f_passwd"})) {
-      printf "FEHLER: Konnte <%s> nicht öffnen: %s\n", $OPT{"f_passwd"}, $!;
+      printf "FEHLER: Konnte %s nicht öffnen: %s\n", $OPT{"f_passwd"}, $!;
       return 0;
     }
 
@@ -875,7 +890,7 @@ sub userdetails {
     local *PASSWD;
 
     if(!open(PASSWD, "<".$OPT{"f_passwd"})) {
-      printf "FEHLER: Konnte <%s> nicht öffnen: %s\n", $OPT{"f_passwd"}, $!;
+      printf "FEHLER: Konnte %s nicht öffnen: %s\n", $OPT{"f_passwd"}, $!;
       return 0;
     }
 
@@ -883,7 +898,7 @@ sub userdetails {
     close PASSWD;
 
     if(!open(PASSWD, ">".$OPT{"f_passwd"})) {
-      printf "FEHLER: Konnte <%s> nicht öffnen: %s\n", $OPT{"f_passwd"}, $!;
+      printf "FEHLER: Konnte %s nicht öffnen: %s\n", $OPT{"f_passwd"}, $!;
       return 0;
     }
 
@@ -905,7 +920,7 @@ sub userdetails {
     local *SHADOW;
 
     if(!open(SHADOW, "<".$OPT{"f_shadow"})) {
-      printf "FEHLER: Konnte <%s> nicht öffnen: %s\n", $OPT{"f_shadow"}, $!;
+      printf "FEHLER: Konnte %s nicht öffnen: %s\n", $OPT{"f_shadow"}, $!;
       return 0;
     }
 
@@ -913,7 +928,7 @@ sub userdetails {
     close SHADOW;
 
     if(!open(SHADOW, ">".$OPT{"f_shadow"})) {
-      printf "FEHLER: Konnte <%s> nicht öffnen: %s\n", $OPT{"f_shadow"}, $!;
+      printf "FEHLER: Konnte %s nicht öffnen: %s\n", $OPT{"f_shadow"}, $!;
       return 0;
     }
 
@@ -941,18 +956,18 @@ sub recover {
 
   local *LOG;
   if(!open(LOG, "<".$logf)) {
-    printf "FEHLER: Konnte <%s> nicht öffnen: %s\n", $logf, $!;
+    printf "FEHLER: Konnte %s nicht öffnen: %s\n", $logf, $!;
     return 0;
   }
 
   if(<LOG> !~ /^$OPT{"PROGN"} \($OPT{"PROGV"}\) - LOG\n?$/so) {
-    printf "FEHLER: <%s>: das Format wird nicht unterstützt\n", $logf;
+    printf "FEHLER: %s: das Format wird nicht unterstützt\n", $logf;
     return 0;
   }
 
   my %h;
   &INIT_genstuff();
-  printf "Stelle aus <%s> wieder her:\n", $logf;
+  printf "Stelle aus %s wieder her:\n", $logf;
   while(defined(my $l = <LOG>)) {
     chomp $l;
     if($l =~ /^\*(.+?):(.+)/s) {
@@ -1021,7 +1036,7 @@ sub getgrent {
   $@ = "";
 
   if(!open(FG, "<".($fg ||= "/etc/group"))) {
-    $@ = sprintf "Could not open <%s>: %s", $fg, $!;
+    $@ = sprintf "Could not open %s: %s", $fg, $!;
     return undef;
   }
 
@@ -1055,12 +1070,12 @@ sub getpwent {
   my($u, $fp, $fs) = @_;
   local(*FP, *FS);
   if(!open(FP, "<".($fp ||= "/etc/passwd"))) {
-    $@ = sprintf "Could not open <%s>: %s", $fp, $!;
+    $@ = sprintf "Could not open %s: %s", $fp, $!;
     return undef;
   }
 
   if(!open(FS, "<".($fs ||= "/etc/shadow"))) {
-    $@ = sprintf "Could not open <%s>: %s", $fs, $!;
+    $@ = sprintf "Could not open %s: %s", $fs, $!;
     close FP;
     return undef;
   }
