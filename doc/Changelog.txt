@@ -1,4 +1,7 @@
-To v1.42d02
+To v1.51
+  - no need for _External_ LibHirogen2. Now it is copied as PM with DAUtool
+
+To v1.50
   - naughty bug around line 489 ($CURR{"s_dtrfile"} => $dtrfile)
   - LH2-20020828
   - added p_preadd, p_postdel program possibilities

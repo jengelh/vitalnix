@@ -29,9 +29,10 @@ sub init {
     %OPT = (
       "PROGF" => "dautool",
       "PROGN" => "DAUtool",
-      "PROGV" => "v1.50",
-      "PROGVF" => "v1.50",
-      "PROGD" => "07. September 2002",
+      "PROGV" => "v1.51",
+      "PROGVC" => v1.51,
+      "PROGVF" => "v1.51",
+      "PROGD" => "07. Oktober 2002",
       "a_cfgf" => [$_RTD."/base/dautool.cfg"],
       "b_nopid" => "",
       "b_saupw" => 0,
@@ -1099,4 +1100,4 @@ sub tssqueeze {
   return join("\n", @rv);
 }
 
-#=====================================================================[ EOF ]==
+#==[ EOF ]=====================================================================

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #==============================================================================
-#   Copyright (C) by Jan Engelhardt <jengelh@gmx.de>, 2002
+#   Copyright (C) Jan Engelhardt <jengelh at gmx de>, 2002
 #   -- distributed under the GPL >= v2.0 --
 #==============================================================================
 package extralib;
@@ -8,8 +8,9 @@ require Exporter;
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(&get_basedir &getcf &getcs &getcs_reset &getgrent &getgrmaxent
  &getpwent &hypot &isolc &isouc &kroot &lcut &pstat);
-$VERSION = 20020904;
+$VERSION = 20021020;
 
+# You may want to copy &get_basedir() as a section into your BEGIN { }
 sub get_basedir {
   my $ln = shift @_;
 
@@ -39,12 +40,12 @@ sub getcf {
 
 sub getcs {
   my $rv = undef;
-  $rv = substr(${$_[0]}, $libfh::getcs::p{$_[0]}, $_[1]);
-  $extralib::getcs::p{$_[0]} += $_[1];
+  $rv = substr(${$_[0]}, $getcs_p{$_[0]}, $_[1]);
+  $getcs_p{$_[0]} += $_[1];
   return $rv;
 }
 
-sub getcs_reset { $extralib::getcs::p{shift @_} = shift @_; }
+sub getcs_reset { $getcs_p{shift @_} = shift @_; }
 
 sub getgrent {
   my($g, $fg) = @_;
@@ -120,7 +121,7 @@ sub getgrmaxent {
 
       close FP;
       if(substr($rv, -1, 1) eq ",") { $rv = substr($rv, 0, -1); }
-      return @lp[0,2,3], $rv;
+      return @lg[0,2,3], $rv;
     }
   }
 }
@@ -229,7 +230,7 @@ sub pstat {
 
 return 1;
 
-#=====================================================================[ POD ]==
+#==[ Documentation ]===========================================================
 =pod
 
 =head1 FUNCTIONS
@@ -346,4 +347,4 @@ You can omit I<$t_start> and I<$t_end>.
 
 =cut
 
-#=====================================================================[ EOF ]==
+#==[ End of file ]=============================================================

@@ -1,14 +1,14 @@
 #!/usr/bin/perl
 #==============================================================================
 # Routine for ANSI <=> ASCII char conversion
-#   Copyright (C) by Jan Engelhardt <jengelh@gmx.de>, 1999 - 2002
+#   Copyright (C) Jan Engelhardt <jengelh at gmx de>, 1999 - 2002
 #   -- distributed under the GPL >= v2.0 --
 #==============================================================================
 package Convert::A2A;
 require Exporter;
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(&to_ascii &to_ansi);
-$VERSION = 20020718;
+$VERSION = 20021011;
 
 sub to_ascii {
   my $s = $_[0];
@@ -29,7 +29,7 @@ sub to_ansi {
 return {"s_name" => "ANSI-ASCII Converter", "s_ver" => $VERSION,
  "s_cat" => "StringOps"};
 
-#=====================================================================[ POD ]==
+#==[ Documentation ]===========================================================
 =pod
 
 =head1 NAME
@@ -68,4 +68,4 @@ qw(WHAT_TO_IMPORT) to B<use> or B<import> yourself.
 
 =cut
 
-#=====================================================================[ EOF ]==
+#==[ End of file ]=============================================================

@@ -13,7 +13,7 @@ SYSTEM REQUIREMENTS
     or later, the modules Fcntl and Getopt::Long.
 
 DOWNLOAD-URL
-    http://134.76.13.21:2222/h2/prog.zh?p=dautool
+    http://linux01.org:2222/h2/prog.zh?p=dautool
 
 --- German
 
