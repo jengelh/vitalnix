@@ -1,39 +1,51 @@
 #!/usr/bin/perl
 # Benutzer in /etc/passwd eintragen und Verzeichnise/Dateien kopieren
-# von Eike Teiwes
+# von Eike Teiwes 17.09.98
 
-print "------------------------------------------------------\n";
-print "Benutzer in /etc/passwd eintragen und Dateien kopieren\n"; 
+$passwdFile = "/etc/passwd";	# üblich ist ="/etc/passwd"
+$shadowFile = "/etc/shadow";	# üblich ist ="/etc/shadow"
+
+print "\n";
+print "          ------------------------------------------------------\n";
+print "                  neue Schüler in $passwdFile eintragen\n"; 
+print "          ------------------------------------------------------\n";
+print "\n";
 
 &vorbereitung;
 &start_oder_stop;
-unlink("datpwd");
+unlink("$dattmp");	# eventuell vorhandene Datei löschen
 
-print "    Benutzer eintragen ($datadd >>> /etc/passwd) und\n";
-print "    ... Verzeichnisse einrichten (/home/user/...) und \n";
-print "    ... Dateien kopieren und anpassen und \n";
-print "    ... Kennworte generieren und speichern (>>> datpwd).\n";
+print "Benutzer aus '$datadd' in '$passwdFile' eintragen\n";
+print "und Home-Verzeichnisse einrichten...\n";
+print "Kennworte generieren und in '$dattmp' speichern...\n";
+
 &passwd_ergaenzen; # und Dateien kopieren und anpassen
 
-print "    Kennworte eintragen (datpwd >>> /etc/shadow)\n";
+print "\nKennworte aus '$dattmp' in '$shadowFile' eintragen...\n";
+
 &kennworte_eintragen;
 
-print "    Kennworte festhalten (datadd/datpwd >>> $datpwd)\n";
-&kennworte_festhalten;
+print "\nKennworte aus '$dattmp' zwecks Weiterverarbeitung aufbereiten...\n";
+
+&kennworte_aufbereiten;
 system("sort -o $datpwd -df $datpwd");
 
-print "Drucken Sie Serienbriefe mit $datpwd und\n";
-print "... löschen Sie $datpwd wegen lesbarer Kennworte\n";
-unlink("datpwd");
+print "\n";
+print "          ------------------------------------------------------\n";
+print "              Starten Sie jetzt das Programm 'shadow'\n"; 
+print "              (Drucken Sie die Neuzugaenge mit 'prnpwd')\n"; 
+print "          ------------------------------------------------------\n";
+print "\n";
 
 # --------------------------------------------------------------------
 
 sub vorbereitung {
     @f=`find *.goe 2>/dev/null`;
     if ($f[0] eq "") {
-	print "\nDer Name der Schule kann nicht ermittelt werden.\n";
+	print "Der Name der Schule kann nicht ermittelt werden.\n";
         print "Bitte im lokalen Verzeichnis ein Verzeichnis oder eine Datei\n";
-        print "xxx.goe anlegen, wobei xxx den Namen angibt.\n";
+        print "xxx.goe anlegen, wobei xxx den Namen angibt.\n\n";
+	exit;
     } else {
         $domain=$f[0];
         chop($domain);
@@ -42,25 +54,43 @@ sub vorbereitung {
     $gruppe=group("schueler");
     $index=max_index("datadd.*");
     $datadd="datadd.".$index;
+    $dattmp="dattmp.".$index;
     $datpwd="datpwd.".$index;
     if ($index eq "000") {
-	print "\nFEHLER: Datei datadd.??? nicht gefunden.\n";
-	print "Starten Sie zuerst das Programm listcmp.\n";
+	print "FEHLER: Datei datadd.??? nicht gefunden.\n";
+	print "Starten Sie zuerst das Programm 'listcmp'.\n\n";
 	exit;
     }
+    @f=`find skel 2>/dev/null`;
+    if ($f[0] eq "") {
+	system('md skel');
+	print "Ein leeres Verzeichnis 'skel' wurde eingerichtet.\n\n";
+    }
+    $index=next_index("$passwdFile.???");
+    $index2=next_index("$shadowFile.???");
+    if ($index2>$index) {
+	$index=$index2;
+    }
+    $passwdFile0=$passwdFile."\.".$index;
+    $shadowFile0=$shadowFile."\.".$index;
+    system("cp -f $passwdFile $passwdFile0");
+    system("cp -f $shadowFile $shadowFile0");
+    print "Die Datei '$passwdFile' wurde als '$passwdFile0' gesichert\n";
+    print "Die Datei '$shadowFile' wurde als '$shadowFile0' gesichert\n\n";
 }
 
 # --------------------------------------------------------------------
 
 sub start_oder_stop {
-    print "        Quelle: $datadd\n";
-    print "        Fortsetzen? (j/n) ";
+    print "\t\t\tQuelle: $datadd\n";
+    print "\t\t\tFortsetzen? (j/n) ";
     $i=<STDIN>;
     chop($i);
-    if (! ($i eq "j") && ! ($i eq "ja")) {
+    if (! ($i eq "j") && ! ($i eq "y")) {
 	print "abgebrochen\n";
 	exit;
     }
+    print "\n";
 }
 
 # --------------------------------------------------------------------
@@ -71,58 +101,23 @@ sub passwd_ergaenzen {
 	chop;
 	($name,$gcos)=split(/:/);
 	($fullname)=split(/,/,$gcos);
-	print "        $fullname\n";
+	print "\t\t$fullname\n";
         system("useradd -c '$gcos' -g $gruppe -m -k skel $name");
-        &kopieren_und_anpassen;
-        system("./pwd $name >> datpwd");
+        system("./pwd $name >> $dattmp"); # Kennwort erstellen und sichern
     }
     close(IN);
 }
 
 # --------------------------------------------------------------------
 
-sub kopieren_und_anpassen {
-    # Verzeichnisse
-    system("mkdir /home/$name/system");
-    system("mkdir /home/$name/system/mail");
-    system("mkdir /home/$name/system/news");
-    # Dateien
-    system("cp address.htm /home/$name/system");
-    system("cp bookmark.htm /home/$name/system");
-    open(N_IN,"netscape.ini");
-    open(N_OUT,">/home/$name/system/netscape.ini");
-    while (<N_IN>) {
-	if ($_ eq "") {
-	    next;
-	}
-	if (/User_Addr=/) {
-	    s/User_Addr=.*/User_Addr=$name\@$domain/;
-	}
-	if (/User_Name=/) {
-	    s/User_Name=.*/User_Name=$fullname/;
-	}
-	if (/POP Name=/) {
-	    s/POP Name=.*/POP Name=$name/;
-	}
-	print N_OUT $_;
-    }
-    close(N_IN);
-    close(N_OUT);
-    # Rechte
-#    system("chown -R $name /home/$name/system");
-#    system("chgrp -R $gruppe /home/$name/system");
-}
-
-# --------------------------------------------------------------------
-
 sub kennworte_eintragen {
-    system("chpasswd < datpwd");
+    system("chpasswd < $dattmp");
 }
 
 # --------------------------------------------------------------------
 
-sub kennworte_festhalten {
-    open (IN,"datpwd");
+sub kennworte_aufbereiten {
+    open (IN,"$dattmp");
     while (<IN>) {
 	chop;
 	($name,$passwd)=split(/:/);
@@ -130,7 +125,7 @@ sub kennworte_festhalten {
     }
     close(IN);
     open (OUT,">".$datpwd);
-    print OUT " klasse;vollname;benutzername;kennwort;\n";
+#   print OUT "klasse;vollname;benutzername;kennwort;\n";
     open (IN,$datadd);
     while (<IN>) {
 	chop;
@@ -161,22 +156,6 @@ sub max_index {
     }	
     $_=sprintf("%03d",$max);
     $_;
-}
-
-# --------------------------------------------------------------------
-
-sub code {
-    local($date)=@_;
-    $date=substr($date,6,2).substr($date,3,2).substr($date,0,2);
-    $date*937;
-}
-
-# --------------------------------------------------------------------
-
-sub decode {
-    local($code)=@_;
-    $code=$code/937;
-    substr($code,4,2).".".substr($code,2,2).".".substr($code,0,2);
 }
 
 # --------------------------------------------------------------------

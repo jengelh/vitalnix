@@ -1,66 +1,123 @@
 #!/usr/bin/perl
-# Zu allen Benutzern in /etc/passwd mit grp_id im Bereich [$von,$bis]
+# Eike Teiwes <eteiwes@ohg.goe.ni.schule.de> 17.09.98
 
-$von=50;
-$bis=999;
+$von= 50;	# gid für die vorgesehenen Änderungen
+$bis= 300;
+$passwdFile = "/etc/passwd";
 
-# Korrekturen vornehmen
+print "\n";
+print "          ------------------------------------------------------\n";
+print "               Änderungen für alle Benutzer aus $passwdFile\n"; 
+print "               mit $von <= gid <= $bis\n";
+print "          ------------------------------------------------------\n";
+print "\n"; 
 
-# von Eike Teiwes
-
-print "------------------------------------------------------\n";
-print "Korrekturen fuer alle Benutzer in /etc/passwd \n"; 
-
-&durchlauf;
-
-exit;
-
-# --------------------------------------------------------------------
-
-sub durchlauf {
-    open (IN,"/etc/passwd");
-    while (<IN>) {
-	chop;
-	($name,$x,$user,$group,$gcos)=split(/:/);
-	($fullname)=split(/,/,$gcos);
-	if (($group>=$von) && ($group<=$bis)) {
-	    print "        $name\n";
-#           &verzeichnisse;
-#           &dateien;
-	    &netscape;
-	    &rechte;
-	}    
+open (IN,"$passwdFile");
+while (<IN>) {
+    chop;
+    ($name,$x,$user,$group,$gcos)=split(/:/);
+    if (substr($name,0,1) eq "#") {
+	$name=substr($name,1);	# gesperrter User
     }
-    close(IN);
+    ($fullname)=split(/,/,$gcos);
+    if (($group>=$von) && ($group<=$bis)) {
+	print "        $name\n";
+	#-----------------------------------------------------
+#	&special;
+#	&verzeichnisse_einrichten;
+#	&netscape_dateien_kopieren;
+#	&netscape_personalisieren;
+#	&communicator_personalisieren;
+#	&bookmark_ergaenzen;
+#	&ftpx_personalisieren;
+#	&user_gruppe_einstellen;	# immer wieder
+	&rechte_einstellen;		# immer wieder
+	#----------------------------------------------------- 
+    }    
 }
+close(IN);
+
 
 # --------------------------------------------------------------------
 
-sub rechte {
-    # HOME-Verzeichnis
-    system("chmod go-rw /home/$name");
-    # SYSTEM-Verzeichnis
-    system("chown -R $name /home/$name/system");
-    system("chgrp -R $group /home/$name/system");
-    # NETSCAPE.INI
-    # user ist root
-    system("chmod a-wx /home/$name/system/netscape.ini");
-    system("chmod a+r /home/$name/system/netscape.ini");
+sub special {
+
 }
 
-sub verzeichnisse {
+sub user_gruppe_einstellen {
+	system("chown $name /home/$name");
+	system("chgrp $group /home/$name");
+	system("chown -R $name /home/$name/system");
+	system("chgrp -R $group /home/$name/system");
+}
+
+sub rechte_einstellen {    
+	#---------- HOME-Verzeichnis
+	system("chmod 711 /home/$name");
+	#---------- SYSTEM-Verzeichnis
+	system("chmod -R 700 /home/$name/system");
+	#---------- NETSCAPE.INI und PREFS.JS
+	system("chmod 500 /home/$name/system/netscape.ini");
+	system("chmod 500 /home/$name/system/prefs.js");
+	#---------- FTPX.REG
+	system("chmod 500 /home/$name/system/ftpx.reg");
+
+}
+
+sub verzeichnisse_einrichten {
     system("mkdir /home/$name/system");
     system("mkdir /home/$name/system/mail");
     system("mkdir /home/$name/system/news");
 }
 
-sub dateien {
-    system("cp -bu address.htm /home/$name/system");
-    system("cp -bu bookmark.htm /home/$name/system");
+sub netscape_dateien_kopieren {
+    system("cp -bu muster/address.htm /home/$name/system");
+    system("cp -bu muster/bookmark.htm /home/$name/system");
 }
 
-sub netscape {
-    open(N_IN,"netscape.ini");
+#	sub communicator_dateien_kopieren {
+#	    system("cp -bu muster/address.htm /home/$name/system");
+#	    system("cp -bu muster/bookmark.htm /home/$name/system");
+#	}
+
+sub bookmark_ergaenzen {
+    $_ = `find /home/$name/system/bookmark.htm -size +0`;
+    if ($_ eq "") {
+	system("cp muster/bookmark.plus /home/$name/system/bookmark.htm");
+    } else {
+	$_ = `grep 'Personal Toolbar' /home/$name/system/bookmark.htm`;
+	if ($_ eq "") {
+	    system("mv /home/$name/system/bookmark.htm /home/$name/system/bookmark.old");
+	    open(N_IN,"/home/$name/system/bookmark.old");
+	    open(M_IN,"muster/bookmark.plus");
+	    open(N_OUT,">/home/$name/system/bookmark.htm");
+	    $i=0;
+	    while (<N_IN>) {
+		if ($_ eq "") {
+		    next;
+		}
+		if ($i>0) {
+		    $i++;
+		}
+		if (/TITLE/) {
+		    $i=1;
+		}
+		print N_OUT $_;
+		if ($i eq 3) {
+			while (<M_IN>) {
+				print N_OUT $_;
+			}
+		}
+	    }	
+	    close(N_IN);
+	    close(M_IN);
+	    close(N_OUT);
+	}
+    }
+}
+
+sub netscape_personalisieren {
+    open(N_IN,"muster/netscape.ini");
     open(N_OUT,">/home/$name/system/netscape.ini");
     while (<N_IN>) {
 	if ($_ eq "") {
@@ -79,6 +136,44 @@ sub netscape {
     }
     close(N_IN);
     close(N_OUT);
+}
+
+sub communicator_personalisieren {
+    open(N_IN,"muster/prefs.js");
+    open(N_OUT,">/home/$name/system/prefs.js");
+    while (<N_IN>) {
+	if ($_ eq "") {
+	    next;
+	}
+	if (/xxxxx/) {
+	    s/(.+)xxxxx(.+)/$1$name$2/;
+	}
+	if (/yyyyy/) {
+	    s/(.+)yyyyy(.+)/$1$fullname$2/;
+	}
+	print N_OUT $_;
+    }
+    close(N_IN);
+    close(N_OUT);
+}
+
+sub ftpx_personalisieren {
+    open(N_IN,"muster/ftpx.reg");
+    open(N_OUT,">/home/$name/system/ftpx.reg");
+    while (<N_IN>) {
+	if ($_ eq "") {
+	    next;
+	}
+	if (/xxxxx/) {
+	    s/(.+)xxxxx(.+)/$1$name$2/;
+	}
+	print N_OUT $_;
+    }
+    close(N_IN);
+    close(N_OUT);
+    system("chown -R $name /home/$name/system");
+    system("chgrp -R $group /home/$name/system");
+    system("chmod 700 /home/$name/system/ftpx.reg");
 }
 
 # --------------------------------------------------------------------

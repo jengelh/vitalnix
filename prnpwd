@@ -1,25 +1,75 @@
 #!/usr/bin/perl
 
-$_ = $ARGV[0];
+$datpwd = "datpwd";
+$index=max_index("$datpwd.???");
+$datpwd = $datpwd."\.".$index;
 
-@liste = `grep -e $_ ./daten.sdf`;
-print " Vorläufige Kennwörter der Schüler der $_\n";
-print "---------------------------------------------\n\n";
+$_ = $ARGV[0];
+if ($_ eq "") {
+	print "\nAufruf: prnpwd <Klasse>, z.B. prnpwd 7k";
+	print "\nAufruf: prnpwd <Stufe>   z.B. prnpwd 1[12]";
+	print "\nAufruf: prnpwd all'\n\n";
+	$_="";
+	open(IN,$datpwd);
+	while ($z=<IN>) {
+		if (substr($z,1) eq " ") {skip}
+		($k)=split(/;/,$z);
+		if (!/$k/) {
+			$_=$_." ".$k;
+		}
+	}
+	close(IN);
+	print $_."\n\n";
+	exit;
+}
+
+tr/a-z/A-Z/;
+
+print "\n";
+print "     -----------------------------------------------------------\n";
+if (/ALL/) {
+	print "      Vorläufige Kennwörter aller neuer Schüler aus $datpwd\n";
+	$_ = ".*";
+} else {
+	print "      Vorläufige Kennwörter der Schüler der '$_' aus $datpwd\n";
+}
+print "     -----------------------------------------------------------\n";
+print "\n";
+
+@liste = `grep -e $_ $datpwd`;
 
 while (@liste) {
-	$_ = $liste[1];
-	shift(@liste);
-	if ($_ eq "") {
-		print "\...\n";
-		exit;
+	$_ = $liste[0];
+	if (/:/) {
+		($a,$_) = split(/:/);
 	}
-	($nachname,$vorname) = split(/;/);
-	$nachname =~ s/ /-/g;
-	$vorname =~ s/ /-/g;
-	$name = "\"".$vorname." ".$nachname."\"";
-	$_ = `grep -e $name ./datpwd.003`;
-	s/;/|/g;
-	print $_;
-#	print $_."\n";
+	chop; 
+	shift(@liste);
+	($klasse,$name,$user,$passwd) = split(/;/);
+	print "$klasse\t$name";
+        for ($i =length($name);$i<30;$i++) { print " ";}
+	print "$user";
+        for ($i =length($user);$i<10;$i++) { print " ";}
+	print "$passwd\n\n\n\n";
+}
+
+
+# --------------------------------------------------------------------
+
+sub next_index {
+    sprintf("%03d",max_index(@_)+1);
+}
+
+# --------------------------------------------------------------------
+
+sub max_index {
+    local($max)="000";
+    foreach (`find @_ 2>/dev/null`) {
+	$i=substr($_,-3,3);
+	if ($i>$max) {
+	    $max=$i;
+	}
+    }	
+    sprintf("%03d",$max);
 }
 

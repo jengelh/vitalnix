@@ -2,38 +2,21 @@
 # Verwalten von Benutzern mit Hilfe von Daten aus der Schulverwaltung
 # von Eike Teiwes 14.09.98
 
-$quelle = "daten.sdf";	# kopiert von DOS-Diskette mit 'mcopy a:daten.sdf .'
-$ziel = "daten.format"; # wird on diesem Programm erzeugt
+# Daten in daten.sdf formatieren und in daten ablegen. 
 
-print "\n";
-print "    ----------------------------------------------------------------\n";
-print "     Daten in '$quelle' formatieren und in '$ziel' sichern\n";
-print "    ----------------------------------------------------------------\n";
-print "\n";
-
-@f=`find $quelle 2>/dev/null`;
-if ($f[0] eq "") {
-    print "    ----------------------------------------------------------------\n";
-    print "    FEHLER: Datei '$quelle' fehlt.\n";
-    print "    Kopieren Sie zuvor die Datei '$quelle' von einer DOS-Diskette\n";
-    print "    in das aktuelle Verzeichnis: 'mcopy a:daten.sdf .'\n";
-    print "    ----------------------------------------------------------------\n";
-    print "\n";
-    exit;
-}
+print "           ----------------------------------------------------\n";
+print "                          daten.sdf ---> daten\n";
+print "           ----------------------------------------------------\n";
 
 &sdf_formatieren;
 
-print "    ----------------------------------------------------------------\n";
-print "                   Starten Sie jetzt 'lstcmp'\n";
-print "    ----------------------------------------------------------------\n";
-print "\n";
+# --------------------------------------------------------------------
 
 # --------------------------------------------------------------------
 
 sub sdf_formatieren {
-    open (ZIEL,">$ziel");
-    open (QUELLE,"$quelle");
+    open (ZIEL,">>p");
+    open (QUELLE,"daten.sdf");
     while (<QUELLE>) {
 	chop;
         if ((/\*/)||(/#/)) {
@@ -51,31 +34,52 @@ sub sdf_formatieren {
 	s//ue/g;
 	s/Ä/Ae/g;
 	s/Ö/Oe/g;
-	s/™/Oe/g;
 	s/Ü/Ue/g;
 	s/ß/ss/g;
-	s/á/ss/g;
-	s/‚/e/g;
 	s/é/e/g;
 	s/è/e/g;
         s/á/a/g;
 	s/à/a/g;
-	($nummer,$lastname,$firstname,$date,$class)=split(/;/,$_);
-print "$lastname:$firstname:$date:$class\n";
-
+	($lastname,$firstname,$date,$class)=split(/;/,$_);
 	($tag,$monat,$jahr)=split(/\./,$date);
 	$_=$lastname;
 	s/von-//;
-	s/de-//;
 	s/(\w+)-(\w+)/$1/;
   	$_=substr($firstname,0,1).substr($_,0,6);
 	tr/A-Z/a-z/;
 	$name=$_;
 	$lastname=~s/von-/von /;
-	$lastname=~s/de-/de /;
 	$fullname=$firstname." ".$lastname;
-	$code=code($date);
-	print ZIEL "$name:$fullname,$code:$class\n";
+	$code=code($date,$class);
+        $decode=decode($code);
+
+	print "$name ";
+	@l = `grep -e $name /etc/passwd`;
+	while (@l) {
+		$_=$l[0];
+		shift(@l);
+		chop;
+		if ($_ eq "") {
+			print ".";
+			next;
+		}
+	        ($name0,$passwd,$uid,$gid,$gcos,$home,$shell)=split(/:/);
+      		($fullname0,$code0)=split(/,/,$gcos);
+	
+		$xcode = xcode($date);
+
+		if ($xcode ne $code0 && $fullname eq $fullname0) {
+			print "#";
+		} elsif ($fullname eq $fullname0) {
+				print "+ >>>";
+				$gcos=$fullname0.",".$code;
+				print ZIEL "$name0:$passwd0:$uid:$gid:".
+					   "$gcos:$home:$shell\n";
+			} else {
+				print "-";
+			}
+	}
+        print "\n";
     }
     close(QUELLE);
     close(ZIEL);
@@ -84,7 +88,7 @@ print "$lastname:$firstname:$date:$class\n";
 # --------------------------------------------------------------------
 
 sub code {
-    local($date)=@_;
+    local($date,$class)=@_;
     #--- Datum
     $tag=26*$tag+113;
     $monat=73*$monat+113;
@@ -92,7 +96,14 @@ sub code {
 	$jahr=100+$jahr;
     }
     $jahr=29*($jahr-75)+113;
-    $tag.$monat.$jahr;
+    #--- Klasse
+    $z=int(rand(10));
+    $_=$class;
+    s/7/1/; s/8/2/; s/9/3/; s/10/4/; s/12/6$z/; s/13/7$z/;
+    s/K/1/; s/M/2/; s/NA/3/; s/F1/4/; s/F2/5/; s/F3/6/; s/F4/7/;
+    s/11A/51/; s/11B/52/; s/11C/53/; s/11D/54/; s/11E/55/; s/11F/56/;
+    #--- fertig
+    $tag.$monat.$jahr.$_;
 }
 
 # --------------------------------------------------------------------
@@ -110,7 +121,33 @@ sub decode {
     if ($jahr>100) {
 	$jahr-=100;
     }
-    $tag.".".$monat.".".$jahr;
+    #--- Klasse
+    s/6.*/y/; s/7.*/z/;
+    s/51/xA/; s/52/xB/; s/53/xC/; s/54/xD/; s/55/xD/; s/56/xE/;
+    s/1(.+)/7$1/; s/2(.+)/8$1/; s/3(.+)/9$1/; s/4(.+)/10$1/; 
+    s/(.)1/$1K/; s/(.)2/$1M/; s/(.)3/$1NA/; 
+    s/(.)4/$1F1/; s/(.)5/$1F2/; s/(.)6/$1F3/; s/(.)7/$1F4/;
+    s/x/11/; s/y/12/; s/z/13/;
+    #--- fertig
+    "(".$tag.".".$monat.".".$jahr.") ".$_;
+}
+
+# --------------------------------------------------------------------
+
+# --------------------------------------------------------------------
+
+sub xcode {
+    local($date)=@_;
+    $date=substr($date,6,2).substr($date,3,2).substr($date,0,2);
+    $date*937;
+}
+
+# --------------------------------------------------------------------
+
+sub xdecode {
+    local($code)=@_;
+    $code=$code/937;
+    substr($code,4,2).".".substr($code,2,2).".".substr($code,0,2);
 }
 
 # --------------------------------------------------------------------

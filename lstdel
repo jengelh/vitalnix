@@ -1,61 +1,108 @@
 #!/usr/bin/perl
 # Benutzer aus /etc/passwd und /etc/shadow streichen und 
-# Verzeichnise/Dateien löschen
-# von Eike Teiwes
+# Home-Verzeichnisse in Trash verschieben
+# von Eike Teiwes 17.09.98
 
-print "------------------------------------------------------\n";
-print "Benutzer in /etc/passwd eintragen und Dateien kopieren\n"; 
-$domain="ohg.goe.ni.schule.de";
-$schueler=group("schueler");
+$test = 1;
 
+$passwdFile = "/etc/passwd";
+$shadowFile = "/etc/shadow";
+$trash = "/home/trash";
+
+print "\n";
+print "          ------------------------------------------------------\n";
+print "              Benutzer aus 'datdel.???' werden gestrichen\n"; 
+print "              Die Home-Verzeichnisse werden in $trash gesichert\n"; 
+print "          ------------------------------------------------------\n";
+
+&vorbereitung;
 &start_oder_stop;
 
-print "    Abgänger austragen ($datdel >>> /etc/passwd .../shadow) und \n";
-print "    Verzeichnisse/Dateien löschen\n";
-&passwd_verkuerzen;
-print "    --> $n Benutzer gestrichen\n";
+print "Abgänger lt. '$datdel' aus '$passwdFile' und '/etc/passwd' streichen...\n";
+print "Home-Verzeichnisse nach $trash verschieben...\n";
+&doit;
+print "--> $n Benutzer wurden gestrichen\n\n";
+
+print "          ------------------------------------------------------\n";
+print "              Es ist sinnvoll, die Datei '$datdel' auzubewahren\n";
+print "          ------------------------------------------------------\n";
+print "\n";
 
 exit;
+
+# --------------------------------------------------------------------
+
+sub vorbereitung {
+    @f=`find $trash -type d -maxdepth 0 2>/dev/null`;
+    if ($f[0] eq "") {
+	system('md $trash');
+	print "Ein leeres Verzeichnis '$trash' wurde eingerichtet.\n\n";
+    }
+    @f=`find *.goe 2>/dev/null`;
+    if ($f[0] eq "") {
+	print "Der Name der Schule kann nicht ermittelt werden.\n";
+        print "Bitte im lokalen Verzeichnis ein Verzeichnis oder eine Datei\n";
+        print "xxx.goe anlegen, wobei xxx den Namen angibt.\n\n";
+	exit;
+    } else {
+        $domain=$f[0];
+        chop($domain);
+	$domain=$domain.".ni.schule.de";
+    }
+    $schueler=group("schueler");
+
+    $index=next_index("$passwdFile.???");
+    $index2=next_index("$shadowFile.???");
+    if ($index2>$index) {
+	$index=$index2;
+    }
+    $passwdFile0=$passwdFile."\.".$index;
+    $shadowFile0=$shadowFile."\.".$index;
+    print "Die Datei '$passwdFile' wird als '$passwdFile0' gesichert";
+    system("cp -f $passwdFile $passwdFile0");
+    print " (erledigt)\n";
+    print "Die Datei '$shadowFile' wird als '$shadowFile0' gesichert";
+    system("cp -f $shadowFile $shadowFile0");
+    print " (erledigt)\n\n";
+}
 
 # --------------------------------------------------------------------
 
 sub start_oder_stop {
     @liste=`find datdel.* 2>/dev/null`;
     $i=0;
-    print "    Vorhandene datdel.xxx sind:\n";
+    print "Vorhandene 'datdel.???' sind:\n";
     foreach $_ (@liste) {
 	++$i;
 	print "        $_";
     }
     if ($i eq 0) {
-	print "FEHLER: Datei datdel.xxx nicht gefunden.\n";
-	print "Starten Sie zuvor das Programm listcmp.\n";
+	print "FEHLER: Datei 'datdel.???' nicht gefunden.\n";
+	print "Starten Sie zuvor das Programm 'listcmp'.\n";
 	exit;
     }
     if ($i>1) {
-	print "    Welche Datei datdel.xxx soll benutzt werden?\n";
-	print "        Index: ";
+	print "Welche Datei 'datdel.???' soll benutzt werden?\n";
+	print "Index: ";
 	$i=<STDIN>;
 	$datdel=sprintf("datdel.%03d",$i);
     } else {
 	$datdel=$liste[0];
 	chop($datdel);
     }
-    print "    ACHTUNG: Auch die Homeverzeichnisse werden gelöscht.\n";
-    print "    Es kann sinnvoll sein, die Datei $datdel auzubewahren\n";
-    print "    und die Benutzer erst später aus /etc/passwd zu streichen.\n";
-    print "        Benutzer jetzt streichen? (j/n) ";
+    print "Benutzer aus '$datdel' streichen? (j/n) ";
     $i=<STDIN>;
+    print "\n";
     chop($i);
-    if (! ($i eq "j") && ! ($i eq "ja")) {
-	print "abgebrochen\n";
+    if (! ($i eq "j") && ! ($i eq "y")) {
+	print "abgebrochen\n\n";
 	exit;
     }
 }
 
 # --------------------------------------------------------------------
 
-sub passwd_verkuerzen {
+sub doit {
     $n=0;
     open (IN,$datdel);
     while (<IN>) {
@@ -63,7 +110,9 @@ sub passwd_verkuerzen {
 	($name)=split(/:/);
 	print("$name\n");
 	++$n;
-	system("userdel -r $name");
+	system("md $trash/$name");
+	system("mv /home/$name/ $trash/$name");
+	system("userdel $name");
     }
     close(IN);
 }
@@ -87,22 +136,6 @@ sub max_index {
     }	
     $_=sprintf("%03d",$max);
     $_;
-}
-
-# --------------------------------------------------------------------
-
-sub code {
-    local($date)=@_;
-    $date=substr($date,6,2).substr($date,3,2).substr($date,0,2);
-    $date*937;
-}
-
-# --------------------------------------------------------------------
-
-sub decode {
-    local($code)=@_;
-    $code=$code/937;
-    substr($code,4,2).".".substr($code,2,2).".".substr($code,0,2);
 }
 
 # --------------------------------------------------------------------

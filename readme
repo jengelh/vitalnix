@@ -6,63 +6,96 @@ Das kann zum Schuljahresbeginn oder zu Beginn eines Halbjahres oder
 zu jedem beliebigen Zeitpunkt geschehen.
 
 Es besteht aus den Programmen
-	listcmp
-	listadd
-	listdel
+	format		OK
+	listcmp		OK
+	listadd		OK
+	listdel		OK
 	listneu
 	add
-	xshadow
+	shadow		OK
 
+/*
 Für die erstmalige und einmalige Erfassung der Lehrer dienen die
 Programme 
-	listcmp.1st
-	listadd.1st
+	listcmp.1st	NICHT GETESTET
+	listadd.1st	NICHT GETESTET
 Die Lehrer sollten vor den Schülern eingetragen werden, um bei den 
 Benutzernamen der Lehrer Indizes zu vermeiden. Lesen Sie die
 Anleitung in liesmich.1st.
+*/
 
-Das Programm add, das den Zugang eines einzelnen Benutzers abwickelt, 
+??? Das Programm add, das den Zugang eines einzelnen Benutzers abwickelt, 
 kann zwischendurch benutzt werden. 
-Für Schüler (gruppe=schüler) hält dieses Programm verschlüsselt das 
+Für Schüler (gruppe=schueler) hält dieses Programm verschlüsselt das 
 Geburtsdatum fest, um bei einem späteren automatischen Abgleich auch
 Namensgleichheit berücksichtigen zu können.  
-usage: ./add -g gruppe -l nachname -f vorname [vorname] -d geburtsdatum
+??? usage: ./add -g gruppe -l nachname -f vorname [vorname] -d geburtsdatum
 
-Das Programm listneu zeigt ein Bespiel für nachträgliche Korrekturen in den
+Das Programm listneu zeigt ein Beispiel für nachträgliche Korrekturen in den
 Verzeichnissen und/oder Datein aller Benutzer.
 
 Ablauf
 ------
-daten.sdf mit Kolleg erstellen
-daten.sdf in das aktuelle Verzeichnis (mit allen Programmen) kopieren
-Datei /etc/passwd sichern (cp /etc/passwd passwd.old)
+
+1. Vorhandene Daten sichern
+   ------------------------
+Datei '/etc/passwd' sichern ('cp /etc/passwd passwd.old' o.ä.)
+Datei '/etc/shadow' sichern ('cp /etc/shadow shadow.old' o.ä.)
 Nur bei erstmaligem Eintrag der Schüler:
-    /etc/passwd anzeigen lassen (more /etc/passwd)
-    Alle Schüler (nur die Schüler) streichen (userdel benutzername)
-    	{Die Home-Verzeichnisse werden dabei nicht gelöscht.
-    	Alle Schüler müssen neu eingetragen werden, damit das 
+    '/etc/passwd' anzeigen lassen ('more /etc/passwd')
+    Alle Schüler (nur die Schüler!) mit 'userdel <benutzername>' streichen
+    	{Begründung: Alle Schüler müssen neu eingetragen werden, damit das 
 	Geburtsdatum korrekt eingefügt wird.}
-Ein Verzeichnis {schule}.goe einrichten (z.B. mkdir mpg.goe) 
+	Hinweis: Die Home-Verzeichnisse werden dabei nicht gelöscht.
+    	Sie müssen unter Umständen - bei Vergabe von Indizes - verschoben
+        werden; z.B. wenn 'emuelle' zu 'emuelle1' wurde.}
+Ein Verzeichnis '<schule>.goe' einrichten (z.B. 'mkdir mpg.goe') 
        {Das lesen die Programme, um die richtige Email-Adresse einzutragen.} 
-Das Programm listcmp starten (./listcmp)
-	{Dieses Programm erzeugt zwei Dateien, in den die Neuzugänge und
-	die Abgänge aufgeliste sind.}
-Datei datadd.001 (oder höherer Index) kontrollieren
-Datei datdel.001 (o.h.I.) kontrollieren, falls Abgänge vorkommen
-Das Programm listadd starten (./listadd)
-	{Dieses Programm trägt neue Benutzer aus datadd.001 ein.}
-/etc/passwd kontrollieren (more /etc/passwd)
+
+2. Daten beschaffen
+   ----------------
+'daten.sdf' mit Kolleg erstellen
+'daten.sdf' in das aktuelle Verzeichnis (das die Programme enthält) kopieren
+'daten.sdf' aufbereiten (./format); das Ergebnis ist die Datei 'daten'
+
+3. Daten abgleichen
+   ----------------
+Das Programm 'listcmp' starten (./listcmp)
+	{Dieses Programm erzeugt zwei Dateien:
+	'datadd.nnn' mit den Neuzugängen
+	'datdel.nnn' mit den Abgänge}
+
+4. Benutzer aufnehmen
+   ------------------
+Datei 'datadd.nnn' (mit höchstem Index nnn) kontrollieren
+Das Programm 'listadd' starten (./listadd)
+	{Die Neuen aus datadd.nnn werden in '/etc/passwd 'eingetragen,
+	auch in /etc/shadow.
+	Zugleich werden Home-Verzeichnisse angelegt.}
+/etc/passwd auf korrekten Eintrag überprüfen (more /etc/passwd)
 Das Programm shadow starten (./shadow)
-	{Dieses Programm korrigiert die Shadow-Datei (verschlüsselte
-	Passwort-Datei) /etc/shadow. Mir ist keine bessere Lösung eingefallen.}
-Mit Datei datpwd.001 (o.h.I.) Serienbriefe drucken
-	{Diese Datei anschliessend löschen!}
-Alle Datendateien löschen außer datdel.001 (o.h.I.) (rm datadd*)
-Das Programm listdel starten (./listdel)
-	{Es ist sinnvoll, die Abgänger erst später auszutragen und
-	die Datei datdel.001 (o.h.I.) solange aufzubewahren.}
-Jede abgearbeitete Datei datdel.001 (o.h.I.) löschen (rm datdel.001)    
+	{Dieses Programm korrigiert die Shadow-Datei '/etc/shadow'.}
+
+5. Kennwörter ausdrucken
+   ---------------------
+Mit Datei 'datpwd.nnn'  Serienbriefe drucken
+
+6. Benutzer streichen
+   ------------------
+Datei 'datdel.nnn' kontrollieren, falls Abgänge vorkommen.
+Das Programm 'listdel' starten (./listdel)
+	{Dieses Programm streicht alle Schüler aus 'datdel.nnn' und
+	verschiebt deren Home-Verzeichnis nach '/home/trash'.
+	Diese Home-Verzechnisse sollten spätestens vor dem nächsten
+	Zugang von Schülern gelöscht werden (rm -r -f /home/trash/*).}
+	{Es kann sinnvoll sein, die Abgänger erst später zu streichen.}
+Die abgearbeitete Datei 'datdel.nnn' löschen (rm datdel.001) oder besser
+in einem Verzeichnis sichern (md daten.980918) (mv datdel.* daten.980918)}   
 	
+
+
+?????>>>>
+
 
 Betroffene Dateien
 ------------------

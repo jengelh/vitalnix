@@ -13,15 +13,23 @@ print "Benutzerverwaltung mit Hilfe von Schülerdaten\n";
 
 sub doit {
     $i=0;
-    open (ZIEL,">p");
+    open (ZIEL,">passwd");
     open (PWD,"/etc/passwd");
     while (<PWD>) {
 	chop;
         ($name,$passwd,$uid,$gid,$gcos)=split(/:/);
         #($fullname,$code)=split(/,/,$gcos);
-	if ($gid ne 200) {
+	print "$name";
+	if ($name eq "") {
+		next;
+	}
+$name=$name.":";
+	$ok=`grep $name p`;
+	if ($ok eq "") {
+		print ">>>";
 		print ZIEL "$_\n"; 
         }
+	print "\n";
     }	
     close(PWD);
     close(ZIEL);

@@ -1,142 +1,102 @@
 #!/usr/bin/perl
 # Verwalten von Benutzern mit Hilfe von Daten aus der Schulverwaltung
-# von Eike Teiwes 20.03.97
+# von Eike Teiwes 15.09.98
 
-print "----------------------------------------------------\n";
-print "Benutzerverwaltung mit Hilfe von Schülerdaten\n";
+$pwdfile = "/etc/passwd";	# üblich ist $pwdfile="/etc/passwd"
+$daten = "daten.format";	# Quelle der aktuellen Daten
+$test=0; 			# =1 zusätzliche Meldungen ausgeben
+$aktuelleDatei=0;		# =1 Datei mit aktuellen Schülern anlegen
+print "\f";
+print "          ----------------------------------------------------\n";
+print "                Schülerdaten mit Passwort-Datei abgleichen\n";
+print "          ----------------------------------------------------\n\n";
 
 &vorbereitungen;
 
-print "    Vorhandene Benutzernamen erfassen (/etc/passwd --> RAM)\n";
+print "Die vorhandenen Benutzer werden aus '$pwdfile' gelesen...\n";
 passwd_auslesen();
-print "    --> \+$i Schüler als Benutzer in passwd\n";
+print " --> Es liegen $i Schüler in '$pwdfile' vor.\n\n";
 
-print "    Aktuelle Schülerdaten auswerten ($datei --> dattmp)\n";
-sdf_auswerten();
+print "Aktuelle Schülerdaten aus '$daten' lesen und ...\n";
+#print "aktuelle vorhandene Namen in '$addakt' sichern und ...\n"; 
+print "neue aktuelle Schüler in '$datadd' sichern...\n"; 
+daten_auslesen();
+print "--> Es wurden $j neue Schüler festgestellt.\n";
+if ($k) {
+    print "          ----------------------------------------------------\n";
+    print "            ACHTUNG: $kmal Überlauf (siehe Datei $daterr)\n";
+    print "          ----------------------------------------------------\n";
+    print "\n";
+    exit;
+}
+print "\n";
 
-print "    Aktuelle Namen abgleichen (dattmp --> RAM) und\n";
-print "    ... aktuelle Namen sichern (RAM --> datsdf) und \n"; 
-print "    ... neue Namen sichern (RAM --> $datadd)\n"; 
-dattmp_auslesen($datadd,$daterr);
-print "    --> \+$j neue Benutzer aus dattmp in $datadd\n";
+#print "Aktuelle Schüler aus '$addakt' lesen...\n";
+#aktuell_auslesen();
+#print " --> $l Benutzer nach wie vor in '$addakt'\n";
 
-print "    Aktuelle Benutzernamen erfassen (datsdf --> RAM)\n";
-datsdf_auslesen();
-print "    --> \-$l Benutzer nach wie vor in datsdf\n";
+print "In '$pwdfile' vorliegende Schüler kontrollieren ...\n";
+print "und abgegangene Namen in Datei '$datdel' sichern\n"; 
+passwd_ausmisten($datdel);
+print "--> Es sind $m Schüler abgegangen.\n\n";
 
-print "    Eingetragene Namen abgleichen (/etc/paswd --> RAM) und\n";
-print "    ... zu streichende Namen sichern (RAM --> $datdel)\n"; 
-passwd_auswerten($datdel);
-print "    --> \-$m zu streichende(r) Benutzer\n";
+#unlink($datakt);
 
-if ($k>0) {
-    print "ACHTUNG: $kmal Überlauf (siehe Datei $daterr)\n";
-} 
-
-unlink("dattmp");
-unlink("datsdf");
-
-print "Starten Sie jetzt die Programme listadd [und listdel].\n";
+print "          ----------------------------------------------------\n";
+print "               Starten Sie jetzt 'lstadd' (und 'lstdel').\n";
+print "          ----------------------------------------------------\n";
+print "\n";
 
 # --------------------------------------------------------------------
 
 sub vorbereitungen {
 
-    print "        Datei mit Schülerdaten? (Voreinstellung daten.sdf) ";
-    $datei=<STDIN>;
-    chop($datei);
-    if ($datei eq "") {
-	$datei="daten.sdf";
-    }
-
-    @f=`find $datei 2>/dev/null`;
+    @f=`find $daten 2>/dev/null`;
     if ($f[0] eq "") {
-	print "\nFEHLER: Datei $datei fehlt.\n";
-	print "Spielen Sie die Datei in das aktuelle Verzeichnis.\n";
+	print "          ----------------------------------------------------\n";
+	print "                 FEHLER: Datei '$daten' fehlt.\n";
+	print "                 Starten Sie zuvor das Programm 'format'.\n\n";
+	print "          ----------------------------------------------------\n";
+	print "\n";
 	exit;
     }
 
-    @f=`find skel/ 2>/dev/null`;
-    if ($f[0] eq "") {
-	print "\nlokales Verzeichnis skel fehlt und wird eingerichtet.\n";
-	system("mkdir skel");
-	system("cp /etc/skel/.profile skel");
-    }
-
-    print "        Trennzeichen in $datei (Voreinstellung ;) ";
-    $z=<STDIN>;
-    chop($z);
-    if ($z eq "") {
-	$z=";";
-    }
+#    @f=`find skel/ 2>/dev/null`;
+#    if ($f[0] eq "") {
+#	print "\nlokales Verzeichnis skel fehlt und wird eingerichtet.\n";
+#	system("mkdir skel");
+#	system("cp /etc/skel/.profile skel");
+#    }
 
     $gruppe=group("schueler");
     if ($gruppe eq "") {
-	print "\nGruppe schueler fehlt und wird eingerichtet.\n";
+	print "\nGruppe 'schueler' fehlt und wird eingerichtet.\n";
 	system("groupadd schueler");
 	$gruppe=group("schueler");
     }
 
-    $index=next_index("dat???.*");
+    $index=next_index("dat???.???");
     $datadd="datadd.".$index;
     $daterr="daterr.".$index;
     $datdel="datdel.".$index;
-}
-
-# --------------------------------------------------------------------
-
-sub sdf_auswerten {
-    open (TMP,">dattmp");
-    open (SDF,$datei);
-    while (<SDF>) {
-	chop;
-	if ($_ eq "") {
-	    next;
-	}    
-	s/ /-/g;
-	s/ä/ae/g;
-	s/ö/oe/g;
-	s/ü/ue/g;
-	s/Ä/Ae/g;
-	s/Ö/Oe/g;
-	s/Ü/Ue/g;
-	s/ß/ss/g;
-	s/é/e/g;
-	s/è/e/g;
-        s/á/a/g;
-	s/à/a/g;
-	($lastname,$firstname,$date)=split(/;/,$_);
-	$_=$lastname;
-	s/von //;
-	s/zur //;
-	s/der //;
-	s/dem //;
-	s/(\w+)-(\w+)/$1/;
-  	$_=substr($firstname,0,1).substr($_,0,6);
-	$name0=$_;
-	tr/A-Z/a-z/;
-	$name=$_;
-	$fullname=$firstname." ".$lastname;
-	$code=code($date);
-#
-
-	print "$name:$fullname,$code:$class\n";
-	print TMP "$name:$fullname,$code:$class\n";
-    }
-    close(SDF);
-    close(TMP);
+    $datakt="datakt.".$index; # aktuelle Schüler (nicht erforderlich)
 }
 
 # --------------------------------------------------------------------
 
 sub passwd_auslesen {
     $i=0;
-    open (PWD,"/etc/passwd");
+    open (PWD,"$pwdfile");
     while (<PWD>) {
 	chop;
         ($name,$passwd,$uid,$gid,$gcos)=split(/:/);
-        #($fullname,$code)=split(/,/,$gcos);
-	$feld{$name}=$gcos;
+#	($fullname,$code)=split(/,/,$gcos);
+	if (substr($name,0,1) eq "#") {
+		$name=substr($name,1);	# gesperrter User
+	}
+	($gcos1,$gcos2)=split(/,/,$gcos);
+	$feld{$name}=$gcos1.",".$gcos2;
+	if ($test eq 3) {print "$name<--$gcos\n";}
 	if ($gid eq $gruppe) {
             ++$i;
         }
@@ -146,14 +106,13 @@ sub passwd_auslesen {
 
 # --------------------------------------------------------------------
 
-sub dattmp_auslesen {
-    local($add,$err)=@_;
-    open (ADD,">$add");
-    open (SDF,">datsdf");
-    open (TMP,"dattmp");
+sub daten_auslesen {
+    open (ADD,">$datadd");
+    if ($aktuelleDatei) {open (SDF,">$datakt");}
+    open (QUELLE,"$daten");
     $k=0;
     $j=0;
-    EINTRAG: while (<TMP>) {
+    EINTRAG: while (<QUELLE>) {
 	chop;
         ($name,$gcos,$class)=split(/:/);
         ($fullname,$code)=split(/,/,$gcos);
@@ -167,14 +126,15 @@ sub dattmp_auslesen {
 	    }
         }
         if ($vorhanden ne "n") {	
-	    #print "!!! $name$vorhanden ($fullname) vorhanden\n";
-	    print SDF "$name$vorhanden:$gcos\n";
+	    if ($test eq 1) {print "### $name$vorhanden ($fullname) vorhanden\n";}
+	    if ($aktuelleDatei) {print SDF "$name$vorhanden:$gcos\n";}
+	    $feld{$name.$vorhanden}="0";
 	    next EINTRAG;
 	}    
 	$_=$name."Z";
 	if ($feld{$_} ne "") {
 	    print "ÜBERLAUF: Alle $name sind belegt!\n";
-            open (ERR,">>$err");
+            open (ERR,">>$daterr");
 	    print ERR "Ueberlauf: $name:$gcos\n";
 	    close(ERR);
 	    $k++;
@@ -182,44 +142,45 @@ sub dattmp_auslesen {
 	    while ((/.*[1-9A-Z]/) && ($feld{$_} eq "")) {
 		tr/1-9A-Z/0-9A-Y/;
 	    }
-	    #print "!!! abwärts bis $_\n";
+	    if ($test eq 2) {print "### abwärts bis $_\n";}
             if ((/.*[1-9A-Z]/) || ($feld{$name} ne "")) {
-		#print "!!! $_ belegt, suche weiter ... ";
+		if ($test eq 2) {print "### $_ belegt, suche weiter ... ";}
 	        ++$K;
 		tr/0-9A-Y/1-9A-Z/;
-		#print "!!! finde $_ !!!\n";
+		if ($test eq 2) {print "### ... finde $_\n"};
 	    } 
         }
 	s/0//;
-	#print "!!! Name: $_\n";
-	$feld{$_}=$fullname.$date;
+	if ($test eq 2) {print "### Name: $_\n"};
+	$feld{$_}=$fullname;
 	print ADD "$_:$gcos:$class\n";
-	print SDF "$_:$gcos\n";
+	if ($aktuelleDatei) {print SDF "$_:$gcos\n";}
+	$feld{$name.$vorhanden}="0";
 	$j++;
     }
-    close (TMP);
-    close (SDF);
+    close (QUELLE);
+    if ($aktuelleDatei) {close (SDF);}
     close (ADD);
 }
 
 # --------------------------------------------------------------------
 
-sub datsdf_auslesen {
-    $l=0;
-    open (SDF,"datsdf");
-    while (<SDF>) {
-        ($name)=split(/:/);
-	$feld{$name}="0";
-	++$l;
-    }	
-    close(SDF);
-}
+#	sub aktuell_auslesen {
+#	    $l=0;
+#	    open (SDF,"$aktuell");
+#	    while (<SDF>) {
+#	        ($name)=split(/:/);
+#		$feld{$name}="0";
+#		++$l;
+#	    }	
+#	    close(SDF);
+#	} 
 
 # --------------------------------------------------------------------
 
-sub passwd_auswerten {
+sub passwd_ausmisten {
     local($del)=@_;
-    open (PWD,"/etc/passwd");
+    open (PWD,"$pwdfile");
     open (DEL,">".$del);
     $m=0;
     while (<PWD>) {
@@ -227,6 +188,9 @@ sub passwd_auswerten {
 	    next;
 	}
 	($name,$passwd,$uid,$gid,$gcos)=split(/:/);
+	if (substr($name,0,1) eq "#") {
+		$name=substr($name,1);	# gesperrter User
+	}
 	if ($feld{$name} ne "0") {
 	    if ($gid eq $gruppe) {
           	print DEL "$name:$gcos\n";
@@ -260,22 +224,6 @@ sub max_index {
     }	
     $_=sprintf("%03d",$max);
     $_;
-}
-
-# --------------------------------------------------------------------
-
-sub code {
-    local($date)=@_;
-    $date=substr($date,6,2).substr($date,3,2).substr($date,0,2);
-    $date*937;
-}
-
-# --------------------------------------------------------------------
-
-sub decode {
-    local($code)=@_;
-    $code=$code/937;
-    substr($code,4,2).".".substr($code,2,2).".".substr($code,0,2);
 }
 
 # --------------------------------------------------------------------
