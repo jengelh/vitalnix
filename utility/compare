@@ -1,0 +1,81 @@
+#!/usr/bin/perl
+# Verwalten von Benutzern mit Hilfe von Daten aus der Schulverwaltung
+# von Eike Teiwes 15.09.98
+
+$pwdfile1 = "/etc/passwd";
+$pwdfile2 = "/etc/shadow";
+
+print "\n";
+print "          ----------------------------------------------------\n";
+print "                     zwei Passwort-Datei vergleichen\n";
+print "          ----------------------------------------------------\n\n";
+
+print "Lese '$pwdfile1 ...\n";
+passwd_auslesen();
+#print "--> Es liegen $i Schüler in '$pwdfile1' vor.\n";
+
+print "\n";
+print "Lese '$pwdfile1 ...\n";
+passwd_vergleichen();
+print "--> Es liegen $m Schüler in '$pwdfile2' vor.\n";
+print "    $n davon kommen nicht in '$pwdfile1' vor.\n";
+print "\n";
+
+$p = $pwdfile1;
+$pwdfile1 = $pwdfile2;
+$pwdfile2 = $p;
+
+passwd_auslesen();
+passwd_vergleichen();
+print "--> Es liegen $m Schüler in '$pwdfile2' vor.\n";
+print "    $n davon kommen nicht in '$pwdfile1' vor.\n";
+print "\n";
+
+
+# --------------------------------------------------------------------
+
+sub passwd_auslesen {
+    $i=0;
+    open (PWD,"$pwdfile1");
+    while (<PWD>) {
+	chop;
+        ($name,$passwd,$uid,$gid,$gcos)=split(/:/);
+#	($fullname,$code)=split(/,/,$gcos);
+	if (substr($name,0,1) eq "#") {
+		$name=substr($name,1);	# gesperrter User
+	}
+	$feld{$name}=$gcos;
+	if ($test eq 3) {print "$name<--$gcos\n";}
+        ++$i;
+    }	
+    close(PWD);
+}
+
+# --------------------------------------------------------------------
+
+sub passwd_vergleichen {
+    open (PWD,"$pwdfile2");
+    $m=0;
+    $n=0;
+    while (<PWD>) {
+	chop;
+        if ($_ eq "") {
+	    next;
+	}
+	if (/--/) {
+	    next;
+	}
+	($name,$passwd,$uid,$gid,$gcos)=split(/:/);
+	if (substr($name,0,1) eq "#") {
+		$name=substr($name,1);	# gesperrter User
+	}
+	++$m;
+	if ($feld{$name} eq "") {
+          	print "$_\n";
+		++$n;
+	}    
+    }
+    close (PWD);
+}
+
+

@@ -1,0 +1,16 @@
+#!/usr/bin/perl
+open(IN,"daten.sdf");
+while (<IN>) {
+	chop;
+	chop;
+	$z=$_;
+	tr/A-Z/x/;
+	tr/a-z/x/;
+	tr/()\*\:0-9.;-/x/;
+	s/x//g;
+	s/\s//g;
+	if ($_ ne "") {
+		print "$_ $z\n";
+	}
+}
+close(IN);

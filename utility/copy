@@ -1,0 +1,38 @@
+#!/usr/bin/perl
+# Verwalten von Benutzern mit Hilfe von Daten aus der Schulverwaltung
+# von Eike Teiwes 20.03.97
+
+print "----------------------------------------------------\n";
+print "Benutzerverwaltung mit Hilfe von Schülerdaten\n";
+
+
+
+&doit;
+
+# --------------------------------------------------------------------
+
+sub doit {
+    $i=0;
+    open (ZIEL,">p");
+    open (PWD,"/etc/passwd");
+    while (<PWD>) {
+	chop;
+        ($name,$passwd,$uid,$gid,$gcos)=split(/:/);
+        #($fullname,$code)=split(/,/,$gcos);
+	if ($gid ne 200) {
+		print ZIEL "$_\n"; 
+        }
+    }	
+    close(PWD);
+    close(ZIEL);
+}
+
+# --------------------------------------------------------------------
+
+sub group {
+    local($name)=@_;
+    $_=`grep $name /etc/group`;
+    /(\w+)\W+(\w+)\W+(\w+)/;
+    $3;
+}
+

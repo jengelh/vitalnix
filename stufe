@@ -1,0 +1,98 @@
+#!/usr/bin/perl
+$pfile="/etc/passwd";
+
+open(IN,$pfile);
+while (<IN>) {
+	($user,$b,$c,$d,$e,$f,$g,$g,$i)=split(/:/);
+#	print "$user:$b:$c:$d:$e:$f:$g:$h:$i\n";
+	if (substr($user,0,1) eq "#") {
+		$user=substr($user,1);
+	}	
+	($name,$date,$class,$info)=split(/,/,$e);
+	if ($date eq "") {
+		$date0="";
+	} else {
+		($date0,$class)=split(/,/,decode($date.",".$class));
+	}
+	$_=substr($class,0,1);
+
+	system("rm /home/$user/.stufe*");
+
+	if (/[78]/) {
+		$n++;
+		print "$user  $_\n";
+		system("cp .stufe /home/$user/stufe.$_");
+	}
+}
+print "insgesamt: $n\n";
+
+# --------------------------------------------------------------------
+
+sub decode {
+        my ($code)=@_;
+        my ($datum,$class0)=split(/,/,$code);
+        $tag=substr($datum,0,3);
+        $monat=substr($datum,3,3);
+        $jahr=substr($datum,6,3);
+        #--- Datum
+        $tag=($tag-113)/26;
+        $tag=~s/^(.)$/0$1/;
+        $monat=($monat-113)/73;
+        $monat=~s/^(.)$/0$1/;
+        $jahr=($jahr-113)/29+75;
+        if ($jahr>100) {
+            $jahr-=100;
+        }
+        #--- Klasse
+        my @class=();
+        for ($i=0;$i<8;$i+=2) {
+                push(@class,substr($class0,$i,2));
+        }
+        @class=grep($_>47,@class);
+        push(@class,32); push(@class,32);
+        $class=pack('ccc',@class);
+        $class=~s/^([0-3])/1$1/;
+        $class=~s/\s//g;
+        #--- Ergebnis
+        $tag.".".$monat.".".$jahr.","."$class";
+}
+
+# --------------------------------------------------------------------
+
+sub last_use {
+my @f;
+my $n;
+# Verzeichnis Mail
+$_ = `ls -l -d /home/$user/Mail 2>/dev/null`;
+chomp;
+s/.*1024\s//g;
+$monat1=substr($_,0,3);
+$tag1  =substr($_,4,2);
+$zeit1 =substr($_,7,5);
+# Verzeichnis mail
+$_ = `ls -l -d /home/$user/system/mail 2>/dev/null`;
+chomp;
+s/.*1024\s//g;
+$monat2=substr($_,0,3);
+$tag2  =substr($_,4,2);
+$zeit2 =substr($_,7,5);
+# Abgleich
+if ($monat1 le $monat2) {
+	$_="mail $monat2 $tag2 $zeit2";
+} elsif ($monat1 ge $monat2) {
+	$_="Mail $monat1 $tag1 $zeit1";
+} elsif ($tag1 le $tag2) {
+	$_="mail $monat2 $tag2 $zeit2";
+} elsif ($tag1 ge $tag2) {	
+	$_="Mail $monat1 $tag1 $zeit1";
+} else {
+	$_="#Mail $monat1 $tag1 $zeit1#";
+}
+# Anzahl der Dateien im Home-Verzeichnis (17 normal)
+@f = `find /home/$user 2>/dev/null`;
+$n=@f-17;
+if ($n<0) {
+	$n=0;
+}
+"last $_   ($n files)";
+}

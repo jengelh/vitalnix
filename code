@@ -1,0 +1,36 @@
+#!/usr/bin/perl
+
+#	$_=$ARGV[0];
+#	($d,$c)=split(/,/);
+#	$code=&code($d,$c);
+$d=$ARGV[0];
+$code=&code($d);
+
+print "$code\n";
+
+# --------------------------------------------------------------------
+
+sub code {
+#   local($date,$class)=@_;
+    local($date)=@_;
+    #--- Datum
+   ($tag,$monat,$jahr)=split(/\./,$date);
+    $tag=26*$tag+113;
+    $monat=73*$monat+113;
+    if ($jahr<50) {
+	$jahr=100+$jahr;
+    }
+    $jahr=29*($jahr-75)+113;
+#    #--- Klasse
+#    $z=int(rand(10));
+#    $_=$class;
+#    s/7/1/; s/8/2/; s/9/3/; s/10/4/; s/12/6$z/; s/13/7$z/;
+#    s/K/1/; s/M/2/; s/NA/3/; s/F1/4/; s/F2/5/; s/F3/6/; s/F4/7/;
+#    s/11A/51/; s/11B/52/; s/11C/53/; s/11D/54/; s/11E/55/; s/11F/56/;
+#    #--- fertig
+#    $tag.$monat.$jahr.$_;
+    $tag.$monat.$jahr;
+}
+
+# --------------------------------------------------------------------
+

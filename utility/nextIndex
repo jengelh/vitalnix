@@ -1,0 +1,56 @@
+#!/usr/bin/perl
+# Benutzer in /etc/passwd eintragen und Verzeichnise/Dateien kopieren
+# von Eike Teiwes 17.09.98
+
+$passwdFile = "/etc/passwd";	# üblich ist ="/etc/passwd"
+$shadowFile = "/etc/shadow";	# üblich ist ="/etc/shadow"
+
+print "\n";
+print "          ------------------------------------------------------\n";
+print "          Test: max. Index $passwdFile, $shadowFile\n"; 
+print "          ------------------------------------------------------\n";
+print "\n";
+
+    $index=next_index("$passwdFile.???");
+    $index2=next_index("$shadowFile.???");
+    if ($index2>$index) {
+	$index=$index2;
+    }
+    print "max. Index ist $index\n\n";
+
+# --------------------------------------------------------------------
+
+sub next_index {
+    $_=sprintf("%03d",max_index(@_)+1);
+    $_;
+}
+
+# --------------------------------------------------------------------
+
+sub max_index {
+    local($max)="000";
+    foreach (`find @_ 2>/dev/null`) {
+	$i=substr($_,-3,3);
+	if ($i>$max) {
+	    $max=$i;
+	}
+    }	
+    $_=sprintf("%03d",$max);
+    $_;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

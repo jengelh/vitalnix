@@ -1,0 +1,113 @@
+#!/usr/bin/perl
+# Benutzer in /etc/passwd eintragen und Verzeichnise/Dateien kopieren
+# von Eike Teiwes 17.09.98
+
+$passwdFile = "/etc/passwd";	# üblich ist ="/etc/passwd"
+$shadowFile = "/etc/shadow";	# üblich ist ="/etc/shadow"
+$dattmp = "dattmp";
+
+print "\n";
+print "          ------------------------------------------------------\n";
+print "                  neuen Benutzer in $passwdFile eintragen\n"; 
+print "          ------------------------------------------------------\n";
+print "\n";
+
+$_ = @ARGV[0];
+tr/A-Z/a-z/;
+$name=$_;
+shift(@ARGV);
+$_ = @ARGV[0];
+tr/A-Z/a-z/;
+$group=$_;
+shift(@ARGV);
+$gcos = @ARGV[0];
+shift(@ARGV);
+while (@ARGV[0] ne "") {
+	$gcos = $gcos." ".@ARGV[0];
+	shift(@ARGV);
+}
+if ($gcos eq "") {
+	print "\nAufruf: newadd <user> <group> <fullname>\n\n";
+	exit;
+}
+
+&vorbereitung;
+print("action: useradd -c '$gcos' -g $gruppe -m -k skel $name\n");
+system("useradd -c '$gcos' -g $gruppe -m -k skel $name");
+print("action: ./pwd $name >> $dattmp");
+system("./pwd $name > $dattmp"); 	# Kennwort erstellen und sichern
+print(" (OK)\n");
+print("action: chpasswd < $dattmp");
+system("chpasswd < $dattmp");		# Kennwort in /etc/shadow eintragen
+print(" (OK)\n");
+$_ = `grep $name $dattmp`;
+($x,$passwd) = split(/:/);
+print "\n";
+print "Das vorläufige Kennwort ist: $passwd\n";
+
+print "\n";
+print "          ------------------------------------------------------\n";
+print "                 Starten Sie jetzt das Programm 'newpre'\n"; 
+print "\n";
+print "                  Starten Sie dann das Programm 'shadow'\n"; 
+print "          ------------------------------------------------------\n";
+print "\n";
+
+# --------------------------------------------------------------------
+
+sub vorbereitung {
+    @f=`find *.goe 2>/dev/null`;
+    if ($f[0] eq "") {
+	print "Der Name der Schule kann nicht ermittelt werden.\n";
+        print "Bitte im lokalen Verzeichnis ein Verzeichnis oder eine Datei\n";
+        print "xxx.goe anlegen, wobei xxx den Namen angibt.\n\n";
+	exit;
+    } else {
+        $domain=$f[0];
+        chop($domain);
+	$domain=$domain.".ni.schule.de";
+    }
+    $gruppe=group($group);
+    $index=next_index("$passwdFile.???");
+    $index2=next_index("$shadowFile.???");
+    if ($index2>$index) {
+	$index=$index2;
+    }
+    $passwdFile0=$passwdFile."\.".$index;
+    $shadowFile0=$shadowFile."\.".$index;
+    system("cp -f $passwdFile $passwdFile0");
+    system("cp -f $shadowFile $shadowFile0");
+    print "Die Datei '$passwdFile' wurde als '$passwdFile0' gesichert\n";
+    print "Die Datei '$shadowFile' wurde als '$shadowFile0' gesichert\n\n";
+}
+
+# --------------------------------------------------------------------
+
+sub next_index {
+    $_=sprintf("%03d",max_index(@_)+1);
+    $_;
+}
+
+# --------------------------------------------------------------------
+
+sub max_index {
+    local($max)="000";
+    foreach (`find @_ 2>/dev/null`) {
+	$i=substr($_,-3,3);
+	if ($i>$max) {
+	    $max=$i;
+	}
+    }	
+    $_=sprintf("%03d",$max);
+    $_;
+}
+
+# --------------------------------------------------------------------
+
+sub group {
+    local($name)=@_;
+    $_=`grep $name /etc/group`;
+    /(\w+)\W+(\w+)\W+(\w+)/;
+    $3;
+}
+

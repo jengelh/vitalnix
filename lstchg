@@ -1,0 +1,110 @@
+#!/usr/bin/perl
+# Zu allen Benutzern in /etc/passwd mit grp_id im Bereich [$von,$bis]
+
+$von=50;
+$bis=999;
+
+# Korrekturen vornehmen
+
+# von Eike Teiwes
+
+print "------------------------------------------------------\n";
+print "Korrekturen fuer alle Benutzer in /etc/passwd \n"; 
+
+&durchlauf;
+
+exit;
+
+# --------------------------------------------------------------------
+
+sub durchlauf {
+    open (IN,"/etc/passwd");
+    while (<IN>) {
+	chop;
+	($name,$x,$user,$group,$gcos)=split(/:/);
+	($fullname)=split(/,/,$gcos);
+	if (($group>=$von) && ($group<=$bis)) {
+	    print "        $name\n";
+#           &verzeichnisse;
+#           &dateien;
+	    &netscape;
+	    &rechte;
+	}    
+    }
+    close(IN);
+}
+
+# --------------------------------------------------------------------
+
+sub rechte {
+    # HOME-Verzeichnis
+    system("chmod go-rw /home/$name");
+    # SYSTEM-Verzeichnis
+    system("chown -R $name /home/$name/system");
+    system("chgrp -R $group /home/$name/system");
+    # NETSCAPE.INI
+    # user ist root
+    system("chmod a-wx /home/$name/system/netscape.ini");
+    system("chmod a+r /home/$name/system/netscape.ini");
+}
+
+sub verzeichnisse {
+    system("mkdir /home/$name/system");
+    system("mkdir /home/$name/system/mail");
+    system("mkdir /home/$name/system/news");
+}
+
+sub dateien {
+    system("cp -bu address.htm /home/$name/system");
+    system("cp -bu bookmark.htm /home/$name/system");
+}
+
+sub netscape {
+    open(N_IN,"netscape.ini");
+    open(N_OUT,">/home/$name/system/netscape.ini");
+    while (<N_IN>) {
+	if ($_ eq "") {
+	    next;
+	}
+	if (/User_Addr=/) {
+	    s/User_Addr=.*/User_Addr=$name\@ohg.goe.ni.schule.de\r/;
+	}
+	if (/User_Name=/) {
+	    s/User_Name=.*/User_Name=$fullname\r/;
+	}
+	if (/POP Name=/) {
+	    s/POP Name=.*/POP Name=$name\r/;
+	}
+	print N_OUT $_;
+    }
+    close(N_IN);
+    close(N_OUT);
+}
+
+# --------------------------------------------------------------------
+
+sub group {
+    local($name)=@_;
+    $_=`grep $name /etc/group`;
+    /(\w+)\W+(\w+)\W+(\w+)/;
+    $3;
+}
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

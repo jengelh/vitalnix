@@ -1,0 +1,101 @@
+#!/usr/bin/perl
+# von Eike Teiwes 17.09.98
+
+print "\n";
+print "          ------------------------------------------------------\n";
+print "                  Preferenzen für Neuzugänge einrichten\n"; 
+print "          ------------------------------------------------------\n";
+print "\n";
+
+&vorbereitung;
+&start_oder_stop;
+
+open(IN,$datadd);
+while (<IN>) {
+	($benutzer)=split(/:/);
+	print $benutzer."\n";
+	system("./newpre $benutzer notitle");
+}
+
+print "\n";
+print "          ------------------------------------------------------\n";
+print "                                  Fertig'\n"; 
+print "          ------------------------------------------------------\n";
+print "\n";
+
+# --------------------------------------------------------------------
+
+sub vorbereitung {
+    $gruppe=group("schueler");
+    $index=max_index("datadd.*");
+    $datadd="datadd.".$index;
+    $dattmp="dattmp.".$index;
+    $datpwd="datpwd.".$index;
+    if ($index eq "000") {
+	print "FEHLER: Datei datadd.??? nicht gefunden.\n";
+	exit;
+    }
+}
+
+# --------------------------------------------------------------------
+
+sub start_oder_stop {
+    print "\t\t\tQuelle: $datadd\n";
+    print "\t\t\tFortsetzen? (j/n) ";
+    $i=<STDIN>;
+    chop($i);
+    if (! ($i eq "j") && ! ($i eq "y")) {
+	print "abgebrochen\n";
+	exit;
+    }
+    print "\n";
+}
+
+# --------------------------------------------------------------------
+
+sub next_index {
+    $_=sprintf("%03d",max_index(@_)+1);
+    $_;
+}
+
+# --------------------------------------------------------------------
+
+sub max_index {
+    local($max)="000";
+    foreach (`find @_ 2>/dev/null`) {
+	$i=substr($_,-3,3);
+	if ($i>$max) {
+	    $max=$i;
+	}
+    }	
+    $_=sprintf("%03d",$max);
+    $_;
+}
+
+# --------------------------------------------------------------------
+
+sub group {
+    local($name)=@_;
+    $_=`grep $name /etc/group`;
+    /(\w+)\W+(\w+)\W+(\w+)/;
+    $3;
+}
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

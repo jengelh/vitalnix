@@ -1,0 +1,45 @@
+#!/usr/bin/perl
+ 
+$text=@ARGV[0]; 
+shift(@ARGV); 
+if (!($text=~/\/.*\/.*\//)) { 
+        print "AUFRUF: perl replace.pl /von/nach/ ...\n"; 
+        exit; 
+}  
+ 
+if (@ARGV[0] eq "" ) { 
+        print "AUFRUF: replace /von/nach/ datei(liste)\n"; 
+        exit; 
+} 
+ 
+($x,$von,$nach)=split("/",$text); 
+ 
+print "Text '$von' ersetzen durch '$nach' in Datei(en)\n'@ARGV'\n"; 
+foreach $longfile (@ARGV) { 
+        $longname=$longfile; 
+        $longname=~s/(.*)\..*/$1/; 
+        $name=$longname; 
+        $name=~s/(.*\\)(.*)/$2/; 
+        $file=$longfile; 
+        $file=~s/(.*\\)(.*)/$2/; 
+        open(IN,$longfile); 
+        open(OUT,">$longname.xxx"); 
+        while (<IN>) { 
+		$change=0;
+                if (/$von/) { 
+                        print "$longfile: $_"; 
+			$change=1;
+                }         
+                s/$von/$nach/; 
+                if ($change) { 
+                        print "$longfile: $_"; 
+                }         
+                print OUT "$_"; 
+        } 
+        close(OUT); 
+        close(IN); 
+#        system("rm $longname.old"); 
+#        system("mv $longfile $name.old"); 
+        system("mv $longname.xxx $file"); 
+} 
+print "\n";

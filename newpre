@@ -1,0 +1,207 @@
+#!/usr/bin/perl
+# Eike Teiwes <eteiwes@ohg.goe.ni.schule.de> 17.09.98
+
+$_=shift;
+if ($_ eq "") {
+	print "Aufruf: newpre <user> [notitle]\n\n";
+	exit;
+}
+tr/A-Z/a-z/;
+$name=$_;
+
+$_=shift;
+if ($_ eq "") {
+	print "\n";
+	print "        ----------------------------------------------------------\n";
+	print "         Verzeichnisse und Einträge für neuen Benutzer einrichten\n";
+	print "        ----------------------------------------------------------\n";
+	print "\n"; 
+}
+
+$_ = `grep -e "^$name:" /etc/passwd`;
+if ($_ eq "") {
+	print "$name ist nicht in /etc/passwd vorhanden.\n";
+	print "Starten Sie zuvor das Programm 'newadd'\n";
+	print "\n";
+	exit;
+} 
+
+chop;
+($name,$x,$user,$group,$gcos)=split(/:/);
+($fullname)=split(/,/,$gcos);
+
+print "$name $group $gcos\n\n";
+
+	#-----------------------------------------------------
+	&verzeichnisse_einrichten;
+	&netscape_dateien_kopieren;
+	&netscape_personalisieren;
+	&communicator_personalisieren;
+	&bookmark_ergaenzen;
+	&ftpx_personalisieren;
+	&user_gruppe_einstellen;	# immer wieder
+	&rechte_einstellen;		# immer wieder
+	#----------------------------------------------------- 
+
+
+# --------------------------------------------------------------------
+
+sub user_gruppe_einstellen {
+	system("chown $name /home/$name");
+	system("chgrp $group /home/$name");
+	system("chown -R $name /home/$name/system");
+	system("chgrp -R $group /home/$name/system");
+}
+
+sub rechte_einstellen {    
+	#---------- HOME-Verzeichnis
+	system("chmod 711 /home/$name");
+	#---------- SYSTEM-Verzeichnis
+	system("chmod -R 700 /home/$name/system");
+	#---------- NETSCAPE.INI und PREFS.JS
+	system("chmod 500 /home/$name/system/netscape.ini");
+	system("chmod 500 /home/$name/system/prefs.js");
+	#---------- FTPX.REG
+	system("chmod 500 /home/$name/system/ftpx.reg");
+
+}
+
+sub verzeichnisse_einrichten {
+    system("mkdir /home/$name/system");
+    system("mkdir /home/$name/system/mail");
+    system("mkdir /home/$name/system/news");
+}
+
+sub netscape_dateien_kopieren {
+    system("cp -bu muster/address.htm /home/$name/system");
+    system("cp -bu muster/bookmark.htm /home/$name/system");
+}
+
+#	sub communicator_dateien_kopieren {
+#	    system("cp -bu muster/address.htm /home/$name/system");
+#	    system("cp -bu muster/bookmark.htm /home/$name/system");
+#	}
+
+sub bookmark_ergaenzen {
+    $_ = `find /home/$name/system/bookmark.htm -size +0`;
+    if ($_ eq "") {
+	system("cp muster/bookmark.plus /home/$name/system/bookmar.htm");
+    } else {
+	$_ = `grep 'Personal Toolbar' /home/$name/system/bookmark.htm`;
+	if ($_ eq "") {
+	    system("mv /home/$name/system/bookmark.htm /home/$name/system/bookmark.old");
+	    open(N_IN,"/home/$name/system/bookmark.old");
+	    open(M_IN,"muster/bookmark.plus");
+	    open(N_OUT,">/home/$name/system/bookmark.htm");
+	    $i=0;
+	    while (<N_IN>) {
+		if ($_ eq "") {
+		    next;
+		}
+		if ($i>0) {
+		    $i++;
+		}
+		if (/TITLE/) {
+		    $i=1;
+		}
+		print N_OUT $_;
+		if ($i eq 3) {
+			while (<M_IN>) {
+				print N_OUT $_;
+			}
+		}
+	    }	
+	    close(N_IN);
+	    close(M_IN);
+	    close(N_OUT);
+	}
+    }
+}
+
+sub netscape_personalisieren {
+    open(N_IN,"muster/netscape.ini");
+    open(N_OUT,">/home/$name/system/netscape.ini");
+    while (<N_IN>) {
+	if ($_ eq "") {
+	    next;
+	}
+	if (/User_Addr=/) {
+	    s/User_Addr=.*/User_Addr=$name\@ohg.goe.ni.schule.de\r/;
+	}
+	if (/User_Name=/) {
+	    s/User_Name=.*/User_Name=$fullname\r/;
+	}
+	if (/POP Name=/) {
+	    s/POP Name=.*/POP Name=$name\r/;
+	}
+	print N_OUT $_;
+    }
+    close(N_IN);
+    close(N_OUT);
+}
+
+sub communicator_personalisieren {
+    open(N_IN,"muster/prefs.js");
+    open(N_OUT,">/home/$name/system/prefs.js");
+    while (<N_IN>) {
+	if ($_ eq "") {
+	    next;
+	}
+	if (/xxxxx/) {
+	    s/(.+)xxxxx(.+)/$1$name$2/;
+	}
+	if (/yyyyy/) {
+	    s/(.+)yyyyy(.+)/$1$fullname$2/;
+	}
+	print N_OUT $_;
+    }
+    close(N_IN);
+    close(N_OUT);
+}
+
+sub ftpx_personalisieren {
+    open(N_IN,"muster/ftpx.reg");
+    open(N_OUT,">/home/$name/system/ftpx.reg");
+    while (<N_IN>) {
+	if ($_ eq "") {
+	    next;
+	}
+	if (/xxxxx/) {
+	    s/(.+)xxxxx(.+)/$1$name$2/;
+	}
+	print N_OUT $_;
+    }
+    close(N_IN);
+    close(N_OUT);
+    system("chown -R $name /home/$name/system");
+    system("chgrp -R $group /home/$name/system");
+    system("chmod 700 /home/$name/system/ftpx.reg");
+}
+
+# --------------------------------------------------------------------
+
+sub group {
+    local($name)=@_;
+    $_=`grep $name /etc/group`;
+    /(\w+)\W+(\w+)\W+(\w+)/;
+    $3;
+}
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,116 @@
+#!/usr/bin/perl
+# Verwalten von Benutzern mit Hilfe von Daten aus der Schulverwaltung
+# von Eike Teiwes 14.09.98
+
+$quelle = "daten.sdf";	# kopiert von DOS-Diskette mit 'mcopy a:daten.sdf .'
+$ziel = "daten.format"; # wird on diesem Programm erzeugt
+
+print "\n";
+print "    ----------------------------------------------------------------\n";
+print "     Daten in '$quelle' formatieren und in '$ziel' sichern\n";
+print "    ----------------------------------------------------------------\n";
+print "\n";
+
+@f=`find $quelle 2>/dev/null`;
+if ($f[0] eq "") {
+    print "    ----------------------------------------------------------------\n";
+    print "    FEHLER: Datei '$quelle' fehlt.\n";
+    print "    Kopieren Sie zuvor die Datei '$quelle' von einer DOS-Diskette\n";
+    print "    in das aktuelle Verzeichnis: 'mcopy a:daten.sdf .'\n";
+    print "    ----------------------------------------------------------------\n";
+    print "\n";
+    exit;
+}
+
+&sdf_formatieren;
+
+print "    ----------------------------------------------------------------\n";
+print "                   Starten Sie jetzt 'lstcmp'\n";
+print "    ----------------------------------------------------------------\n";
+print "\n";
+
+# --------------------------------------------------------------------
+
+sub sdf_formatieren {
+    open (ZIEL,">$ziel");
+    open (QUELLE,"$quelle");
+    while (<QUELLE>) {
+	chop;
+        if ((/\*/)||(/#/)) {
+	   next;
+	}
+	if ($_ eq "") {
+	    next;
+	}    
+	s/ /-/g;
+	s/‰/ae/g;
+	s/Ñ/ae/g;
+	s/ˆ/oe/g;
+	s/î/oe/g;
+	s/¸/ue/g;
+	s/Å/ue/g;
+	s/ƒ/Ae/g;
+	s/÷/Oe/g;
+	s/ô/Oe/g;
+	s/‹/Ue/g;
+	s/ﬂ/ss/g;
+	s/·/ss/g;
+	s/Ç/e/g;
+	s/È/e/g;
+	s/Ë/e/g;
+        s/·/a/g;
+	s/‡/a/g;
+	($nummer,$lastname,$firstname,$date,$class)=split(/;/,$_);
+print "$lastname:$firstname:$date:$class\n";
+
+	($tag,$monat,$jahr)=split(/\./,$date);
+	$_=$lastname;
+	s/von-//;
+	s/de-//;
+	s/(\w+)-(\w+)/$1/;
+  	$_=substr($firstname,0,1).substr($_,0,6);
+	tr/A-Z/a-z/;
+	$name=$_;
+	$lastname=~s/von-/von /;
+	$lastname=~s/de-/de /;
+	$fullname=$firstname." ".$lastname;
+	$code=code($date);
+	print ZIEL "$name:$fullname,$code:$class\n";
+    }
+    close(QUELLE);
+    close(ZIEL);
+}
+
+# --------------------------------------------------------------------
+
+sub code {
+    local($date)=@_;
+    #--- Datum
+    $tag=26*$tag+113;
+    $monat=73*$monat+113;
+    if ($jahr<50) {
+	$jahr=100+$jahr;
+    }
+    $jahr=29*($jahr-75)+113;
+    $tag.$monat.$jahr;
+}
+
+# --------------------------------------------------------------------
+
+sub decode {
+    local($code)=@_;
+    $tag=substr($code,0,3);
+    $monat=substr($code,3,3);
+    $jahr=substr($code,6,3);
+    $_=substr($code,9,2);
+    #--- Datum
+    $tag=($tag-113)/26;
+    $monat=($monat-113)/73;
+    $jahr=($jahr-113)/29+75;
+    if ($jahr>100) {
+	$jahr-=100;
+    }
+    $tag.".".$monat.".".$jahr;
+}
+
+# --------------------------------------------------------------------
