@@ -13,5 +13,5 @@ BESCHREIBUNG
 
       /usr/bin/suidperl                       root.root       6755
 
-    gemacht werden, damit beim nächsten SuSEconfig das suidperl nicht wieder
-    zurückgesetzt wird.
+    gemacht werden, damit bei der nächsten automatischen Konfiguration das
+    suidperl nicht wieder zurückgesetzt wird.

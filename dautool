@@ -8,13 +8,18 @@
 #   Chistoph Thiel <cthiel1@linux01.gwdg.de>, 2001 - 2003
 #   <acb@kki.org>, 2002
 #==============================================================================
-BEGIN { push(@INC, "src"); }
+BEGIN {
+  if($^V lt v5.8.0) {
+    die "We need Perl v5.8.0!\n";
+  }
+  push(@INC, "src");
+}
 
 %OPT = (
   "PROGF" => "dautool",
   "PROGN" => "dautool",
-  "PROGV" => "v1.73.8",
-  "PROGD" => "29. August 2003",
+  "PROGV" => "v1.73.11",
+  "PROGD" => "September 30 2003",
   "a_cfgf" => ["dautool.cfg"],
   "b_saupw" => 0,
   "b_zpack" => 2,

@@ -7,6 +7,15 @@
 #   Also includes old version 1 used in original bv-0.x
 #   and version 2 used in up to (including) v1.72
 #==============================================================================
+# Horribly crappy version control.
+# The default coding (date_scramble/_unscramble) are _always_ an alias for the
+# _newest_ coding method. However, v4 is actually v2, since v3 somewhat misses
+# the point (doesnot work beyond 2038), and v2 was actually the best format so
+# far, so v4 was added to keep ......... whatever.
+
+# Daxtraq2 will have this scheme cleared up and only have ONE coding routine,
+# and that is v2/v4. kthxbye.
+
 use Time::Local;
 
 sub date_scramble { return &date4_scramble(@_); }

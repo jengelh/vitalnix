@@ -1,3 +1,6 @@
+To v1.73.8
+==========
+
 To v1.73.3 (August 10 2003)
 ===========================
 - fixed the assistant help text to reflect changes of recent versions
