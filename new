@@ -3,11 +3,10 @@
 # von Eike Teiwes 20.03.97
 
 # Für Test setze $test=1, sonst setze $test=0
-$test=1;
+$test=0;
 
 if ($ARGV[0] eq "") {
     &fehlermeldung;
-    &fehlermeldung2;
     exit;
 }
 
@@ -312,10 +311,8 @@ sub passwd_ergaenzen {
     $_=$neu;
     ($name,$gcos)=split(/:/);
     ($fullname)=split(/,/,$gcos);
-    print ("#".$gcos."#");
-    if ($gcos[0] eq " ") {
-	print "leer\n";
-	exit;
+    if ($u=1) {
+	$gcos=substr($gcos,1,length($gcos));
     }
     print "useradd -c '$gcos' -g $gruppe -m -k skel $name\n";
     if ($test eq 0) {
@@ -338,7 +335,7 @@ sub kopieren_und_anpassen {
     open(N_OUT,">/home/$name/system/netscape.ini");
     while (<N_IN>) {
 	if ($_ eq "") {
-	    next;
+	    neyt;
 	}
 	if (/User_Addr=/) {
 	    s/User_Addr=.*/User_Addr=$name\@$domain/;
@@ -420,15 +417,11 @@ sub group {
 # --------------------------------------------------------------------
 
 sub fehlermeldung {
-    print "usage: add -g group -l lastname -f firstname [firstname] [-d date]\n";
+    print "usage: new -g group -f firstname(s) -l lastname [-d date]\n";
+    print "       new [-g group] -u username\n";
 }
 
 # --------------------------------------------------------------------
-
-sub fehlermeldung2 {
-    print "usage: add -g schueler -l Dingsda -f Hans Rüdiger=von -d 12.04.87\n";
-}
-
 
 
 
