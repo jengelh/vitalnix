@@ -1,5 +1,26 @@
-To v1.71
-========
+To v1.72 (July 21 2003)
+=======================
+    - removed: birthdate. the new algorithms (since v1.50) do not require it
+      anymore.
+    - fixed: the 7th parameter (skeleton dir) was never passed
+    - added: running a preadd script is now possible when adding a single user
+    - added: running a postdel script is now possible when deleting a single
+      user
+    - fixed: when adding a single user:
+      - "useradd" was always run, ignoring p_useradd and pa_useradd
+      - a possible postadd script was not executed properly
+    - fixed: when deleting a single user:
+      - "userdel" was always run, ignoring p_userdel and pa_userdel
+      - a possible predel script was not executed properly
+    - fixed: a var aclash rejected archiving a user home directory (single user
+      delete); plus more
+    - eliminated perl-generated warnings (perl -cwT)
+    - fixed a memory leak (add/keep/del lists were not reset correctly)
+    - removed "cnvep" and "codec.pm" from the tree, with the absence of the
+      birthdate it is not needed anymore too
+
+To v1.71 (July 04 2003)
+=======================
     - fixed: base config (dautool.cfg) file did not got read (since v1.70)
     - fixed: if the destination group did not exist, a warning was
       displayed -- but without the group's name
