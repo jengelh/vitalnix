@@ -1,69 +1,48 @@
 #!/usr/bin/perl
 #==============================================================================
 # DAUtool - Massenbenutzerverwaltung
-#   Copyright (C) by Eike Teiwes <eteiwes@ohg.goe.ni.schule.de>, 1997 - 1998
-#   Copyright (C) by Jan "Hirogen2" Engelhardt <hirogen2@gmx.de>, 1999 - 2002
-#   -- distributed under the Artistic License or GPL >= v2.0 --
+#   Copyright (C) Jan Engelhardt <jengelh at gmx de>, 1999 - 2003
+#   -- distributed under the GPL >= v2.0 --
 #
 #   Other contributors:
-#   Chistoph Thiel <cthiel1@linux01.gwdg.de>, 2001 - 2002
+#   Chistoph Thiel <cthiel1@linux01.gwdg.de>, 2001 - 2003
 #   <acb@kki.org>, 2002
 #==============================================================================
 &init();
 
 sub init {
   BEGIN {
-    if(readlink($0) ne "") {
-      my $ln = $0;
-      while(readlink($ln) ne "") {
-        $lf = readlink $ln;
-        my $ld = ($lf =~ /^(.*)\/[^\/]+$/s)[0];
-        $ln = ((substr($lf, 0, 1) ne "/" && $_RTD ne "") ? $_RTD."/" : "").$lf;
-        if(substr($ld, 0, 1) eq "/" || length($_RTD) == 0) { $_RTD = $ld; }
-        else { $_RTD .= "/".$ld; }
-      }
-    } else {
-      if(($0 =~ /^(.*)\/[^\/]+$/is)[0] ne "") { $_RTD = $1; }
-      else { $_RTD = "."; }
-    }
-
-    %OPT = (
-      "PROGF" => "dautool",
-      "PROGN" => "DAUtool",
-      "PROGV" => "v1.52",
-      "PROGVC" => v1.52,
-      "PROGVF" => "v1.52",
-      "PROGD" => "06. Dezember 2002",
-      "a_cfgf" => [$_RTD."/base/dautool.cfg"],
-      "b_nopid" => "",
-      "b_saupw" => 0,
-      "b_zpack" => 1,
-      "f_group" => "/etc/group",
-      "f_passwd" => "/etc/passwd",
-      "f_shadow" => "/etc/shadow",
-      "f_skeldir" => "/tmp/dautool.skel",
-      "f_trhome" => "/home/_trash",
-      "s_passlen" => 8,
-      "s_dgrp" => "change_this", # changes in conf file
-      "p_pager" => (-e $ENV{"PAGER"}) ? $ENV{"PAGER"} :
-        (-e "/usr/bin/less") ? "/usr/bin/less" :
-        (-e "/usr/bin/w3m") ? "/usr/bin/w3m" :
-        (-e "/bin/more") ? "/bin/more" : "/bin/true",
-      "p_postadd" => "",
-      "p_postdel" => "",
-      "p_preadd" => "",
-      "p_predel" => "",
-      "p_useradd" => "/usr/sbin/useradd",
-      "p_userdel" => "/usr/sbin/userdel",
-    );
-
-    if(!-e $_RTD."/base") { die "Could not find directory \"base\"!\n"; }
+    if(!-e "base") { die "Could not find directory \"base\"!\n"; }
     if($^V lt v5.6.0) { die "Needing Perl v5.6.0 or newer!\n"; }
-    unshift(@INC, $_RTD."/base");
-    @OPT{"s_termwy","s_termwx"} =
-     (`stty size 2>/dev/null` =~ /^(\d+)\s+(\d+)/);
-    $OPT{"s_termwx"} ||= 80; $OPT{"s_termwy"} ||= 25;
+    unshift(@INC, "base");
   }
+
+  %OPT = (
+    "PROGF" => "dautool",
+    "PROGN" => "DAUtool",
+    "PROGV" => "v1.60",
+    "PROGD" => "29. Dezember 2002",
+    "a_cfgf" => ["base/dautool.cfg"],
+    "b_saupw" => 0,
+    "b_zpack" => 1,
+    "f_group" => "/etc/group",
+    "f_passwd" => "/etc/passwd",
+    "f_shadow" => "/etc/shadow",
+    "f_skeldir" => "/tmp/dautool.skel",
+    "f_trhome" => "/home/_trash",
+    "s_passlen" => 8,
+    "s_dgrp" => "change_this", # changes in conf file
+    "p_pager" => (-e $ENV{"PAGER"}) ? $ENV{"PAGER"} :
+      (-e "/usr/bin/less") ? "/usr/bin/less" :
+      (-e "/usr/bin/w3m") ? "/usr/bin/w3m" :
+      (-e "/bin/more") ? "/bin/more" : "/bin/true",
+    "p_postadd" => "",
+    "p_postdel" => "",
+    "p_preadd" => "",
+    "p_predel" => "",
+    "p_useradd" => "/usr/sbin/useradd",
+    "p_userdel" => "/usr/sbin/userdel",
+  );
 
   %CURR = (
     "a_udel" => [],
@@ -80,6 +59,9 @@ sub init {
     "r_uid" => ".*?",
   );
 
+  @OPT{"s_termwy","s_termwx"} = (`stty size 2>/dev/null` =~ /^(\d+)\s+(\d+)/);
+  $OPT{"s_termwx"} ||= 80; $OPT{"s_termwy"} ||= 25;
+
   # ----------------------------------------
   {
     my $istr = sprintf "%s %s (%s)", @OPT{"PROGN","PROGV","PROGD"};
@@ -93,9 +75,7 @@ sub init {
 
   use Convert::A2A qw(&to_ansi &to_ascii);
   use Codec::DAUtool;
-  use Fcntl;
   use Getopt::Long;
-  use LibHirogen2 qw(&getgrent &getpwent &isolc &pstat);
 
   *enday = \&Codec::DAUtool::scramble;
   *deday = \&Codec::DAUtool::unscramble;
@@ -107,24 +87,9 @@ sub init {
   foreach my $f (@{$OPT{"a_cfgf"}}) {
    if(do $f) { printf "Lade Konfiguration aus Datei <%s>\n", $f; } }
 
-  &GetOptions("p" => \$OPT{"b_nopid"});
-
   # ----------------------------------------
   @SIG{"HUP","INT","QUIT","ILL","TRAP","ABRT","BUS","FPE","USR1","SEGV",
    "USR2","PIPE","ALRM","TERM"} = ((\&SIG_EXIT) x 14);
-
-  if($OPT{"b_nopid"} eq "") {
-    local *PID;
-    if(!sysopen(PID, "/var/run/".$OPT{"PROGF"}.".pid", O_WRONLY | O_EXCL |
-     O_CREAT | O_TRUNC)) {
-      printf "%s läuft schon!? (Falls nicht, dann /var/run/%s.pid löschen\n",
-       $OPT{"PROGN"}, $OPT{"PROGF"};
-      exit 1;
-    }
-
-    print PID $$;
-    close PID;
-  }
 
   &hmenu();
   sub SIG_EXIT { unlink "/var/run/".$OPT{"PROGF"}.".pid"; print "\n"; exit 1; }
@@ -144,6 +109,8 @@ sub hmenu {
     print "< 6 >  Benutzerdetails\n";
     print "-" x 40, "\n";
     print "< 7 >  Wiederherstellen\n";
+    print "< 8 >  crypt() Test (DEBUG/EXPERT)\n";
+    print "< 9 >  Preview DAUtool2\n";
     print "< 0 >  Beenden\n\n";
     print "WAHL>  ";
 
@@ -155,6 +122,8 @@ sub hmenu {
     elsif($INKEY eq "5") { &useradd(); }
     elsif($INKEY eq "6") { &userdetails(); }
     elsif($INKEY eq "7") { &recover(); }
+    elsif($INKEY eq "8") { &crypt_test(); }
+    elsif($INKEY eq "9") { &preview(); }
     elsif($INKEY =~ /^[0q]$/io) { last; }
     print "\n\n\n";
   }
@@ -163,7 +132,7 @@ sub hmenu {
 sub assistant {
   my $temp;
   print "\n\n\n", &hbar("="), "\n\e[1mAssistent\e[0m\n", &hbar("="), "\n";
-  print &tssqueeze("Fragen an <hirogen2\@gmx.de>"), "\n";
+  print &tssqueeze("Fragen an <jengelh\@gmx.de>"), "\n";
   print &tssqueeze("Das Programm kann jederzeit mit STRG+C (oder spez. ".
    "Signalen) unter- oder abgebrochen werden. Es entstehen dabei keinerlei ".
    "Schäden, d.h. es müssen zwar Aktionen wiederholt werden, diese Aktionen ".
@@ -492,7 +461,7 @@ sub apply_changes {
       my($encpass, $pass) = &genpass();
       if($OPT{"p_preadd"} ne "") { system $OPT{"p_preadd"}, $lname; }
       system $OPT{"p_useradd"}, "-c", join(",", $gcname, $gcdate), "-g",
-       $OPT{"s_dgrp"}, "-m", "-k", $OPT{"f_skeldir"}, "-p", $encpass, "-s",
+       $OPT{"s_dgrp"}, "-mk", $OPT{"f_skeldir"}, "-p", $encpass, "-s",
        "/bin/bash", $lname;
       printf DTR "%s:%s:%s:%s\n", $klasse, $gcname, $lname, $pass;
       print LOG "+".$lname."\n";
@@ -1034,6 +1003,37 @@ sub recover {
   return 1;
 }
 
+sub crypt_test {
+  for(my $i = 0; $i < 10E6; ++$i) { # million
+    my($ep, $pw) = &genpass();
+    my $sa = substr($ep, 0, 2);
+    printf("We get ep=%s pw=%s sa=%s  crypt(pw,sa)=%s\n", $ep, $pw, $sa,
+     crypt($pw, $sa));
+    if(crypt($pw, $sa) ne $ep) { printf("** Error **\n"); }
+  }
+}
+
+sub preview {
+  print <<"--EOT";
+
+.+====================================================================+.
+||  DAUtool v2                                                        ||
+||  ab Mitte Januar 2003 zu erhalten                                  ||
+||                                                                    ||
+||  - neu, 100% von vorn (from scratch)                               ||
+||  - NCurses benutzt, farbig und dialog-basiert                      ||
+||    - spezielle Behandlungsroutinen für Linux Console, XTerm,       ||
+||      farblose und 7-bit Terminals/ttys                             ||
+||  - kann auch von Windowmanagersymbolen ausgeführt werden (NOCTTY)  ||
+||  - noch schneller in der Bearbeitung                               ||
+||  - uses relaxed-style key navigation                               ||
+``--------------------------------------------------------------------''
+<Taste drücken>
+--EOT
+  <STDIN>;
+  return;
+}
+
 #====================================================================[ SUBs ]==
 sub INIT_genstuff {
   print "Generating stuff [";
@@ -1060,8 +1060,96 @@ sub genpass {
   my $pass;
   for(my $count = 0; $count < $OPT{"s_passlen"}; ++$count) {
    $pass .= !int(rand 5) ? int(rand 10) : chr(int(rand 26) + 97); }
-  my $salt = join("", ("A".."Z", "a".."z", 0..9, "_")[rand(64), rand 64]);
+  my $salt = join("", ("A".."Z", "a".."z", 0..9, "_")[rand(63), rand 63]);
   return(crypt($pass, $salt), $pass);
+}
+
+sub getgrent {
+  my($g, $fg) = @_;
+  local *FG;
+  $@ = "";
+
+  if(!open(FG, "<".($fg ||= "/etc/group"))) {
+    $@ = sprintf "Could not open <%s>: %s", $fg, $!;
+    return undef;
+  }
+
+  if(($g = lc $g) eq "") { $g = (split(/ /o, $)))[0]; }
+  if(!wantarray) {
+    while(defined(my $l = <FG>)) {
+      my @lg = split(/:/o, $l);
+      if($g =~ /\D/iso) { if($g eq lc $lg[0]) { close FG; return $lg[2]; } }
+      elsif($lg[2] == $g) { close FG; return lc $lg[0]; }
+    }
+  } else {
+    while(defined(my $l = <FG>)) {
+      if($g !~ /\D/iso) {
+        my @lg = split(/:/o, $l);
+        if($lg[2] == $g) { $g = lc $lg[0]; }
+      }
+
+      my @lg = split(/:/o, $l);
+      if($g eq lc $lg[0]) {
+        close FG;
+        return @lg[0,2,3];
+      }
+    }
+  }
+
+  close FG;
+  return undef;
+}
+
+sub getpwent {
+  my($u, $fp, $fs) = @_;
+  local(*FP, *FS);
+  if(!open(FP, "<".($fp ||= "/etc/passwd"))) {
+    $@ = sprintf "Could not open <%s>: %s", $fp, $!;
+    return undef;
+  }
+
+  if(!open(FS, "<".($fs ||= "/etc/shadow"))) {
+    $@ = sprintf "Could not open <%s>: %s", $fs, $!;
+    close FP;
+    return undef;
+  }
+
+  if(($u = lc $u) eq "") { $u = $>; }
+  if(!wantarray) {
+    while(defined(my $l = <FP>)) {
+      my @lp = split(/:/o, $l);
+      if($u =~ /\D/iso) {
+       if($u eq lc $lp[0]) { close FP; close FS; return $lp[2]; } }
+      elsif($lp[2] == $u) { close FP; close FS; return lc $lp[0]; }
+    }
+  } else {
+    while(defined(my $l = <FP>)) {
+      if($u !~ /\D/iso) {
+        my @lp = split(/:/o, $l);
+        if($lp[2] == $u) { $u = lc $lp[0]; }
+      }
+
+      my @lp = split(/:/o, $l);
+      if($u eq lc $lp[0]) {
+        close FP;
+
+        while(defined(my $l = <FS>)) {
+          my @ls = split(/:/o, $l);
+          if($u eq lc $ls[0]) {
+            close FS;
+            return @lp[0,2..5], @ls[1..7];
+          }
+        }
+
+        close FS;
+        return @lp[0,2..5];
+      }
+    }
+  }
+
+  close FP;
+  close FS;
+  return undef;
 }
 
 sub hbar { return $_[0] x (($OPT{"s_termwx"} / length($_[0])) - 1); }
@@ -1092,9 +1180,33 @@ sub name2user {
   $in =~ s/[ÙÚÛÜùúû]/u/gio;
   $in =~ tr/£µÑñ®×¥Ýýÿ/lmnnrxyyyy/;
   $in =~ s/[^a-z]//giso;
-  $in = &isolc($in);
+  $in = &strlower_iso($in);
   $in = substr($in, 0, 7);
   return $in;
+}
+
+sub pstat {
+  my($count, $max, $opt, $t_start, $t_end) = @_;
+  my $rv = sprintf "%s%.0f von %.0f (%.2f%%)",
+   ($opt & 1) ? "\r" : "", $count, $max, $count * 100 / $max;
+
+  if($t_start ne "") {
+    $rv .= sprintf " [elap: %.0fs, est: %.0fs", $t_end -
+     $t_start, ($t_end - $t_start) * $max / $count;
+  }
+
+  if($t_end - $t_start > 0) {
+   $rv .= sprintf ", ajps: %.2f", $count / ($t_end - $t_start); }
+
+  if($t_start ne "") { $rv .= "]\e[K"; }
+  if($opt & 2 || ($count == $max && $opt & 4)) { $rv .= "\n"; }
+  return $rv;
+}
+
+sub strlower_iso {
+  my $IN = shift @_;
+  $IN =~ tr/A-Z\xC0-\xD6\xD8-\xDE/a-z\xE0-\xF6\xF8-\xFE/;
+  return $IN;
 }
 
 sub tssqueeze {

@@ -1,5 +1,0 @@
-
-IN DEVELOPEMENT
-===============
-v2.00
-  - new with NCurses, dialogs, in C, even FASTER

@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 #==============================================================================
 # WebPass
-#   by Jan "Hirogen2" Engelhardt <hirogen2@gmx.de>, 2001, 2002
-#   -- distributed under the Artistic License or GPL >= v2.0 --
+#   Copyright (C) Jan Engelhardt <jengelh@gmx.de>, 2001 - 2003
+#   -- distributed under the GPL >= v2.0 --
 #==============================================================================
 %OPT = (
   "PROGF" => "webpass",
@@ -42,7 +42,6 @@ if($f < 1) {
 
 &footer();
 
-#====================================================================[ SUBs ]==
 sub action0 { # --------------------------------------------[ Startformular ]--
   &lmsg("connect");
 
@@ -180,7 +179,7 @@ sub footer {
 <hr />
 
 <p align="right"><i>$OPT{"PROGF"} $OPT{"PROGV"} ($OPT{"PROGD"})<br>
-<small>by <i>hirogen2 at gmx de</i></small></p>
+<small>by <i>jengelh at gmx de</i></small></p>
 </body>
 </html>
 EOT
@@ -210,4 +209,4 @@ sub lmsg {
   close LOG;
 }
 
-#=====================================================================[ EOF ]==
+#==[ End of file ]=============================================================

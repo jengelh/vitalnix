@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 #==============================================================================
 # Routine for ANSI <=> ASCII char conversion
-#   Copyright (C) Jan "Hirogen2" Engelhardt <hirogen2 at gmx de>, 1999 - 2002
-#   -- distributed under the Artistic License or GPL >= v2.0 --
+#   Copyright (C) Jan Engelhardt <jengelh at gmx de>, 1999 - 2003
+#   -- distributed under the GPL >= v2.0 --
 #==============================================================================
 package Convert::A2A;
 require Exporter;
@@ -26,8 +26,7 @@ sub to_ansi {
   return $s;
 }
 
-return {"s_name" => "ANSI-ASCII Converter", "s_ver" => $VERSION,
- "s_cat" => "StringOps"};
+return 1;
 
 #==[ Documentation ]===========================================================
 =pod

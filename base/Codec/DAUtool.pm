@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #==============================================================================
-# Standard DAUtool date scrambling v2.2
-#   by Jan "Hirogen2" Engelhardt <hirogen2@gmx.de>, 1999 - 2002
+# Standard DAUtool date scrambling v1.x
+#   by Jan Engelhardt <jengelh@gmx.de>, 1999 - 2002
 #------------------------------------------------------------------------------
 # DESCRIPTION
 #   This is no real "codec"; these two methods are just used to scramble the
@@ -18,30 +18,30 @@
 #   On failure, scramble returns undef.
 # 
 # FEATURES
-#   v2.21 (July 26 2002)
+#   v1.21 (July 26 2002)
 #     - fixed wrong var name, leading to an incorrest result
 #
-#   v2.20 (February 22 2002)
+#   v1.20 (February 22 2002)
 #     - added support for other date types ("M/T/YYYY", "YYYY-M-T")
 #     - using a regex instead of split, to eleminate non-numbers
 # 
-#   v2.10 - somewhen back in 2001
+#   v1.10 - somewhen back in 2001
 #     - fixed: DAUtool itself had a different arg passing
 # 
-#   v2.00 - somewhen back in 2000
+#   v1.00 - somewhen back in 2000
 #     - redone the scrambling methods. Teiwes's one was totally
 #       over-estimated.
 # 
-#   v1.00 - somewhen back in 1998
+#   v0.xx - somewhen back in 1998
 #     - initial release (or such)
 # 
 # LICENSE
-#   Codec::DAUtool starting with v2.2 is distributed under the GPL v2.0.
+#   Codec::DAUtool starting with v2.2 is distributed under the GPL >= v2.0.
 #   Previous versions applied to the same license as DAUtool.
 # 
 #==============================================================================
 package Codec::DAUtool;
-$VERSION = "v2.21";
+$VERSION = "v1.21";
 
 sub scramble {
   if($_[0] =~ /\./so) {
@@ -65,7 +65,6 @@ sub unscramble {
   else { return sprintf "%02d.%02d.%04d", $day, $month, $year; }
 }
 
-return {"s_name" => "Codec::DAUtool", "s_ver" => $VERSION,
- "s_cat" => "StringOps"};
+return 1;
 
-#=====================================================================[ EOF ]==
+#==[ End of file ]=============================================================

@@ -1,37 +1,36 @@
-To v1.52
-  - fiddling with LH2 makes sick but it's changing someday
-  - fixed typo-bug: line 667 of DAUtool v1.52 was missing
-
-To v1.51
-  - no need for ext LH2, now it is copied as .pm module with DAUtool
+To v1.60
+========
+    - fixed password generation routine that produced illegal one-character
+      salts
 
 To v1.50
-  - naughty bug around line 489 ($CURR{"s_dtrfile"} => $dtrfile)
-  - LH2-20020828
-  - added p_preadd, p_postdel program possibilities
+========
+    - naughty typo around line 489 ($CURR{"s_dtrfile"} => $dtrfile)
+    - added p_preadd, p_postdel program possibilities
 
 To v1.42
-  - using LH2-20020825 with standard exports instead of global function
-    replacements
-  - fixed sig handler
-  - fixed &getgrent ... routines and their implementation
-  - if an error occurs, we print either "ERROR:" or "WARNING:"
-  - &assitant: finished it
-  - &apply_changes: first creating backups then wait
-  - &apply_changes: waiting 2 secs instead of 3 now
-  - &apply_changes: users to be added / removed are logged to $proj.log
-  - &apply_changes: user first removed, then added
-  - &apply_changes: shifted compression type:
-    0 => do not backup homedir
-    1 => tar
-    2 => tar-bzip2 (standard in base/dautool.cfg)
-  - &useradd: fixed typo "UPW" to "DTR"
-  - &recover: is untested
+========
+    - fixed sig handler
+    - fixed &getgrent ... routines and their implementation
+    - if an error occurs, we print either "ERROR:" or "WARNING:"
+    - &assitant: finished it
+    - &apply_changes: first creating backups then wait
+    - &apply_changes: waiting 2 secs instead of 3 now
+    - &apply_changes: users to be added / removed are logged to $proj.log
+    - &apply_changes: user first removed, then added
+    - &apply_changes: shifted compression type:
+      0 => do not backup homedir
+      1 => tar
+      2 => tar-bzip2 (standard in base/dautool.cfg)
+    - &useradd: fixed typo "UPW" to "DTR"
+    - &recover: is untested
 
 To v1.41
-  - a not-finished bug-fix and was never released
+========
+    - a not-finished bug-fix and was never released
 
 To v1.40
+========
   Startup:
     - changed $CURR{"vgld"} into $CURR{"b_cmpd"}
     - added rootdir / basedir lookup
@@ -71,8 +70,8 @@ To v1.40
     - added recognition for SDF "(* text text text... *)" comment
 
   (2)Find_Changes:
-    - fixed BIG BUG since DAUtool v1.01: if there existed a jengelh1 in PASSWD
-      and DTF, we never found it and always created a new jengelh.
+    - fixed BIG BUG since DAUtool v1.01: if there existed a dumbusr1 in PASSWD
+      and DTF, we never found it and always created a new dumbusr.
       Guess why the presentation of DAUtool failed last year... since of this
       DAMN BUG. Finally fixed.
     - storing users with their realname instead of DTF-Lname
@@ -113,8 +112,8 @@ To v1.40
   (2)Änderungen finden
     - Header in FMT- und UPW-Dateien (inkl. Versionsnummer)
     - Prüfung der GID zu / von der hinzugefügt / gelöscht werden soll
-    - Benutzerindex (z.B. jengelh1) läuft jetzt unendlich weiter, also
-      jengel10, jenge100, etc.
+    - Benutzerindex (z.B. dumbusr1) läuft jetzt unendlich weiter, also
+      dumbus10, dumbu100, etc.
     - Vergleichsroutinen gefixt, vereinfacht
 
   (3)Änderungen zuweisen
