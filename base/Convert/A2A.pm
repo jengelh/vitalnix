@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 #==============================================================================
 # Routine for ANSI <=> ASCII char conversion
-#   Copyright (C) Jan Engelhardt <jengelh at gmx de>, 1999 - 2002
-#   -- distributed under the GPL >= v2.0 --
+#   Copyright (C) Jan "Hirogen2" Engelhardt <hirogen2 at gmx de>, 1999 - 2002
+#   -- distributed under the Artistic License or GPL >= v2.0 --
 #==============================================================================
 package Convert::A2A;
 require Exporter;

@@ -1,5 +1,9 @@
+To v1.52
+  - fiddling with LH2 makes sick but it's changing someday
+  - fixed typo-bug: line 667 of DAUtool v1.52 was missing
+
 To v1.51
-  - no need for _External_ LibHirogen2. Now it is copied as PM with DAUtool
+  - no need for ext LH2, now it is copied as .pm module with DAUtool
 
 To v1.50
   - naughty bug around line 489 ($CURR{"s_dtrfile"} => $dtrfile)

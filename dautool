@@ -1,8 +1,9 @@
 #!/usr/bin/perl
 #==============================================================================
 # DAUtool - Massenbenutzerverwaltung
-#   Copyright (C) by Jan Engelhardt <jengelh@gmx.de>, 1999 - 2002
-#   -- distributed under the GPL >= v2.0 --
+#   Copyright (C) by Eike Teiwes <eteiwes@ohg.goe.ni.schule.de>, 1997 - 1998
+#   Copyright (C) by Jan "Hirogen2" Engelhardt <hirogen2@gmx.de>, 1999 - 2002
+#   -- distributed under the Artistic License or GPL >= v2.0 --
 #
 #   Other contributors:
 #   Chistoph Thiel <cthiel1@linux01.gwdg.de>, 2001 - 2002
@@ -29,10 +30,10 @@ sub init {
     %OPT = (
       "PROGF" => "dautool",
       "PROGN" => "DAUtool",
-      "PROGV" => "v1.51",
-      "PROGVC" => v1.51,
-      "PROGVF" => "v1.51",
-      "PROGD" => "07. Oktober 2002",
+      "PROGV" => "v1.52",
+      "PROGVC" => v1.52,
+      "PROGVF" => "v1.52",
+      "PROGD" => "06. Dezember 2002",
       "a_cfgf" => [$_RTD."/base/dautool.cfg"],
       "b_nopid" => "",
       "b_saupw" => 0,
@@ -94,7 +95,7 @@ sub init {
   use Codec::DAUtool;
   use Fcntl;
   use Getopt::Long;
-  use extralib qw(&getgrent &getpwent &isolc &pstat);
+  use LibHirogen2 qw(&getgrent &getpwent &isolc &pstat);
 
   *enday = \&Codec::DAUtool::scramble;
   *deday = \&Codec::DAUtool::unscramble;
@@ -159,14 +160,14 @@ sub hmenu {
   }
 }
 
-sub assistant { # XXX fix
+sub assistant {
   my $temp;
   print "\n\n\n", &hbar("="), "\n\e[1mAssistent\e[0m\n", &hbar("="), "\n";
-  print &tssqueeze("Fragen an <jengelh\@gmx.de>"), "\n";
+  print &tssqueeze("Fragen an <hirogen2\@gmx.de>"), "\n";
   print &tssqueeze("Das Programm kann jederzeit mit STRG+C (oder spez. ".
    "Signalen) unter- oder abgebrochen werden. Es entstehen dabei keinerlei ".
    "Schäden, d.h. es müssen zwar Aktionen wiederholt werden, diese Aktionen ".
-   "erkennen aber schon Getanes."), "\n";
+   "erkennen aber schon erfüllte Aufgaben."), "\n";
   print &tssqueeze("In [] befinden sich alle wählbaren Möglichkeiten, ".
    "diejenige die in ()-Klammern ist, wird angenommen wenn die Eingabe leer ".
    "bleibt, ist also praktisch Standard. Gib den Großbuchstaben der ".
@@ -301,7 +302,10 @@ sub find_changes {
         if(substr($l, -2, 2) eq "\x0D\x0A") { $l = &to_ansi($l); }
 
         chomp $l;
-        my($nname, $vname, $gebd, $klasse) = split(/;/o, $l);
+        my($nname, $vname, $gebd, $klasse);
+        if((split(/;/o, $l))[0] !~ /\D/) {
+         (undef, $nname, $vname, $gebd, $klasse) = split(/;/o, $l); }
+        else { ($nname, $vname, $gebd, $klasse) = split(/;/o, $l); }
         if($nname eq "" || $vname eq "" || $gebd eq "") {
           printf "Fehler in der SDF-Datei, Zeile %d\n", $count;
           close IN;
@@ -411,7 +415,7 @@ sub apply_changes {
   local *LOG;
   if(!open(LOG, ">".$logfile)) {
    printf "WARNUNG: Konnte <%s> nicht öffnen: %s\n", $logfile, $!; }
-  select((select(LOG), $| = 1)[0]); # in case of CTRL+C
+  select((select(LOG), $| = 1)[0]);
   printf LOG "%s (%s) - LOG\n", @OPT{"PROGN","PROGV"};
   print LOG "*passwd:".&modext($CURR{"s_dtffile"}, ".dtf", ".opasswd")."\n";
   print LOG "*shadow:".&modext($CURR{"s_dtffile"}, ".dtf", ".oshadow")."\n";
@@ -663,6 +667,7 @@ sub useradd {
       my($lname, undef, undef, $gid, $gcos) = split(/:/o, $l);
       my($gcname, $gcdate) = split(/,/o, $gcos);
       $ph{$lname} = 1;
+      if($gid == $dgid) { ++$users_g; }
       print &pstat($count, $max, 5, $t_start, time());
     }
 

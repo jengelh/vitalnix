@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #==============================================================================
 # Standard DAUtool date scrambling v2.2
-#   by Jan Engelhardt <jengelh@gmx.de>, 1999 - 2002
+#   by Jan "Hirogen2" Engelhardt <hirogen2@gmx.de>, 1999 - 2002
 #------------------------------------------------------------------------------
 # DESCRIPTION
 #   This is no real "codec"; these two methods are just used to scramble the
@@ -36,7 +36,7 @@
 #     - initial release (or such)
 # 
 # LICENSE
-#   Codec::DAUtool starting with v2.2 is distributed under the GPL >= v2.0.
+#   Codec::DAUtool starting with v2.2 is distributed under the GPL v2.0.
 #   Previous versions applied to the same license as DAUtool.
 # 
 #==============================================================================

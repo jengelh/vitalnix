@@ -2,7 +2,7 @@
 #==============================================================================
 # Serienbrieferstellung
 #   Copyright (C) by Cristoph Thiel <cthiel1@linux01.gwdg.de>, 2001 - 2002
-#   Copyright (C) by Jan Engelhardt <jengelh@gmx.de>, 2001 - 2002
+#   Copyright (C) by Jan Engelhardt <hirogen2@gmx.de>, 2001 - 2002
 #   v1.081 :: 31. Juli 2002
 #==============================================================================
 $VERSION = "1.081";

@@ -1,12 +1,5 @@
-TODO
-====
 
-v1.50:
-  - restructure the whole DAUtool design, too much conversion functions
-    are there right now...
-
-PLANS
-=====
-
-v2.00:
-  - pTk version, independent of console ver.
+IN DEVELOPEMENT
+===============
+v2.00
+  - new with NCurses, dialogs, in C, even FASTER

@@ -6,7 +6,7 @@ DESCRIPTION
     users. This eliminates the need to add and remove each user separately.
 
     Has limited support for single users.
-    Distributed under the GPL >= v2.0
+    Distributed under the Artistic License or GPL >= v2.0
 
 SYSTEM REQUIREMENTS
     Linux or similar Unix-variants, at least 16 megs o' RAM, Perl v5.6.0
@@ -23,7 +23,7 @@ BESCHREIBUNG
     einzelnen Benutzers.
 
     Bietet auch limitierten Support für einzelne User.
-    DAUtool wird unter der GPL >= v2.0 vertrieben.
+    DAUtool wird unter der Artistic License oder GPL >= v2.0 vertrieben.
 
 SYSTEMANFORDERUNGEN
     Linux oder ähnliche Unix-Varianten, mindestens 16 MB RAM, mindestens

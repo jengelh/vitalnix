@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #==============================================================================
 # cnvep - Programm zur Konvertierung des GECOS-Datums
-#   Copyright (C) by Jan Engelhardt <jengelh@gmx.de>, 2001 - 2002
+#   Copyright (C) by Jan Engelhardt <hirogen2@gmx.de>, 2001 - 2002
 #   v1.06 (24. August 2002)
 #
 #   Konvertierung der </etc/passwd> vom DAUtool-v1.0 ins

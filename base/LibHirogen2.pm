@@ -1,9 +1,10 @@
 #!/usr/bin/perl
 #==============================================================================
-#   Copyright (C) Jan Engelhardt <jengelh at gmx de>, 2002
-#   -- distributed under the GPL >= v2.0 --
+# LibHirogen2 (Perl section)
+#   Copyright (C) Jan "Hirogen2" Engelhardt <hirogen2 at gmx de>, 2002
+#   -- distributed under the Artistic License or GPL >= v2.0 --
 #==============================================================================
-package extralib;
+package LibHirogen2;
 require Exporter;
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(&get_basedir &getcf &getcs &getcs_reset &getgrent &getgrmaxent
@@ -228,10 +229,14 @@ sub pstat {
   return $rv;
 }
 
-return 1;
+return {"s_name" => "LibHirogen2", "s_ver" => $VERSION};
 
 #==[ Documentation ]===========================================================
 =pod
+
+=head1 NAME
+
+LibHirogen2 - private function collection
 
 =head1 FUNCTIONS
 
@@ -344,6 +349,11 @@ Example:
   }
 
 You can omit I<$t_start> and I<$t_end>.
+
+=head1 AUTHOR, COPYRIGHT, LICENSE
+
+LibHirogen2 is distributed under the Artistic License or GPL >= v2.0.
+Copyright (C) by Jan "Hirogen2" Engelhardt <hirogen2@gmx.de>, 2002.
 
 =cut
 
