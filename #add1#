@@ -59,9 +59,9 @@ sub domain {
 
 sub vorbereitungen {
 #   domain automatisch ermitteln:    
-#    &domain;
-# MFB:	so geht's auch
-    $domain=`/bin/hostname --domain`
+    &domain;
+#   domain vorgegeben
+#   $domain="ohg.goe.ni.schule.de";
     @f=`find skel/ 2>/dev/null`;
     if ($f[0] eq "") {
 	print "\nlokales Verzeichnis skel fehlt und wird eingerichtet.\n";
@@ -82,6 +82,9 @@ sub daten_auslesen {
     $g=0;
     $l=0;
     $f=0;
+    $u=0;
+    $gruppenname='users';
+    $gruppe=group($gruppenname);
     while ($ARGV[0] ne "") {
 	if ($ARGV[0] eq "-g") {
 	    shift(@ARGV);
@@ -147,12 +150,22 @@ sub daten_auslesen {
                 exit;
             } 
             if ($test) { print "Datum $date OK\n"; }
+	} elsif ($ARGV[0] eq "-u") {
+	    shift(@ARGV);
+	    $user=$ARGV[0];
+	    shift(@ARGV);
+	    $u=1;
+	    if ($user eq "") {
+                print "fehlerhafter User\n";
+		fehlermeldung;
+                exit;
+            }
+	    if ($test) { print "User $user OK\n"; }
         } else {
 	    print "unbekannter Fehler: $ARGV[0]\n";
             fehlermeldung;
             exit;
-        }
-         
+        }       
     }
     if ( $date=~/(\d+)\.(\d+)\.(\d+)(.*)/ ) {
  	if ($4 eq "") {
@@ -182,22 +195,26 @@ sub daten_auslesen {
 	    $date="00.00.00";
 	}    
     }
-    if ($g eq 0) {
-	print "Gruppe fehlt\n";
+    if ($u eq 0) {
+	if ($g eq 0) {
+	    print "Gruppe fehlt\n";
+	}
+	if ($l eq 0) {
+	    print "Nachname fehlt\n";
+	}
+	if ($f eq 0) {
+	    print "Vorname fehlt\n";
+	}
+	if ($g+$l+$f < 3) {
+	    print "Abbruch\n";
+	    fehlermeldung;
+	    fehlermeldung2;
+	    exit;
+	}
+        $neu=$nachname.":".$vorname.":".$date;
+    } else {	
+	$neu=$user;
     }
-    if ($l eq 0) {
-	print "Nachname fehlt\n";
-    }
-    if ($f eq 0) {
-	print "Vorname fehlt\n";
-    }
-    if ($g+$l+$f < 3) {
-	print "Abbruch\n";
-	fehlermeldung;
-	fehlermeldung2;
-	exit;
-    }
-    $neu=$nachname.":".$vorname.":".$date;
 }
 # --------------------------------------------------------------------
 
@@ -295,6 +312,11 @@ sub passwd_ergaenzen {
     $_=$neu;
     ($name,$gcos)=split(/:/);
     ($fullname)=split(/,/,$gcos);
+    print ("#".$gcos."#");
+    if ($gcos[0] eq " ") {
+	print "leer\n";
+	exit;
+    }
     print "useradd -c '$gcos' -g $gruppe -m -k skel $name\n";
     if ($test eq 0) {
 	system("useradd -c '$gcos' -g $gruppe -m -k skel $name");

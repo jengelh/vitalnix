@@ -8,14 +8,16 @@ int main (int Anzahl, char *Argument[])
  
   if (Anzahl<2) {
     printf("Parameter fehlt (Aufruf: pwd benutzer)\n");
+    exit(1);
   }
   else {
     strcpy(s,Argument[1]);
     strcat(s,Argument[1]); 
-    l=strlen(s)-1;
+    l=5;
     for (i=0;i<7;i++) {
       a= (int) s[l] + (int) s[i];
-      b= (int) s[l] + (int) s[i+1];
+      b= (int) s[l+1] - (int) s[i+1];
+      l++;
       c= 97 + (a+b) % 26;
       t[i]=(char) c;
     }

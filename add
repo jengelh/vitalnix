@@ -3,7 +3,7 @@
 # von Eike Teiwes 20.03.97
 
 # Für Test setze $test=1, sonst setze $test=0
-$test=1;
+$test=0;
 
 if ($ARGV[0] eq "") {
     &fehlermeldung;
@@ -59,9 +59,9 @@ sub domain {
 
 sub vorbereitungen {
 #   domain automatisch ermitteln:    
-#    &domain;
-# MFB:	so geht's auch
-    $domain=`/bin/hostname --domain`
+    &domain;
+#   domain vorgegeben
+#   $domain="ohg.goe.ni.schule.de";
     @f=`find skel/ 2>/dev/null`;
     if ($f[0] eq "") {
 	print "\nlokales Verzeichnis skel fehlt und wird eingerichtet.\n";
