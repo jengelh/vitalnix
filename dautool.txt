@@ -1,0 +1,15 @@
+dautool(8)
+
+NAME
+    dautool(8) - Massenbenutzerverwaltung
+
+BESCHREIBUNG
+    dautool ist ein Programm zur Synchronisation der /etc/passwd mit einer
+    Liste von Usern. Somit entfällt das Hinzufügen und Entefernen jenes
+    einzelnen Benutzers.
+
+    Es können auch Einzelbenutzer hinzugefügt und deren Info geändert werden.
+
+SYSTEMANFORDERUNGEN
+    Linux-Kernel v2.4.x
+    Perl v5.8.0

@@ -8,94 +8,80 @@
 #   Chistoph Thiel <cthiel1@linux01.gwdg.de>, 2001 - 2003
 #   <acb@kki.org>, 2002
 #==============================================================================
-&init();
+BEGIN { if($^V lt v5.8.0) { die "Needing Perl v5.8.0 or newer!\n"; } }
 
-sub init {
-  BEGIN {
-    if(!-e "base") { die "Could not find directory \"base\"!\n"; }
-    if($^V lt v5.6.0) { die "Needing Perl v5.6.0 or newer!\n"; }
-    unshift(@INC, "base");
-  }
+%OPT = (
+  "PROGF" => "dautool",
+  "PROGN" => "dautool",
+  "PROGV" => "v1.70",
+  "PROGD" => "28. Juni 2003",
+  "a_cfgf" => ["./dautool.cfg"],
+  "b_saupw" => 0,
+  "b_zpack" => 1,
+  "f_group" => "/etc/group",
+  "f_passwd" => "/etc/passwd",
+  "f_shadow" => "/etc/shadow",
+  "f_skeldir" => "/tmp/dautool.skel",
+  "f_trhome" => "/home/_trash",
+  "s_passlen" => 8,
+  "s_dgrp" => "change_this", # changes in conf file
+  "p_pager" => (-e $ENV{"PAGER"}) ? $ENV{"PAGER"} :
+    (-e "/usr/bin/less") ? "/usr/bin/less" :
+    (-e "/usr/bin/w3m") ? "/usr/bin/w3m" :
+    (-e "/bin/more") ? "/bin/more" : "/bin/true",
+  "p_postadd" => "",
+  "p_postdel" => "",
+  "p_preadd" => "",
+  "p_predel" => "",
+  "p_useradd" => "/usr/sbin/useradd",
+  "p_userdel" => "/usr/sbin/userdel",
+);
 
-  %OPT = (
-    "PROGF" => "dautool",
-    "PROGN" => "DAUtool",
-    "PROGV" => "v1.61",
-    "PROGD" => "18. Januar 2003",
-    "a_cfgf" => ["base/dautool.cfg"],
-    "b_saupw" => 0,
-    "b_zpack" => 1,
-    "f_group" => "/etc/group",
-    "f_passwd" => "/etc/passwd",
-    "f_shadow" => "/etc/shadow",
-    "f_skeldir" => "/tmp/dautool.skel",
-    "f_trhome" => "/home/_trash",
-    "s_passlen" => 8,
-    "s_dgrp" => "change_this", # changes in conf file
-    "p_pager" => (-e $ENV{"PAGER"}) ? $ENV{"PAGER"} :
-      (-e "/usr/bin/less") ? "/usr/bin/less" :
-      (-e "/usr/bin/w3m") ? "/usr/bin/w3m" :
-      (-e "/bin/more") ? "/bin/more" : "/bin/true",
-    "p_postadd" => "",
-    "p_postdel" => "",
-    "p_preadd" => "",
-    "p_predel" => "",
-    "p_useradd" => "/usr/sbin/useradd",
-    "p_userdel" => "/usr/sbin/userdel",
-  );
+%CURR = (
+  "a_udel" => [],
+  "a_ukeep" => [],
+  "a_unew" => [],
+  "b_cmpd" => 0,
+  "r_gebd" => ".*?",
+  "r_gid" => ".*?",
+  "r_homedir" => ".*?",
+  "r_klasse" => ".*?",
+  "r_lname" => ".*?",
+  "r_rname" => ".*?",
+  "r_shell" => ".*?",
+  "r_uid" => ".*?",
+);
 
-  %CURR = (
-    "a_udel" => [],
-    "a_ukeep" => [],
-    "a_unew" => [],
-    "b_cmpd" => 0,
-    "r_gebd" => ".*?",
-    "r_gid" => ".*?",
-    "r_homedir" => ".*?",
-    "r_klasse" => ".*?",
-    "r_lname" => ".*?",
-    "r_rname" => ".*?",
-    "r_shell" => ".*?",
-    "r_uid" => ".*?",
-  );
+@OPT{"s_termwy","s_termwx"} = (`stty size 2>/dev/null` =~ /^(\d+)\s+(\d+)/);
+$OPT{"s_termwx"} ||= 80; $OPT{"s_termwy"} ||= 25;
 
-  @OPT{"s_termwy","s_termwx"} = (`stty size 2>/dev/null` =~ /^(\d+)\s+(\d+)/);
-  $OPT{"s_termwx"} ||= 80; $OPT{"s_termwy"} ||= 25;
+# ----------------------------------------
+print "\e[1m", $OPT{"PROGN"}, " ", $OPT{"PROGV"}, "\e[0m\n";
+print "=" x 40, "\n";
+select((select(STDOUT), $| = 1)[0]);
+select((select(STDERR), $| = 1)[0]);
 
-  # ----------------------------------------
-  {
-    my $istr = sprintf "%s %s (%s)", @OPT{"PROGN","PROGV","PROGD"};
-    print $istr."\n", "=" x length($istr), "\n";
-  }
-  select((select(STDOUT), $| = 1)[0]);
-  select((select(STDERR), $| = 1)[0]);
+use Getopt::Long;
+require "a2a.pm";
+require "codec.pm";
 
-  printf "TTY size: %s cols * %s rows\n", @OPT{"s_termwx","s_termwy"};
-  printf "Base directory: %s\n", $_RTD;
+*enday = \&date_scramble;
+*deday = \&date_unscramble;
 
-  use Convert::A2A qw(&to_ansi &to_ascii);
-  use Codec::DAUtool;
-  use Getopt::Long;
+# ----------------------------------------
+&Getopt::Long::Configure(qw(bundling pass_through));
+&GetOptions("c=s" => $OPT{"a_cfgf"});
 
-  *enday = \&Codec::DAUtool::scramble;
-  *deday = \&Codec::DAUtool::unscramble;
+foreach my $f (@{$OPT{"a_cfgf"}}) {
+ if(do $f) { printf "Lade Konfiguration aus Datei <%s>\n", $f; } }
 
-  # ----------------------------------------
-  &Getopt::Long::Configure(qw(bundling pass_through));
-  &GetOptions("c=s" => $OPT{"a_cfgf"});
+# ----------------------------------------
+@SIG{"HUP","INT","QUIT","ILL","TRAP","ABRT","BUS","FPE","USR1","SEGV",
+ "USR2","PIPE","ALRM","TERM"} = ((\&SIG_EXIT) x 14);
 
-  foreach my $f (@{$OPT{"a_cfgf"}}) {
-   if(do $f) { printf "Lade Konfiguration aus Datei <%s>\n", $f; } }
-
-  # ----------------------------------------
-  @SIG{"HUP","INT","QUIT","ILL","TRAP","ABRT","BUS","FPE","USR1","SEGV",
-   "USR2","PIPE","ALRM","TERM"} = ((\&SIG_EXIT) x 14);
-
-  &hmenu();
-  sub SIG_EXIT { unlink "/var/run/".$OPT{"PROGF"}.".pid"; print "\n"; exit 1; }
-  END { unlink "/var/run/".$OPT{"PROGF"}.".pid"; print "\n"; }
-  return 1;
-}
+&hmenu();
+sub SIG_EXIT { unlink "/var/run/".$OPT{"PROGF"}.".pid"; print "\n"; exit 1; }
+END { unlink "/var/run/".$OPT{"PROGF"}.".pid"; print "\n"; }
 
 sub hmenu {
   while() {
@@ -109,7 +95,6 @@ sub hmenu {
     print "< 6 >  Benutzerdetails\n";
     print "-" x 40, "\n";
     print "< 7 >  Wiederherstellen\n";
-    print "< 9 >  Preview DAUtool2\n";
     print "< 0 >  Beenden\n\n";
     print "WAHL>  ";
 
@@ -121,7 +106,6 @@ sub hmenu {
     elsif($INKEY eq "5") { &useradd(); }
     elsif($INKEY eq "6") { &userdetails(); }
     elsif($INKEY eq "7") { &recover(); }
-    elsif($INKEY eq "9") { &preview(); }
     elsif($INKEY =~ /^[0q]$/io) { last; }
     print "\n\n\n";
   }
@@ -1001,28 +985,7 @@ sub recover {
   return 1;
 }
 
-sub preview {
-  print <<"--EOT";
-
-.+====================================================================+.
-||  DAUtool v2                                                        ||
-||  ab Mitte Januar 2003 zu erhalten                                  ||
-||                                                                    ||
-||  - neu, 100% von vorn (from scratch)                               ||
-||  - NCurses benutzt, farbig und dialog-basiert                      ||
-||    - spezielle Behandlungsroutinen für Linux Console, XTerm,       ||
-||      farblose und 7-bit Terminals/ttys                             ||
-||  - kann auch von Windowmanagersymbolen ausgeführt werden (NOCTTY)  ||
-||  - noch schneller in der Bearbeitung                               ||
-||  - uses relaxed-style key navigation                               ||
-``--------------------------------------------------------------------''
-<Taste drücken>
---EOT
-  <STDIN>;
-  return;
-}
-
-#====================================================================[ SUBs ]==
+#------------------------------------------------------------------------------
 sub INIT_genstuff {
   print "Generating stuff [";
   foreach my $l (@OPT{"f_skeldir","f_trhome"}) {
@@ -1048,7 +1011,7 @@ sub genpass {
   my $pass;
   for(my $count = 0; $count < $OPT{"s_passlen"}; ++$count) {
    $pass .= !int(rand 5) ? int(rand 10) : chr(int(rand 26) + 97); }
-  my $salt = join("", ("A".."Z", "a".."z", 0..9, "_")[rand(63), rand 63]);
+  my $salt = join("", (".", "/", 0..9, "A".."Z", "a".."z")[rand(64), rand 64]);
   return(crypt($pass, $salt), $pass);
 }
 
@@ -1205,4 +1168,4 @@ sub tssqueeze {
   return join("\n", @rv);
 }
 
-#==[ EOF ]=====================================================================
+#==[ End of file ]=============================================================

@@ -1,0 +1,17 @@
+webpass(8)                                                  07. September 2002
+
+BESCHREIBUNG
+    Web-Frontend zur Änderung eiens Benutzerpasswortes. Beim Kopieren nach
+    /usr/www/cgi/ (bzw. /usr/local/httpd/cgi-bin/) bitte noch den SUID setzen
+    (mit `chmod 4755 /usr/www/cgi/webpass.pl /usr/bin/suidperl`).
+
+    Es bedarf einer Änderung in /etc/permissions.*. Aus
+
+      /usr/bin/suidperl                       root.root       0755
+
+    soll
+
+      /usr/bin/suidperl                       root.root       6755
+
+    gemacht werden, damit beim nächsten SuSEconfig das suidperl nicht wieder
+    zurückgesetzt wird.

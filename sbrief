@@ -5,19 +5,18 @@
 #   Copyright (C) Jan Engelhardt <jengelh at gmx de>, 2001 - 2003
 #   -- distributed under the GPL >= v2.0, --
 #   -- see doc/GPL-v2.0.txt               --
-#   v1.081 :: 31. Juli 2002
+#   v1.082 :: 08. März 2003
 #==============================================================================
-$VERSION = "1.081";
+$VERSION = "1.082";
 use Getopt::Long;
 select((select(STDOUT), $| = 1)[0]);
 select((select(STDERR), $| = 1)[0]);
 
-($inputf, $tpl) = ("-", "sbrief.tex")
+($inputf, $outputf, $tpl) = ("-", "-", "sbrief.tex")
 &Getopt::Long::Configure(qw(bundling pass_through));
-&GetOptions("h|help" => \$wanthelp, "i|inputf=s" => \$inputf,
- "t|template=s" => \$tpl);
+&GetOptions("i|inputf=s" => \$inputf, "o|outputf=s" => \$outputf,
+ "t|template=s" => \$tpl, "h" => sub { exec "pod2man $0 | man -l -"; });
 
-if($wanthelp) { exec "pod2man $0 | man -l -"; }
 if($inputf eq "-") {
  print STDERR "Achtung: Input wird von STDIN gelesen.\n"; }
 
@@ -30,7 +29,7 @@ open(DTR, "<".$inputf) ||
 open(OUT, ">/tmp/dautool_sbrief.tex") ||
  die sprintf "Konnte </tmp/dautool_sbrief.tex> nicht öffnen: %s\n", $!;
 
-print OUT <<"EOT";
+print OUT <<"--EOT";
 \\documentclass[12pt]{article}
 
 \\usepackage{isolatin1}
@@ -39,9 +38,9 @@ print OUT <<"EOT";
 
 \\begin{document}
 
-EOT
+--EOT
 
-while(defiend(my $l = <UPW>)) {
+while(defined(my $l = <UPW>)) {
   ++$count;
   if($count > 2) { print OUT "\\newpage\n"; }
   if($count == 1) { next; }

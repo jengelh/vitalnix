@@ -1,3 +1,9 @@
+To v1.70
+========
+    - clushed init()
+    - genpass() generated a wrong salt in some cases
+    - reordered a2a.pm and codec.pm
+
 To v1.60
 ========
     - fixed password generation routine that produced illegal one-character

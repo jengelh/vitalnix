@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 #==============================================================================
 # WebPass
+#   Web-Fronted zum Passwortändern
 #   Copyright (C) Jan Engelhardt <jengelh at gmx de>, 2001 - 2003
 #   -- distributed under the GPL >= v2.0, --
 #   -- see doc/GPL-v2.0.txt               --
