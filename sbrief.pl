@@ -12,7 +12,7 @@ use Getopt::Long;
 select((select(STDOUT), $| = 1)[0]);
 select((select(STDERR), $| = 1)[0]);
 
-($inputf, $outputf, $tpl) = ("-", "-", "sbrief.tex")
+($inputf, $outputf, $tpl) = ("-", "-", "sbrief.tex");
 &Getopt::Long::Configure(qw(bundling pass_through));
 &GetOptions("i|inputf=s" => \$inputf, "o|outputf=s" => \$outputf,
  "t|template=s" => \$tpl, "h" => sub { exec "pod2man $0 | man -l -"; });

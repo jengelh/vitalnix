@@ -13,8 +13,8 @@ BEGIN { push(@INC, "src"); }
 %OPT = (
   "PROGF" => "dautool",
   "PROGN" => "dautool",
-  "PROGV" => "v1.73.3",
-  "PROGD" => "10. August 2003",
+  "PROGV" => "v1.73.8",
+  "PROGD" => "29. August 2003",
   "a_cfgf" => ["dautool.cfg"],
   "b_saupw" => 0,
   "b_zpack" => 2,
@@ -72,7 +72,7 @@ require "a2a.pm";
 require "datescram.pm";
 
 *enday = \&date_scramble;
-*deday = \&date_unscramble;
+*to_ansi = \&Convert::A2A::to_ansi;
 
 # ----------------------------------------
 &Getopt::Long::Configure(qw(bundling pass_through));
@@ -324,6 +324,7 @@ sub find_changes {
 
   # ----------------------------------------
   {
+    open(LOG, ">debugadd.log");
     foreach my $gcnd (sort keys %dtf) {
       my($lname, $klasse) = @{$dtf{$gcnd}};
       my($gcname, $gcdate) = split(/,/o, $gcnd);
@@ -336,9 +337,12 @@ sub find_changes {
 
       $ph{$llname} = 1;
       push(@{$CURR{"a_unew"}}, [$llname, $gcname, $gcdate, $klasse]);
+      printf LOG "llname=%s gcname=%s gcdate=%s klasse=%s\n",
+       $llname, $gcname, $gcdate, $klasse;
     }
 
     printf "(Bestätigt: %d neue Benutzer)\n", scalar @{$CURR{"a_unew"}};
+    close LOG;
   }
 
   $CURR{"b_cmpd"} = 1;
@@ -626,7 +630,6 @@ sub useradd {
       if(substr($l, 0, 1) eq "#" || $l eq "") { next; }
       my($lname, undef, undef, $gid, $gcos) = split(/:/o, $l);
       my($gcname, $gcdate, $gcrest) = split(/,/o, $gcos, 3);
-#ATTN
       $ph{$lname} = 1;
       if($gid == $dgid) { ++$users_g; }
       print &pstat($count, $max, 5, $t_start, time());

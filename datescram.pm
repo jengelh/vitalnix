@@ -42,12 +42,22 @@ sub date3_unscramble {
 
 sub date2_scramble {
   if($_[0] =~ /\./so) {
-   ($day, $month, $year) = ($_[0] =~ /^(\d\d?)\.(\d\d?)\.(\d{4})/so); }
+   ($day, $month, $year) = ($_[0] =~ /^(\d\d?)\.(\d\d?)\.(\d{2,4})/so); }
   elsif($_[0] =~ /\//so) {
-   ($month, $day, $year) = ($_[0] =~ /^(\d\d?)\/(\d\d?)\/(\d{4})/so); }
+   ($month, $day, $year) = ($_[0] =~ /^(\d\d?)\/(\d\d?)\/(\d{2,4})/so); }
   elsif($_[0] =~ /-/so) {
-   ($year, $month, $day) = ($_[0] =~ /^(\d{4})-(\d\d?)-(\d\d?)/so); }
+   ($year, $month, $day) = ($_[0] =~ /^(\d{2,4})-(\d\d?)-(\d\d?)/so); }
   else { $! = "No delimiter found"; return undef; }
+
+  my $ty = (localtime())[5];
+  my $bp = ($ty + 50) % 100;
+  my $nc = $ty - $ty % 100;
+  if($bp < 50) { $nc += 100; }
+  my $ct = $nc - 100;
+
+  if($year >= 1000) { $year -= 1900; }
+  elsif($year < 100 && $year >= 0) { $year += ($year > $bp) ? $ct : $nc; }
+  $year += 1900;
   return sprintf "%04X%02X%02X", $year, $month, $day;
 }
 

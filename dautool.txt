@@ -10,6 +10,13 @@ BESCHREIBUNG
 
     Es können auch Einzelbenutzer hinzugefügt und deren Info geändert werden.
 
+    Aus v0.8:
+
+       Das Programmpaket benutzt eine aktuelle von "Kolleg" erstellte
+       Schülerdatei, um die Benutzerliste des Linux-Server zu aktualisieren. 
+       Das kann zum Schuljahresbeginn oder zu Beginn eines Halbjahres oder zu
+       jedem beliebigen Zeitpunkt geschehen.
+
 SYSTEMANFORDERUNGEN
     Linux-Kernel v2.4.x
     Perl >= v5.6.0
