@@ -8,7 +8,7 @@ require Exporter;
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(&get_basedir &getcf &getcs &getcs_reset &getgrent &getgrmaxent
  &getpwent &hypot &isolc &isouc &kroot &lcut &pstat);
-$VERSION = 20020825;
+$VERSION = 20020904;
 
 sub get_basedir {
   my $ln = shift @_;
@@ -24,7 +24,10 @@ sub get_basedir {
     }
 
     return $bd;
-  } else { return "."; }
+  } else {
+    if(($0 =~ /^(.*)\/[^\/]+$/is)[0] ne "") { return $1; }
+    else { return "."; }
+  }
 }
 
 sub getcf {
@@ -231,7 +234,7 @@ return 1;
 
 =head1 FUNCTIONS
 
-=head1 &getcf()
+=head2 &getcf()
 
  $string = &getcf(*FILEHANDLE, $length);
 
@@ -255,7 +258,7 @@ position pointer, use this:
 
  &getcs_reset(\$ref_to_string, $position);
 
-=head2 getgrent()
+=head2 &getgrent()
 
  $gid = &getgrent($gname, $ETCGROUP);
  $gname = &getgrent($gid, $ETCGROUP);

@@ -1,55 +1,45 @@
-#!/usr/bin/suidperl
+#!/usr/bin/perl
 #==============================================================================
 # WebPass
 #   by Jan Engelhardt <jengelh@gmx.de>, 2001, 2002
-# 
-# LIZENZ
-#   wie DAUtool (siehe <doc/dautool.html>), also GPL >= v2.0
+#   -- distributed under the GPL >= v2.0 --
 #==============================================================================
-#--< Configuration >--
 %OPT = (
   "PROGF" => "webpass",
-  "PROGV" => "v1.03",
-  "PROGD" => "Freitag, 13. Mai 2002",
+  "PROGV" => "v1.04",
+  "PROGD" => "07. September 2002",
   "f_passwd" => "/etc/passwd",
   "f_shadow" => "/etc/shadow",
 );
 
 $BANS = <<"EOT";
-(root|bin|daemon|lp|news|uucp|games|man|at|postgres|mdom|wwwrun|squid|fax|gnats|adabas|amanda|irc|ftp|firewall|named|fnet|gdm|postfix|oracle|mysql|dpbox|ingres|zope|vscan|wnn|pop|perforce|sapdb|db4web|cyrus|nobody)\@.*?\\..*?\\..*?\\..*?
+(root|bin|daemon|lp|news|uucp|games|man|at|postgres|mdom|wwwrun|squid|fax|gnats|adabas|amanda|irc|ftp|firewall|named|fnet|gdm|postfix|oracle|mysql|dpbox|ingres|zope|vscan|wnn|pop|perforce|sapdb|db4web|cyrus|nobody)\@(?!127\\.)
 EOT
 
-#====================================================================[ MAIN ]==
 if($ENV{"REQUEST_METHOD"} !~ /^POST$/o) {
   $DATA = join(";", @ARGV);
-  $ENV{"CONTENT_LENGTH"} ||= length($DATA);
+  $ENV{"CONTENT_LENGTH"} ||= length $DATA;
   $ENV{"REMOTE_ADDR"} ||= "127.0.0.1";
 }
 
-# ----------------------------------------
 &header();
 if(!-e $OPT{"f_passwd"}) {
-  print "<p><b><i>".$OPT{"f_passwd"}."</i> gibt es nicht!<br />";
-  print "Da ist was faul!</b></p>\n\n";
-  $f = 1;
+  print "<p><b><i>".$OPT{"f_passwd"}."</i> gibt es nicht!</b></p>\n\n";
+  ++$f;
 }
 
-# ----------------------------------------
 if(!-e $OPT{"f_shadow"}) {
   print "<p><b><i>".$OPT{"f_shadow"}."</i> gibt es nicht!</b></p>\n\n";
-  $f = 1;
+  ++$f;
 }
 
-# ----------------------------------------
-if($> != 0) { print "<p><b>EUID ist nicht 0!</b></p>\n\n"; $f = 1; }
+if($> != 0) { print "<p><b>EUID ist nicht 0!</b></p>\n\n"; ++$f; }
 
-# ----------------------------------------
 if($f < 1) {
   if($ENV{"CONTENT_LENGTH"} == 0) { &action0(); }
   else { &action1(); }
 }
 
-# ----------------------------------------
 &footer();
 
 #====================================================================[ SUBs ]==
@@ -93,7 +83,7 @@ sub action1 { # ---------------------------------------------------[ Ändern ]--
   foreach $_ (split(/;/o, $DATA)) {
     ($name, $wert) = split(/=/o, $_);
     $wert =~ tr/+/ /;
-    $wert =~ s/\%([0-9a-f]{2})/chr(hex($1))/egi;
+    $wert =~ s/\%([0-9a-f]{2})/chr hex $1/egis;
     $QS{$name} = $wert;
   }
 
@@ -119,7 +109,7 @@ sub action1 { # ---------------------------------------------------[ Ändern ]--
   close PASSWD;
 
   if($exist < 1) {
-    &lsmg("try: no such user ($QS{"user"})");
+    &lsmg("try: no such user (".$QS{"user"}.")");
     print "<p><b>Kein solcher Benutzer vorhanden!</b></p>\n\n";
     return 0;
   }
@@ -140,9 +130,9 @@ sub action1 { # ---------------------------------------------------[ Ändern ]--
   }
 
   # ----------------------------------------
-  foreach $_ (<SHADOW>) {
-    chomp($_);
-    ($user, $pass, $rest) = ($_ =~ /^(.*?):(.*?):(.*)/s);
+  foreach my $l (<SHADOW>) {
+    chomp $l;
+    ($user, $pass, $rest) = ($l =~ /^(.*?):(.*?):(.*)/s);
 
     if($user =~ /^$QS{"user"}$/is) {
       ($salt) = ($pass =~ /^(..)/s);
@@ -177,8 +167,7 @@ sub action1 { # ---------------------------------------------------[ Ändern ]--
 }
 
 sub checkbans {
-  my $V1 = undef;
-  foreach $V1 (split(/\n/s, $BANS)) {
+  foreach my $V1 (split(/\n/so, $BANS)) {
     if(join("\@", $QS{"user"}, $ENV{"REMOTE_ADDR"}) =~ /^$V1$/i) {
      return $V1; }
   }
@@ -191,8 +180,7 @@ sub footer {
 <hr />
 
 <p align="right"><i>$OPT{"PROGF"} $OPT{"PROGV"} ($OPT{"PROGD"})<br>
-<small>by Jan Engelhardt &lt;<a
-href="mailto:jengelh\@gmx.de">jengelh\@gmx.de</a>&gt;</i></small></p>
+<small>by <i>jengelh at gmx de</i></small></p>
 </body>
 </html>
 EOT
@@ -217,7 +205,7 @@ EOT
 
 sub lmsg {
   open(LOG, ">/var/log/webpass.log");
-  printf LOG "[%s/%s] ", scalar(localtime), $ENV{"REMOTE_ADDR"};
+  printf LOG "[%s/%s] ", scalar(localtime()), $ENV{"REMOTE_ADDR"};
   print LOG join(" ", @_)."\n";
   close LOG;
 }

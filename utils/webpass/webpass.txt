@@ -1,6 +1,7 @@
-Name: WebPass                 Sektion: 8                  Datum: 31. Juil 2002
+Name: WebPass                 Sektion: 8             Datum: 07. September 2002
 ------------------------------------------------------------------------------
 Copyright (C) by Jan Engelhardt <jengelh@gmx.de>, 2001, 2002
+Lizenz: GPL >= v2.0
 
 Web-Frontend zur Änderung eiens Benutzerpasswortes. Beim Kopieren nach
 /usr/www/cgi/ (bzw. /usr/local/httpd/cgi-bin/) bitte noch den SUID setzen (mit

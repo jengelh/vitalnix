@@ -21,14 +21,17 @@ sub init {
         if(substr($ld, 0, 1) eq "/" || length($_RTD) == 0) { $_RTD = $ld; }
         else { $_RTD .= "/".$ld; }
       }
-    } else { $_RTD = "."; }
+    } else {
+      if(($0 =~ /^(.*)\/[^\/]+$/is)[0] ne "") { $_RTD = $1; }
+      else { $_RTD = "."; }
+    }
 
     %OPT = (
       "PROGF" => "dautool",
       "PROGN" => "DAUtool",
-      "PROGV" => "v1.42d02", # d=4 => 1.42.4.2
-      "PROGVF" => "v1.42d02",
-      "PROGD" => "28. August 2002",
+      "PROGV" => "v1.50",
+      "PROGVF" => "v1.50",
+      "PROGD" => "07. September 2002",
       "a_cfgf" => [$_RTD."/base/dautool.cfg"],
       "b_nopid" => "",
       "b_saupw" => 0,
@@ -129,7 +132,7 @@ sub init {
 
 sub hmenu {
   while() {
-    print "\n\n\n", &hbar("="), "\n\e[1mHauptmenü\e[0m\n", &hbar("="), "\n";
+    print "\n", &hbar("="), "\n\e[1mHauptmenü\e[0m\n", &hbar("="), "\n";
     print "< 1 >  Assistent\n";
     print "< 2 >  Änderungen finden\n";
     print "< 3 >  Änderungen zuweisen\n";
@@ -151,6 +154,7 @@ sub hmenu {
     elsif($INKEY eq "6") { &userdetails(); }
     elsif($INKEY eq "7") { &recover(); }
     elsif($INKEY =~ /^[0q]$/io) { last; }
+    print "\n\n\n";
   }
 }
 
@@ -190,46 +194,16 @@ sub assistant { # XXX fix
       return 0;
     }
   } elsif($temp =~ /^m(?:ehrere)?$/io) {
-    print uc("\nSchritt 1 - Konvertieren\n\n");
-    print &tssqueeze("Jede Software bringt ihr eigenes Format mit, daher ".
-     "wird in diesem Schritt eine Datei beliebigen Typs (z.Z. nur SDF ".
-     "unterstützt) in DTF-Format konvertiert."), "\n\n";
-    print &tssqueeze("Falls schon eine DTF vorliegt (z.B. durch ".
-     "Konvertierungsprogramm von Drittanbietern) kann dieser Schritt ".
-     "übergangen werden."), "\n\n\n";
-
-    print "Konvertieren [(Ja)/Nein/Abbrechen] > ";
-    chomp($temp = <STDIN>);
-    if($temp =~ /^j(?:a)?/io) {
-      print "\n", &tssqueeze("Es wird gleich nach einem Dateinamen und einem ".
-       "Dateityp gefragt; das gibt dir jetzt die Möglichkeit, eine Diskette ".
-       "zu mounten, falls nötig. Kopiere die zu konvertierende Datei am ".
-       "besten in ein Unterverzeichnis des ".$OPT{"PROGN"}.
-       "-Wurzelverzeichnisses. (Z.B. /usr/local/".$OPT{"PROGF"}.
-       "/DATUM_VON_HEUTE/)"), "\n\n\n";
-      print "Weiter >> (Return drücken)\n";
-      <STDIN>;
-      print "\n";
-
-      if(!&convert()) {
-        print &tssqueeze("Der Konvertierungsprozess ist nicht fehlerfrei ".
-         "abgelaufen. Wiederhole die Prozedur, falls nötig. Der Assistent ".
-         "beendet sich nun und kehrt zum Hauptmenü zurück."), "\n";
-        return 0;
-      } else { print &tssqueeze("Konvertierungsprozess erfolgreich."), "\n"; }
-    }
-
-    print uc("\nSchritt 2 - Änderungen finden\n\n");
-    print &tssqueeze("Die DTF-Datei enthält jetzt eine Liste von Benutzern, ".
-     "mit der /etc/passwd (oder Eingestelltem) synchronisiert werden soll. ".
-     "In diesem Schritt wird herausgefunden, welche Benutzer hinzugefügt / ".
-     "behalten oder gelöscht werden sollen. Dies ist die Vorraussetzung für ".
-     "den 3. Schritt."), "\n\n";
-    print &tssqueeze("Die Listen, welche die Änderungen beschreiben, werden ".
-     "im Speicher gehalten bzw. werden nicht auf die Festplatte geschrieben, ".
-     "damit diese Daten nicht aus Versehen wiederverwendet werden."), "\n\n\n";
-
-    print "Änderungen finden [(Ja)/Nein/Abbrechen] > ";
+    print uc("\nSchritt 1 - Änderungen finden\n\n");
+    print &tssqueeze("In diesem Teil wird eine Datei beliebigen Typs ".
+     "(z.z. nur SDF-4field unterstützt) eingelesen, und mit die Änderungen ".
+     "herausgefunden."), "\n\n";
+    print &tssqueeze("Es wird gleich nach einem Dateinamen und einem ".
+     "Dateityp gefragt; es gibt jetzt also die Möglichkeit, eine Diskette zu ".
+     "mounten, falls nötig. Kopiere die zu konvertierende Datei am besten in ".
+     "ein Unterverzeichnis des ".$OPT{"PROGN"}."-Wurzelverzeichnisses. (Z.B. ".
+     "/usr/local/".$OPT{"PROGF"}."/DATUM_VON_HEUTE/)"), "\n\n\n";
+    print "Änderungen finden [(Ja)/Abbrechen] > ";
     chomp($temp = <STDIN>);
     if($temp =~ /^j(?:a)?/io) {
       print "\n";
@@ -239,46 +213,45 @@ sub assistant { # XXX fix
          "nötig. Der Assistent beendet sich nun und kehrt zum Hauptmenü ".
          "zurück."), "\n";
         return 0;
-      } else {
-        print &tssqueeze("\"Änderungen finden\" erfolgreich."), "\n";
+      }
+      
+      print &tssqueeze("\"Änderungen finden\" erfolgreich."), "\n\n";
 
-        print uc("\nSchritt 3 - Änderungen zuweisen\n\n");
-        print &tssqueeze("Es werden nun die Änderungen vollzogen, die im ".
-         "zuvorgehendem Schritt erarbeitet wurden. Die nötige Zeit, um jene ".
-         "Benutzer zu löschen variiert je nach eingestellter Kompression bei ".
-         "der Archivierung der alten Home-Verzeichnisse."), "\n\n\n";
+      print uc("Schritt 2 - Änderungen zuweisen\n\n");
+      print &tssqueeze("Es werden nun die Änderungen vollzogen, die im ".
+       "zuvorgehendem Schritt erarbeitet wurden. Die nötige Zeit, um jene ".
+       "Benutzer zu löschen variiert je nach eingestellter Kompression bei ".
+       "der Archivierung der alten Home-Verzeichnisse."), "\n\n\n";
 
-        print "Änderungen zuweisen [(Ja)/Nein] > ";
+      print "Änderungen zuweisen [(Ja)/Abbrechen] > ";
+      chomp($temp = <STDIN>);
+      if($temp =~ /^j(?:a)?/io) {
+        print "\n";
+        if(!&apply_changes()) {
+          print &tssqueeze("Die Prozedur um die nötigen Änderungen zu ".
+           "vollziehen ist nicht fehlerfrei abgelaufen. Wiederhole die ".
+           "Prozedur, falls nötig. Der Assistent beendet sich nun und ".
+           "kehrt zum Hauptmenü zurück."), "\n";
+          return 0;
+        }
+
+        print &tssqueeze("Änderungen wurden erfolgreich zugewiesen."), "\n\n";
+
+        print uc("Schritt 3 - Passwortlisten drucken\n\n");
+        print &tssqueeze("Sollen noch formatierte Passwortlisten erstellt ".
+         "werden?"), "\n\n\n";
+
+        print "Passwortlisten erstellen [(Ja)/Nein] > ";
         chomp($temp = <STDIN>);
         if($temp =~ /^j(?:a)?/io) {
           print "\n";
-          if(!&apply_changes()) {
-            print &tssqueeze("Die Prozedur um die nötigen Änderungen zu ".
-             "vollziehen ist nicht fehlerfrei abgelaufen. Wiederhole die ".
-             "Prozedur, falls nötig. Der Assistent beendet sich nun und ".
-             "kehrt zum Hauptmenü zurück."), "\n";
-            return 0;
-          } else {
-            print &tssqueeze("Änderungen wurden erfolgreich zugewiesen."),
-             "\n";
-
-            print uc("\nSchritt 4 - Passwortlisten drucken\n\n");
-            print &tssqueeze("Sollen noch formatierte Passwortlisten ".
-             "erstellt werden?"), "\n\n\n";
-
-            print "Passwortlisten erstellen [(Ja)/Nein] > ";
-            chomp($temp = <STDIN>);
-            if($temp =~ /^j(?:a)?/io) {
-              print "\n";
-              if(!&prlist) {
-                print &tssqueeze("Die Erstellung der Passwortlisten ist ".
-                 "nicht fehlerfrei abgelaufen."), "\n";
-              }
-
-              print &tssqueeze("Der Assistent ist jetzt fertig, beendet sich ".
-               "und kehrt zum Hauptmenü zurück."), "\n\n";
-            }
+          if(!&prlist) {
+            print &tssqueeze("Die Erstellung der Passwortlisten ist ".
+             "nicht fehlerfrei abgelaufen."), "\n";
           }
+
+          print &tssqueeze("Der Assistent ist jetzt fertig, beendet sich ".
+           "und kehrt zum Hauptmenü zurück."), "\n\n";
         }
       }
     }
@@ -300,38 +273,52 @@ sub find_changes {
 
   # ----------------------------------------
   my %dtf = ();
-
   {
-    local *DTF;
-    print "Zu vergleichende DTF-Datei > ";
+    print "Input > ";
     chomp(my $inputf = <STDIN>);
 
-    if(!open(DTF, "<".$inputf)) {
-      print "FEHLER: Konnte <%s> nicht öffnen: %s\n", $inputf, $!;
+    local *IN;
+    if(!open(IN, "<".$inputf)) {
+      printf "FEHLER: Konnte <%s> nicht öffnen: %s\n", $inputf, $!;
       return 0;
     }
 
-    if(<DTF> !~ /^$OPT{"PROGN"} \($OPT{"PROGV"}\) - DTF\n?$/so) {
-      printf "FEHLER: <%s>: das Format wird nicht unterstützt\n", $inputf;
+    print "Format (1=SDF,2=) > ";
+    chomp(my $enumfmt = <STDIN>);
+
+    if($enumfmt == 1) {
+      my($buf, $max);
+      while(read(IN, $buf, 4096)) { $max += ($buf =~ tr/\x0A//); }
+      seek(IN, 0, 0);
+
+      # ----------------------------------------
+      my($count, $t_start) = (0, time());
+      while(defined(my $l = <IN>)) {
+        ++$count;
+        if($l =~ /^\(\*.*?\*\)/so || $l =~ /^(?:[\#;]|\/\/)/so || $l eq "") {
+         next; }
+        if(substr($l, -2, 2) eq "\x0D\x0A") { $l = &to_ansi($l); }
+
+        chomp $l;
+        my($nname, $vname, $gebd, $klasse) = split(/;/o, $l);
+        if($nname eq "" || $vname eq "" || $gebd eq "") {
+          printf "Fehler in der SDF-Datei, Zeile %d\n", $count;
+          close IN;
+          print "\n";
+          return 0;
+        }
+
+        my $lname = &name2user($nname, $vname);
+        $gebd =~ s/^(.*?\..*?\.)(..)$/$1.(1900 + $2)/egis;
+        $dtf{$vname." ".$nname} = [$lname, &enday($gebd), $klasse];
+        print &pstat($count, $max, 5, $t_start, time());
+      }
+    } else {
+      printf "Ungültige Eingabe\n";
       return 0;
     }
 
-    my($buf, $max);
-    while(read(DTF, $buf, 4096)) { $max += ($buf =~ tr/\x0A//); }
-    seek(DTF, 0, 0);
-    <DTF>;
-
-    $CURR{"s_dtffile"} = $inputf;
-    my($count, $t_start) = (0, time());
-    printf "Lese <%s>:\n", $inputf;
-    while(defined(my $l = <DTF>)) {
-      chomp($l);
-      my($lname, $gcname, $gcdate, $klasse) = split(/:/o, $l);
-      $dtf{$gcname} = [$lname, $gcdate, $klasse];
-      print &pstat(++$count, $max, 5, $t_start, time());
-    }
-
-    close DTF;
+    close IN;
   }
 
   # ----------------------------------------
@@ -353,7 +340,7 @@ sub find_changes {
     printf "Lese <%s>:\n", $OPT{"f_passwd"};
     while(defined(my $l = <PASSWD>)) {
       ++$count;
-      chomp($l);
+      chomp $l;
       if(substr($l, 0, 1) eq "#" || $l eq "") { next; }
       my($lname, undef, undef, $gid, $gcos) = split(/:/o, $l);
       my($gcname, $gcdate) = split(/,/o, $gcos);
@@ -579,7 +566,7 @@ sub prlist {
      "Klasse", "Name", "Benutzername", "Passwort", "-" x 61;
 
     while(defined(my $l = <DTR>)) {
-      chomp($l);
+      chomp $l;
       if($l =~ /^$CURR{"r_klasse"}:$CURR{"r_rname"}:$CURR{"r_lname"}:.*/is) {
         ++$e;
         printf OUT "%-6s   %-30s   %-8s   %-8s\n", split(/:/o, $l);
@@ -589,7 +576,7 @@ sub prlist {
     my $prev;
 
     foreach my $e (sort _prlist_sort <DTR>) {
-      chomp($e);
+      chomp $e;
       my @e = split(/:/o, $e);
       if($e[0] ne $prev) {
         printf OUT "\n%-6s   %-26s   %-12s   %-8s\n%s\n",
@@ -670,7 +657,7 @@ sub useradd {
     printf "Lese <%s>:\n", $OPT{"f_passwd"};
     while(defined(my $l = <PASSWD>)) {
       ++$count;
-      chomp($l);
+      chomp $l;
       if(substr($l, 0, 1) eq "#" || $l eq "") { next; }
       my($lname, undef, undef, $gid, $gcos) = split(/:/o, $l);
       my($gcname, $gcdate) = split(/,/o, $gcos);
@@ -771,7 +758,7 @@ sub userdetails {
     print &hbar("-"), "\n";
     my($count, $list) = (0, []);
     while(defined(my $l = <PASSWD>)) {
-      chomp($l);
+      chomp $l;
       if($l =~ /^$CURR{"r_lname"}:.*?:$CURR{"r_uid"}:$CURR{"r_gid"}:$CURR{"r_rname"}(,.*?)?:$CURR{"r_homedir"}:$CURR{"r_shell"}$/is) {
         my($lname, undef, $uid, $gid, $gcos, $home, $shell) = split(/:/o, $l);
         my($rname, $gebd, $rgcos) = split(/,/o, $gcos, 3);
@@ -944,7 +931,7 @@ sub userdetails {
     }
 
     for(my $l = 0; $l < scalar @$pwa; ++$l) {
-      chomp($pwa->[$l]);
+      chomp $pwa->[$l];
       my $fgcos = join(",", $rname, $gebd, $rgcos);
       $fgcos =~ s/,+$//go;
       $pwa->[$l] =~ s/^$lname:.*/join(":", $lname, "x", $uid, $gid, $fgcos,
@@ -974,7 +961,7 @@ sub userdetails {
     }
 
     for(my $l = 0; $l < scalar @$sha; ++$l) {
-      chomp($sha->[$l]);
+      chomp $sha->[$l];
       $sha->[$l] =~ s/^($lname:)!?(.*)/$1.(($accstat eq "CLOSED") ?
        "!" : "").$2/egis;
       print SHADOW $sha->[$l]."\n";
@@ -984,74 +971,6 @@ sub userdetails {
     $ed_s = 0;
   }
 
-  return 1;
-}
-
-sub convert {
-  print "\n\n\n", &hbar("="), "\n\e[1mKonvertieren\e[0m\n", &hbar("="), "\n";
-
-  # ----------------------------------------
-  print "Zu konvertierende Datei > ";
-  chomp(my $inputf = <STDIN>);
-
-  local *IN;
-  if(!open(IN, "<".$inputf)) {
-    printf "FEHLER: Konnte <%s> nicht öffnen: %s\n", $inputf, $!;
-    return 0;
-  }
-
-  print "Format (1=SDF,2=) > ";
-  chomp(my $enumfmt = <STDIN>);
-
-  if($enumfmt == 1) {
-    my($buf, $max);
-    while(read(IN, $buf, 4096)) { $max += ($buf =~ tr/\x0A//); }
-    seek(IN, 0, 0);
-
-    # ----------------------------------------
-    my $outputf = &modext($inputf, ".sdf", ".dtf");
-    local *DTF;
-
-    if(!open(DTF, ">".$outputf)) {
-      printf "FEHLER: Konnte <%s> nicht öffnen: %s\n", $outputf, $!;
-      close IN;
-      close DTF;
-      unlink $outputf;
-      return 0;
-    }
-
-    my($count, $t_start) = (0, time());
-    printf DTF "%s (%s) - DTF\n", @OPT{"PROGN","PROGV"};
-    while(defined(my $l = <IN>)) {
-      ++$count;
-      if($l =~ /^\(\*.*?\*\)/so || $l =~ /^(?:[\#;]|\/\/)/so || $l eq "") {
-       next; }
-      if(substr($l, -2, 1) eq "\x0D") { $l = &to_ansi($l); }
-
-      chomp($l);
-      my($nname, $vname, $gebd, $klasse) = split(/;/o, $l);
-      if($nname eq "" || $vname eq "" || $gebd eq "") {
-        printf "Fehler in der SDF-Datei, Zeile %d\n", $count;
-        close IN;
-        close DTF;
-        unlink $outputf;
-        print "\n";
-        return 0;
-      }
-
-      my $lname = &name2user($nname, $vname);
-      $gebd =~ s/^(.*?\..*?\.)(..)$/$1.(1900 + $2)/egis;
-      printf DTF "%s:%s %s:%s:%s\n", $lname, $vname, $nname,
-       &enday($gebd), $klasse;
-      print &pstat($count, $max, 5, $t_start, time());
-    }
-  } else {
-    printf "Ungültige Eingabe\n";
-    return 0;
-  }
-
-  close IN;
-  close DTF;
   return 1;
 }
 
@@ -1078,7 +997,7 @@ sub recover {
   &INIT_genstuff();
   printf "Stelle aus <%s> wieder her:\n", $logf;
   while(defined(my $l = <LOG>)) {
-    chomp($l);
+    chomp $l;
     if($l =~ /^\*(.+?):(.+)/s) {
       $h{$1} = $2;
       print "+ ".$1."=".$2."\n";
