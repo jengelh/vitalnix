@@ -1,0 +1,87 @@
+#!/usr/bin/perl
+# Änderungen bei einzelnen Benutzern
+# von Eike Teiwes
+
+print "------------------------------------------------------\n";
+print "Korrekturen einen Benutzer\n"; 
+
+print "\nIn PASSWD und SHADOW muessen die Änderungen per Hand vorgenommen werden.\n";
+
+
+print "alter Benutzername: ";
+$alt=<STDIN>;
+chop($alt);
+
+print "neuer Benutzername: ";
+$neu=<STDIN>;
+chop($neu);
+
+$_=`grep $neu /etc/passwd`;
+print "$_\n";
+($name,$x,$user,$group,$gcos)=split(/:/);
+($fullname)=split(/,/,$gcos);
+print "$fullname\n";
+
+print "mv /home/$alt /home/$neu\n";
+
+system("mv /home/$alt /home/$neu");
+&kopieren_und_anpassen;
+
+exit;
+
+# --------------------------------------------------------------------
+
+sub kopieren_und_anpassen {
+
+    #Netscape
+    open(N_IN,"netscape.ini");
+    open(N_OUT,">/home/$name/system/netscape.ini");
+    while (<N_IN>) {
+	if ($_ eq "") {
+	    next;
+	}
+	if (/User_Addr=/) {
+	    s/User_Addr=.*/User_Addr=$name\@ohg.goe.ni.schule.de\r/;
+	}
+	if (/User_Name=/) {
+	    s/User_Name=.*/User_Name=$fullname\r/;
+	}
+	if (/POP Name=/) {
+	    s/POP Name=.*/POP Name=$name\r/;
+	}
+	print N_OUT $_;
+    }
+    close(N_IN);
+    close(N_OUT);
+
+    system("chown $name /home/$name/system/netscape.ini");
+    system("chgrp $group /home/$name/system/netscape.ini");
+}
+
+# --------------------------------------------------------------------
+
+sub group {
+    local($name)=@_;
+    $_=`grep $name /etc/group`;
+    /(\w+)\W+(\w+)\W+(\w+)/;
+    $3;
+}
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

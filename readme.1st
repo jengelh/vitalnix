@@ -1,0 +1,40 @@
+Benutzerverwaltung
+------------------
+Das Programmpaket benutzt eine aktuelle von Kolleg (o.ä) erstellte
+Datei, um die Benutzer de Linux-Server zu verwalten.
+
+Für die erstmalige und einmalige (!) Erfassung der Lehrer dienen die
+Programme listcmp.1st und listadd.1st. 
+Die Lehrer sollten vor den Schülern eingetragen werden, um bei den 
+Benutzernamen der Lehrer Indizes zu vermeiden. 
+
+!!! Spätere Zugänge und Abgänge von Lehrern werden nicht mit diesen
+!!! Programmen, sondern mit add erledigt.
+
+Nach erfolgreichen Eintrag der Lehrer als Nutzer sollten alle
+Daten gelöscht werden (rm dat*) und die lehrerbezogegenen Programme
+gelöscht werden (rm *1st).
+
+
+
+Weiteres siehe readme
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

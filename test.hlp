@@ -1,0 +1,35 @@
+Um das Verhalten der Programme zu testen, können Sie so vorgehen:
+
+rm daten???*		Alle Daten löschen
+cp test1.sdf daten.sdf	Testdaten 
+./abgleich		Zugänge ermitteln
+more datenadd.001	Zugänge kontrollieren
+./zugang		Zugänge eintragen
+more datenpwd.001	Vorlage für Serienbrief kontrollieren
+more /etc/passwd	Eintrag kontrollieren
+ls /home		Home-Verzeichnisse kontrollieren
+more /home/uuebel/system/netscape.ini
+			Benutzereintrag kontrollieren
+[logout login ...	Testweise als neuer Benutzer anmelden]
+cp test2.sdf daten.sdf	Testdaten 
+./abgleich		Zugänge und Abgänge ermitteln
+more datenadd.002	Zugänge kontrollieren
+more datendel.002	Abgänge kontrollieren
+./zugang		Zugänge eintragen
+./abgang		Abgänge vornehmen
+more /etc/passwd	Eintrag kontrollieren
+more datenpwd.002	Vorlage für Serienbrief kontrollieren
+cp test3.sdf daten.sdf	Testdaten 
+./abgleich		Abgänge ermitteln
+more datendel.002	Abgänge kontrollieren
+./abgang		Abgänge vornehmen
+more /etc/passwd	Eintrag kontrollieren
+rm daten???*		Alle Daten löschen
+
+Es sollten alle Testdaten (auch in /etc/passwd) wieder gelöscht sein.
+
+
+
+
+
+

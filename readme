@@ -1,0 +1,141 @@
+Benutzerverwaltung
+------------------
+Das Programmpaket benutzt eine aktuelle von Kolleg (o.ä) erstellte
+Schülerdatei, um die Benutzerliste des Linux-Server zu aktualisieren.
+Das kann zum Schuljahresbeginn oder zu Beginn eines Halbjahres oder
+zu jedem beliebigen Zeitpunkt geschehen.
+
+Es besteht aus den Programmen
+	listcmp
+	listadd
+	listdel
+	listneu
+	add
+	xshadow
+
+Für die erstmalige und einmalige Erfassung der Lehrer dienen die
+Programme 
+	listcmp.1st
+	listadd.1st
+Die Lehrer sollten vor den Schülern eingetragen werden, um bei den 
+Benutzernamen der Lehrer Indizes zu vermeiden. Lesen Sie die
+Anleitung in liesmich.1st.
+
+Das Programm add, das den Zugang eines einzelnen Benutzers abwickelt, 
+kann zwischendurch benutzt werden. 
+Für Schüler (gruppe=schüler) hält dieses Programm verschlüsselt das 
+Geburtsdatum fest, um bei einem späteren automatischen Abgleich auch
+Namensgleichheit berücksichtigen zu können.  
+usage: ./add -g gruppe -l nachname -f vorname [vorname] -d geburtsdatum
+
+Das Programm listneu zeigt ein Bespiel für nachträgliche Korrekturen in den
+Verzeichnissen und/oder Datein aller Benutzer.
+
+Ablauf
+------
+daten.sdf mit Kolleg erstellen
+daten.sdf in das aktuelle Verzeichnis (mit allen Programmen) kopieren
+Datei /etc/passwd sichern (cp /etc/passwd passwd.old)
+Nur bei erstmaligem Eintrag der Schüler:
+    /etc/passwd anzeigen lassen (more /etc/passwd)
+    Alle Schüler (nur die Schüler) streichen (userdel benutzername)
+    	{Die Home-Verzeichnisse werden dabei nicht gelöscht.
+    	Alle Schüler müssen neu eingetragen werden, damit das 
+	Geburtsdatum korrekt eingefügt wird.}
+Ein Verzeichnis {schule}.goe einrichten (z.B. mkdir mpg.goe) 
+       {Das lesen die Programme, um die richtige Email-Adresse einzutragen.} 
+Das Programm listcmp starten (./listcmp)
+	{Dieses Programm erzeugt zwei Dateien, in den die Neuzugänge und
+	die Abgänge aufgeliste sind.}
+Datei datadd.001 (oder höherer Index) kontrollieren
+Datei datdel.001 (o.h.I.) kontrollieren, falls Abgänge vorkommen
+Das Programm listadd starten (./listadd)
+	{Dieses Programm trägt neue Benutzer aus datadd.001 ein.}
+/etc/passwd kontrollieren (more /etc/passwd)
+Das Programm shadow starten (./shadow)
+	{Dieses Programm korrigiert die Shadow-Datei (verschlüsselte
+	Passwort-Datei) /etc/shadow. Mir ist keine bessere Lösung eingefallen.}
+Mit Datei datpwd.001 (o.h.I.) Serienbriefe drucken
+	{Diese Datei anschliessend löschen!}
+Alle Datendateien löschen außer datdel.001 (o.h.I.) (rm datadd*)
+Das Programm listdel starten (./listdel)
+	{Es ist sinnvoll, die Abgänger erst später auszutragen und
+	die Datei datdel.001 (o.h.I.) solange aufzubewahren.}
+Jede abgearbeitete Datei datdel.001 (o.h.I.) löschen (rm datdel.001)    
+	
+
+Betroffene Dateien
+------------------
+Quelldateien:
+-------------
+/etc/passwd	System-Datei mit Benutzerbeschreibungen
+		gast:x:501:100:Gast:/home/gast:/bin/bash
+daten.sdf	mit Kolleg erstellte Datei mit Schülerdaten
+		Fröhlich;Friedrich-Wilhelm;06.06.06;8f1
+
+Hilfsdateien:
+-------------
+datadd.001	neue Schüler (in daten.sdf und nicht in /etc/passwd)
+		ffroehl0:Friedrich-Wilhelm Froehlich,56787822:8f1
+		(56787822 enthält das verschlüsselte Geburtsdatum.)
+datdel.001	abgegangene Schüler (in /etc/passwd und nicht in ...)
+		ffroehl0:Friedrich-Wilhelm Froehlich,56787822
+datpwd.001	neue Schüler mit vorläufigem Kennwort für Serienbriefe
+		11;Ferdinand Froehlich;ffroehl2;senatay;
+
+		(Die Dateien werden fortlaufend indiziert;
+		den Dateien werden jeweils gleiche Indizes angehängt.
+		datadd.nnn kann nach dem Eintragen gelöscht werden.
+		datdel.nnn kann nach dem Austragen gelöscht werden.
+		datpwd.nnn kann nach dem Briefdruck gelöscht werden.
+		Es kann sinnvoll sein, die Abgänger erst nach Ablauf einer
+		Frist zu streichen und datdel.nnn solange aufzuheben.
+
+dattmp		nur temporär
+datsdf		nur temporär
+datpwd		nur temporär
+
+brief		Serienbrief (Word-Format) für Mitteilung an Schüler
+
+Zieldateien:
+------------
+/etc/passwd	System-Datei mit Benutzerbeschreibungen
+		ffroehl0:x:1000:102:Friedrich-Wilhelm Froehlich,56787822:
+		/home/ffroehl0:/bin/bash
+/etc/shadow	System-Datei mit verschlüsselten Kennwörtern
+		ffroehl0:8gw4exBDw2YeQ:9947:10000:99999:7:0::0
+
+
+Programme
+---------
+listcmp		liest /etc/passwd und daten.sdf und erstellt für Zugänge
+		datadd.001 (bwz. fortlaufender Index) und,
+		wenn Abgänge anliegen, datdel.001.
+listdel		liest datdel.001 (oder nach Wunsch mit anderem Index)
+		und streicht die dort angegebenen Benutzer.
+listadd		liest datadd.001 (maximaler Index) und trägt die
+		die dort angegebenen Benutzer ein.
+		Für jeden neuen Benutzer wird ein Home-Verzeichnis
+		erstellt und eingerichtet.
+		Speziell wird in ~/system/netscape.ini für den
+		Netscape-Browser die Email-Adresse eingetragen.
+		Auf diese ini-Datei muß unter Windows for Workgroups in
+		system.ini verwiesen werden (z.B. mit p:/system/netscape.ini),
+		wenn in WfW das Laufwerk p: mit dem Home-Verzeichnis 
+		verbunden ist).
+pwd		C-Programm, das ein vorläufiges Kennwort generiert.
+		Das Programm (Source pwd.c) sollte in der Formel für die
+		Genierung des vorläufigen Passworts etwas abgeändert werden.
+shadow		Korrigiert die /etc/shadow im Anschluss an listadd bzw. add.
+listneu		Beispiel für eine Korrektur in Verzeichnis oder Datei aller
+		Benutzer.
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,299 @@
+#!/usr/bin/perl -w
+#
+#			listcmp
+#
+# Verwalten von Benutzern mit Hilfe von Daten aus der Schulverwaltung
+# von Eike Teiwes 20.03.97
+#
+# kleine Korrekturen und viele Aenderungen von Markus Boie
+
+# benoetigte Routinen
+require "bvw.pl";
+
+print "----------------------------------------------------\n";
+print "Benutzerverwaltung mit Hilfe von Schülerdaten\n";
+
+&vorbereitungen;
+
+print "    Vorhandene Benutzernamen erfassen (/etc/passwd --> RAM)\n";
+passwd_auslesen();
+print "    --> \+$i Schüler als Benutzer in passwd\n";
+
+print "    Aktuelle Schülerdaten auswerten ($datei --> dattmp)\n";
+sdf_auswerten();
+
+print "    Aktuelle Namen abgleichen (dattmp --> RAM) und\n";
+print "    ... aktuelle Namen sichern (RAM --> datsdf) und \n"; 
+print "    ... neue Namen sichern (RAM --> $datadd)\n"; 
+dattmp_auslesen($datadd, $daterr);
+print "    --> \+$j neue Benutzer aus dattmp in $datadd\n";
+
+print "    Aktuelle Benutzernamen erfassen (datsdf --> RAM)\n";
+datsdf_auslesen();
+print "    --> \-$l Benutzer nach wie vor in datsdf\n";
+
+print "    Eingetragene Namen abgleichen (/etc/paswd --> RAM) und\n";
+print "    ... zu streichende Namen sichern (RAM --> $datdel)\n"; 
+passwd_auswerten($datdel);
+print "    --> \-$m zu streichende(r) Benutzer\n";
+
+if ($k > 0) {
+    print "ACHTUNG: $k mal Überlauf (siehe Datei $daterr)\n";
+} 
+
+unlink('dattmp');
+unlink('datsdf');
+
+print "Starten Sie jetzt die Programme listadd [und listdel].\n";
+
+# --------------------------------------------------------------------
+
+sub vorbereitungen {
+
+    ($domain, $usergroup, $usershell, $staffgroup, $quotausr, $dflt_filename, $dflt_delimiter) = Initialize();
+
+    print "        Datei mit Benutzerdaten? (Voreinstellung $dflt_filename) ";
+    $datei = <STDIN>;
+    chop($datei);
+    if ($datei eq '') {
+	$datei = $dflt_filename;
+    }
+
+    @f=`find $datei 2>/dev/null`;
+    if ($f[0] eq '') {
+	print "\nFEHLER: Datei $datei fehlt.\n";
+	print "Spielen Sie die Datei in das aktuelle Verzeichnis.\n";
+	exit;
+    }
+
+    print "        Trennzeichen in $datei (Voreinstellung $dflt_delimiter) ";
+    $z = <STDIN>;
+    chop($z);
+    if ($z eq '') {
+	$z = $dflt_delimiter;
+    }
+
+    $gruppe = group($usergroup);
+    if ($gruppe eq '') {
+	print "\nGruppe $usergroup fehlt und wird eingerichtet.\n";
+	system("groupadd $usergroup");
+        $gruppe = group($usergroup);
+    }
+
+    $index = next_index("dat???.*");
+    $datadd = "datadd.$index";
+    $daterr = "daterr.$index";
+    $datdel = "datdel.$index";
+}
+
+# --------------------------------------------------------------------
+
+sub sdf_auswerten {
+    open (TMP, ">dattmp");
+    open (SDF, $datei);
+    while (<SDF>) {
+	chomp;
+	$_ =~ s/\r+\Z//m;	# remove any trailing return chars
+	if ($_ eq "") {
+	    next;
+	}    
+	if (/^\#/) {		# ignore comment lines
+	    next;
+	}    
+	s/ /-/g;
+	s/ä/ae/g;
+	s/ö/oe/g;
+	s/ü/ue/g;
+	s/Ä/Ae/g;
+	s/Ö/Oe/g;
+	s/Ü/Ue/g;
+	s/ß/ss/g;
+	s/é/e/g;
+	s/è/e/g;
+        s/á/a/g;
+	s/à/a/g;
+	($lastname, $firstname, $date, $class) = split(/$z/, $_);
+	$_ = $lastname;
+	s/von //;
+	s/zur //;
+	s/der //;
+	s/dem //;
+	s/(\w+)-(\w+)/$1/;
+  	$_ = substr($firstname, 0, 1) . substr($_, 0, 6);
+	tr/A-Z/a-z/;
+	$name = $_;
+	$fullname = $firstname . " " . $lastname;
+	$code = code($date);
+	print TMP "$name:$fullname,$code:$class\n";
+    }
+    close(SDF);
+    close(TMP);
+}
+
+# --------------------------------------------------------------------
+
+sub passwd_auslesen {
+    $i = 0;
+    open(PWD, '/etc/passwd');
+    while (<PWD>) {
+	chop;
+        ($name, $passwd, $uid, $gid, $gcos) = split(/:/);
+        #($fullname, $code) = split(/,/, $gcos);
+	$feld{$name} = $gcos;
+	if ($gid eq $gruppe) {
+            ++$i;
+        }
+    }	
+    close(PWD);
+}
+
+# --------------------------------------------------------------------
+
+sub dattmp_auslesen {
+    local($add, $err) = @_;
+    open(ADD, ">$add");
+    open(SDF, ">datsdf");
+    open(TMP, 'dattmp');
+    $k = 0;
+    $j = 0;
+    EINTRAG: while (<TMP>) {
+	chop;
+        ($name, $gcos, $class) = split(/:/);
+        ($fullname, $code) = split(/,/, $gcos);
+        $vorhanden = 'n';
+	if ( (exists $feld{$name}) && ($feld{$name} eq $gcos) ) {
+	    $vorhanden = '';
+	}
+	foreach $i (1..9,A..Z) {
+	    if ( (exists $feld{$name.$i}) && ($feld{$name.$i} eq $gcos) ) {
+		$vorhanden = $i;
+	    }
+        }
+        if ($vorhanden ne 'n') {	
+	    #print "!!! $name$vorhanden ($fullname) vorhanden\n";
+	    print SDF "$name$vorhanden:$gcos\n";
+	    next EINTRAG;
+	}    
+	$_ = $name . 'Z';
+	#if ($feld{$_} ne '') {
+	if (exists $feld{$_}) {
+	    print "ÜBERLAUF: Alle $name sind belegt!\n";
+            open(ERR, ">>$err");
+	    print ERR "Ueberlauf: $name:$gcos\n";
+	    close(ERR);
+	    $k++;
+	} else {
+	    #while ( (/.*[1-9A-Z]/) && ($feld{$_} eq '') ) {
+	    while ( (/.*[1-9A-Z]/) && (not exists $feld{$_}) ) {
+		tr/1-9A-Z/0-9A-Y/;
+	    }
+	    #print "!!! abwärts bis $_\n";
+            #if ( (/.*[1-9A-Z]/) || ($feld{$name} ne '') ) {
+            if ( (/.*[1-9A-Z]/) || (exists $feld{$name}) ) {
+		#print "!!! $_ belegt, suche weiter ... ";
+	        ++$k;
+		tr/0-9A-Y/1-9A-Z/;
+		#print "!!! finde $_ !!!\n";
+	    } 
+        }
+	s/0//;
+	#print "!!! Name: $_\n";
+	$feld{$_} = $fullname . $date;
+	print ADD "$_:$gcos:$class\n";
+	print SDF "$_:$gcos\n";
+	$j++;
+    }
+    close(TMP);
+    close(SDF);
+    close(ADD);
+}
+
+# --------------------------------------------------------------------
+
+sub datsdf_auslesen {
+    $l = 0;
+    open(SDF, 'datsdf');
+    while (<SDF>) {
+        ($name) = split(/:/);
+	$feld{$name} = '0';
+	++$l;
+    }	
+    close(SDF);
+}
+
+# --------------------------------------------------------------------
+
+sub passwd_auswerten {
+    local($del) = @_;
+    open(PWD, '/etc/passwd');
+    open(DEL, ">$del");
+    $m = 0;
+    while (<PWD>) {
+        if ($_ eq '') {
+	    next;
+	}
+	($name, $passwd, $uid, $gid, $gcos) = split(/:/);
+	if ($feld{$name} ne '0') {
+	    if ($gid eq $gruppe) {
+          	print DEL "$name:$gcos\n";
+		++$m;
+	    }
+	}    
+    }
+    close(DEL);
+    close(PWD);
+    if ($m == 0) {
+	unlink($del);
+    }
+}
+
+# --------------------------------------------------------------------
+
+sub next_index {
+    $_ = sprintf("%03d", max_index(@_)+1);
+    return $_;
+}
+
+# --------------------------------------------------------------------
+
+sub max_index {
+    local($max) = '000';
+    foreach (`find @_ 2>/dev/null`) {
+	$i = substr($_, -3, 3);
+	if ($i > $max) {
+	    $max = $i;
+	}
+    }	
+    $_ = sprintf("%03d", $max);
+    return $_;
+}
+
+# --------------------------------------------------------------------
+
+sub code {
+    local($date) = @_;
+    $date = substr($date, 6, 2) . substr($date, 3, 2)
+				. substr($date, 0, 2);
+    return $date*937;
+}
+
+# --------------------------------------------------------------------
+
+sub decode {
+    local($code) = @_;
+    $code = $code / 937;
+    return substr($code, 4, 2) . '.' . substr($code, 2, 2)
+			       . '.' . substr($code, 0, 2);
+}
+
+# --------------------------------------------------------------------
+
+sub group {
+    local($name) = @_;
+    $_=`grep $name /etc/group`;
+    /(\w+)\W+(\w+)\W+(\w+)/;
+    return $3;
+}
+
+#
+# end listcmp
