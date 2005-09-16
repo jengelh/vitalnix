@@ -89,42 +89,42 @@ afterwards of important events.</p>
   </tr>
   <tr>
     <td class="t1">2003-06-28</td>
-    <td class="t1">Daxtraq 1.70</td>
+    <td class="t1">DAUtool 1.70</td>
     <td class="t1">&nbsp;</td>
   </tr>
   <tr>
     <td class="t2">2003-07-04</td>
-    <td class="t2">Daxtraq 1.71</td>
+    <td class="t2">DAUtool 1.71</td>
     <td class="t2">Bugfixes</td>
   </tr>
   <tr>
     <td class="t1">2003-07-21</td>
-    <td class="t1">Daxtraq 1.72</td>
+    <td class="t1">DAUtool 1.72</td>
     <td class="t1">Bugfixes</td>
   </tr>
   <tr>
     <td class="t2">2003-07-22</td>
-    <td class="t2">Daxtraq 1.73</td>
+    <td class="t2">DAUtool 1.73</td>
     <td class="t2">Bugfixes</td>
   </tr>
   <tr>
     <td class="t1">2003-08-04</td>
-    <td class="t1">Daxtraq 1.73.2</td>
+    <td class="t1">DAUtool 1.73.2</td>
     <td class="t1">Bugfixes</td>
   </tr>
   <tr>
     <td class="t2">2003-08-10</td>
-    <td class="t2">Daxtraq 1.73.3</td>
+    <td class="t2">DAUtool 1.73.3</td>
     <td class="t2">Bugfixes</td>
   </tr>
   <tr>
     <td class="t1">2003-08-29</td>
-    <td class="t1">Daxtraq 1.73.8</td>
+    <td class="t1">DAUtool 1.73.8</td>
     <td class="t1">Bugfixes</td>
   </tr>
   <tr>
     <td class="t2">2003-09-30</td>
-    <td class="t2">Daxtraq 1.73.11</td>
+    <td class="t2">DAUtool 1.73.11</td>
     <td class="t2">Bugfixes (bugged 'til eternity)</td>
   </tr>
   <tr>
@@ -134,38 +134,32 @@ afterwards of important events.</p>
   </tr>
   <tr>
     <td class="t2">2003-11-19</td>
-    <td class="t2">Vitalnix 0.9.8.5<br />
-      Daxtraq 1.90.8.5</td>
+    <td class="t2">Vitalnix 0.9.8.5</td>
     <td class="t2">Alpha snapshot (released as package)</td>
   </tr>
   <tr>
     <td class="t1">2003-11-20</td>
-    <td class="t1">Vitalnix 0.9.8.6<br />
-      Daxtraq 1.90.8.6</td>
+    <td class="t1">Vitalnix 0.9.8.6</td>
     <td class="t1">Alpha snapshot (released as package)</td>
   </tr>
   <tr>
     <td class="t2">2003-11-29</td>
-    <td class="t2">Vitalnix 0.9.8.35<br />
-      Daxtraq 1.90.8.35</td>
+    <td class="t2">Vitalnix 0.9.8.35</td>
     <td class="t2">Alpha snapshot (released as package)</td>
   </tr>
   <tr>
     <td class="t1">2003-12-01</td>
-    <td class="t1">Vitalnix 0.9.8.41<br />
-      Daxtraq 1.90.8.41</td>
+    <td class="t1">Vitalnix 0.9.8.41</td>
     <td class="t1">Alpha snapshot (released as package)</td>
   </tr>
   <tr>
     <td class="t2">2003-12-12</td>
-    <td class="t2">Vitalnix 0.9.8.52<br />
-      Daxtraq 1.90.8.52</td>
+    <td class="t2">Vitalnix 0.9.8.52</td>
     <td class="t2">Alpha snapshot (released as package)</td>
   </tr>
   <tr>
     <td class="t1">2003-12-18</td>
-    <td class="t1">Vitalnix 0.9.8.70<br />
-      Daxtraq 1.90.8.70</td>
+    <td class="t1">Vitalnix 0.9.8.70</td>
     <td class="t1">Alpha snapshot (released as package)</td>
   </tr>
   <tr>
@@ -182,7 +176,7 @@ afterwards of important events.</p>
   </tr>
   <tr>
     <td class="t2">2004-03-22</td>
-    <td class="t2">Daxtraq 1.73.99</td>
+    <td class="t2">DAUtool 1.73.99</td>
     <td class="t2">The "Death Edition" (final discontinuation)</td>
   </tr>
   <tr>
