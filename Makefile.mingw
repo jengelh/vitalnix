@@ -1,0 +1,277 @@
+#~~syntax:makefile
+#==============================================================================
+# Vitalnix User Management Suite
+#   Copyright © Jan Engelhardt <jengelh [at] linux01 gwdg de>, 2003 - 2005
+#   -- License restrictions apply (LGPL v2.1)
+#
+#   This file is part of Vitalnix.
+#   Vitalnix is free software; you can redistribute it and/or modify it
+#   under the terms of the GNU Lesser General Public License as published
+#   by the Free Software Foundation; however ONLY version 2 of the License.
+#
+#   Vitalnix is distributed in the hope that it will be useful, but
+#   WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+#   General Public License for more details.
+#
+#   You should have received a copy of the GNU Lesser General Public
+#   License along with this program kit; if not, write to:
+#   Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+#   Boston, MA  02110-1301  USA
+#
+#   -- For details, see the file named "LICENSE.LGPL2"
+#==============================================================================
+
+include devutil/makevars.inc
+
+ifneq ($(shell uname -p | grep -Ei 'i.86|athlon'),)
+  MCPU_IS_X86 := 1
+else
+  MCPU_IS_X86 := 0
+endif
+
+### Base targets --------------------------------------------------------------
+#
+.PHONY: all clean distclean
+
+all: accdb backends cspark.exe sysprog supply cgi
+
+clean: clean_accdb clean_backends clean_cui clean_sysprog clean_supply \
+ clean_devutil clean_cgi
+
+distclean: clean
+	rm -f */.*.d;
+
+### ---------------------------------------------------------------------------
+#
+devutil/vx_icon.o: devutil/vx_icon.rc devutil/vx_icon.ico
+	windres -i $< -o $@;
+
+### Target: libaccdb ----------------------------------------------------------
+#
+.PHONY: accdb clean_accdb
+
+LIBACCDB_OBJS := accdb/accdb.o accdb/bf.o accdb/phonemic.o
+ifeq (${MCPU_IS_X86},1)
+  LIBACCDB_OBJS += accdb/bf_x86.o
+accdb/bf.o: accdb/bf.c
+	${VECHO_CC}
+	${CC} -DBF_ASM=1 ${CFLAGS} -Wp,-MMD,accdb/.bf.d -c -o $@ $<;
+endif
+
+accdb: .Target.accdb.d
+
+.Target.accdb.d: libaccdb.0.2.dll
+	@touch $@;
+
+libaccdb.0.2.dll: ${LIBACCDB_OBJS}
+	${VECHO_LD}
+	${LD} ${LDFLAGS} ${SOFLAGS} -Wl,-soname,$@ -o $@ $^ -lHX;
+	${STRIP} -s $@;
+	ln -fs $@ libaccdb.dll;
+
+accdb/%.o: accdb/%.c
+	${VECHO_CC}
+	${CC} ${CFLAGS} -Wp,-MMD,accdb/.$*.d -c -o $@ $<;
+
+accdb/%.o: accdb/%.cpp
+	${VECHO_CC}
+	${CXX} ${CXXFLAGS} -Wp,-MMD,accdb/.$*.d -c -o $@ $<;
+
+accdb/%.o: accdb/%.S
+	${VECHO_CC}
+	${AS} ${ASFLAGS} -c -o $@ $<;
+
+clean_accdb:
+	rm -f .Target.accdb.d accdb/*.o libaccdb{,.0.2}.dll;
+
+### Target: ACCDB back-end modules --------------------------------------------
+#
+.PHONY: backends clean_backends
+
+backends: .Target.backends.d
+
+.Target.backends.d: accdb_shadow.dll
+	@touch $@;
+
+BACKEND_SHADOW_OBJS := backends/shadow.o
+accdb_shadow.dll: .Target.accdb.d ${BACKEND_SHADOW_OBJS}
+	${VECHO_LD}
+	${LD} ${LDFLAGS} ${SOFLAGS} -o $@ ${BACKEND_SHADOW_OBJS} -lHX -laccdb;
+	${STRIP} -s $@;
+
+backends/%.o: backends/%.c
+	${VECHO_CC}
+	${CC} ${CFLAGS} -Wp,-MMD,backends/.$*.d -c -o $@ $<;
+
+backends/%.o: backends/%.cpp
+	${VECHO_CC}
+	${CXX} ${CXXFLAGS} -Wp,-MMD,backends/.$*.d -c -o $@ $<;
+
+clean_backends:
+	rm -f .Target.backends.d backends/*.o accdb_*.dll;
+
+### Target: ACCDB programs ----------------------------------------------------
+#
+.PHONY: clean_sysprog
+USERADD_OBJS := sysprog/useradd.o sysprog/shared.o devutil/vx_icon.o
+USERMOD_OBJS := sysprog/usermod.o sysprog/shared.o devutil/vx_icon.o
+USERDEL_OBJS := sysprog/userdel.o sysprog/shared.o devutil/vx_icon.o
+GROUPADD_OBJS := sysprog/groupadd.o sysprog/shared.o devutil/vx_icon.o
+GROUPMOD_OBJS := sysprog/groupmod.o sysprog/shared.o devutil/vx_icon.o
+GROUPDEL_OBJS := sysprog/groupdel.o sysprog/shared.o devutil/vx_icon.o
+
+sysprog: .Target.sysprog.d
+
+.Target.sysprog.d: vuseradd.exe vusermod.exe vuserdel.exe vgroupadd.exe \
+ vgroupmod.exe vgroupdel.exe
+	@touch $@;
+
+vuseradd.exe: .Target.accdb.d ${USERADD_OBJS}
+	${VECHO_LD}
+	${LD} ${LDFLAGS} -o $@ ${USERADD_OBJS} -lHX -laccdb -lpopt;
+	${STRIP} -s $@;
+
+vusermod.exe: .Target.accdb.d ${USERMOD_OBJS}
+	${VECHO_LD}
+	${LD} ${LDFLAGS} -o $@ ${USERMOD_OBJS} -lHX -laccdb -lpopt;
+	${STRIP} -s $@;
+
+vuserdel.exe: .Target.accdb.d ${USERDEL_OBJS}
+	${VECHO_LD}
+	${LD} ${LDFLAGS} -o $@ ${USERDEL_OBJS} -lHX -laccdb -lpopt;
+	${STRIP} -s $@;
+
+vgroupadd.exe: .Target.accdb.d ${GROUPADD_OBJS}
+	${VECHO_LD}
+	${LD} ${LDFLAGS} -o $@ ${GROUPADD_OBJS} -lHX -laccdb -lpopt;
+	${STRIP} -s $@;
+
+vgroupmod.exe: .Target.accdb.d ${GROUPMOD_OBJS}
+	${VECHO_LD}
+	${LD} ${LDFLAGS} -o $@ ${GROUPMOD_OBJS} -lHX -laccdb -lpopt;
+	${STRIP} -s $@;
+
+vgroupdel.exe: .Target.accdb.d ${GROUPDEL_OBJS}
+	${VECHO_LD}
+	${LD} ${LDFLAGS} -o $@ ${GROUPDEL_OBJS} -lHX -laccdb -lpopt;
+	${STRIP} -s $@;
+
+sysprog/%.o: sysprog/%.c
+	${VECHO_CC}
+	${CC} ${CFLAGS} -Wp,-MMD,sysprog/.$*.d -c -o $@ $<;
+
+sysprog/%.o: sysprog/%.cpp
+	${VECHO_CC}
+	${CXX} ${CXXFLAGS} -Wp,-MMD,sysprog/.$*.d -c -o $@ $<;
+
+clean_sysprog:
+	rm -f .Target.sysprog.d sysprog/*.o v{user,group}{add,mod,del}.exe;
+
+### C-spark -------------------------------------------------------------------
+#
+.PHONY: clean_cui
+VCUI_OBJS := cui/main.o cui/autorun.o cui/data.o cui/pwlist.o cui/sync.o \
+ cui/xml_in.o devutil/vx_icon.o
+
+cspark.exe: .Target.accdb.d ${VCUI_OBJS}
+	${VECHO_LD}
+	${LDXX} ${LDFLAGS} -o $@ ${VCUI_OBJS} -lHX -laccdb -liconv -lpopt -lxml2;
+	${STRIP} -s $@;
+
+cui/%.o: cui/%.c
+	${VECHO_CC}
+	${CC} ${CFLAGS} -Wp,-MMD,cui/.$*.d -c -o $@ $<;
+
+cui/%.o: cui/%.cpp
+	${VECHO_CC}
+	${CXX} ${CXXFLAGS} -Wp,-MMD,cui/.$*.d -c -o $@ $<;
+
+clean_cui:
+	rm -f cspark.exe cui/*.o;
+
+### Target: Supply programs ---------------------------------------------------
+#
+.PHONY: supply clean_supply
+
+supply: .Target.sysprog.d .Target.supply.d
+
+.Target.supply.d: accdbinfo.exe
+	@touch $@;
+
+ACCDBINFO_OBJS := supply/accdbinfo.o sysprog/shared.o
+accdbinfo.exe: .Target.accdb.d .Target.sysprog.d ${ACCDBINFO_OBJS}
+	${VECHO_LD}
+	${LD} ${LDFLAGS} -o $@ ${ACCDBINFO_OBJS} -lHX -laccdb -lpopt;
+	${STRIP} -s $@;
+
+supply/%.o: supply/%.c
+	${VECHO_CC}
+	${CC} ${CFLAGS} -Wp,-MMD,supply/.$*.d -c -o $@ $<;
+
+supply/%.o: supply/%.cpp
+	${VECHO_CC}
+	${CXX} ${CXXFLAGS} -Wp,-MMD,supply/.$*.d -c -o $@ $<;
+
+clean_supply:
+	rm -f .Target.supply.d accdbinfo.exe supply/*.o;
+
+### Target: Development helper programs ---------------------------------------
+#
+.PHONY: devutil clean_devutil
+
+devutil: .Target.devutil.d
+
+.Target.devutil.d: listusers.exe
+	@touch $@;
+
+listusers.exe: .Target.accdb.d devutil/listusers.o
+	${VECHO_LD}
+	${LD} ${LDFLAGS} -o $@ devutil/listusers.o -laccdb;
+	${STRIP} -s $@;
+
+devutil/%.o: devutil/%.c
+	${VECHO_CC}
+	${CC} ${CFLAGS} -Wp,-MMD,devutil/.$*.d -c -o $@ $<;
+
+devutil/%.o: devutil/%.cpp
+	${VECHO_CC}
+	${CXX} ${CXXFLAGS} -Wp,-MMD,devutil/.$*.d -c -o $@ $<;
+
+clean_devutil:
+	rm -f .Target.devutil.d listusers.exe devutil/*.o;
+
+### CGI -----------------------------------------------------------------------
+#
+.PHONY: cgi
+
+cgi: .Target.cgi.d
+
+.Target.cgi.d: cgi/chpasswd.exe cgi/cquota.exe
+
+CHPASSWD_OBJS := cgi/chpasswd.o cgi/base.o cgi/sh_auth.o
+cgi/chpasswd.exe: ${CHPASSWD_OBJS}
+	${VECHO_LD}
+	${LD} ${LDFLAGS} -o $@ ${CHPASSWD_OBJS} -lHX -lcrypt;
+	chmod u+s $@;
+
+CQUOTA_OBJS := cgi/cquota.o cgi/base.o cgi/sh_auth.o
+cgi/cquota.exe: ${CQUOTA_OBJS}
+	${VECHO_LD}
+	${LD} ${LDFLAGS} -o $@ ${CQUOTA_OBJS} -lHX -lcrypt;
+	chmod u+s $@;
+
+cgi/%.o: cgi/%.c
+	${VECHO_CC}
+	${CC} ${CFLAGS} -Wp,-MMD,cgi/.$*.d -c -o $@ $<;
+
+cgi/%.o: cgi/%.cpp
+	${VECHO_CC}
+	${CXX} ${CXXFLAGS} -Wp,-MMD,cgi/.$*.d -c -o $@ $<;
+
+clean_cgi:
+	rm -f .Target.cgi.d cgi/*.{exe,o};
+
+-include */.*.d
+
+#==============================================================================

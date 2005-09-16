@@ -1,0 +1,9 @@
+#~~syntax:shconfig
+#
+# Configuration file for Vitalnix ACCDB
+
+# DEFAULT_BACKEND can either be the short name (i.e. "dummy" for accdb_dummy.*)
+# or the full pathname (i.e. /usr/lib/accdb_dummy.so). The latter is in most
+# cases then OS dependent.
+#
+DEFAULT_BACKEND=shadow

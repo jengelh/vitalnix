@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+
+$Id: ds-real.xml,v 2.1 2005/04/11 17:55:36 hirogen2 Exp $
+
+This is a very cut down example of a real world example. What contained is my
+very own entry as I can not pass any confidental data.
+
+Remember, any unknown fields are ignored by the parser. Fields known are
+"nname", "vname", "xuid" and "sgroup". That "src" is provided here is a remnant
+(though, leave it in) of the SDF2XML utility.
+
+-->
+<datasource>
+    <user nname="Engelhardt" vname="Jan" src="22.5.86" xuid="0_7C2516" sgroup="12" />
+</datasource>

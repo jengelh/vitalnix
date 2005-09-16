@@ -1,0 +1,17 @@
+#!/bin/bash
+# It sometimes happens that our secretaries get small stuff wrong;
+# we notice it when a user gets removed and added again -
+# (yes, it needs a human review to decide "is it the same user?")
+# Helps anyway.
+
+if [ "$#" -lt 2 ]; then
+    echo "Usage: $0 sdffile logfile";
+    exit 1;
+fi;
+
+(
+    for i in `grep ^-: "$2" | cut -b 3-`; do
+        echo '*** '"$i";
+        grep -i "^${i:1}.*;${i:0:1}" "$1";
+    done;
+) 2>&1 | less;

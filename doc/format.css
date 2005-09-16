@@ -1,0 +1,107 @@
+/* $Id: format.css,v 2.1 2005/04/11 17:51:07 hirogen2 Exp $ */
+
+.block {
+  margin-left: 20px;
+  text-align: justify;
+}
+
+.jblock {
+  text-align: justify;
+}
+
+.cmd {
+  background-color: #D0DDCC;
+  border: 1px solid #808080;
+  font-size: 10pt;
+}
+
+.pleft { margin-left: 20px; }
+.pleft2 { margin-left: 40px; }
+
+.left {
+   text-align: left;
+}
+
+.titlebar {
+  background-color: #000000;
+  border-bottom: 1px solid #808080;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.titlebar td {
+  color: #80AA80;
+  font-size: 14pt;
+  font-weight: bold;
+  vertical-align: bottom;
+}
+
+a, a:visited {
+  color: #B00000;
+  text-decoration: none;
+}
+
+a:active, a:hover, a:focus {
+  color: #0000FF;
+  text-decoration: none;
+}
+
+body {
+  background-color: #FFFFFF;
+  color: #000000;
+  margin: 0px;
+}
+
+h1, h2 {
+  color: #C00000;
+  font-size: 12pt;
+  font-family: Arial, Helvetica;
+  font-weight: bold;
+}
+
+h2 {
+  font-size: 11pt;
+  font-style: italic;
+  margin-left: 10px;
+}
+
+p, td, li {
+  font-size: 11pt;
+  font-family: Arial, Helvetica;
+}
+
+sup {
+  font-size: 9pt;
+}
+
+table {
+  border: 0px;
+  border-collapse: collapse;
+}
+
+table.bordered {
+  border-collapse: collapse;
+  border-spacing: 0px;
+}
+
+table.bordered td {
+  border: 1px solid #808080;
+  padding: 2px;
+  vertical-align: top;
+}
+
+table.bordered td.t1 {
+  background-color: #DDDDDD;
+}
+
+table.bordered td.t2 {
+  background-color: #EEEEEE;
+}
+
+table.ttl {
+  border: 1px solid #C00000;
+}
+
+td {
+  vertical-align: top;
+}

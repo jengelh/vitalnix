@@ -1,0 +1,60 @@
+#!/bin/bash
+#==============================================================================
+# Vitalnix User Management Suite
+#   Copyright © Jan Engelhardt <jengelh [at] linux01 gwdg de>, 2003 - 2005
+#   -- License restrictions apply (LGPL v2.1)
+#
+#   This file is part of Vitalnix.
+#   Vitalnix is free software; you can redistribute it and/or modify it
+#   under the terms of the GNU Lesser General Public License as published
+#   by the Free Software Foundation; however ONLY version 2 of the License.
+#
+#   Vitalnix is distributed in the hope that it will be useful, but
+#   WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+#   General Public License for more details.
+#
+#   You should have received a copy of the GNU Lesser General Public
+#   License along with this program kit; if not, write to:
+#   Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+#   Boston, MA  02110-1301  USA
+#
+#   -- For details, see the file named "LICENSE.LGPL2"
+#==============================================================================
+
+if [ "$1" == "" ]; then
+    echo Usage: $0 version-target
+    echo Example: makezip 1.0.30.0-win32
+    exit 1;
+fi;
+
+VAT="$1";
+rm -f "vitalnix-$VAT.zip";
+
+spec="${0%/*}/vitalnix.spec";
+td=`mktemp -d "/tmp/makezip.$$.XXXXXX"`;
+mkdir -p "$td/vitalnix-$VAT";
+
+echo Copying
+for f in `grep '^#win32\\$' $spec | cut -b 9-`; do
+    f="./$f";
+    fbase="${f%/*}";
+    mkdir -p "$td/vitalnix-$VAT/$fbase";
+    cp -av "$f" "$td/vitalnix-$VAT/$fbase/";
+done;
+
+echo Removing CVS folders
+find "$td" -iname CVS -print0 | xargs -0r rm -Rfv;
+vhome="$PWD";
+cd "$td"/;
+
+echo Stripping EXEs
+find . -iname "*.exe" -print0 | xargs -0r strip -sv;
+echo Stripping DLLs
+find . -iname "*.dll" -print0 | xargs -0r strip -sv;
+
+echo Packaging
+zip -9r "$vhome/vitalnix-$VAT.zip" "vitalnix-$VAT";
+rm -Rf "$td";
+
+#==============================================================================

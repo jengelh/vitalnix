@@ -1,0 +1,81 @@
+#!/usr/bin/perl
+#==============================================================================
+# Vitalnix User Management Suite
+#   Copyright © Jan Engelhardt <jengelh [at] linux01 gwdg de>, 2003 - 2005
+#   -- License restrictions apply (LGPL v2.1)
+#
+#   This file is part of Vitalnix.
+#   Vitalnix is free software; you can redistribute it and/or modify it
+#   under the terms of the GNU Lesser General Public License as published
+#   by the Free Software Foundation; however ONLY version 2 of the License.
+#
+#   Vitalnix is distributed in the hope that it will be useful, but
+#   WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+#   General Public License for more details.
+#
+#   You should have received a copy of the GNU Lesser General Public
+#   License along with this program kit; if not, write to:
+#   Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+#   Boston, MA  02110-1301  USA
+#
+#   -- For details, see the file named "LICENSE.LGPL2"
+#==============================================================================
+#
+# sort_by_uid [-n|-u] {-p|-g} [-i INPUT] [-o OUTPUT]
+#
+# -n    Sort by user name
+# -p    Recognize file as /etc/passwd style (UID in 3rd field)
+# -g    Recognize file as /etc/group style (GID in 2nd field)
+# -i    Supply an input file, or - for stdin. If omitted, uses -.
+# -o    Supply an output file, or - for stdout. If omitted, uses -.
+# -u    Sort by UID. This option is implicit, and only -n can override it.
+#
+# Example:
+#     sort_pwf -pi /etc/passwd -o /etc/passwd.new
+#
+#------------------------------------------------------------------------------
+use Getopt::Long;
+use strict;
+no strict "subs", "refs";
+
+my @db;
+my $Style_passwd = 0;
+my $Style_group = 0;
+my $Sort_name = 0;
+my $Inputf = "-";
+my $Outputf = "-";
+
+&Getopt::Long::Configure(qw(bundling pass_through));
+&GetOptions(
+    "g"   => \$Style_group,
+    "i=s" => \$Inputf,
+    "n"   => sub { $Sort_name = 1; },
+    "o=s" => \$Outputf,
+    "p"   => \$Style_passwd,
+    "u"   => sub { $Sort_name = 0; },
+);
+
+if($Style_group && $Style_passwd) {
+    die "Error: Cannot use -p and -g at the same time\n";
+}
+
+open(IN, "< $Inputf") || die "Could not open $Inputf: $!\n";
+chomp(@db = <IN>);
+
+if($Style_passwd) {
+    @db = sort {
+        (split(/:/o, $a))[2] <=> (split(/:/o, $b))[2]
+    } @db;
+} elsif($Style_group) {
+    @db = sort {
+        (split(/:/o, $a))[1] <=> (split(/:/o, $b))[1]
+    } @db;
+}
+close IN;
+
+open(OUT, "> $Outputf") || die "Could not open $Outputf: $!\n";
+print OUT join("\n", @db), "\n";
+close OUT;
+
+#==============================================================================
