@@ -1,0 +1,247 @@
+# -*- Makefile -*-
+
+ifeq (${S},)
+    $(error You need to specify S=/path/to/vitalnix/src)
+endif
+include ${S}/Makevars.inc
+ifneq (${S},)
+    vpath %.c   ${S}
+    vpath %.cpp ${S}
+    vpath %.h   ${S}
+    vpath %.hpp ${S}
+    vpath %.S   ${S}
+    vpath %.php ${S}
+    vpath %.png ${S}
+    vpath %.icss ${S}
+endif
+
+ifneq ($(shell uname -m | grep -i i.86),)
+    MCPU_IS_X86 := 1
+else
+    MCPU_IS_X86 := 0
+endif
+
+# BASE ---------------------------------
+#
+.PHONY: all doc clean distclean
+
+EXEC_TARGETS := \
+    vitalnix \
+    cgi_chpasswd cgi_vwquota \
+    mdfixuuid mdpwlfmt mdsingle mdsync pdbdump pdbinfo \
+    randpw tryauth testcase \
+    vxuseradd vxusermod vxuserdel vxgroupadd vxgroupmod vxgroupdel
+
+all: \
+    ${EXEC_TARGETS} doc \
+    libvxcgi.so libvxcli.so libvxcore.so libvxeds.so libvxmdfmt.so \
+    libvxmdsync.so libvxpdb.so libvxplex.so libvxutil.so \
+    drv_mmd.so drv_ldap.so drv_mysql.so drv_shadow.so drv_nss.so \
+    drv_nss1.so drv_dummy.so \
+    useradd_lib.so \
+    usermod_lib.so \
+    userdel_lib.so \
+
+doc: $(patsubst ${S}/%.php,%.html,$(wildcard ${S}/doc/[a-z]*.php)) \
+     $(patsubst ${S}/%.php,%.txt,$(wildcard ${S}/doc/[a-z]*.php)) \
+     $(patsubst ${S}/%.icss,%.css,$(wildcard ${S}/doc/*.icss))
+
+clean:
+ifneq (${O},)
+	rm -Rf ${O};
+endif
+
+distclean: clean
+
+# LIBS ---------------------------------
+#
+XLDFLAGS_libvxcgi_so            := -lHX -lpam
+libvxcgi.so: $(call srcobj,libvxcgi)
+
+XLDFLAGS_libvxcli_so            := -lHX
+libvxcli.so: $(call srcobj,libvxcli)
+
+XLDFLAGS_libvxcore_so           := -lHX
+libvxcore.so: $(call srcobj,libvxcore)
+
+XCFLAGS_libvxeds_d_xml          := ${LIBXML_CFLAGS}
+XLDFLAGS_libvxeds_so            := ${LIBXML_LDFLAGS} -lHX -lvxcore -lvxutil
+libvxeds.so: $(call srcobj,libvxeds) | libvxcore.so libvxutil.so
+
+XLDFLAGS_libvxmdfmt_so          := -lHX -lvxcore -lvxutil
+libvxmdfmt.so: $(call srcobj,libvxmdfmt) | libvxcore.so libvxutil.so
+
+XLDFLAGS_libvxmdsync_so         := -lHX -lvxeds -lvxpdb -lvxutil
+libvxmdsync.so: $(call srcobj,libvxmdsync) | libvxeds.so libvxpdb.so libvxutil.so
+
+XLDFLAGS_libvxpdb_so            := -lHX -lvxcore -lvxutil
+libvxpdb.so: $(call srcobj,libvxpdb) | libvxcore.so libvxutil.so
+
+XLDFLAGS_libvxplex_so           := -lHX
+libvxplex.so: $(call srcobj,libvxplex)
+
+ifeq (${MCPU_IS_X86},1)
+    XOBJS_libvxutil             += libvxutil/blowfish_x86.o
+    XCFLAGS_libvxutil_blowfish  := -DBF_ASM=1
+endif
+XLDFLAGS_libvxutil_so  := -lHX -lcrypt -lssl
+libvxutil.so: $(call srcobj,libvxutil) ${XOBJS_libvxutil}
+
+# PDB DRIVERS --------------------------
+#
+
+XLDFLAGS_drv_ldap_so            := -lHX -lvxcore -lvxpdb
+drv_mmd.so: drivers/mmd.o | libvxcore.so libvxpdb.so
+
+XLDFLAGS_drv_ldap_so            := -lldap_r -lvxcore -lvxpdb
+drv_ldap.so: drivers/ldap.o | libvxcore.so libvxpdb.so
+
+XCFLAGS_drivers_mysql           := ${MYSQL_CFLAGS}
+XLDFLAGS_drv_shadow_so          := ${MYSQL_LDFLAGS} -lvxcore -lvxpdb -lvxutil
+drv_mysql.so: $(call srcobj,drivers/mysql) | libvxcore.so libvxpdb.so libvxutil.so
+
+XCFLAGS_drivers_shadow          := ${LIBXML_CFLAGS}
+XLDFLAGS_drv_shadow_so          := ${LIBXML_LDFLAGS} -lHX -lvxcore -lvxpdb
+drv_shadow.so: $(call srcobj,drivers/shadow) | libvxcore.so libvxpdb.so
+
+XLDFLAGS_drv_nss_so             := -lHX -lvxcore -lvxpdb
+drv_nss.so: drivers/nss.o | libvxcore.so libvxpdb.so
+
+XLDFLAGS_drv_nss1_so            := -lvxcore -lvxpdb -lvxutil
+drv_nss1.so: drivers/nss1.o | libvxcore.so libvxpdb.so libvxutil.so
+
+XLDFLAGS_drv_dummy_so           := -lvxcore
+drv_dummy.so: drivers/dummy.o | libvxcore.so
+
+### CGI PROGRAMS --------------------------------------------------------------
+#
+XLDFLAGS_cgi_chpasswd   := -lHX -lvxcgi
+cgi_chpasswd: cgiutils/chpasswd.o | libvxcgi.so
+
+XLDFLAGS_cgi_vwquota    := -lHX -lvxcgi -lvxutil
+cgi_vwquota: cgiutils/vwquota.o | libvxcgi.so libvxutil.so
+
+# COMMAND-LINE TOOLS -------------------
+#
+XLDFLAGS_mdfixuuid      := -lHX -lvxpdb -lvxutil
+mdfixuuid: clutils/mdfixuuid.o | libvxpdb.so libvxutil.so
+
+XLDFLAGS_mdpwlfmt       := -lHX -lvxmdfmt
+mdpwlfmt: clutils/mdpwlfmt.o | libvxmdfmt.so
+
+XLDFLAGS_mdsingle       := -lHX -lvxcli -lvxmdsync -lvxpdb
+mdsingle: clutils/mdsingle.o | libvxcli.so libvxmdsync.so libvxpdb.so
+
+XLDFLAGS_mdsync         := -lHX -lvxeds -lvxmdsync -lvxpdb
+mdsync: clutils/mdsync.o | libvxeds.so libvxmdsync.so libvxpdb.so
+
+XLDFLAGS_pdbdump        := -lvxpdb
+pdbdump: clutils/pdbdump.o | libvxpdb.so
+
+XLDFLAGS_pdbinfo        := -lHX -lvxpdb
+pdbinfo: clutils/pdbinfo.o | libvxpdb.so
+
+XLDFLAGS_randpw         := -lvxpdb
+randpw: clutils/randpw.o | libvxpdb.so
+
+XLDFLAGS_tryauth        := -lHX -lpam -lvxcgi
+tryauth: clutils/tryauth.o | libvxcgi.so
+
+XLDFLAGS_testcase       := -lvxeds -lvxpdb -lvxutil
+testcase: devutil/testcase.o | libvxeds.so libvxpdb.so libvxutil.so
+
+XLDFLAGS_vxuseradd      := -lvxcli -lvxutil -lvxplex
+vxuseradd: clutils/useradd.o useradd_lib.so | libvxcli.so libvxplex.so
+
+XLDFLAGS_vxusermod      := -lvxcli -lvxutil -lvxplex
+vxusermod: clutils/usermod.o usermod_lib.so | libvxcli.so libvxutil.so
+
+XLDFLAGS_vxuserdel      := -lvxcli -lvxutil -lvxplex
+vxuserdel: clutils/userdel.o userdel_lib.so | libvxcli.so libvxutil.so
+
+XLDFLAGS_vxgroupadd     := -lHX -lvxpdb -lvxutil
+vxgroupadd: clutils/groupadd.o | libvxpdb.so libvxutil.so
+
+XLDFLAGS_vxgroupmod     := -lHX -lvxpdb -lvxutil
+vxgroupmod: clutils/groupmod.o | libvxpdb.so libvxutil.so
+
+XLDFLAGS_vxgroupdel     := -lHX -lvxpdb -lvxutil
+vxgroupdel: clutils/groupdel.o | libvxpdb.so libvxutil.so
+
+XLDFLAGS_useradd_lib_so := -lHX -lvxpdb -lvxutil
+useradd_lib.so: clutils/useradd_lib.o | libvxpdb.so libvxutil.so
+
+XLDFLAGS_usermod_lib_so := -lHX -lvxpdb -lvxutil
+usermod_lib.so: clutils/usermod_lib.o | libvxpdb.so libvxutil.so
+
+XLDFLAGS_userdel_lib_so := -lHX -lvxpdb -lvxutil
+userdel_lib.so: clutils/userdel_lib.o | libvxpdb.so libvxutil.so
+
+### VITALNIX STEELMILL --------------------------------------------------------
+#
+XLD_vitalnix            := ${LDXX}
+XCFLAGS_steelmill       := ${WX_CXXFLAGS}
+XLDFLAGS_vitalnix       := ${WX_LDFLAGS} -lHX -lvxeds -lvxmdfmt -lvxmdsync -lvxpdb
+
+vitalnix: $(call srcobj,steelmill) steelmill/images.o | \
+    libvxeds.so libvxmdfmt.so libvxmdsync.so libvxpdb.so
+
+$(wildcard ${S}/steelmill/*.cpp): steelmill/images.hpp
+ifneq (${O},)
+${O}/steelmill/images.cpp: steelmill/images.cpp
+${O}/steelmill/images.hpp: steelmill/images.hpp
+endif
+steelmill/images.cpp: steelmill/images.hpp
+steelmill/images.hpp: $(wildcard ${S}/steelmill/*.png)
+	${PREREQ}
+	${VECHO_GEN}
+	${Q}${S}/png2wx.pl -C steelmill/images.cpp -H steelmill/images.hpp -M STEELMILL_IMAGES_HPP $^ || \
+	    ${S}/png2wx.py -C steelmill/images.cpp -H steelmill/images.hpp -M STEELMILL_IMAGES_HPP $^;
+
+### Default targets -----------------------------------------------------------
+#
+doc/%.html: doc/%.php ${S}/doc/Base*.php
+	${PREREQ}
+	${VECHO_GEN}
+	${Q}(php -q $< | perl -pe 's{href="([^/]*?)\.php"}{href="$$1.html"}' >$@) || echo "Cannot create $@";
+
+doc/%.txt: doc/%.html
+	${PREREQ}
+	${VECHO_GEN}
+	${Q}w3m -dump $< >$@ || echo "Cannot create $@";
+
+doc/%.css: doc/%.icss
+	${PREREQ}
+	${VECHO_GEN}
+	${Q}cp $< $@;
+
+%.o: %.c
+	${PREREQ}
+	${VECHO_CC}
+	${Q}${CC} ${CFLAGS} ${DEPFLAGS} ${XCFLAGS_$(subst /,_,$(@D))} ${XCFLAGS_$(subst /,_,$(@:%.o=%))} -c -o $@ $<;
+
+%.o: %.cpp
+	${PREREQ}
+	${VECHO_CXX}
+	${Q}${CXX} ${CXXFLAGS} ${DEPFLAGS} ${XCFLAGS_$(subst /,_,$(@D))} ${XCFLAGS_$(subst /,_,$(@:%.o=%))} -c -o $@ $<;
+
+%.o: %.S
+	${PREREQ}
+	${VECHO_AS}
+	${Q}${AS} ${ASFLAGS} ${XASFLAGS_$(subst /,_,$(@D))} ${XASFLAGS_$(subst /,_,$(@:%.o=%))} -c -o $@ $<;
+
+%.so:
+	${PREREQ}
+	${VECHO_LD}
+	${Q}${LD} ${LDFLAGS} ${SOFLAGS} -o $@ $^ ${XLDFLAGS_$(subst /,_,$(subst .,_,$@))} ${EXT_LDFLAGS};
+	${Q}${STRIP} $@;
+
+${EXEC_TARGETS}:
+	${PREREQ}
+	${VECHO_LD}
+	${Q}$(if ${XLD_$(subst /,_,$(subst .,_,$@))},${XLD_$(subst /,_,$(subst .,_,$@))},${LD}) ${LDFLAGS} -o $@ $^ ${XLDFLAGS_$(subst /,_,$(subst .,_,$@))} ${EXT_LDFLAGS};
+	${Q}${STRIP} $@;
+
+-include */.*.d
+
+#==============================================================================

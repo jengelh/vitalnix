@@ -1,0 +1,90 @@
+.block {
+    text-align: justify;
+}
+.code {
+    background-color: #BBC6D0;
+    border: 1px solid #808080;
+    margin-left: 8pt;
+    margin-right: 8pt;
+    padding: 1pt;
+}
+.ctop {
+    padding: 5px 20px;
+    margin: 0px;
+}
+.cmain {
+    background-color: #A5B4C1;
+    border-top: 1px solid #808080;
+    border-bottom: 1px solid #808080;
+    padding-left: 16pt;
+    padding-bottom: 1cm;
+}
+.printLimit {
+    max-width: 777px;
+    width: 777px;
+}
+.titleN {
+    font: bold italic 32pt "Times New Roman", "Times", serif;
+    color: #4B6983;
+}
+.titleS {
+    font: 16pt "Arial", "Helvetica", "Tahoma", "Verdana", sans-serif;
+    color: #4B6983;
+}
+.titleV {
+    font: bold italic 24pt "Times New Roman", "Times", serif;
+    color: #4B6983;
+}
+.titleX {
+    font: bold italic 32pt "Times New Roman", "Times", serif;
+    color: #FFFFFF;
+}
+a, a:visited {
+    color: #404040;
+    text-decoration: underline;
+}
+a:active, a:hover {
+    color: #808080;
+    text-decoration: underline;
+}
+body {
+    background-color: #BBC6D0;
+    color: #000000;
+    margin: 0px;
+}
+h1 {
+    font: bold italic 16pt "Times New Roman", serif;
+    text-decoration: underline;
+    margin-top: 12pt;
+    margin-bottom: 0px;
+}
+h2 {
+    font: italic 14pt "Times New Roman", serif;
+    text-decoration: underline;
+    margin-top: 12pt;
+    margin-bottom: 0px;
+}
+p, td, li {
+    font-family: "Tahoma", "Verdana", sans-serif, "Helvetica", "Arial";
+}
+p {
+    margin-top: 4pt;
+    margin-bottom: 4pt;
+}
+table {
+    border-width: 1px;
+    border-spacing: 0px;
+    margin-left: 8pt;
+    margin-right: 8pt;
+}
+table td {
+    border-width: 1px;
+}
+table td.t1 {
+    background-color: #C1CBD4;
+    vertical-align: top;
+}
+table td.t2 {
+    background-color: #CCD4DC;
+    vertical-align: top;
+}

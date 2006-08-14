@@ -1,0 +1,95 @@
+#!/usr/bin/perl
+#
+# convert from Vitalnix 2.x /etc/vxshadow to Vitalnix 3.0-beta6 format
+#
+
+use Digest::MD5 qw(md5_hex);
+use Getopt::Long;
+use Time::Local;
+use strict;
+my %passwd;
+
+exit &main(\@ARGV);
+
+#------------------------------------------------------------------------------
+sub main {
+    my($passwd_file, $vxshadow_file) = ("/etc/passwd", "/etc/vxshadow");
+    &GetOptions(
+        "p=s" => \$passwd_file,
+        "x=s" => \$vxshadow_file,
+    );
+
+    open(PW, "< $passwd_file") || die "Could not open $passwd_file: $!\n";
+    open(VS, "< $vxshadow_file") || die "Could not open $vxshadow_file: $!\n";
+
+    while(defined($_ = <PW>)) {
+        chomp $_;
+        @_ = split(/:/, $_);
+        $passwd{$_[0]} = (split(/,/, $_[4]))[0];
+    }
+
+    print "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
+    print "<vxshadow_vx3>\n";
+
+    while(defined($_ = <VS>)) {
+        chomp $_;
+        if($_ =~ /^\s*#/) {
+            print "  <!-- $' -->\n";
+            next;
+        }
+        @_ = split(/:/, $_);
+        if(!exists($passwd{$_[0]})) {
+            warn "Unknown user \"$_[0]\" in vxshadow\n";
+            next;
+        }
+        print "  <user lname=\"".&xmlencode($_[0])."\"";
+        print " uuid=\"".&xmlencode(&re_uuid($passwd{$_[0]}, $_[1]))."\"";
+        print " pvgrp=\"".&xmlencode($_[2])."\"";
+        print " defer=\"".($_[3] + 0)."\">\n";
+    }
+
+    print "</vxshadow_vx3>\n";
+    close PW;
+    close VS;
+    return 0;
+}
+
+# re_uuid
+#   @realname:  real name of the user
+#   @uuid_v0:   v0 uuid (hex-encoded into '0_YYYMDD')
+#
+# Computes the new VX3 scheme from VX2.
+#
+sub re_uuid {
+    my($realname, $uuid_v0) = @_;
+
+    if($uuid_v0 =~ /^1_(.*?)_(.*)/) {
+        # Vitalnix 3.0-beta1 - 3.0-beta4
+        return "{VX3}$1$2";
+    }
+
+    my $day   = hex(substr($uuid_v0, 6, 2));
+    my $month = hex(substr($uuid_v0, 5, 1));
+    my $year  = hex(substr($uuid_v0, 2, 3));
+    my $time;
+
+    if($day == 0 || $month == 0 || $year == 0) {
+        $time = 0;
+    } else {
+        $time = timelocal(0, 0, 0, $day, $month - 1, $year);
+    }
+
+    my $iday = int($time / 86400);
+    return sprintf "{VX3}%04x%s", $iday, lc md5_hex($realname);
+}
+
+sub xmlencode {
+    my $s = shift @_;
+    $s =~ s/&/&amp;/g;
+    $s =~ s/</&lt;/g;
+    $s =~ s/>/&gt;/g;
+    $s =~ s/\"/&quot;/g;
+    return $s;
+}
+
+#==============================================================================

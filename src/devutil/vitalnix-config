@@ -1,0 +1,29 @@
+#!/bin/bash
+
+INCLUDE=".";
+LIBDIR=".";
+usage="Usage: vitalnix-config [--cflags] [--ldflags] [--libs]";
+
+if [ $# -eq 0 ]; then
+    echo -e "$usage";
+    exit 1;
+fi;
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+      --cflags)
+        echo "-I$INCLUDE";
+        ;;
+      --ldflags)
+        echo "-L$LIBDIR -Wl,-rpath,$LIBDIR";
+        ;;
+      --libs)
+        ;;
+      *)
+        echo -e "$usage";
+        ;;
+    esac;
+    shift;
+done;
+
+#<<eof>>

@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Throw out our O= when calling make, as we set it through the environment
+# (which is a cosmetic decision here).
+#
+newargc=0;
+for argp in "$@"; do
+    if [ "${argp:0:2}" == "O=" ]; then
+        export O="${argp:2}";
+        continue;
+    fi;
+    newargv[$newargc]="$argp";
+    newargc=$[$newargc+1];
+done;
+
+# Object dir
+#
+[ -z "$S" ] && export S="$PWD/src";
+[ -z "$O" ] && export O="$PWD/obj-`config.guess`";
+export O=`readlink -f "$O"`;
+[ ! -e "$O" ] && mkdir -p "$O";
+
+# Call make. The S= and O= parameters required by GNUmakefile.src
+# are set above.
+#
+prewd="$PWD";
+(cd "$O" && ${MAKE:-make} -Rr -f "$prewd/GNUmakefile.src" "${newargv[@]}");
