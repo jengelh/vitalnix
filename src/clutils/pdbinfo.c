@@ -25,6 +25,7 @@ clutils/pdbinfo.c
 #include <stdlib.h>
 #include <string.h>
 #include <libHX.h>
+#include "compiler.h"
 #include "vitalnix-config.h"
 #include "libvxpdb/libvxpdb.h"
 #include "libvxpdb/xafunc.h"
@@ -72,7 +73,8 @@ int main(int argc, const char **argv) {
             char buf[MAXFNLEN];
             if(strncmp(dentry, "drv_", 8) != 0)
                 continue;
-            snprintf(buf, MAXLNLEN, "%s/%s", (char *)cd->ptr, dentry);
+            snprintf(buf, MAXLNLEN, "%s/%s",
+                     static_cast(const char *, cd->ptr), dentry);
             backend_info(buf);
         }
 

@@ -26,6 +26,7 @@ cgiutils/vwquota.c - Web-frontend for quota information
 #include <stdlib.h>
 #include <string.h>
 #include <libHX.h>
+#include "compiler.h"
 #include "libvxcgi/libvxcgi.h"
 #include "libvxutil/defines.h"
 #include "libvxutil/libvxutil.h"
@@ -127,8 +128,8 @@ static void do_quota(const char *user) {
         if(dqb_soft == 0)
             printf("<td align=\"right\">-</td>");
         else
-            printf("<td align=\"right\">%s%d%%%s</td>",
-             bover, (int)(dqb_used * 100 / dqb_soft), de_bover);
+            printf("<td align=\"right\">%s%ld%%%s</td>",
+             bover, static_cast(long, dqb_used * 100 / dqb_soft), de_bover);
         printf("<td align=\"right\">%llu</td>", dqb_soft);
         printf("<td align=\"right\">%llu</td>", dqb_hard);
         printf("<td align=\"right\">%s%s%s</td>", bover, field[5], de_bover);
@@ -138,8 +139,8 @@ static void do_quota(const char *user) {
         if(dqi_soft == 0)
             printf("<td align=\"right\">-</td>");
         else
-            printf("<td align=\"right\">%s%d%%%s</td>",
-             iover, (int)(dqi_used * 100 / dqi_soft), de_iover);
+            printf("<td align=\"right\">%s%ld%%%s</td>",
+             iover, static_cast(long, dqi_used * 100 / dqi_soft), de_iover);
         printf("<td align=\"right\">%llu</td>", dqi_soft);
         printf("<td align=\"right\">%llu</td>", dqi_hard);
         printf("<td align=\"right\">%s%s%s</td>", iover, field[9], de_iover);

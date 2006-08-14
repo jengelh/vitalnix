@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "compiler.h"
 
 static int get_date_parts(const char *, unsigned int *, unsigned int *,
     unsigned int *);
@@ -64,7 +65,7 @@ char *dt3_encode(const char *date) {
     tm.tm_mon  = month - 1;
     tm.tm_mday = day;
     tm.tm_hour = 12;
-    asprintf(&s, "%08lX", (long)mktime(&tm));
+    asprintf(&s, "%08lX", static_cast(long, mktime(&tm)));
     return s;
 }
 

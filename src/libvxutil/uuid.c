@@ -35,7 +35,7 @@ EXPORT_SYMBOL char *vxuuid_vx3(const char *full_name, long iday)
     unsigned char md[MD5_DIGEST_LENGTH];
     char tmp[48];
 
-    MD5((const unsigned char *)full_name, strlen(full_name), md);
+    MD5(signed_cast(const unsigned char *, full_name), strlen(full_name), md);
 #define B "%02x"
 #define D B B B B
     snprintf(tmp, sizeof(tmp), "{VX3}%04lx" D D D D,

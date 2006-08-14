@@ -117,9 +117,9 @@ EXPORT_SYMBOL int vxcli_query_v(const struct vxcq_entry *tp)
                 return count;
 
             if((tp->flags & VXCQ_ZNULL) && *res == '\0')
-                *(char **)tp->ptr = NULL;
+                *static_cast(char **, tp->ptr) = NULL;
             else
-                *(char **)tp->ptr = res;
+                *static_cast(char **, tp->ptr) = res;
 
             if(tp->validate != NULL && !tp->validate(tp)) {
                 free(res);
@@ -134,11 +134,11 @@ EXPORT_SYMBOL int vxcli_query_v(const struct vxcq_entry *tp)
 
             if(!(tp->flags & VXCQ_ZNULL) || *buf != '\0') {
                 if(tp->type == HXTYPE_INT)
-                    *(int *)tp->ptr = strtol(buf, NULL, 0);
+                    *static_cast(int *, tp->ptr) = strtol(buf, NULL, 0);
                 else if(tp->type == HXTYPE_LONG)
-                    *(long *)tp->ptr = strtol(buf, NULL, 0);
+                    *static_cast(long *, tp->ptr) = strtol(buf, NULL, 0);
                 else if(tp->type == HXTYPE_DOUBLE)
-                    *(double *)tp->ptr = strtod(buf, NULL);
+                    *static_cast(double *, tp->ptr) = strtod(buf, NULL);
                 else
                     fprintf(stderr, "%s: Unknown type\n", __FUNCTION__);
 

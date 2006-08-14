@@ -27,12 +27,13 @@ libvxeds/d_sdf.c - SDF parsing module
 #include <stdlib.h>
 #include <string.h>
 #include <libHX.h>
+#include "compiler.h"
 #include "libvxeds/libvxeds.h"
 #include "libvxeds/static-build.h"
 #include "libvxeds/vtable.h"
 #include "libvxutil/defines.h"
 #include "libvxutil/libvxutil.h"
-#define ICONV_NULL ((iconv_t)(-1))
+#define ICONV_NULL reinterpret_cast(iconv_t, -1)
 
 // Structures
 struct sdf_state {

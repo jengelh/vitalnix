@@ -26,6 +26,7 @@ libvxmdfmt/extra.c
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "compiler.h"
 #include "libvxmdfmt/internal.h"
 #include "libvxutil/defines.h"
 
@@ -130,7 +131,8 @@ int pwlfmt_extra_whitespace(const char *s) {
         return 0;
 
     tw = tmp;
-    iconv(cd, (void *)&s, &in_size, (void *)&tw, &out_size);
+    iconv(cd, reinterpret_cast(char **, &s), &in_size,
+          reinterpret_cast(char **, &tw), &out_size);
 
     tw = tmp;
     while(*tw != 0)

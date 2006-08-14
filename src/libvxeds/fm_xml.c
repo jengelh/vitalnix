@@ -26,6 +26,7 @@ libvxeds/fm_xml.c - XML parsing module
 #include <stdlib.h>
 #include <string.h>
 #include <libxml/parser.h>
+#include "compiler.h"
 #include "libvxeds/libvxeds.h"
 #include "libvxeds/static-build.h"
 #include "libvxeds/vtable.h"
@@ -124,11 +125,12 @@ static void xml_close(void *state_ptr) {
 
 //-----------------------------------------------------------------------------
 static inline int strcmp_1u(const xmlChar *a, const char *b) {
-    return strcmp((const char *)a, b);
+    return strcmp(reinterpret_cast(const char *, a), b);
 }
 
 static inline char *xmlGetProp_2s(xmlNode *p, const char *v) {
-    return (char *)xmlGetProp(p, (const xmlChar *)v);
+    return reinterpret_cast(char *, xmlGetProp(p,
+           reinterpret_cast(const xmlChar *, v)));
 }
 
 //=============================================================================

@@ -27,6 +27,7 @@ libvxmdfmt/s_pgrtf.c
 #include <stdlib.h>
 #include <string.h>
 #include <libHX.h>
+#include "compiler.h"
 #include "libvxmdfmt/internal.h"
 #include "libvxmdfmt/libvxmdfmt.h"
 #include "libvxmdfmt/static-build.h"
@@ -113,10 +114,10 @@ static void pgrtf_tbl_entry(struct pwlfmt_workspace *w,
     hmc_t *uni_surname         = utf8_to_rtfuni(data->surname);
 
     struct HXoption catalog[] = {
-        {.sh = PH_PVGROUP,   .type = HXTYPE_STRING, .ptr = (void *)data->pvgrp},
+        {.sh = PH_PVGROUP,   .type = HXTYPE_STRING, .ptr = static_cast(void *, data->pvgrp)},
         {.sh = PH_SURNAME,   .type = HXTYPE_STRING, .ptr = uni_surname},
-        {.sh = PH_PASSWORD,  .type = HXTYPE_STRING, .ptr = (void *)data->password},
-        {.sh = PH_USERNAME,  .type = HXTYPE_STRING, .ptr = (void *)data->username},
+        {.sh = PH_PASSWORD,  .type = HXTYPE_STRING, .ptr = static_cast(void *, data->password)},
+        {.sh = PH_USERNAME,  .type = HXTYPE_STRING, .ptr = static_cast(void *, data->username)},
         {.sh = PH_FIRSTNAME, .type = HXTYPE_STRING, .ptr = uni_firstname},
         HXOPT_TABLEEND,
     };
@@ -181,7 +182,7 @@ static hmc_t *utf8_to_rtfuni(const char *ip) {
     wchar_t oc, *op = &oc;
 
     while(*ip != '\0') {
-        if(*(const unsigned char *)ip < 0x80) {
+        if(*signed_cast(const unsigned char *, ip) < 0x80) {
             ++ip;
             continue;
         }
@@ -189,8 +190,9 @@ static hmc_t *utf8_to_rtfuni(const char *ip) {
         is = strlen(ip);
         os = sizeof(wchar_t);
         hmc_memcat(&dest, cfh, ip - cfh);
-        iconv(cd, (void *)&ip, &is, (void *)&op, &os);
-        snprintf(buf, sizeof(buf), "\\uc0\\u%ld", (long)oc);
+        iconv(cd, reinterpret_cast(char **, &ip), &is,
+              reinterpret_cast(char **, &op), &os);
+        snprintf(buf, sizeof(buf), "\\uc0\\u%ld", static_cast(long, oc));
         hmc_strcat(&dest, buf);
         cfh = ip;
     }

@@ -26,6 +26,7 @@ external advertisements for this software. */
 
 #include <stdio.h>
 #include <libHX.h>
+#include "compiler.h"
 #include "vitalnix-config.h"
 #include "libvxmdfmt/internal.h"
 #include "libvxmdfmt/libvxmdfmt.h"
@@ -89,8 +90,8 @@ static void pghtml_tbl_entry(struct pwlfmt_workspace *state,
     char buf[MAXSNLEN];
     struct HXoption catalog[] = {
         {.sh = 'n', .type = HXTYPE_STRING, .ptr = buf},
-        {.sh = 'p', .type = HXTYPE_STRING, .ptr = (void *)data->password},
-        {.sh = 'u', .type = HXTYPE_STRING, .ptr = (void *)data->username},
+        {.sh = 'p', .type = HXTYPE_STRING, .ptr = static_cast(void *, data->password)},
+        {.sh = 'u', .type = HXTYPE_STRING, .ptr = static_cast(void *, data->username)},
         HXOPT_TABLEEND,
     };
     snprintf(buf, MAXSNLEN, "%s, %s", data->surname, data->first_name);

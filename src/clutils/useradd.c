@@ -24,6 +24,7 @@ clutils/useradd.c
 #include <stdio.h>
 #include <unistd.h>
 #include <libHX.h>
+#include "compiler.h"
 #include "clutils/useradd_lib.h"
 #include "libvxcli/libvxcli.h"
 #include "libvxpdb/libvxpdb.h"
@@ -105,7 +106,7 @@ static int useradd_cli(int argc, const char **argv,
 }
 
 static int valid_user(const struct vxcq_entry *p) {
-    return vxutil_valid_username(*(const char **)p->ptr);
+    return vxutil_valid_username(*static_cast(const char **, p->ptr));
 }
 
 //=============================================================================

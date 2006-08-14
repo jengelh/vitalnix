@@ -111,7 +111,7 @@ EXPORT_SYMBOL char *vxutil_quote(const char *src, unsigned int type,
     char *ret, *ret_wp;
 
     if(type >= _VXQUOTE_MAX || strpbrk(src, quote_match[type]) == NULL)
-        return (char *)src;
+        return const_cast(char *, src);
 
     // Allocation and deallocation saving
     ret = realloc(*free_me, quoted_size(src, type) + 1);
@@ -242,7 +242,7 @@ EXPORT_SYMBOL long vxutil_string_iday(const char *s)
 
     if((r = mktime(&td)) == -1)
         return -1;
-    return (unsigned long)r / 86400;
+    return static_cast(unsigned long, r) / 86400;
 }
 
 EXPORT_SYMBOL int vxutil_valid_username(const char *n)
@@ -381,7 +381,7 @@ char *transform7(const char *src, char *dest, size_t dsize) {
         if((*src >= 'A' && *src <= 'Z') || (*src >= 'a' && *src <= 'z')) {
             *dest++ = *src++;
             --dsize;
-        } else if(*(unsigned char *)src & 0x80) {
+        } else if(*signed_cast(unsigned char *, src) & 0x80) {
             const struct stab *sp = subst_tab;
             int ok = 0;
             for(sp = subst_tab; sp->in != NULL; ++sp) {

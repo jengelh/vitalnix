@@ -28,6 +28,7 @@ clutils/mdsingle.c
 #include <string.h>
 #include <time.h>
 #include <libHX.h>
+#include "compiler.h"
 #include "vitalnix-config.h"
 #include "libvxcli/libvxcli.h"
 #include "libvxeds/libvxeds.h"
@@ -281,7 +282,7 @@ static void single_interactive(struct private_info *priv) {
 static int validate_group(const struct vxcq_entry *e) {
     struct vxpdb_group group = {};
     struct vxpdb_state *mh;
-    const char *group_name = *(const char **)e->ptr;
+    const char *group_name = *static_cast(const char **, e->ptr);
     int ret;
 
     if((mh = vxpdb_load(e->uptr)) == NULL) {
