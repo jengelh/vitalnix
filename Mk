@@ -16,7 +16,7 @@ done;
 # Object dir
 #
 [ -z "$S" ] && export S="$PWD/src";
-[ -z "$O" ] && export O="$PWD/obj-`config.guess`";
+[ -z "$O" ] && export O="$PWD/obj-`./config.guess`";
 export O=`readlink -f "$O"`;
 [ ! -e "$O" ] && mkdir -p "$O";
 
