@@ -57,7 +57,7 @@ struct HXdeque *db_read_groups(FILE *fp) {
         g->gr_name = HX_strdup(data[0]);
         g->gr_gid  = strtol(data[2], NULL, 0);
         g->be_priv = calloc(1, sizeof(void *) * 2);
-        ((char **)g->be_priv)[0] = HX_strdup(data[3]);
+        static_cast(char **, g->be_priv)[0] = HX_strdup(data[3]);
         HXdeque_push(dq, g);
     }
 

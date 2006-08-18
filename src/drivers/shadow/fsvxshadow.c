@@ -119,11 +119,12 @@ void db_write_vxshadow(FILE *fp, const struct vxpdb_user *u) {
 
 //-----------------------------------------------------------------------------
 static inline int strcmp_1u(const xmlChar *a, const char *b) {
-    return strcmp((const char *)a, b);
+    return strcmp(reinterpret_cast(const char *, a), b);
 }
 
 static inline char *xmlGetProp_2s(xmlNode *p, const char *v) {
-    return (char *)xmlGetProp(p, (const xmlChar *)v);
+    return reinterpret_cast(char *, xmlGetProp(p,
+           reinterpret_cast(const xmlChar *, v)));
 }
 
 //=============================================================================
