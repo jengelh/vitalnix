@@ -74,7 +74,7 @@ struct HXdeque *db_read_passwd(FILE *fp) {
         /* Anything after the seven main fields is "reserved for future use",
         (read: or private use), so we need to keep that intact. */
         u->be_priv = calloc(1, sizeof(void *) * 2);
-        static_cast(char **, u->be_priv)[0] = data[7];
+        static_cast(char **, u->be_priv)[0] = HX_strdup(data[7]);
 
         /* In case there is no shadow entry, we need some recovery values.
         This is already done by vxpdb_clean_user(). */
