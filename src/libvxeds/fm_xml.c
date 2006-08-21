@@ -91,7 +91,8 @@ static int xml_read(void *state_ptr, struct vxeds_entry *e) {
     if(state->ptr == NULL)
         return 0;
 
-    if(strcmp_1u(state->ptr->name, "user") == 0) {
+    if(state->ptr->type == XML_ELEMENT_NODE &&
+     strcmp_1u(state->ptr->name, "user") == 0) {
         char *bd;
 
         memset(e, 0, sizeof(*e));

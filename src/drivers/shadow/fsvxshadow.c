@@ -38,62 +38,39 @@ static inline char *xmlGetProp_2s(xmlNode *, const char *);
 
 //-----------------------------------------------------------------------------
 void db_read_vxshadow(const char *file, struct HXdeque *dq) {
-    char *name, *uuid, *pvgrp, *defer;
+    char *name, *defer;
+    struct vxpdb_user *u;
     xmlNode *ptr;
     xmlDoc *doc;
 
     if(dq->itemcount == 0)
         return;
-    //xmlKeepBlanksDefault(0);
+    xmlKeepBlanksDefault(0);
     if((doc = xmlParseFile(file)) == NULL)
         return;
     if((ptr = xmlDocGetRootElement(doc)) == NULL ||
      strcmp_1u(ptr->name, "VX3_vxshadow") != 0)
         goto out;
 
-    for(; ptr != NULL; ptr = ptr->next) {
-        if(strcmp_1u(ptr->name, "user") != 0)
+    for(ptr = ptr->xmlChildrenNode; ptr != NULL; ptr = ptr->next) {
+        if(ptr->type != XML_ELEMENT_NODE || strcmp_1u(ptr->name, "user") != 0)
             continue;
-        if((name = xmlGetProp_2s(ptr, "name")) == NULL)
+        if((name = xmlGetProp_2s(ptr, "lname")) == NULL)
             continue;
-        uuid  = xmlGetProp_2s(ptr, "uuid");
-        pvgrp = xmlGetProp_2s(ptr, "pvgrp");
-        defer = xmlGetProp_2s(ptr, "defer");
+        if((u = lookup_user(dq, name, PDB_NOUID)) == NULL)
+            continue;
+        u->vs_uuid  = xmlGetProp_2s(ptr, "uuid");
+        u->vs_pvgrp = xmlGetProp_2s(ptr, "pvgrp");
+        if((defer = xmlGetProp_2s(ptr, "defer")) != NULL) {
+            u->vs_defer = strtol(defer, NULL, 0);
+            free(defer);
+        }
     }
 
  out:
     xmlFreeDoc(doc);
     return;
 }
-
-/*
-void db_read_vxshadow(FILE *fp, struct HXdeque *dq) {
-    struct vxpdb_user *u;
-    char *ln = NULL;
-
-    if(dq->itemcount == 0)
-        return;
-
-    while(HX_getl(&ln, fp) != NULL) {
-        char *data[5];
-
-        if(*ln == '#')
-            continue;
-
-        HX_chomp(ln);
-        memset(data, 0, sizeof(data));
-        HX_split5(ln, ":", ARRAY_SIZE(data), data);
-        if(*data[0] == '\0' || (u = lookup_user(dq, data[0], PDB_NOUID)) == NULL)
-            continue;
-
-        u->vs_uuid  = HX_strdup(data[1]);
-        u->vs_pvgrp = HX_strdup(data[2]);
-        u->vs_defer = strtol(data[3], NULL, 0);
-    }
-
-    hmc_free(ln);
-    return;
-}*/
 
 void db_write_vxshadow(FILE *fp, const struct vxpdb_user *u) {
     char *fm = NULL;
