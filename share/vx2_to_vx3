@@ -29,7 +29,7 @@ sub main {
     }
 
     print "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
-    print "<vxshadow_vx3>\n";
+    print "<VX3_vxshadow>\n";
 
     while(defined($_ = <VS>)) {
         chomp $_;
@@ -45,10 +45,10 @@ sub main {
         print "  <user lname=\"".&xmlencode($_[0])."\"";
         print " uuid=\"".&xmlencode(&re_uuid($passwd{$_[0]}, $_[1]))."\"";
         print " pvgrp=\"".&xmlencode($_[2])."\"";
-        print " defer=\"".($_[3] + 0)."\">\n";
+        print " defer=\"".($_[3] + 0)."\" />\n";
     }
 
-    print "</vxshadow_vx3>\n";
+    print "</VX3_vxshadow>\n";
     close PW;
     close VS;
     return 0;
