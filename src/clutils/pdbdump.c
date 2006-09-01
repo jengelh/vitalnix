@@ -95,82 +95,65 @@ static void d_ldif(struct vxpdb_state *db) {
 }
 
 static void d_mysql(struct vxpdb_state *db) {
-    if(Dump_what[DUMP_PASSWD])
-        printf(
-            "drop table if exists users;\n"
-            "create table users (\n"
-            "    username varchar(64) not null default '',\n"
-            "    uid int(11) not null default %d,\n"
-            "    gid int(11) not null default %d,\n"
-            "    realname varchar(255) not null default '',\n"
-            "    homedir varchar(255) not null default '',\n"
-            "    shell varchar(255) not null default '/bin/bash',\n"
-            "    unused0 varchar(255) not null default 'x',\n"
-            "    primary key (username),\n"
-            "    index uid (uid)\n"
-            ") default charset=utf8\n",
-            PDB_NOUID, PDB_NOGID
-        );
+    printf(
+        "drop table if exists users;\n"
+        "drop table if exists shadow;\n"
+        "drop table if exists vxshadow;\n"
+        "drop table if exists groups;\n"
+        "drop table if exists groupmap;\n"
 
-    if(Dump_what[DUMP_SHADOW])
-        printf(
-            "drop table if exists shadow;\n"
-            "create table shadow (\n"
-            "    username varchar(64) not null default '',\n"
-            "    password varchar(255) not null default '!',\n"
-                "    lastchange int(11) not null default 0,\n"
-            "    minkeep int(11) not null default %d,\n"
-            "    maxkeep int(11) not null default %d,\n"
-            "    warnage int(11) not null default %d,\n"
-            "    expire int(11) not null default %d,\n"
-            "    inactive int(11) not null default %d,\n"
-            "    primary key (username)\n"
-            ") default charset=utf8\n",
-            PDB_DFL_KEEPMIN, PDB_DFL_KEEPMAX, PDB_DFL_WARNAGE,
-            PDB_NO_EXPIRE, PDB_NO_INACTIVE
-        );
-    if(Dump_what[DUMP_VXSHADOW])
-        printf(
-            "drop table if exists vxshadow;\n"
-            "create table vxshadow (\n"
-            "    username varchar(64) not null default '',\n"
-            "    uuid varchar(255) not null default '',\n"
-            "    pvgrp varchar(64) not null default '',\n"
-            "    defer int(11) not null default 0,\n"
-            "    primary key (username)\n"
-            ") default charset=utf8\n"
-        );
-    if(Dump_what[DUMP_GROUP])
-        printf(
-            "drop table if exists groups;\n"
-            "drop table if exists groupmaps;\n"
+        "create table users (\n"
+        "    username varchar(64) not null default '',\n"
+        "    uid int(11) not null default %d,\n"
+        "    gid int(11) not null default %d,\n"
+        "    realname varchar(255) not null default '',\n"
+        "    homedir varchar(255) not null default '',\n"
+        "    shell varchar(255) not null default '/bin/bash',\n"
+        "    unused0 varchar(255) not null default 'x',\n"
+        "    primary key (username),\n"
+        "    index uid (uid)\n"
+        ") default charset=utf8;\n"
 
-            "create table groups (\n"
-            "    group_name varchar(64) not null default '',\n"
-            "    gid int(11) not null default %d,\n"
-            "    group_password varchar(255) not null default '*',\n"
-            "    primary key (group_name),\n"
-            "    index gid (gid)\n"
-            ") default charset=utf8;\n"
+        "create table shadow (\n"
+        "    username varchar(64) not null default '',\n"
+        "    password varchar(255) not null default '!',\n"
+        "    lastchange int(11) not null default 0,\n"
+        "    minkeep int(11) not null default %d,\n"
+        "    maxkeep int(11) not null default %d,\n"
+        "    warnage int(11) not null default %d,\n"
+        "    expire int(11) not null default %d,\n"
+        "    inactive int(11) not null default %d,\n"
+        "    primary key (username)\n"
+        ") default charset=utf8;\n"
 
-            "create table groupmaps (\n"
-            "    user_name varchar(64) not null default '',\n"
-            "    group_name varchar(64) not null default '',\n"
-            ") default charset=utf8;\n",
-            PDB_NOGID
-        );
+        "create table vxshadow (\n"
+        "    username varchar(64) not null default '',\n"
+        "    uuid varchar(255) not null default '',\n"
+        "    pvgrp varchar(64) not null default '',\n"
+        "    defer int(11) not null default 0,\n"
+        "    primary key (username)\n"
+        ") default charset=utf8;\n"
 
+        "create table groups (\n"
+        "    group_name varchar(64) not null default '',\n"
+        "    gid int(11) not null default %d,\n"
+        "    group_password varchar(255) not null default '*',\n"
+        "    primary key (group_name),\n"
+        "    index gid (gid)\n"
+        ") default charset=utf8;\n"
+
+        "create table groupmap (\n"
+        "    user_name varchar(64) not null default '',\n"
+        "    group_name varchar(64) not null default ''\n"
+        ") default charset=utf8;\n",
+        PDB_NOUID, PDB_NOGID, PDB_DFL_KEEPMIN, PDB_DFL_KEEPMAX,
+        PDB_DFL_WARNAGE, PDB_NO_EXPIRE, PDB_NO_INACTIVE, PDB_NOGID
+    );
     printf("lock tables users write, shadow write, vxshadow write, "
            "groups write, groupmap write;\n");
-
-    // User
     d_mysql_users(db);
-
-    // Group
     if(Dump_what[DUMP_GROUP])
         d_mysql_groups(db);
-
-    // Info
     printf("unlock tables;\n");
     return;
 }
@@ -186,7 +169,8 @@ static void d_mysql_users(struct vxpdb_state *db) {
         if(!(user.pw_uid >= Uid_range[0] && user.pw_uid <= Uid_range[1]))
             continue;
         if(Dump_what[DUMP_PASSWD])
-            printf("insert into users values ('%s',%ld,%ld,'%s','%s','%s');\n",
+            printf("insert into users (username, uid, gid, realname, homedir,"
+                   " shell) values ('%s',%ld,%ld,'%s','%s','%s');\n",
                    user.pw_name, user.pw_uid, user.pw_gid, user.pw_real,
                    user.pw_home, user.pw_shell);
         if(Dump_what[DUMP_SHADOW] && user.sp_passwd != NULL)
