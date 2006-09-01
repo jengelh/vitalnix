@@ -54,7 +54,7 @@ static const struct pwlstyle_vtable THIS_STYLE = {
 REGISTER_MODULE(pg_html, &THIS_STYLE);
 
 static void pghtml_file_header(struct pwlfmt_workspace *state,
- const struct pwl_data *data)
+  const struct pwl_data *data)
 {
     fprintf(state->output_fh,
         "<html><head>"
@@ -72,7 +72,7 @@ static void pghtml_file_header(struct pwlfmt_workspace *state,
 }
 
 static void pghtml_tbl_header(struct pwlfmt_workspace *state,
- const struct pwl_data *data)
+  const struct pwl_data *data)
 {
     fprintf(state->output_fh,
         "<p>&nbsp;</p><table width=\"100%%\"><tr><td><h1>Group %s</h1></td>"
@@ -85,7 +85,7 @@ static void pghtml_tbl_header(struct pwlfmt_workspace *state,
 }
 
 static void pghtml_tbl_entry(struct pwlfmt_workspace *state,
- const struct pwl_data *data)
+  const struct pwl_data *data)
 {
     char buf[MAXSNLEN];
     struct HXoption catalog[] = {
@@ -101,14 +101,14 @@ static void pghtml_tbl_entry(struct pwlfmt_workspace *state,
 }
 
 static void pghtml_tbl_footer(struct pwlfmt_workspace *state,
- const struct pwl_data *data)
+  const struct pwl_data *data)
 {
     fprintf(state->output_fh, "</table>");
     return;
 }
 
 static void pghtml_file_footer(struct pwlfmt_workspace *state,
- const struct pwl_data *data)
+  const struct pwl_data *data)
 {
     fprintf(state->output_fh, "</body></html>");
     return;

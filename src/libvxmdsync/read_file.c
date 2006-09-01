@@ -36,7 +36,7 @@ libvxmdsync/read_file.c
 
 //-----------------------------------------------------------------------------
 EXPORT_SYMBOL int mdsync_read_file(struct mdsync_workspace *w,
- const char *input_dsc, const char *input_fmt)
+  const char *input_dsc, const char *input_fmt)
 {
     struct vxeds_entry *entry;
     char username[MAX_LNAME+1];
@@ -64,6 +64,8 @@ EXPORT_SYMBOL int mdsync_read_file(struct mdsync_workspace *w,
             break;
         }
 
+        static unsigned int countme = 0;
+        fprintf(stderr, "Counting %d\n", ++countme);
         entry->username = HX_strdup(vxutil_propose_lname(username,
                           sizeof(username), entry->surname, entry->first_name));
         HXbtree_add(w->add_req, entry->uuid, entry);

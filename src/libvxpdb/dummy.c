@@ -104,18 +104,19 @@ static long vdummy_modctl(struct vxpdb_state *vp, long command, ...) {
 }
 
 static int vdummy_useradd(struct vxpdb_state *vp,
- const struct vxpdb_user *user) {
+  const struct vxpdb_user *user)
+{
     return -EPERM;
 }
 
 static int vdummy_usermod(struct vxpdb_state *vp,
- const struct vxpdb_user *mask, const struct vxpdb_user *mod)
+  const struct vxpdb_user *mask, const struct vxpdb_user *mod)
 {
     return -EPERM;
 }
 
 static int vdummy_userdel(struct vxpdb_state *vp,
- const struct vxpdb_user *hint)
+  const struct vxpdb_user *hint)
 {
     return -EPERM;
 }
@@ -125,7 +126,7 @@ static void *vdummy_usertrav_init(struct vxpdb_state *vp) {
 }
 
 static int vdummy_usertrav_walk(struct vxpdb_state *vp, void *ptr,
- struct vxpdb_user *result)
+  struct vxpdb_user *result)
 {
     return 0;
 }
@@ -135,24 +136,24 @@ static void vdummy_usertrav_free(struct vxpdb_state *vp, void *ptr) {
 }
 
 static int vdummy_userinfo(struct vxpdb_state *vp,
- const struct vxpdb_user *mask, struct vxpdb_user *result, size_t size)
+  const struct vxpdb_user *mask, struct vxpdb_user *result, size_t size)
 {
     return 0;
 }
 
 static int vdummy_groupadd(struct vxpdb_state *vp,
- const struct vxpdb_group *u) {
+  const struct vxpdb_group *u) {
     return -EPERM;
 }
 
 static int vdummy_groupmod(struct vxpdb_state *vp,
- const struct vxpdb_group *vprk, const struct vxpdb_group *mod)
+  const struct vxpdb_group *vprk, const struct vxpdb_group *mod)
 {
     return -EPERM;
 }
 
 static int vdummy_groupdel(struct vxpdb_state *vp,
- const struct vxpdb_group *hint)
+  const struct vxpdb_group *hint)
 {
     return -EPERM;
 }
@@ -162,7 +163,7 @@ static void *vdummy_grouptrav_init(struct vxpdb_state *vp) {
 }
 
 static int vdummy_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
- struct vxpdb_group *result)
+  struct vxpdb_group *result)
 {
     return 0;
 }
@@ -172,7 +173,7 @@ static void vdummy_grouptrav_free(struct vxpdb_state *vp, void *ptr) {
 }
 
 static int vdummy_groupinfo(struct vxpdb_state *vp,
- const struct vxpdb_group *mask, struct vxpdb_group *result, size_t size)
+  const struct vxpdb_group *mask, struct vxpdb_group *result, size_t size)
 {
     return 0;
 }

@@ -87,7 +87,7 @@ static void pgrtf_destruct(struct pwlfmt_workspace *w) {
 }
 
 static void pgrtf_file_header(struct pwlfmt_workspace *w,
- const struct pwl_data *data)
+  const struct pwl_data *data)
 {
     const struct pgrtf_data *p = w->style_data;
     DEFCAT_FILE_HEADER(w, data);
@@ -97,7 +97,7 @@ static void pgrtf_file_header(struct pwlfmt_workspace *w,
 }
 
 static void pgrtf_tbl_header(struct pwlfmt_workspace *w,
- const struct pwl_data *data)
+  const struct pwl_data *data)
 {
     const struct pgrtf_data *p = w->style_data;
     DEFCAT_TBL_HEADER(w, data);
@@ -107,7 +107,7 @@ static void pgrtf_tbl_header(struct pwlfmt_workspace *w,
 }
 
 static void pgrtf_tbl_entry(struct pwlfmt_workspace *w,
- const struct pwl_data *data)
+  const struct pwl_data *data)
 {
     const struct pgrtf_data *p = w->style_data;
     hmc_t *uni_firstname       = utf8_to_rtfuni(data->first_name);
@@ -129,7 +129,7 @@ static void pgrtf_tbl_entry(struct pwlfmt_workspace *w,
 }
 
 static void pgrtf_tbl_footer(struct pwlfmt_workspace *w,
- const struct pwl_data *data)
+  const struct pwl_data *data)
 {
     const struct pgrtf_data *p = w->style_data;
     fprintf(w->output_fh, p->tps_tbl_footer);
@@ -137,7 +137,7 @@ static void pgrtf_tbl_footer(struct pwlfmt_workspace *w,
 }
 
 static void pgrtf_file_footer(struct pwlfmt_workspace *w,
- const struct pwl_data *data)
+  const struct pwl_data *data)
 {
     const struct pgrtf_data *p = w->style_data;
     fprintf(w->output_fh, p->tps_file_footer);
@@ -146,7 +146,7 @@ static void pgrtf_file_footer(struct pwlfmt_workspace *w,
 
 //-----------------------------------------------------------------------------
 static int pgrtf_read_template(const char *template_file,
- struct pgrtf_data *p)
+  struct pgrtf_data *p)
 {
     char *ptr;
 

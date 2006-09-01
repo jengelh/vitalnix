@@ -85,7 +85,7 @@ static long vnss1_modctl(struct vxpdb_state *this, long command, ...) {
 
 //-----------------------------------------------------------------------------
 static int vnss1_userinfo(struct vxpdb_state *this,
- const struct vxpdb_user *sr_mask, struct vxpdb_user *dest, size_t size)
+  const struct vxpdb_user *sr_mask, struct vxpdb_user *dest, size_t size)
 {
     struct vxpdb_user temp_mask;
     struct passwd *pe;
@@ -124,7 +124,7 @@ static void *vnss1_usertrav_init(struct vxpdb_state *this) {
 }
 
 static int vnss1_usertrav_walk(struct vxpdb_state *this, void *priv_data,
- struct vxpdb_user *dest)
+  struct vxpdb_user *dest)
 {
     struct passwd *pe;
     struct spwd *se;
@@ -149,7 +149,7 @@ static void vnss1_usertrav_free(struct vxpdb_state *this, void *priv_data) {
 
 //-----------------------------------------------------------------------------
 static int vnss1_groupinfo(struct vxpdb_state *this,
- const struct vxpdb_group *sr_mask, struct vxpdb_group *dest, size_t size)
+  const struct vxpdb_group *sr_mask, struct vxpdb_group *dest, size_t size)
 {
     struct vxpdb_group temp_mask;
     struct group *ge;
@@ -189,7 +189,7 @@ static void *vnss1_grouptrav_init(struct vxpdb_state *this) {
 }
 
 static int vnss1_grouptrav_walk(struct vxpdb_state *this, void *priv_data,
- struct vxpdb_group *dest)
+  struct vxpdb_group *dest)
 {
     struct group *gr;
 
@@ -226,7 +226,7 @@ static long count_groups(void) {
 }
 
 static void nssuser_copy(struct vxpdb_user *dest, const struct passwd *pe,
- const struct spwd *se)
+  const struct spwd *se)
 {
     HX_strclone(&dest->pw_name, pe->pw_name);
     dest->pw_uid     = pe->pw_uid;
@@ -260,7 +260,7 @@ static void nssgroup_copy(struct vxpdb_group *dest, const struct group *src) {
 }
 
 static inline int nssuser_match(const struct passwd *user,
- const struct vxpdb_user *mask)
+  const struct vxpdb_user *mask)
 {
     return
       (mask->pw_name == NULL || strcmp(user->pw_name, mask->pw_name) == 0) &&

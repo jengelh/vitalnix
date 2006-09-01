@@ -62,7 +62,7 @@ int main(int argc, const char **argv) {
 }
 
 static int useradd_nio(int argc, const char **argv,
- struct useradd_state *state)
+  struct useradd_state *state)
 {
     if(state->user.pw_name == NULL) {
         fprintf(stderr, "You have to specify a username!\n");
@@ -72,7 +72,7 @@ static int useradd_nio(int argc, const char **argv,
 }
 
 static int useradd_cli(int argc, const char **argv,
- struct useradd_state *state)
+  struct useradd_state *state)
 {
     struct vxpdb_user *user = &state->user;
     struct vxcq_entry table1[] = {

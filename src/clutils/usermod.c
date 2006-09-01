@@ -53,7 +53,7 @@ int main(int argc, const char **argv) {
 }
 
 static int usermod_nio(int argc, const char **argv,
- struct usermod_state *state)
+  struct usermod_state *state)
 {
     if(argc < 2) {
         fprintf(stderr, "You need to specify a username!\n");
@@ -63,7 +63,7 @@ static int usermod_nio(int argc, const char **argv,
 }
 
 static int usermod_cli(int argc, const char **argv,
- struct usermod_state *state)
+  struct usermod_state *state)
 {
     struct vxpdb_user *user = &state->newstuff;
     struct vxcq_entry table_1[] = {

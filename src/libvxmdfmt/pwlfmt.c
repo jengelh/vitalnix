@@ -208,7 +208,7 @@ static void pwlfmt_destruct(struct pwlfmt_workspace *w) {
     style's functions.
 */
 static int pwlfmt_process2(struct pwlfmt_workspace *w,
- const struct HXbtree *tl_tree)
+  const struct HXbtree *tl_tree)
 {
     const struct HXbtree_node *tl_node;
     struct pwl_data data;

@@ -188,7 +188,7 @@ void free_single_group(struct vxpdb_group *g) {
     %PDB_NOGID, which would usually match any user, %NULL is returned too.
 */
 struct vxpdb_group *lookup_group(struct HXdeque *dq, const char *gname,
- long gid)
+  long gid)
 {
     const struct HXdeque_node *travp = dq->first;
 
@@ -216,7 +216,7 @@ struct vxpdb_group *lookup_group(struct HXdeque *dq, const char *gname,
     %PDB_NOUID, which would usually match any user, %NULL is returned too.
 */
 struct vxpdb_user *lookup_user(struct HXdeque *dq, const char *lname,
- long uid)
+  long uid)
 {
     const struct HXdeque_node *travp = dq->first;
 
@@ -235,7 +235,7 @@ struct vxpdb_user *lookup_user(struct HXdeque *dq, const char *lname,
 }
 
 void read_config(struct shadow_state *state, unsigned int action,
- const char *file)
+  const char *file)
 {
     struct HXoption autouid_table[] = {
         {.ln = "UID_MIN", .type = HXTYPE_LONG, .ptr = &state->uid_min},

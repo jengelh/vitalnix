@@ -9,6 +9,9 @@ libvxutil/blowfish.h - header file for blowfish.c
 extern "C" {
 #endif
 
+/*
+ *      BLOWFISH.H
+ */
 extern char *_crypt_blowfish_rn(const char *, const char *, char *, int);
 extern char *_crypt_gensalt_blowfish_rn(unsigned long, const char *, int,
     char *, int);

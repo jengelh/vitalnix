@@ -527,7 +527,7 @@ static void add_groups(wxComboBox *b) {
 }
 
 static void cb_report(unsigned int type, const struct mdsync_workspace *mdsw,
- unsigned long current, unsigned long max)
+  unsigned long current, unsigned long max)
 {
     static const struct timeval report_delta = {0, 100000};
     struct pv_sync *priv = static_cast<struct pv_sync *>(mdsw->user_private);
@@ -630,7 +630,7 @@ static int time_limit(struct timeval *last, const struct timeval *max) {
 }
 
 static void tv_delta(const struct timeval *past, const struct timeval *now,
- struct timeval *dest)
+  struct timeval *dest)
 {
     /* Calculates the time difference between "past" and "now" and stores the
     result in "dest". All parameters in µs. */

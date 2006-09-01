@@ -32,7 +32,7 @@ static void parse_group(const struct HXoptcb *);
 
 //-----------------------------------------------------------------------------
 EXPORT_SYMBOL int vxconfig_read_useradd(const char *file,
- struct vxconfig_useradd *c)
+  struct vxconfig_useradd *c)
 {
     struct HXoption useradd_table[] = {
         {.ln = "MASTER_PREADD",     .type = HXTYPE_STRING, .ptr = &c->master_preadd},
@@ -60,7 +60,7 @@ EXPORT_SYMBOL int vxconfig_read_useradd(const char *file,
 }
 
 EXPORT_SYMBOL int vxconfig_read_usermod(const char *file,
- struct vxconfig_usermod *c)
+  struct vxconfig_usermod *c)
 {
     struct HXoption usermod_table[] = {
         {.ln = "USER_PREMOD",    .type = HXTYPE_STRING, .ptr = &c->user_premod},
@@ -73,7 +73,7 @@ EXPORT_SYMBOL int vxconfig_read_usermod(const char *file,
 }
 
 EXPORT_SYMBOL int vxconfig_read_userdel(const char *file,
- struct vxconfig_userdel *c)
+  struct vxconfig_userdel *c)
 {
     struct HXoption userdel_table[] = {
         {.ln = "USER_PREDEL",    .type = HXTYPE_STRING, .ptr = &c->user_predel},

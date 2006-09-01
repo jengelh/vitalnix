@@ -89,19 +89,19 @@ static int vldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq) {
 }
 
 static int vldap_usermod(struct vxpdb_state *vp,
- const struct vxpdb_user *sr_mask, const struct vxpdb_user *mod_mask)
+  const struct vxpdb_user *sr_mask, const struct vxpdb_user *mod_mask)
 {
     return 0;
 }
 
 static int vldap_userdel(struct vxpdb_state *vp,
- const struct vxpdb_user *sr_mask)
+  const struct vxpdb_user *sr_mask)
 {
     return 0;
 }
 
 static int vldap_userinfo(struct vxpdb_state *vp,
- const struct vxpdb_user *sr_mask, struct vxpdb_user *dest, size_t size)
+  const struct vxpdb_user *sr_mask, struct vxpdb_user *dest, size_t size)
 {
     return 0;
 }
@@ -111,7 +111,7 @@ static void *vldap_usertrav_init(struct vxpdb_state *vp) {
 }
 
 static int vldap_usertrav_walk(struct vxpdb_state *vp, void *ptr,
- struct vxpdb_user *dest)
+  struct vxpdb_user *dest)
 {
     return 0;
 }
@@ -122,25 +122,25 @@ static void vldap_usertrav_free(struct vxpdb_state *vp, void *ptr) {
 
 //-----------------------------------------------------------------------------
 static int vldap_groupadd(struct vxpdb_state *vp,
- const struct vxpdb_group *rq)
+  const struct vxpdb_group *rq)
 {
     return 0;
 }
 
 static int vldap_groupmod(struct vxpdb_state *vp,
- const struct vxpdb_group *sr_mask, const struct vxpdb_group *mod_mask)
+  const struct vxpdb_group *sr_mask, const struct vxpdb_group *mod_mask)
 {
     return 0;
 }
 
 static int vldap_groupdel(struct vxpdb_state *vp,
- const struct vxpdb_group *sr_mask)
+  const struct vxpdb_group *sr_mask)
 {
     return 0;
 }
 
 static int vldap_groupinfo(struct vxpdb_state *vp,
- const struct vxpdb_group *sr_mask, struct vxpdb_group *dest, size_t size)
+  const struct vxpdb_group *sr_mask, struct vxpdb_group *dest, size_t size)
 {
     return 0;
 }
@@ -150,7 +150,7 @@ static void *vldap_grouptrav_init(struct vxpdb_state *vp) {
 }
 
 static int vldap_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
- struct vxpdb_group *dest)
+  struct vxpdb_group *dest)
 {
     return 0;
 }

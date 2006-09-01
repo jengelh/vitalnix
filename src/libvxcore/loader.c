@@ -50,7 +50,7 @@ static DESTRUCTOR void vxcore_exit(void) {
 }
 
 EXPORT_SYMBOL int vxcore_module_register(const char *section, const char *name,
- const void *ptr)
+  const void *ptr)
 {
     struct HXbtree *sect_tree;
     int esave;
@@ -82,7 +82,7 @@ EXPORT_SYMBOL int vxcore_module_register(const char *section, const char *name,
 }
 
 EXPORT_SYMBOL void vxcore_module_unregister(const char *section,
- const char *name)
+  const char *name)
 {
     struct HXbtree *sect_tree;
 
@@ -115,7 +115,7 @@ EXPORT_SYMBOL void *vxcore_module_lookup(const char *section, const char *name)
 }
 
 EXPORT_SYMBOL const void *vxcore_section_trav(void **trav_pptr,
- const char *section)
+  const char *section)
 {
     const struct HXbtree_node *node;
     const struct HXbtree *btree;

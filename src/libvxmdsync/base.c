@@ -97,7 +97,7 @@ EXPORT_SYMBOL struct mdsync_workspace *mdsync_init(void)
 
 /* Side effects: Allocates w->dest_group (freed in mdsync_free()). */
 EXPORT_SYMBOL int mdsync_prepare_group(struct mdsync_workspace *w,
- const char *name)
+  const char *name)
 {
     if(vxutil_only_digits(name))
         return vxpdb_getgrgid(w->database, strtol(name, NULL, 0),
@@ -107,7 +107,7 @@ EXPORT_SYMBOL int mdsync_prepare_group(struct mdsync_workspace *w,
 }
 
 EXPORT_SYMBOL int mdsync_open_log(struct mdsync_workspace *w,
- const char *output_file)
+  const char *output_file)
 {
     if((w->logfile = fopen(output_file, "w")) == NULL)
         return -errno;

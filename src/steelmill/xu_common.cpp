@@ -44,7 +44,7 @@ wxPanel *smc_logo_panel(wxWindow *parent) {
 }
 
 wxBoxSizer *smc_navgen(wxWindow *parent, const char *flags,
- unsigned int border)
+  unsigned int border)
 {
     wxBoxSizer *hp = new wxBoxSizer(wxHORIZONTAL),
                *vp = new wxBoxSizer(wxVERTICAL);

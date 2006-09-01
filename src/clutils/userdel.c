@@ -52,7 +52,7 @@ int main(int argc, const char **argv) {
 }
 
 static int userdel_nio(int argc, const char **argv,
- struct userdel_state *state)
+  struct userdel_state *state)
 {
     if(argc < 2) {
         fprintf(stderr, "You have to specify a username!\n");
@@ -62,7 +62,7 @@ static int userdel_nio(int argc, const char **argv,
 }
 
 static int userdel_cli(int argc, const char **argv,
- struct userdel_state *state)
+  struct userdel_state *state)
 {
     return 0;
 }

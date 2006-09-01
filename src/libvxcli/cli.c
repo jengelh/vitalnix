@@ -36,7 +36,7 @@ static inline int big_prompt(const struct vxcq_entry *);
 
 //-----------------------------------------------------------------------------
 EXPORT_SYMBOL char *vxcli_query(const char *msg, const char *prompt,
- const char *defl, long opts, char *buf, size_t size)
+  const char *defl, long opts, char *buf, size_t size)
 {
     hmc_t *answer = NULL;
     int i = 0;

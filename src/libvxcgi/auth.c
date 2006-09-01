@@ -56,7 +56,7 @@ EXPORT_SYMBOL int vxcgi_authenticate(const char *user, const char *password)
 
 //-----------------------------------------------------------------------------
 static int my_conv(int num_msg, const struct pam_message **msg_ap,
- struct pam_response **res_ap, void *ptr)
+  struct pam_response **res_ap, void *ptr)
 {
     int j;
 

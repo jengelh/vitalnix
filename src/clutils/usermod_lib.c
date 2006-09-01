@@ -51,7 +51,7 @@ EXPORT_SYMBOL int usermod_fill_defaults(struct usermod_state *sp)
 }
 
 EXPORT_SYMBOL int usermod_get_options(int *argc, const char ***argv,
- struct usermod_state *sp)
+  struct usermod_state *sp)
 {
     struct vxpdb_user *nu = &sp->newstuff;
     struct HXoption options_table[] = {

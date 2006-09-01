@@ -61,7 +61,7 @@ EXPORT_SYMBOL int vxutil_only_digits(const char *p)
 }
 
 EXPORT_SYMBOL char *vxutil_propose_home(char *dest, size_t size,
- const char *base, const char *username, unsigned int level)
+  const char *base, const char *username, unsigned int level)
 {
     if(*username == '\0')
         fprintf(stderr, "%s: username has zero length\n", __FUNCTION__);
@@ -84,7 +84,7 @@ EXPORT_SYMBOL char *vxutil_propose_home(char *dest, size_t size,
     @firstname_8:       The first name, UTF-8 encoded
 */
 EXPORT_SYMBOL char *vxutil_propose_lname(char *dest, size_t size,
- const char *surname_8, const char *firstname_8)
+  const char *surname_8, const char *firstname_8)
 {
     char surname_7[7], firstname_7[8];
 
@@ -106,7 +106,7 @@ EXPORT_SYMBOL char *vxutil_propose_lname(char *dest, size_t size,
 }
 
 EXPORT_SYMBOL char *vxutil_quote(const char *src, unsigned int type,
- char **free_me)
+  char **free_me)
 {
     char *ret, *ret_wp;
 
@@ -169,7 +169,7 @@ EXPORT_SYMBOL char *vxutil_quote(const char *src, unsigned int type,
 }
 
 EXPORT_SYMBOL int vxutil_replace_run(const char *fmt,
- const struct HXoption *map)
+  const struct HXoption *map)
 {
     char cmd[4 * MAXLNLEN];
     HX_strrep5(fmt, map, cmd, sizeof(cmd));

@@ -443,7 +443,7 @@ static int mdsync_defer_stop(struct mdsync_workspace *w) {
 
 //-----------------------------------------------------------------------------
 static inline int create_home(const struct mdsync_workspace *w, const char *d,
- long uid, long gid)
+  long uid, long gid)
 {
     const struct mdsync_config *c = &w->config;
 

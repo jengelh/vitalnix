@@ -32,7 +32,7 @@ enum {
 
 //-----------------------------------------------------------------------------
 EXPORT_SYMBOL int vxplex_enter(const char *library, const char *function,
- int argc, const char **argv, void *ptr)
+  int argc, const char **argv, void *ptr)
 {
     int (*entrypoint)(int, const char **, void *);
     void *handle;

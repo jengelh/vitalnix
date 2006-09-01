@@ -53,7 +53,7 @@ EXPORT_SYMBOL int userdel_fill_defaults(struct userdel_state *sp)
 }
 
 EXPORT_SYMBOL int userdel_get_options(int *argc, const char ***argv,
- struct userdel_state *state)
+  struct userdel_state *state)
 {
     struct HXoption options_table[] = {
         // New (vxuserdel) options

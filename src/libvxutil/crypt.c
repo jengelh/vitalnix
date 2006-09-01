@@ -59,7 +59,7 @@ static char *(*const cryptor[])(const char *, const char *) = {
 
 //-----------------------------------------------------------------------------
 EXPORT_SYMBOL int vxutil_cryptpw(const char *key, const char *salt,
- unsigned int meth, char **result)
+  unsigned int meth, char **result)
 {
     if(meth >= ARRAY_SIZE(cryptor) || cryptor[meth] == NULL ||
      (*result = cryptor[meth](key, salt)) == NULL)

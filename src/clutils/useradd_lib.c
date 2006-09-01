@@ -87,7 +87,7 @@ EXPORT_SYMBOL char *useradd_genhome(struct useradd_state *state)
 }
 
 EXPORT_SYMBOL int useradd_get_options(int *argc, const char ***argv,
- struct useradd_state *state)
+  struct useradd_state *state)
 {
     struct vxpdb_user *user = &state->user;
     struct HXoption options_table[] = {

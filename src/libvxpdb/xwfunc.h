@@ -32,8 +32,11 @@ libvxpdb/xwfunc.h - simple wrappers
 extern "C" {
 #endif
 
+/*
+ *      INLINE FUNCTIONS
+ */
 static inline int vxpdb_getpwnam(struct vxpdb_state *state, const char *user,
- struct vxpdb_user *result)
+  struct vxpdb_user *result)
 {
     struct vxpdb_user mask;
     vxpdb_user_clean(&mask);
@@ -42,7 +45,7 @@ static inline int vxpdb_getpwnam(struct vxpdb_state *state, const char *user,
 }
 
 static inline int vxpdb_getpwuid(struct vxpdb_state *state, long uid,
- struct vxpdb_user *result)
+  struct vxpdb_user *result)
 {
     struct vxpdb_user mask;
     vxpdb_user_clean(&mask);
@@ -51,7 +54,7 @@ static inline int vxpdb_getpwuid(struct vxpdb_state *state, long uid,
 }
 
 static inline int vxpdb_getgrnam(struct vxpdb_state *state, const char *group,
- struct vxpdb_group *result)
+  struct vxpdb_group *result)
 {
     struct vxpdb_group mask;
     mask.gr_name = (char *)group;
@@ -60,7 +63,7 @@ static inline int vxpdb_getgrnam(struct vxpdb_state *state, const char *group,
 }
 
 static inline int vxpdb_getgrgid(struct vxpdb_state *state, long gid,
- struct vxpdb_group *result)
+  struct vxpdb_group *result)
 {
     struct vxpdb_group mask;
     mask.gr_name = NULL;

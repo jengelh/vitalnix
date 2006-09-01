@@ -75,7 +75,7 @@ static void sb_destruct(struct pwlfmt_workspace *state) {
 }
 
 static void sb_file_header(struct pwlfmt_workspace *state,
- const struct pwl_data *data)
+  const struct pwl_data *data)
 {
     fprintf(state->output_fh,
         "\\documentclass[12pt]{article}\n\n"
@@ -88,7 +88,7 @@ static void sb_file_header(struct pwlfmt_workspace *state,
 }
 
 static void sb_tbl_entry(struct pwlfmt_workspace *state,
- const struct pwl_data *data)
+  const struct pwl_data *data)
 {
     DEFCAT_TBL_ENTRY(state, data);
     HX_fstrrep(state->output_fh, state->template_data, catalog);
@@ -97,7 +97,7 @@ static void sb_tbl_entry(struct pwlfmt_workspace *state,
 }
 
 static void sb_file_footer(struct pwlfmt_workspace *state,
- const struct pwl_data *data)
+  const struct pwl_data *data)
 {
     fprintf(state->output_fh, "\\end{document}\n");
     return;

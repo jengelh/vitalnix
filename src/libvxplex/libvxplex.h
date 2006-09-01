@@ -35,6 +35,9 @@ enum {
     PLEXUI_GUI,
 };
 
+/*
+ *      PLEX.C
+ */
 extern int vxplex_enter(const char *, const char *, int, const char **, void *);
 extern unsigned int vxplex_select_ui(int *, const char ***);
 

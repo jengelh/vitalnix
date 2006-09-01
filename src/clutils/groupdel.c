@@ -123,7 +123,7 @@ int main(int argc, const char **argv) {
 
 //-----------------------------------------------------------------------------
 static int groupdel_check_pri_group(struct vxpdb_state *db,
- struct vxpdb_group *mm)
+  struct vxpdb_group *mm)
 {
     struct vxpdb_user user;
     int pg = 0; // some user has this as primary group

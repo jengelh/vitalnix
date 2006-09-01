@@ -77,7 +77,7 @@ EXPORT_SYMBOL void mdsync_fixup(struct mdsync_workspace *w)
     preferred UNIX username length).
 */
 static inline char *format_name(const char *name, unsigned int idx,
- char *dest, size_t dsize)
+  char *dest, size_t dsize)
 {
     char istr[24];
     int ret;

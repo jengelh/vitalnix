@@ -39,7 +39,7 @@ struct vxeds_state {
 
 //-----------------------------------------------------------------------------
 EXPORT_SYMBOL int vxeds_open(const char *identifier, const char *fmt,
- void **state_pptr)
+  void **state_pptr)
 {
     struct vxeds_state state, *stp;
     int ret;
@@ -96,7 +96,7 @@ EXPORT_SYMBOL void vxeds_free_entry(struct vxeds_entry *e)
 }
 
 EXPORT_SYMBOL char *vxeds_bfullname(const char *first_name,
- const char *surname)
+  const char *surname)
 {
     char *full_name;
     if(surname == NULL)

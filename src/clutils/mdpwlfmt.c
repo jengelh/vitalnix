@@ -113,7 +113,7 @@ static int pwlfmt(struct pwlfmt_workspace *i) {
 
 //-----------------------------------------------------------------------------
 static int get_options(int *argc, const char ***argv,
- struct pwlfmt_workspace *i)
+  struct pwlfmt_workspace *i)
 {
     struct HXoption options_table[] = {
         {.sh = 'V', .type = HXTYPE_NONE, .cb = show_version,

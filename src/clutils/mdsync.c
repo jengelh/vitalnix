@@ -241,7 +241,7 @@ static void sync_cleanup(struct private_info *priv) {
 
 //-----------------------------------------------------------------------------
 static void cb_report(unsigned int type, const struct mdsync_workspace *mdsw,
- unsigned long current, unsigned long max)
+  unsigned long current, unsigned long max)
 {
     static const char *const fmt[] = {
         [MDREP_ADD]     = "Add process",

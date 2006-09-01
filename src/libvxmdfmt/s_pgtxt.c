@@ -45,7 +45,7 @@ static const struct pwlstyle_vtable THIS_STYLE = {
 REGISTER_MODULE(pg_txt, &THIS_STYLE);
 
 static void pgtxt_tbl_header(struct pwlfmt_workspace *state,
- const struct pwl_data *data)
+  const struct pwl_data *data)
 {
     fprintf(state->output_fh,
         "\n\n"
@@ -59,7 +59,7 @@ static void pgtxt_tbl_header(struct pwlfmt_workspace *state,
 }
 
 static void pgtxt_tbl_entry(struct pwlfmt_workspace *state,
- const struct pwl_data *data)
+  const struct pwl_data *data)
 {
     char buf[MAXSNLEN];
     snprintf(buf, MAXSNLEN, "%s, %s", data->surname, data->first_name);
@@ -70,7 +70,7 @@ static void pgtxt_tbl_entry(struct pwlfmt_workspace *state,
 }
 
 static void pgtxt_tbl_footer(struct pwlfmt_workspace *state,
- const struct pwl_data *data)
+  const struct pwl_data *data)
 {
     fputc('\f', state->output_fh);
     return;

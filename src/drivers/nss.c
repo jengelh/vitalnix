@@ -142,7 +142,7 @@ static long vnss_modctl(struct vxpdb_state *vp, long command, ...) {
 
 //-----------------------------------------------------------------------------
 static int vnss_userinfo(struct vxpdb_state *vp,
- const struct vxpdb_user *sr_mask, struct vxpdb_user *dest, size_t size)
+  const struct vxpdb_user *sr_mask, struct vxpdb_user *dest, size_t size)
 {
     struct nss_state *state = vp->state;
     const struct HXdeque_node *travp;
@@ -184,7 +184,7 @@ static void *vnss_usertrav_init(struct vxpdb_state *vp) {
 }
 
 static int vnss_usertrav_walk(struct vxpdb_state *vp, void *priv_data,
- struct vxpdb_user *dest)
+  struct vxpdb_user *dest)
 {
     struct traverser_state *trav = priv_data;
     if(trav->wp == NULL)
@@ -201,7 +201,7 @@ static void vnss_usertrav_free(struct vxpdb_state *vp, void *priv_data) {
 
 //-----------------------------------------------------------------------------
 static int vnss_groupinfo(struct vxpdb_state *vp,
- const struct vxpdb_group *sr_mask, struct vxpdb_group *dest, size_t size)
+  const struct vxpdb_group *sr_mask, struct vxpdb_group *dest, size_t size)
 {
     struct nss_state *state = vp->state;
     const struct HXdeque_node *travp;
@@ -243,7 +243,7 @@ static void *vnss_grouptrav_init(struct vxpdb_state *vp) {
 }
 
 static int vnss_grouptrav_walk(struct vxpdb_state *vp, void *priv_data,
- struct vxpdb_group *dest)
+  struct vxpdb_group *dest)
 {
     struct traverser_state *trav = priv_data;
     if(trav->wp == NULL)
@@ -390,7 +390,7 @@ static inline void free_single_group(struct vxpdb_group *g) {
 }
 
 static inline struct vxpdb_user *get_user(struct HXdeque *dq,
- const char *lname)
+  const char *lname)
 {
     const struct HXdeque_node *travp;
     for(travp = dq->first; travp != NULL; travp = travp->Next) {
@@ -402,7 +402,7 @@ static inline struct vxpdb_user *get_user(struct HXdeque *dq,
 }
 
 static inline struct vxpdb_group *get_group(struct HXdeque *dq,
- const char *name)
+  const char *name)
 {
     const struct HXdeque_node *travp;
     for(travp = dq->first; travp != NULL; travp = travp->Next) {

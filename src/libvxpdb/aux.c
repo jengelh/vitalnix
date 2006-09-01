@@ -47,7 +47,7 @@ EXPORT_SYMBOL void vxpdb_user_clean(struct vxpdb_user *u)
 }
 
 EXPORT_SYMBOL void vxpdb_user_copy(struct vxpdb_user *dest,
- const struct vxpdb_user *src)
+  const struct vxpdb_user *src)
 {
     hmc_strasg(&dest->pw_name, src->pw_name);
     dest->pw_uid     = src->pw_uid;
@@ -95,7 +95,7 @@ EXPORT_SYMBOL void vxpdb_user_free(struct vxpdb_user *user, int heap)
 }
 
 EXPORT_SYMBOL int vxpdb_user_match(const struct vxpdb_user *user,
- const struct vxpdb_user *mask)
+  const struct vxpdb_user *mask)
 {
     return
       (mask->pw_name == NULL || strcmp(user->pw_name, mask->pw_name) == 0) &&
@@ -130,7 +130,7 @@ EXPORT_SYMBOL void vxpdb_group_clean(struct vxpdb_group *group)
 }
 
 EXPORT_SYMBOL void vxpdb_group_copy(struct vxpdb_group *dest,
- const struct vxpdb_group *src)
+  const struct vxpdb_group *src)
 {
     hmc_strasg(&dest->gr_name, src->gr_name);
     dest->gr_gid  = src->gr_gid;

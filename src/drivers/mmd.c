@@ -133,7 +133,7 @@ static int vmmd_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq) {
 }
 
 static int vmmd_usermod(struct vxpdb_state *vp,
- const struct vxpdb_user *sr_mask, const struct vxpdb_user *mod_mask)
+  const struct vxpdb_user *sr_mask, const struct vxpdb_user *mod_mask)
 {
     struct multi_state *state = vp->state;
     if(WR_OPEN(state))
@@ -142,7 +142,7 @@ static int vmmd_usermod(struct vxpdb_state *vp,
 }
 
 static int vmmd_userdel(struct vxpdb_state *vp,
- const struct vxpdb_user *sr_mask)
+  const struct vxpdb_user *sr_mask)
 {
     struct multi_state *state = vp->state;
     if(WR_OPEN(state))
@@ -151,7 +151,7 @@ static int vmmd_userdel(struct vxpdb_state *vp,
 }
 
 static int vmmd_userinfo(struct vxpdb_state *vp,
- const struct vxpdb_user *sr_mask, struct vxpdb_user *dest, size_t size)
+  const struct vxpdb_user *sr_mask, struct vxpdb_user *dest, size_t size)
 {
 /*    struct shadow_state *state = vp->state;
     const struct HXdeque_node *travp = state->dq_user->first;
@@ -190,7 +190,7 @@ static void *vmmd_usertrav_init(struct vxpdb_state *vp) {
 }
 
 static int vmmd_usertrav_walk(struct vxpdb_state *vp, void *ptr,
- struct vxpdb_user *dest)
+  struct vxpdb_user *dest)
 {
     return 1;
 }
@@ -208,7 +208,7 @@ static int vmmd_groupadd(struct vxpdb_state *vp, const struct vxpdb_group *rq) {
 }
 
 static int vmmd_groupmod(struct vxpdb_state *vp,
- const struct vxpdb_group *sr_mask, const struct vxpdb_group *mod_mask)
+  const struct vxpdb_group *sr_mask, const struct vxpdb_group *mod_mask)
 {
     struct multi_state *state = vp->state;
     if(WR_OPEN(state))
@@ -217,7 +217,7 @@ static int vmmd_groupmod(struct vxpdb_state *vp,
 }
 
 static int vmmd_groupdel(struct vxpdb_state *vp,
- const struct vxpdb_group *sr_mask)
+  const struct vxpdb_group *sr_mask)
 {
     struct multi_state *state = vp->state;
     if(WR_OPEN(state))
@@ -230,7 +230,7 @@ static void *vmmd_grouptrav_init(struct vxpdb_state *vp) {
 }
 
 static int vmmd_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
- struct vxpdb_group *dest)
+  struct vxpdb_group *dest)
 {
     return 1;
 }
@@ -240,7 +240,7 @@ static void vmmd_grouptrav_free(struct vxpdb_state *vp, void *ptr) {
 }
 
 static int vmmd_groupinfo(struct vxpdb_state *vp,
- const struct vxpdb_group *sr_mask, struct vxpdb_group *dest, size_t size)
+  const struct vxpdb_group *sr_mask, struct vxpdb_group *dest, size_t size)
 {
     return 0;
 }

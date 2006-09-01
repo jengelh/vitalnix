@@ -126,7 +126,7 @@ static int vxpdb_cleanup(struct vxpdb_state *thx, int err, struct opt *cf) {
     and resolve     into its configuration file.
 */
 static int vxpdb_config(struct opt *cf, unsigned int action,
- const char *L1_name)
+  const char *L1_name)
 {
     const char *L2_name = NULL;
     struct HXoption opt_driver[] = {

@@ -168,7 +168,7 @@ static int vshadow_unlock(struct vxpdb_state *vp) {
 
 //-----------------------------------------------------------------------------
 static int vshadow_useradd(struct vxpdb_state *vp,
- const struct vxpdb_user *rq)
+  const struct vxpdb_user *rq)
 {
     struct shadow_state *state = vp->state;
     struct vxpdb_user *nu;
@@ -211,7 +211,7 @@ static int vshadow_useradd(struct vxpdb_state *vp,
 }
 
 static int vshadow_usermod(struct vxpdb_state *vp,
- const struct vxpdb_user *sr_mask, const struct vxpdb_user *mod_mask)
+  const struct vxpdb_user *sr_mask, const struct vxpdb_user *mod_mask)
 {
 #define UP_INT(__field) \
     if(mod_mask->__field != PDB_NO_CHANGE) \
@@ -258,7 +258,7 @@ static int vshadow_usermod(struct vxpdb_state *vp,
 }
 
 static int vshadow_userdel(struct vxpdb_state *vp,
- const struct vxpdb_user *sr_mask)
+  const struct vxpdb_user *sr_mask)
 {
     struct shadow_state *state = vp->state;
     struct vxpdb_user *user;
@@ -279,7 +279,7 @@ static int vshadow_userdel(struct vxpdb_state *vp,
 }
 
 static int vshadow_userinfo(struct vxpdb_state *vp,
- const struct vxpdb_user *sr_mask, struct vxpdb_user *dest, size_t size)
+  const struct vxpdb_user *sr_mask, struct vxpdb_user *dest, size_t size)
 {
     struct shadow_state *state = vp->state;
     const struct HXdeque_node *travp = state->dq_user->first;
@@ -337,7 +337,7 @@ static void *vshadow_usertrav_init(struct vxpdb_state *vp) {
 }
 
 static int vshadow_usertrav_walk(struct vxpdb_state *vp, void *ptr,
- struct vxpdb_user *dest)
+  struct vxpdb_user *dest)
 {
     struct traverser_state *trav = ptr;
     if(trav->wp == NULL)
@@ -354,7 +354,7 @@ static void vshadow_usertrav_free(struct vxpdb_state *vp, void *ptr) {
 
 //-----------------------------------------------------------------------------
 static int vshadow_groupadd(struct vxpdb_state *vp,
- const struct vxpdb_group *rq)
+  const struct vxpdb_group *rq)
 {
     struct shadow_state *state = vp->state;
     struct vxpdb_group *ng;
@@ -377,7 +377,7 @@ static int vshadow_groupadd(struct vxpdb_state *vp,
 }
 
 static int vshadow_groupmod(struct vxpdb_state *vp,
- const struct vxpdb_group *sr_mask, const struct vxpdb_group *mod_mask)
+  const struct vxpdb_group *sr_mask, const struct vxpdb_group *mod_mask)
 {
     struct shadow_state *state = vp->state;
     struct vxpdb_group *group;
@@ -398,7 +398,7 @@ static int vshadow_groupmod(struct vxpdb_state *vp,
 }
 
 static int vshadow_groupdel(struct vxpdb_state *vp,
- const struct vxpdb_group *sr_mask)
+  const struct vxpdb_group *sr_mask)
 {
     struct shadow_state *state = vp->state;
     struct vxpdb_group *grp;
@@ -416,7 +416,7 @@ static int vshadow_groupdel(struct vxpdb_state *vp,
 }
 
 static int vshadow_groupinfo(struct vxpdb_state *vp,
- const struct vxpdb_group *sr_mask, struct vxpdb_group *dest, size_t size)
+  const struct vxpdb_group *sr_mask, struct vxpdb_group *dest, size_t size)
 {
     struct shadow_state *state = vp->state;
     const struct HXdeque_node *travp = state->dq_group->first;
@@ -459,7 +459,7 @@ static void *vshadow_grouptrav_init(struct vxpdb_state *vp) {
 }
 
 static int vshadow_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
- struct vxpdb_group *dest)
+  struct vxpdb_group *dest)
 {
     struct traverser_state *trav = ptr;
     if(trav->wp == NULL)
