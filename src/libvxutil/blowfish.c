@@ -378,7 +378,7 @@ static unsigned char BF_atoi64[0x60] = {
 static void clean(void *data, int size)
 {
 #if BF_ASM
-	extern void _BF_clean(void *data);
+	extern void _BF_clean(void *);
 #endif
 	memset(data, 0, size);
 #if BF_ASM
