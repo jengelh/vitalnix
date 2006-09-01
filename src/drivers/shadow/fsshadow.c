@@ -62,9 +62,9 @@ void db_read_shadow(FILE *fp, struct HXdeque *dq) {
         u->sp_max     = strtol(data[4], NULL, 0);
         u->sp_warn    = strtol(data[5], NULL, 0);
 
-        if(data[6] == NULL || *data[6] == '\0')
+        if(data[6] != NULL && *data[6] != '\0')
             u->sp_expire = strtol(data[6], NULL, 0);
-        if(data[7] == NULL || *data[7] == '\0')
+        if(data[7] != NULL && *data[7] != '\0')
             u->sp_inact = strtol(data[7], NULL, 0);
         static_cast(char **, u->be_priv)[1] = HX_strdup(data[8]);
     }
