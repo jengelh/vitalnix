@@ -89,8 +89,9 @@ void db_write_vxshadow(FILE *fp, const struct vxpdb_user *u) {
                 vxutil_quote(u->vs_pvgrp, VXQUOTE_XML, &fm));
 
     if(u->vs_defer != 0)
-        fprintf(fp, " defer=\"%ld\" />\n", u->vs_defer);
+        fprintf(fp, " defer=\"%ld\"", u->vs_defer);
 
+    fprintf(fp, " />\n");
     free(fm);
     return;
 }
