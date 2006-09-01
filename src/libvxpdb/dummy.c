@@ -29,50 +29,6 @@ libvxpdb/dummy.c
 
 #define ALIAS(orig, new) static typeof(orig) new __attribute__((alias(#orig)))
 
-// Functions
-DRIVER_PROTO_ALL(vdummy);
-
-//-----------------------------------------------------------------------------
-/*  vxpdb_fix_vtable
-    @m: vtable
-
-*/
-EXPORT_SYMBOL void vxpdb_fix_vtable(struct vxpdb_mvtable *m)
-{
-#define SET(x) if((m->x) == NULL) (m->x) = vdummy_##x;
-    SET(init);
-    SET(open);
-    SET(close);
-    SET(modctl);
-    SET(deinit);
-    SET(lock);
-    SET(unlock);
-
-    SET(useradd);
-    SET(usermod);
-    SET(userdel);
-    if(m->usertrav_init == NULL && m->usertrav_walk == NULL &&
-     m->usertrav_free == NULL) {
-        m->usertrav_init = vdummy_usertrav_init;
-        m->usertrav_walk = vdummy_usertrav_walk;
-        m->usertrav_free = vdummy_usertrav_free;
-    }
-    SET(userinfo);
-
-    SET(groupadd);
-    SET(groupmod);
-    SET(groupdel);
-    if(m->grouptrav_init == NULL && m->grouptrav_walk == NULL &&
-     m->grouptrav_free == NULL) {
-        m->grouptrav_init = vdummy_grouptrav_init;
-        m->grouptrav_walk = vdummy_grouptrav_walk;
-        m->grouptrav_free = vdummy_grouptrav_free;
-    }
-    SET(groupinfo);
-    return;
-#undef SET
-}
-
 //-----------------------------------------------------------------------------
 static int vdummy_init(struct vxpdb_state *vp, const char *config_file) {
     return 1;
@@ -176,6 +132,47 @@ static int vdummy_groupinfo(struct vxpdb_state *vp,
   const struct vxpdb_group *mask, struct vxpdb_group *result, size_t size)
 {
     return 0;
+}
+
+//-----------------------------------------------------------------------------
+/*  vxpdb_fix_vtable
+    @m: vtable
+
+*/
+EXPORT_SYMBOL void vxpdb_fix_vtable(struct vxpdb_mvtable *m)
+{
+#define SET(x) if((m->x) == NULL) (m->x) = vdummy_##x;
+    SET(init);
+    SET(open);
+    SET(close);
+    SET(modctl);
+    SET(deinit);
+    SET(lock);
+    SET(unlock);
+
+    SET(useradd);
+    SET(usermod);
+    SET(userdel);
+    if(m->usertrav_init == NULL && m->usertrav_walk == NULL &&
+     m->usertrav_free == NULL) {
+        m->usertrav_init = vdummy_usertrav_init;
+        m->usertrav_walk = vdummy_usertrav_walk;
+        m->usertrav_free = vdummy_usertrav_free;
+    }
+    SET(userinfo);
+
+    SET(groupadd);
+    SET(groupmod);
+    SET(groupdel);
+    if(m->grouptrav_init == NULL && m->grouptrav_walk == NULL &&
+     m->grouptrav_free == NULL) {
+        m->grouptrav_init = vdummy_grouptrav_init;
+        m->grouptrav_walk = vdummy_grouptrav_walk;
+        m->grouptrav_free = vdummy_grouptrav_free;
+    }
+    SET(groupinfo);
+    return;
+#undef SET
 }
 
 //=============================================================================

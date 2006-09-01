@@ -32,23 +32,7 @@ struct ldap_state {
     long uid_min, uid_max, gid_min, gid_max;
 };
 
-// Functions
-DRIVER_PROTO_BASE1(vldap);
-DRIVER_PROTO_USER(vldap);
-DRIVER_PROTO_GROUP(vldap);
-
-// Variables
-static struct vxpdb_mvtable THIS_MODULE = {
-    .name           = "LDAP back-end module",
-    .author         = "Alphagate Systems <support [at] ahn hopto org>, 2005 - 2006",
-    DRIVER_CB_BASE1(vldap),
-    DRIVER_CB_USER(vldap),
-    DRIVER_CB_GROUP(vldap),
-};
-
 //-----------------------------------------------------------------------------
-REGISTER_MODULE(ldap, &THIS_MODULE);
-
 static int vldap_init(struct vxpdb_state *vp, const char *config_file) {
     struct ldap_state *state;
 
@@ -158,5 +142,16 @@ static int vldap_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
 static void vldap_grouptrav_free(struct vxpdb_state *vp, void *ptr) {
     return;
 }
+
+//-----------------------------------------------------------------------------
+static struct vxpdb_mvtable THIS_MODULE = {
+    .name   = "LDAP back-end module",
+    .author = "Jan Engelhardt <jengelh [at] gmx de>, 2005 - 2006",
+    DRIVER_CB_BASE1(vldap),
+    DRIVER_CB_USER(vldap),
+    DRIVER_CB_GROUP(vldap),
+};
+
+REGISTER_MODULE(ldap, &THIS_MODULE);
 
 //=============================================================================

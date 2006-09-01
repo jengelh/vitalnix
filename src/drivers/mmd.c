@@ -54,7 +54,6 @@ struct multi_state {
 };
 
 // Functions
-DRIVER_PROTO_ALL(vmmd);
 static int modules_construct(struct multi_state *, char **);
 static int modules_open(struct multi_state *, long);
 static void modules_close(struct multi_state *);
@@ -63,16 +62,7 @@ static void read_config(struct multi_state *);
 static void read_rdmod(const struct HXoptcb *);
 static void read_wrmod(const struct HXoptcb *);
 
-// Variables
-static struct vxpdb_mvtable THIS_MODULE = {
-    .name           = "Multiple Module driver",
-    .author         = "Jan Engelhardt <jengelh [at] gmx de>, 2006",
-    DRIVER_CB_ALL(vmmd),
-};
-
 //-----------------------------------------------------------------------------
-REGISTER_MODULE(multi, &THIS_MODULE);
-
 static int vmmd_init(struct vxpdb_state *vp, const char *config_file) {
     struct multi_state *state;
 
@@ -342,5 +332,14 @@ static void read_wrmod(const struct HXoptcb *cbi) {
     }
     return;
 }
+
+//-----------------------------------------------------------------------------
+static struct vxpdb_mvtable THIS_MODULE = {
+    .name   = "Multiple Module driver",
+    .author = "Jan Engelhardt <jengelh [at] gmx de>, 2006",
+    DRIVER_CB_ALL(vmmd),
+};
+
+REGISTER_MODULE(multi, &THIS_MODULE);
 
 //=============================================================================

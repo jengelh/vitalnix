@@ -82,10 +82,6 @@ struct traverser_state {
 };
 
 // Functions
-DRIVER_PROTO_BASE1(vmysql);
-DRIVER_PROTO_USER(vmysql);
-DRIVER_PROTO_GROUP(vmysql);
-static driver_modctl_t vmysql_modctl;
 static int vmysql_xlock_user(struct mysql_state *);
 static int vmysql_xlock_group(struct mysql_state *);
 static inline void vmysql_xunlock(struct mysql_state *);
@@ -110,19 +106,7 @@ static hmc_t *sql_usermask(hmc_t **, const struct mysql_state *,
     const struct vxpdb_user *, unsigned int);
 
 // Variables
-static struct vxpdb_mvtable THIS_MODULE = {
-    .name           = "MYSQL back-end module",
-    .author         = "Alphagate Systems <support [at] ahn hopto org>, "
-                      "2005 - 2006",
-    DRIVER_CB_BASE1(vmysql),
-    .modctl         = vmysql_modctl,
-    DRIVER_CB_USER(vmysql),
-    DRIVER_CB_GROUP(vmysql),
-};
-
 //-----------------------------------------------------------------------------
-REGISTER_MODULE(mysql, &THIS_MODULE);
-
 static int vmysql_init(struct vxpdb_state *vp, const char *config_file) {
     struct mysql_state *st;
 
@@ -591,7 +575,7 @@ static int vmysql_groupdel(struct vxpdb_state *vp,
     return 0; // (ret == 0) ? 1 : ret;
 }
 
-void *vmysql_grouptrav_init(struct vxpdb_state *vp) {
+static void *vmysql_grouptrav_init(struct vxpdb_state *vp) {
     struct mysql_state *st = vp->state;
     struct traverser_state trav;
     char query[1024];
@@ -609,7 +593,7 @@ void *vmysql_grouptrav_init(struct vxpdb_state *vp) {
     return HX_memdup(&trav, sizeof(struct traverser_state));
 }
 
-int vmysql_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
+static int vmysql_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
   struct vxpdb_group *res)
 {
     struct mysql_state *st = vp->state;
@@ -631,15 +615,15 @@ int vmysql_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
     return 1;
 }
 
-void vmysql_grouptrav_free(struct vxpdb_state *vp, void *ptr) {
+static void vmysql_grouptrav_free(struct vxpdb_state *vp, void *ptr) {
     struct traverser_state *trav = ptr;
     mysql_free_result(trav->res);
     free(trav);
     return;
 }
 
-int vmysql_groupinfo(struct vxpdb_state *vp, const struct vxpdb_group *srk,
-  struct vxpdb_group *res, size_t rsize)
+static int vmysql_groupinfo(struct vxpdb_state *vp,
+  const struct vxpdb_group *srk, struct vxpdb_group *res, size_t rsize)
 {
     return 0;
 }
@@ -961,5 +945,18 @@ static hmc_t *sql_usermask(hmc_t **s, const struct mysql_state *state,
 }
 #undef PUT_I
 #undef PUT_S
+
+//-----------------------------------------------------------------------------
+static struct vxpdb_mvtable THIS_MODULE = {
+    .name   = "MYSQL back-end module",
+    .author = "Jan Engelhardt <jengelh [at] gmx de>, 2005 - 2006",
+
+    DRIVER_CB_BASE1(vmysql),
+    .modctl = vmysql_modctl,
+    DRIVER_CB_USER(vmysql),
+    DRIVER_CB_GROUP(vmysql),
+};
+
+REGISTER_MODULE(mysql, &THIS_MODULE);
 
 //=============================================================================

@@ -50,16 +50,9 @@ struct traverser_state {
 };
 
 // Functions
-DRIVER_PROTO_ALL(vshadow);
+static void vshadow_close(struct vxpdb_state *);
 
 // Variables
-static struct vxpdb_mvtable THIS_MODULE = {
-    .name   = "vxShadow back-end module",
-    .desc   = "for shadow suite (and vxshadow extension)",
-    .author = "Jan Engelhardt <jengelh [at] gmx de>, 2002 - 2006",
-    DRIVER_CB_ALL(vshadow),
-};
-
 static char *Path_passwd   = "/etc/passwd",
             *Path_shadow   = "/etc/shadow",
             *Path_group    = "/etc/group",
@@ -67,8 +60,6 @@ static char *Path_passwd   = "/etc/passwd",
             *Path_vxshadow = "/etc/vxshadow";
 
 //-----------------------------------------------------------------------------
-REGISTER_MODULE(shadow, &THIS_MODULE);
-
 static int vshadow_init(struct vxpdb_state *vp, const char *config_file) {
     struct shadow_state *state;
 
@@ -473,5 +464,15 @@ static void vshadow_grouptrav_free(struct vxpdb_state *vp, void *ptr) {
     free(ptr);
     return;
 }
+
+//-----------------------------------------------------------------------------
+static struct vxpdb_mvtable THIS_MODULE = {
+    .name   = "vxShadow back-end module",
+    .desc   = "for shadow suite (and vxshadow extension)",
+    .author = "Jan Engelhardt <jengelh [at] gmx de>, 2002 - 2006",
+    DRIVER_CB_ALL(vshadow),
+};
+
+REGISTER_MODULE(shadow, &THIS_MODULE);
 
 //=============================================================================

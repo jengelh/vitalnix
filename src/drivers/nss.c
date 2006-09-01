@@ -56,17 +56,7 @@ struct traverser_state {
 };
 
 // Functions
-DRIVER_PROTO_BASE1(vnss);
-static driver_modctl_t          vnss_modctl;
-static driver_userinfo_t        vnss_userinfo;
-static driver_usertrav_init_t   vnss_usertrav_init;
-static driver_usertrav_walk_t   vnss_usertrav_walk;
-static driver_usertrav_free_t   vnss_usertrav_free;
-static driver_groupinfo_t       vnss_groupinfo;
-static driver_grouptrav_init_t  vnss_grouptrav_init;
-static driver_grouptrav_walk_t  vnss_grouptrav_walk;
-static driver_grouptrav_free_t  vnss_grouptrav_free;
-
+static void vnss_close(struct vxpdb_state *);
 static int db_open(struct nss_state *);
 static struct HXdeque *db_read_groups(void);
 static struct HXdeque *db_read_passwd(void);
@@ -77,29 +67,7 @@ static inline void free_single_user(struct vxpdb_user *);
 static inline struct vxpdb_user *get_user(struct HXdeque *, const char *);
 static inline struct vxpdb_group *get_group(struct HXdeque *, const char *);
 
-// Variables
-static struct vxpdb_mvtable THIS_MODULE = {
-    .name           = "NSS back-end module (not MU/MT-safe)",
-    .desc           = "API demonstration",
-    .author         = "Jan Engelhardt <jengelh [at] gmx de>, 2005 - 2006",
-
-    DRIVER_CB_BASE1(vnss),
-    .modctl         = vnss_modctl,
-
-    .userinfo       = vnss_userinfo,
-    .usertrav_init  = vnss_usertrav_init,
-    .usertrav_walk  = vnss_usertrav_walk,
-    .usertrav_free  = vnss_usertrav_free,
-
-    .groupinfo      = vnss_groupinfo,
-    .grouptrav_init = vnss_grouptrav_init,
-    .grouptrav_walk = vnss_grouptrav_walk,
-    .grouptrav_free = vnss_grouptrav_free,
-};
-
 //-----------------------------------------------------------------------------
-REGISTER_MODULE(nss, &THIS_MODULE);
-
 static int vnss_init(struct vxpdb_state *vp, const char *config_file) {
     if((vp->state = calloc(1, sizeof(struct nss_state))) == NULL)
         return -errno;
@@ -412,5 +380,27 @@ static inline struct vxpdb_group *get_group(struct HXdeque *dq,
     }
     return NULL;
 }
+
+//-----------------------------------------------------------------------------
+static struct vxpdb_mvtable THIS_MODULE = {
+    .name           = "NSS back-end module (not MU/MT-safe)",
+    .desc           = "API demonstration",
+    .author         = "Jan Engelhardt <jengelh [at] gmx de>, 2005 - 2006",
+
+    DRIVER_CB_BASE1(vnss),
+    .modctl         = vnss_modctl,
+
+    .userinfo       = vnss_userinfo,
+    .usertrav_init  = vnss_usertrav_init,
+    .usertrav_walk  = vnss_usertrav_walk,
+    .usertrav_free  = vnss_usertrav_free,
+
+    .groupinfo      = vnss_groupinfo,
+    .grouptrav_init = vnss_grouptrav_init,
+    .grouptrav_walk = vnss_grouptrav_walk,
+    .grouptrav_free = vnss_grouptrav_free,
+};
+
+REGISTER_MODULE(nss, &THIS_MODULE);
 
 //=============================================================================
