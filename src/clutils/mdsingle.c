@@ -67,6 +67,7 @@ int main(int argc, const char **argv) {
 
     memset(&priv, 0, sizeof(priv));
     priv.backend_module = HX_strdup("*");
+    priv.run_master     = 1;                    // on by default
 
     fprintf(stderr, "Note that mdsingle will not check if a user with the "
                     "same UUID already exists. Make sure you do not add a "
