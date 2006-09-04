@@ -158,8 +158,8 @@ static int vmmd_userinfo(struct vxpdb_state *vp,
         mask = &temp_mask;
     }
 
-    for(travp = state->dq_user->first;
-     travp != NULL && (dest == NULL || size > 0); travp = travp->Next)
+    for(travp = state->dq_user->first; travp != NULL &&
+     (dest == NULL || size > 0); travp = travp->Next)
     {
         const struct vxpdb_user *src = travp->ptr;
         if(!vxpdb_user_match(src, mask))
