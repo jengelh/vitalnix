@@ -48,19 +48,17 @@ struct module_handle {
 };
 
 struct multi_state {
-    int destructing;
+    char *rdmod_str, *wrmod_str;
     struct HXdeque *rd_mod;
     struct module_handle wr_mod;
 };
 
 // Functions
-static int modules_construct(struct multi_state *, char **);
+static int modules_construct(struct multi_state *);
 static int modules_open(struct multi_state *, long);
 static void modules_close(struct multi_state *);
 static void modules_destruct(struct multi_state *);
 static void read_config(struct multi_state *);
-static void read_rdmod(const struct HXoptcb *);
-static void read_wrmod(const struct HXoptcb *);
 
 //-----------------------------------------------------------------------------
 static int vmmd_init(struct vxpdb_state *vp, const char *config_file) {
@@ -70,7 +68,14 @@ static int vmmd_init(struct vxpdb_state *vp, const char *config_file) {
         return -errno;
 
     read_config(state);
+    if(!modules_construct(state))
+        goto out;
+
     return 1;
+
+ out:
+    modules_destruct(state);
+    return -EINVAL;
 }
 
 static int vmmd_open(struct vxpdb_state *vp, long flags) {
@@ -236,19 +241,36 @@ static int vmmd_groupinfo(struct vxpdb_state *vp,
 }
 
 //-----------------------------------------------------------------------------
-static int modules_construct(struct multi_state *state, char **name) {
-    state->rd_mod = HXdeque_init();
+static int modules_construct(struct multi_state *state) {
+    char **rdmod_list = HX_split(state->rdmod_str, ":", NULL, 0), **name;
+    struct module_handle *wr;
+    int ret = 0;
 
+    state->rd_mod = HXdeque_init();
     while(name != NULL && *name != NULL) {
-        struct module_handle mh = {
-            .mh_name     = *name,
-            .mh_state    = STATE_OUT,
-        };
+        struct module_handle mh;
+        mh.mh_name = *name;
+        if((mh.mh_instance = vxpdb_load(*name)) == NULL)
+            goto out;
+        mh.mh_state = STATE_LOADED;
         HXdeque_push(state->rd_mod, HX_memdup(&mh, sizeof(mh)));
         ++name;
     }
 
-    return 1;
+    wr = &state->wr_mod;
+    wr->mh_name      = state->wrmod_str;
+    wr->mh_state     = STATE_OUT;
+    state->wrmod_str = NULL;
+    if((wr->mh_instance = vxpdb_load(wr->mh_name)) == NULL)
+        return 0;
+    wr->mh_state = STATE_LOADED;
+
+    ret = 1;
+ out:
+    HX_zvecfree(rdmod_list);
+    free(state->rdmod_str);
+    state->rdmod_str = NULL;
+    return ret;
 }
 
 static int modules_open(struct multi_state *state, long flags) {
@@ -299,6 +321,7 @@ static void modules_destruct(struct multi_state *state) {
     if(state->wr_mod.mh_state == STATE_LOADED) {
         vxpdb_unload(WR_MOD(state));
         state->wr_mod.mh_state = STATE_OUT;
+        free(state->wr_mod.mh_name);
     }
 
     return;
@@ -306,30 +329,12 @@ static void modules_destruct(struct multi_state *state) {
 
 static void read_config(struct multi_state *state) {
     struct HXoption options_table[] = {
-        {.ln = "RD_MODULES", .type = HXTYPE_STRING, .cb = read_rdmod, .uptr = state},
-        {.ln = "WR_MODULE",  .type = HXTYPE_STRING, .cb = read_wrmod, .uptr = state},
+        {.ln = "RD_MODULES", .type = HXTYPE_STRING, .ptr = state->rdmod_str},
+        {.ln = "WR_MODULE",  .type = HXTYPE_STRING, .ptr = state->wrmod_str},
         HXOPT_TABLEEND,
     };
 
     HX_shconfig(CONFIG_ETC_VITALNIX "/db_multi.conf", options_table);
-    return;
-}
-
-static void read_rdmod(const struct HXoptcb *cbi) {
-    struct multi_state *state = cbi->current->uptr;
-    char **mod = HX_split(cbi->s, ":", NULL, 0);
-    if((state->destructing = modules_construct(state, mod)) <= 0)
-        modules_destruct(state);
-    HX_zvecfree(mod);
-    return;
-}
-
-static void read_wrmod(const struct HXoptcb *cbi) {
-    struct multi_state *state = cbi->current->uptr;
-    if(state->destructing == 0) {
-        state->wr_mod.mh_name  = HX_strdup(cbi->s);
-        state->wr_mod.mh_state = STATE_OUT;
-    }
     return;
 }
 
