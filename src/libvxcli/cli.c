@@ -31,9 +31,6 @@ libvxcli/cli.c
 #include "libvxcli/libvxcli.h"
 #include "libvxutil/defines.h"
 
-// Functions
-static inline int big_prompt(const struct vxcq_entry *);
-
 //-----------------------------------------------------------------------------
 EXPORT_SYMBOL char *vxcli_query(const char *msg, const char *prompt,
   const char *defl, long opts, char *buf, size_t size)
@@ -103,12 +100,9 @@ EXPORT_SYMBOL char *vxcli_query(const char *msg, const char *prompt,
 
 EXPORT_SYMBOL int vxcli_query_v(const struct vxcq_entry *tp)
 {
-    unsigned int count = 0;
+    int count = 0;
 
     while(tp->msg != NULL || tp->prompt != NULL) {
-        int big_prev = big_prompt(tp);
-        int big_next;
-
         if(tp->type == HXTYPE_STRING) {
             char *res = vxcli_query(tp->msg, tp->prompt, tp->defl,
                         tp->flags, NULL, 0);
@@ -147,18 +141,11 @@ EXPORT_SYMBOL int vxcli_query_v(const struct vxcq_entry *tp)
             }
         }
 
-        big_next = big_prompt(++tp);
-        if(big_prev ^ big_next)
-            printf("\n");
+        printf("\n");
         ++count;
+        ++tp;
     }
-    return 1;
-}
-
-//-----------------------------------------------------------------------------
-static inline int big_prompt(const struct vxcq_entry *e) {
-    return e->msg != NULL || e->defl != NULL ||
-           (e->flags & (VXCQ_ABORT | VXCQ_EMPTY));
+    return count;
 }
 
 //=============================================================================
