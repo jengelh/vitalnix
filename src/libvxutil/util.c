@@ -329,7 +329,7 @@ static const char *surname_pointer(const char *s) {
     while(*p != '\0') {
         if(isupper(*p))
             return p;
-        while(!isspace(*p)) ++p;
+        while(!isspace(*p) && *p != '\0') ++p;
         while(isspace(*p)) ++p;
     }
     if((p = strchr(s, ' ')) != NULL) {
