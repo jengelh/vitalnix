@@ -313,7 +313,6 @@ static int vshadow_userinfo(struct vxpdb_state *vp,
                 return 1;
             ++found;
         }
-        travp = travp->Next;
     }
 
     return found;
@@ -410,7 +409,7 @@ static int vshadow_groupinfo(struct vxpdb_state *vp,
   const struct vxpdb_group *sr_mask, struct vxpdb_group *dest, size_t size)
 {
     struct shadow_state *state = vp->state;
-    const struct HXdeque_node *travp = state->dq_group->first;
+    const struct HXdeque_node *travp;
     struct vxpdb_group temp_mask;
     int found = 0;
 
@@ -419,23 +418,21 @@ static int vshadow_groupinfo(struct vxpdb_state *vp,
         sr_mask = &temp_mask;
     }
 
-    while(travp != NULL && (dest == NULL || size > 0)) {
+    for(travp = state->dq_group->first; travp != NULL &&
+     (dest == NULL || size > 0); travp = travp->Next)
+    {
         const struct vxpdb_group *src = travp->ptr;
-
-        if(!vxpdb_group_match(src, sr_mask)) {
-            travp = travp->Next;
+        if(!vxpdb_group_match(src, sr_mask))
             continue;
-        }
-
         if(dest != NULL) {
             vxpdb_group_copy(dest, src);
             ++dest;
             ++found;
             --size;
         } else {
-            return 1;
+            if(size == 0)
+                return 1;
         }
-        travp = travp->Next;
     }
 
     return found;
