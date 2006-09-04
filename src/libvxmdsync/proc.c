@@ -165,8 +165,9 @@ EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
     char home_path[MAXFNLEN], plain_pw[64];
     unsigned long users_proc, users_max;
     const struct HXbtree_node *node;
+    struct vxpdb_user chk = {};
     void *travp;
-    int ret;
+    int ret = 1;
     struct HXoption master_catalog[] = {
         {.sh = 'n', .type = HXTYPE_ULONG, .ptr = &users_max},
         HXOPT_TABLEEND,
@@ -186,7 +187,7 @@ EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
     travp = HXbtrav_init(w->add_req, NULL);
     while((node = HXbtraverse(travp)) != NULL) {
         struct vxeds_entry *in = node->data;
-        struct vxpdb_user out    = {};
+        struct vxpdb_user out  = {};
         struct HXoption user_catalog[] = {
             {.sh = 'l', .type = HXTYPE_STRP, .ptr = &out.pw_name},
             {.sh = 'n', .type = HXTYPE_STRP, .ptr = &out.pw_real},
@@ -234,11 +235,9 @@ EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
         if(c->add_opts.user_preadd != NULL)
             vxutil_replace_run(c->add_opts.user_preadd, user_catalog);
 
-        if((ret = vxpdb_useradd(w->database, &out)) <= 0) {
-            memset(plain_pw, 0, sizeof(plain_pw));
-            HXbtrav_free(travp);
-            return ret;
-        }
+        if((ret = vxpdb_useradd(w->database, &out)) <= 0 ||
+         (ret = vxpdb_getpwnam(w->database, out.pw_name, &chk)) <= 0)
+            break;
 
         if(c->postadd_flush && c->add_opts.user_postadd != NULL)
             vxpdb_modctl(w->database, PDB_FLUSH);
@@ -259,7 +258,7 @@ EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
         }
 
         // Create home directory and optionally copy skeleton dir
-        if(!create_home(w, out.pw_home, out.pw_uid, out.pw_gid)) {
+        if(!create_home(w, chk.pw_home, chk.pw_uid, chk.pw_gid)) {
             printf("\n");
             fprintf(stderr, "Warning: Could not create home directory %s: %s\n",
                     out.pw_home, strerror(errno));
@@ -274,11 +273,13 @@ EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
     memset(plain_pw, 0, sizeof(plain_pw));
     HXbtrav_free(travp);
     vxpdb_modctl(w->database, PDB_FLUSH);
+    vxpdb_user_free(&chk, 0);
 
-    if(c->add_opts.master_postadd != NULL)
-        vxutil_replace_run(c->add_opts.master_postadd, master_catalog);
+    if(ret > 0)
+        if(c->add_opts.master_postadd != NULL)
+            vxutil_replace_run(c->add_opts.master_postadd, master_catalog);
 
-    return 1;
+    return ret;
 }
 
 EXPORT_SYMBOL int mdsync_mod(struct mdsync_workspace *w)
