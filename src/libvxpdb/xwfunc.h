@@ -25,6 +25,7 @@ libvxpdb/xwfunc.h - simple wrappers
 #define _VITALNIX_LIBVXPDB_XWFUNC_H 1
 
 #include <sys/types.h>
+#include "compiler.h"
 #include "libvxpdb/libvxpdb.h"
 #include "libvxpdb/xafunc.h"
 
@@ -40,7 +41,7 @@ static inline int vxpdb_getpwnam(struct vxpdb_state *state, const char *user,
 {
     struct vxpdb_user mask;
     vxpdb_user_clean(&mask);
-    mask.pw_name = (char *)user;
+    mask.pw_name = const_cast(char *, user);
     return vxpdb_userinfo(state, &mask, result, result != NULL);
 }
 
@@ -57,7 +58,7 @@ static inline int vxpdb_getgrnam(struct vxpdb_state *state, const char *group,
   struct vxpdb_group *result)
 {
     struct vxpdb_group mask;
-    mask.gr_name = (char *)group;
+    mask.gr_name = const_cast(char *, group);
     mask.gr_gid  = PDB_NOGID;
     return vxpdb_groupinfo(state, &mask, result, result != NULL);
 }
