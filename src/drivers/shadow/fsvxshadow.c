@@ -80,11 +80,11 @@ void db_write_vxshadow(FILE *fp, const struct vxpdb_user *u) {
     fprintf(fp, "  <user name=\"%s\"",
             vxutil_quote(u->pw_name, VXQUOTE_XML, &fm));
 
-    if(u->vs_uuid != NULL)
+    if(u->vs_uuid != NULL && *u->vs_uuid != '\0')
         fprintf(fp, " uuid=\"%s\"",
                 vxutil_quote(u->vs_uuid, VXQUOTE_XML, &fm));
 
-    if(u->vs_pvgrp != NULL)
+    if(u->vs_pvgrp != NULL && *u->vs_pvgrp != '\0')
         fprintf(fp, " pvgrp=\"%s\"",
                 vxutil_quote(u->vs_pvgrp, VXQUOTE_XML, &fm));
 
