@@ -77,7 +77,7 @@ void db_write_vxshadow(FILE *fp, const struct vxpdb_user *u) {
     if(u->vs_uuid == NULL && u->vs_pvgrp == NULL && u->vs_defer == 0)
         return;
 
-    fprintf(fp, "  <user name=\"%s\"",
+    fprintf(fp, "  <user lname=\"%s\"",
             vxutil_quote(u->pw_name, VXQUOTE_XML, &fm));
 
     if(u->vs_uuid != NULL && *u->vs_uuid != '\0')
