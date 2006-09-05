@@ -199,32 +199,32 @@ EXPORT_SYMBOL char *vxutil_slurp_file(const char *fn)
 
 EXPORT_SYMBOL long vxutil_string_iday(const char *s)
 {
-    struct tm td = {};
-    int ret = 0;
-    time_t r;
+    int day = 0, month = 0, year = 0, ret = 0;
 
     if(strchr(s, '-') != NULL)
-        /* ISO-8601 style YYYY-MM-DD, http://www.cl.cam.ac.uk/~mgk25/iso-time.html */
-        ret = sscanf(s, "%u-%u-%u", &td.tm_year, &td.tm_mon, &td.tm_mday);
+        /* ISO-8601 style YYYY-MM-DD,
+        http://www.cl.cam.ac.uk/~mgk25/iso-time.html
+        http://en.wikipedia.org/wiki/ISO-8601 */
+        ret = sscanf(s, "%u-%u-%u", &year, &month, &day);
     else if(strchr(s, '.') != NULL)
         // European style DD.MM.YYYY
-        ret = sscanf(s, "%u.%u.%u", &td.tm_mday, &td.tm_mon, &td.tm_year);
+        ret = sscanf(s, "%u.%u.%u", &day, &month, &year);
     else if(strchr(s, '/') != NULL)
         // American style MM/DD/YYYY
-        ret = sscanf(s, "%u/%u/%u", &td.tm_mon, &td.tm_mday, &td.tm_year);
+        ret = sscanf(s, "%u/%u/%u", &month, &day, &year);
     if(ret != 3)
         return -1;
 
     /* If any of the three are zero, the input date is illegal. If all three
     are zero, the equivalent meaning is "no date given". */
-    if(td.tm_mday == 0 && td.tm_mon == 0 && td.tm_year == 0)
+    if(day == 0 && month == 0 && year == 0)
         return 0;
-    if(td.tm_mday == 0 || td.tm_mon == 0 || td.tm_year == 0)
+    if(day == 0 || month == 0 || year == 0)
         return -1;
 
-    if(td.tm_year >= 100 && td.tm_year < 1000) {
-        td.tm_year += 1900;
-    } else if(td.tm_year < 100) {
+    if(year >= 100 && year < 1000) {
+        year += 1900;
+    } else if(year < 100) {
         /* Fix two-digit year numbers. The range of two-digit years is always
         [now-50yrs ... now+50yrs]. */
         time_t now_sec = time(NULL);
@@ -234,15 +234,11 @@ EXPORT_SYMBOL long vxutil_string_iday(const char *s)
         localtime_r(&now_sec, &now_tm);
         bp = (now_tm.tm_year + 50) % 100;
         nc = now_tm.tm_year - now_tm.tm_year % 100 + ((bp < 50) ? 100 : 0);
-        td.tm_year += 1900 + ((td.tm_year > bp) ? (nc - 100) : nc);
+        year += 1900 + ((year > bp) ? (nc - 100) : nc);
     }
 
-    td.tm_year -= 1900;
-    --td.tm_mon;
-
-    if((r = mktime(&td)) == -1)
-        return -1;
-    return static_cast(unsigned long, r) / 86400;
+    /* YYYMDD */
+    return ((year & 0xFFF) << 12) | ((month & 0xF) << 8) | (day & 0xFF);
 }
 
 EXPORT_SYMBOL int vxutil_valid_username(const char *n)

@@ -63,13 +63,17 @@ sub main {
 sub re_uuid {
     my($realname, $uuid_v0) = @_;
 
+    if($uuid_v0 eq "") {
+        return;
+    }
+
     if($uuid_v0 =~ /^0_(.*?)/) {
         # from Vitalnix 2.x, to Vitalnix 3.0-beta7
         return sprintf "{VX3A}%s%s", lc substr($uuid_v0, 2, 6),
                lc md5_hex($realname);
     }
 
-    warn "Unknown UUID $uuid_v0 for user (realname) \"$realname\"\n";
+    warn "Unknown UUID $uuid_v0 for user (realname) \"$realname\": $uuid_v0\n";
     return;
 }
 
