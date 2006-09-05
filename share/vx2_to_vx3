@@ -68,19 +68,9 @@ sub re_uuid {
         return "{VX3}$1$2";
     }
 
-    my $day   = hex(substr($uuid_v0, 6, 2));
-    my $month = hex(substr($uuid_v0, 5, 1));
-    my $year  = hex(substr($uuid_v0, 2, 3));
-    my $time;
-
-    if($day == 0 || $month == 0 || $year == 0) {
-        $time = 0;
-    } else {
-        $time = timelocal(0, 0, 0, $day, $month - 1, $year);
-    }
-
-    my $iday = int($time / 86400);
-    return sprintf "{VX3}%04x%s", $iday, lc md5_hex($realname);
+    # since Vitalnix 3.0-beta7
+    return sprintf "{VX3}%s%s", lc substr($uuid_v0, 2, 6),
+           lc md5_hex($realname);
 }
 
 sub xmlencode {

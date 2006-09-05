@@ -38,7 +38,7 @@ EXPORT_SYMBOL char *vxuuid_vx3(const char *full_name, long iday)
     MD5(signed_cast(const unsigned char *, full_name), strlen(full_name), md);
 #define B "%02x"
 #define D B B B B
-    snprintf(tmp, sizeof(tmp), "{VX3}%04lx" D D D D,
+    snprintf(tmp, sizeof(tmp), "{VX3A}%06lx" D D D D,
              iday, md[0], md[1], md[2], md[3], md[4], md[5], md[6], md[7],
              md[8], md[9], md[10], md[11], md[12], md[13], md[14], md[15]);
 #undef B
@@ -49,9 +49,9 @@ EXPORT_SYMBOL char *vxuuid_vx3(const char *full_name, long iday)
 EXPORT_SYMBOL long vxuuid_vx3_get_iday(const char *s)
 {
     char tmp[5];
-    if(strncmp(s, "{VX3}", 5) != 0)
+    if(strncmp(s, "{VX3A}", 5) != 0)
         return -1;
-    HX_strlcpy(tmp, s + 5, sizeof(tmp));
+    HX_strlcpy(tmp, s + sizeof("{VX3A}") - 1, sizeof(tmp));
     return strtol(tmp, NULL, 16);
 }
 
