@@ -350,7 +350,7 @@ char *transform7(const char *src, char *dest, size_t dsize) {
         const char *in, *out;
         int is, os;
     } subst_tab[] = {
-#define E(s, d) {(s), (d), sizeof((s) - 1), sizeof((d) - 1)}
+#define E(s, d) {(s), (d), sizeof(s) - 1, sizeof(d) - 1}
         E("ß", "ss"),
         E("à", "a"), E("á", "a"), E("â", "a"), E("ã", "a"), E("ä", "ae"), E("å", "a"), E("æ", "ae"),
         E("è", "e"), E("é", "e"), E("ê", "e"), E("ë", "e"),
