@@ -7,16 +7,18 @@
 
 //-----------------------------------------------------------------------------
 static void test_1(void) {
-    printf("--- TEST 1 ---\n");
-    printf("2006-03-04 in days since 1970: %ld (should be 13210)\n",
-        vxutil_string_iday("2006-03-04"));
+    printf("--- TEST 1 --- IDAY conversion\n");
+    printf("2006-03-04 = %lx (should be 7d6304)\n",
+           vxutil_string_iday("2006-03-04"));
     return;
 }
 
 static void test_2(void) {
     char *r;
     vxutil_cryptpw("", NULL, CRYPW_BLOWFISH, &r);
-    printf("--- TEST 2 ---\n" "%s\n", r);
+    printf(
+        "--- TEST 2 --- Blowfish encryption\n"
+        "Output: %s\n", r);
     free(r);
     return;
 }
@@ -26,7 +28,7 @@ static void test_3(const char *f) {
     void *handle;
     int ret, c = 0;
 
-    printf("--- TEST 3 ---\n");
+    printf("--- TEST 3: EDS reading\n");
     if((ret = vxeds_open(f, NULL, &handle)) <= 0) {
         printf("eds_open: %s\n", strerror(-ret));
         return;
@@ -44,7 +46,7 @@ static void test_4(void) {
     char *fm = NULL, *ret;
     const char *s;
 
-    printf("--- TEST 4 ---\n");
+    printf("--- TEST 4: Quoting\n");
 
     s = "Good ''keg o' ol' \\\"whisky\\\"";
     ret = vxutil_quote(s, 0, &fm);
@@ -61,8 +63,28 @@ static void test_4(void) {
     s = "noquote";
     ret = vxutil_quote(s, 1, &fm);
     printf("Unquoted:\t%s (%p)\n" "Quoted:\t\t\"%s\" (%p)\n", s, s, ret, ret);
-    printf("fm is %p (should be NULL)\n", fm);
 
+    free(fm);
+    return;
+}
+
+static void test_5(void) {
+    char lname[16];
+    printf("--- TEST 5: Login name creation\n");
+#define CHK(s, f) \
+    vxutil_propose_lname(lname, sizeof(lname), (s), (f)); \
+    printf(f " " s " = %s\n", lname);
+
+    CHK("van der Foobar", "Ölte");
+    CHK("van Yksi", "Ölte");
+    CHK("van Öksi", "Ären");
+    CHK("Üxi", "Iren");
+    CHK("Üxi", "Omur");
+    CHK("Ji-Domo Den", "Ojiisan");
+    CHK("Ji Go Ku", "Ojiisan");
+    CHK("Ji Go-Ku", "Ojiisan");
+    CHK("Ji-Go Ku", "Ojiisan");
+    CHK("Ji go Ku", "Ojiisan");
     return;
 }
 
@@ -74,6 +96,7 @@ int main(int argc, const char **argv) {
     test_3("daten3.sdf");
     test_3("daten.xml");
     test_4();
+    test_5();
     return 0;
 }
 
