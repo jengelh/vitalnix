@@ -47,6 +47,13 @@ perl -lpe "
 " <src/devutil/vitalnix-config >"$b/%_bindir/vitalnix-config";
 chmod 755 "$b/%_bindir/vitalnix-config";
 
+# /usr/lib/pkgconfig
+install -dm0755 "$b/%_libdir/pkgconfig";
+perl -lpe "
+    s{^includedir=.*}{includedir=%pfx/include}g;
+    s{^libdir=.*}{libdir=%pfx/%_lib}g;
+" <src/devutil/vitalnix.pc >"$b/%_libdir/pkgconfig/vitalnix.pc";
+
 # /opt/vitalnix3
 install -dm0755 "$b/%pfx";
 

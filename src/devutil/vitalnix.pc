@@ -1,0 +1,9 @@
+libdir=.
+includedir=.
+
+Name:           vitalnix
+Description:    Vitalnix User Management Suite libraries
+Version:        2.99_beta7
+
+Libs:           -L${libdir} -Wl,-rpath,${libdir}
+Cflags:         -I${includedir}
