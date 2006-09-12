@@ -41,11 +41,11 @@ cp -a etc "$b/%_sysconfdir/%name";
 
 # /usr/bin
 install -dm0755 "$b/%_bindir";
-cat src/devutil/%name-config | perl -lpe "
+perl -lpe "
     s{^INCLUDE=.*}{INCLUDE='%pfx/include'}g;
     s{^LIBDIR=.*}{LIBDIR='%pfx/%_lib'}g;
-" >"$b/%_bindir/%name-config";
-chmod 755 "$b/%_bindir/%name-config";
+" <src/devutil/vitalnix-config >"$b/%_bindir/vitalnix-config";
+chmod 755 "$b/%_bindir/vitalnix-config";
 
 # /opt/vitalnix3
 install -dm0755 "$b/%pfx";

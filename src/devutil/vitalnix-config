@@ -11,15 +11,15 @@ fi;
 
 while [ $# -gt 0 ]; do
     case "$1" in
-      --cflags)
+      (--cflags)
         echo "-I$INCLUDE";
         ;;
-      --ldflags)
+      (--ldflags)
         echo "-L$LIBDIR -Wl,-rpath,$LIBDIR";
         ;;
-      --libs)
+      (--libs)
         ;;
-      *)
+      (*)
         echo -e "$usage";
         ;;
     esac;
