@@ -150,8 +150,9 @@ static int sync_run(struct private_info *priv) {
     if(mdsw->config.add_opts.defaults.vs_defer > 0)
         printf(
           "Deferred Deletion feature enabled (%ld day(s)).\n"
-          "Note that the deletion count therefore may be lower"
-          "than expected, which is normal.\n",
+          "Note that the deletion count therefore may be lower than\n"
+          "expected, which is normal. These users should instead show up\n"
+          "under Deferred Deletion Timer Start.\n",
           mdsw->config.add_opts.defaults.vs_defer);
 
     print_compare_input(mdsw);
