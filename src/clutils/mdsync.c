@@ -21,6 +21,7 @@ clutils/mdsync.c
 
   -- For details, see the file named "LICENSE.LGPL2"
 =============================================================================*/
+#include <ctype.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,6 +29,7 @@ clutils/mdsync.c
 #include <time.h>
 #include <libHX.h>
 #include "vitalnix-config.h"
+#include "libvxcli/libvxcli.h"
 #include "libvxeds/libvxeds.h"
 #include "libvxmdsync/libvxmdsync.h"
 #include "libvxpdb/libvxpdb.h"
@@ -39,7 +41,7 @@ clutils/mdsync.c
 // Structures
 struct private_info {
     char *backend_module, *group_name, *input_file, *input_fmt, *output_file;
-    int no_add, no_update, no_delete, interactive;
+    int no_add, no_update, no_delete, yestoall;
 
     int open_status;
     struct vxpdb_state *module_handle;
@@ -55,6 +57,7 @@ static int sync_mod(struct private_info *);
 static int sync_del(struct private_info *);
 static void sync_cleanup(struct private_info *);
 
+static int ask_continue(const struct private_info *, const char *);
 static void cb_report(unsigned int, const struct mdsync_workspace *,
     unsigned long, unsigned long);
 static void print_compare_input(const struct mdsync_workspace *);
@@ -174,6 +177,8 @@ static int sync_add(struct private_info *priv) {
         printf("Not adding any users due to request (command-line).\n");
         return 1;
     }
+    if(!ask_continue(priv, "Continue with adding users?\n"))
+        return 1;
     if((ret = mdsync_add(priv->mdsw)) <= 0) {
         printf("mdsync_add(): %s\n" NOTICE_REDO, strerror(-ret));
         return 0;
@@ -196,6 +201,8 @@ static int sync_mod(struct private_info *priv) {
                " (command-line).\n");
         return 1;
     }
+    if(!ask_continue(priv, "Continue with modifying users?\n"))
+        return 1;
     if((ret = mdsync_mod(priv->mdsw)) <= 0) {
         printf("mdsync_mod(): %s\n" NOTICE_REDO, strerror(-ret));
         return 0;
@@ -215,6 +222,8 @@ static int sync_del(struct private_info *priv) {
         printf("Not deleting any users due to request (command-line).\n");
         return 1;
     }
+    if(!ask_continue(priv, "Continue with deleting users?\n"))
+        return 1;
     if((ret = mdsync_del(priv->mdsw)) <= 0) {
         printf("mdsync_del(): %s\n" NOTICE_REDO, strerror(-ret));
         return 0;
@@ -241,6 +250,16 @@ static void sync_cleanup(struct private_info *priv) {
 }
 
 //-----------------------------------------------------------------------------
+static int ask_continue(const struct private_info *priv, const char *msg) {
+    char buf[4] = {};
+
+    if(priv->yestoall || !isatty(STDIN_FILENO))
+        return 1;
+
+    vxcli_query(msg, NULL, "yes", VXCQ_NONE, buf, sizeof(buf));
+    return tolower(*buf) == 'y';
+}
+
 static void cb_report(unsigned int type, const struct mdsync_workspace *mdsw,
   unsigned long current, unsigned long max)
 {
@@ -294,8 +313,8 @@ static int get_options(int *argc, const char ***argv, struct private_info *p) {
          .help = "Backend module", .htyp = "NAME"},
         {.sh = 'V', .type = HXTYPE_NONE, .cb = show_version,
          .help = "Show version information"},
-        {.sh = 'Y', .type = HXTYPE_NONE, .ptr = &p->interactive,
-         .help = "Ask before performing each operation"},
+        {.sh = 'Y', .type = HXTYPE_NONE, .ptr = &p->yestoall,
+         .help = "Assume yes on all questions"},
         {.sh = 'g', .type = HXTYPE_STRING, .ptr = &p->group_name,
          .help = "System group to synchronize against", .htyp = "NAME"},
         {.sh = 'i', .type = HXTYPE_STRING, .ptr = &p->input_file,
