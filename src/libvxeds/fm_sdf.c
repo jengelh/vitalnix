@@ -121,9 +121,10 @@ static int sdf_read(void *state_ptr, struct vxeds_entry *e) {
     e->pvgrp      = HX_strdup(data[3]);
     e->uuid       = vxuuid_vx3(e->full_name, vxutil_string_iday(data[2]));
 
-    /* In Vitalnix2, the (rname,uuid) tuple was unique among all users, while
-    in Vitalnix3, the uuid is unique among all users and can therefore be used
-    as a sort key. */
+    /* In Vitalnix2, the birthdate was used as UUID, and the <Full Name, UUID>
+    _tuple_ was unique among all users. In Vitalnix3, the UUID is generated
+    from the full name and the birthdate, so that the UUID _itself_ is unique
+    and can therefore be used as a key. */
 
     free(line);
     return 1;
