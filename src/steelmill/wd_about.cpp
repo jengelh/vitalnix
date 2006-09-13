@@ -32,7 +32,7 @@ steelmill/wd_about.cpp
 #include "steelmill/xu_common.hpp"
 
 //-----------------------------------------------------------------------------
-static const char *text =
+static const char *const text =
     PROD_NAME "\n"
     "(Vitalnix " VITALNIX_VERSION " Steelmill)\n"
     "\n"

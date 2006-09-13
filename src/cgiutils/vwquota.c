@@ -38,7 +38,7 @@ static void form(const char *);
 static void footer(void);
 
 // Variables
-static const char *Wrong_auth =
+static const char *const Wrong_auth =
     "<p class=\"red\"><b>Wrong username and/or password!</b></p>";
 
 //-----------------------------------------------------------------------------

@@ -39,7 +39,7 @@ static const char *surname_pointer(const char *);
 static char *transform7(const char *, char *, size_t);
 
 // Variables
-static const char *quote_match[] = {
+static const char *const quote_match[] = {
     [VXQUOTE_SINGLE] = "'\\",
     [VXQUOTE_DOUBLE] = "\"\\",
     [VXQUOTE_XML]    = "\"&<>",

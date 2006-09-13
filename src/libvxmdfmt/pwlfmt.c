@@ -103,7 +103,7 @@ EXPORT_SYMBOL int pwlfmt_process(struct pwlfmt_workspace *w)
 EXPORT_SYMBOL const char *pwlfmt_strerror(int err)
 {
 #define B PWLFMT_ESUCCESS
-    static const char *errlist[] = {
+    static const char *const errlist[] = {
         [PWLFMT_ESUCCESS  - B] = "Success",
         [PWLFMT_ENOSTYLE  - B] = "Style not found",
         [PWLFMT_EREQTPL   - B] = "Style requires template",
