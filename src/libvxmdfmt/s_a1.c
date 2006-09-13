@@ -35,7 +35,7 @@ static printfunc_t a1_file_header, a1_tbl_entry;
 // Variables
 static const struct pwlstyle_vtable THIS_STYLE = {
     .name        = "a1",
-    .desc        = "pvgrp-sorted text/plain",
+    .desc        = "user-sorted text/plain",
 
     .file_header = a1_file_header,
     .tbl_entry   = a1_tbl_entry,
