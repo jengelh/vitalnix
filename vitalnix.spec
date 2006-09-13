@@ -1,6 +1,6 @@
 
 Name:           vitalnix
-Version:        2.99_beta6
+Version:        2.99_beta7
 Release:        0
 Group:          System/Base
 Summary:        Vitalnix User Management Suite
