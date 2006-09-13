@@ -81,7 +81,7 @@ static int sdf_open(const char *filename, void **state_pptr) {
 
 static int sdf_read(void *state_ptr, struct vxeds_entry *e) {
     struct sdf_state *state = state_ptr;
-    char *data[5], *line;
+    char *data[6], *line;
     int num_fields;
 
     if(HX_getl(&state->hmc, state->input_fh) == NULL)
