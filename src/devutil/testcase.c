@@ -81,10 +81,10 @@ static void test_5(void) {
     CHK("Üxi", "Iren");
     CHK("Üxi", "Omur");
     CHK("Ji-Domo Den", "Ojiisan");
-    CHK("Ji Go Ku", "Ojiisan");
+    CHK("Ji Go Ku", "Shoujo");
     CHK("Ji Go-Ku", "Ojiisan");
-    CHK("Ji-Go Ku", "Ojiisan");
-    CHK("Ji go Ku", "Ojiisan");
+    CHK("Ji-Go Ku", "ōtōsan");
+    CHK("Ji go Ku", "@erv");
     return;
 }
 
