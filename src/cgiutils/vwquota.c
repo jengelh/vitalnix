@@ -31,9 +31,6 @@ cgiutils/vwquota.c - Web-frontend for quota information
 #include "libvxutil/defines.h"
 #include "libvxutil/libvxutil.h"
 
-// Structures
-typedef unsigned long long u64_t;
-
 // Functions
 static void do_quota(const char *);
 static void header(void);
@@ -103,7 +100,8 @@ static void do_quota(const char *user) {
     printf("</tr>");
 
     while(HX_getl(&ln, fp) != NULL) {
-        u64_t dqb_used, dqb_soft, dqb_hard, dqi_used, dqi_soft, dqi_hard;
+        unsigned long long dqb_used, dqb_soft, dqb_hard, dqi_used,
+                           dqi_soft, dqi_hard;
         char *bover = "", *de_bover = "", *iover = "", *de_iover = "";
         char *field[11];
 
