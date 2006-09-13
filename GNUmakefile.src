@@ -132,8 +132,8 @@ mdpwlfmt: clutils/mdpwlfmt.o | libvxmdfmt.so
 XLDFLAGS_mdsingle       := -lHX -lvxcli -lvxmdsync -lvxpdb
 mdsingle: clutils/mdsingle.o | libvxcli.so libvxmdsync.so libvxpdb.so
 
-XLDFLAGS_mdsync         := -lHX -lvxeds -lvxmdsync -lvxpdb
-mdsync: clutils/mdsync.o | libvxeds.so libvxmdsync.so libvxpdb.so
+XLDFLAGS_mdsync         := -lHX -lvxcli -lvxeds -lvxmdsync -lvxpdb
+mdsync: clutils/mdsync.o | libvxcli.so libvxeds.so libvxmdsync.so libvxpdb.so
 
 XLDFLAGS_pdbdump        := -lvxpdb
 pdbdump: clutils/pdbdump.o | libvxpdb.so
