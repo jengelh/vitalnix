@@ -64,8 +64,6 @@ EXPORT_SYMBOL int mdsync_read_file(struct mdsync_workspace *w,
             break;
         }
 
-        static unsigned int countme = 0;
-        fprintf(stderr, "Counting %d\n", ++countme);
         entry->username = HX_strdup(vxutil_propose_lname(username,
                           sizeof(username), entry->surname, entry->first_name));
         HXbtree_add(w->add_req, entry->uuid, entry);
