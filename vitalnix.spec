@@ -85,6 +85,7 @@ rm -Rf "%buildroot";
 %defattr(-,root,root)
 %config(noreplace) %_sysconfdir/%name/*
 %_bindir/*
+%_libdir/pkgconfig/*
 %dir %pfx
 %pfx/bin
 %pfx/include
