@@ -37,7 +37,7 @@ static void sb_destruct(struct pwlfmt_workspace *);
 static printfunc_t sb_file_header, sb_tbl_entry, sb_file_footer;
 
 // Variables
-static struct pwlstyle_vtable THIS_STYLE = {
+static const struct pwlstyle_vtable THIS_STYLE = {
     .name             = "sb",
     .desc             = "per-user application/x-latex",
     .require_template = 1,
