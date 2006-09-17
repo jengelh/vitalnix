@@ -4,7 +4,7 @@
 #define CONSTRUCTOR     __attribute__((constructor))
 #define DESTRUCTOR      __attribute__((destructor))
 
-#if defined(__GNUC__) && __GNUC__ >= 4
+#ifdef HAVE_VISIBILITY
 #    define EXPORT_SYMBOL __attribute__((visibility("default")))
 #else
 #    define EXPORT_SYMBOL
