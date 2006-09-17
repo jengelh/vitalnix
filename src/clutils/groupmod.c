@@ -1,7 +1,7 @@
 /*=============================================================================
 Vitalnix User Management Suite
 clutils/groupmod.c - Modify a group
-  Copyright © Jan Engelhardt <jengelh [at] linux01 gwdg de>, 2003 - 2006
+  Copyright © Jan Engelhardt <jengelh [at] gmx de>, 2003 - 2006
   -- License restrictions apply (LGPL v2.1)
 
   This file is part of Vitalnix.
