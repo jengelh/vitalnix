@@ -298,8 +298,9 @@ static int vmysql_useradd(struct vxpdb_state *vp,
         snprintf(query, sizeof(query),
             "insert into %s (%s) values ('%s','%s',%ld,%ld,%ld,%ld,%ld,%ld)",
             state->sp_table, state->csl_shadow, esc_name,
-            vxutil_quote(rq->sp_passwd, 0, &free_me[1]), rq->sp_lastchg,
-            rq->sp_min, rq->sp_max, rq->sp_warn, rq->sp_expire, rq->sp_inact);
+            vxutil_quote(rq->sp_passwd, VXQUOTE_SINGLE, &free_me[1]),
+            rq->sp_lastchg, rq->sp_min, rq->sp_max, rq->sp_warn,
+            rq->sp_expire, rq->sp_inact);
         free(free_me[1]);
         if(mysql_query(state->cn.handle, query) != 0) {
             if((ret = -mysql_errno(state->cn.handle)) == -ER_DUP_ENTRY)
@@ -313,8 +314,8 @@ static int vmysql_useradd(struct vxpdb_state *vp,
         snprintf(query, sizeof(query),
             "insert into %s (%s) values ('%s','%s','%s',%ld)",
             state->vs_table, state->csl_vxshadow, esc_name,
-            vxutil_quote(rq->vs_uuid, 0, &free_me[1]),
-            vxutil_quote(rq->vs_pvgrp, 0, &free_me[2]),
+            vxutil_quote(rq->vs_uuid, VXQUOTE_SINGLE, &free_me[1]),
+            vxutil_quote(rq->vs_pvgrp, VXQUOTE_SINGLE, &free_me[2]),
             rq->vs_defer
         );
         free(free_me[1]);
@@ -334,8 +335,8 @@ static int vmysql_useradd(struct vxpdb_state *vp,
         state->pw_table, state->pw_name, state->pw_uid, state->pw_gid,
         state->pw_real, state->pw_home, state->pw_shell, esc_name, rq->pw_uid,
         rq->pw_gid, vxutil_quote(rq->pw_real, 0, &free_me[1]),
-        vxutil_quote(rq->pw_home, 0, &free_me[2]),
-        vxutil_quote(rq->pw_shell, 0, &free_me[3])
+        vxutil_quote(rq->pw_home, VXQUOTE_SINGLE, &free_me[2]),
+        vxutil_quote(rq->pw_shell, VXQUOTE_SINGLE, &free_me[3])
     );
     free(free_me[0]);
     free(free_me[1]);
