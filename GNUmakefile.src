@@ -90,14 +90,14 @@ libvxutil.so: $(call srcobj,libvxutil) ${XOBJS_libvxutil}
 # PDB DRIVERS --------------------------
 #
 
-XLDFLAGS_drv_ldap_so            := -lHX -lvxcore -lvxpdb
+XLDFLAGS_drv_mmd_so             := -lHX -lvxcore -lvxpdb
 drv_mmd.so: drivers/mmd.o | libvxcore.so libvxpdb.so
 
 XLDFLAGS_drv_ldap_so            := -lldap_r -lvxcore -lvxpdb
 drv_ldap.so: drivers/ldap.o | libvxcore.so libvxpdb.so
 
 XCFLAGS_drivers_mysql           := ${MYSQL_CFLAGS}
-XLDFLAGS_drv_shadow_so          := ${MYSQL_LDFLAGS} -lvxcore -lvxpdb -lvxutil
+XLDFLAGS_drv_mysql_so           := ${MYSQL_LDFLAGS} -lvxcore -lvxpdb -lvxutil
 drv_mysql.so: $(call srcobj,drivers/mysql) | libvxcore.so libvxpdb.so libvxutil.so
 
 XCFLAGS_drivers_shadow          := ${LIBXML_CFLAGS}
@@ -110,8 +110,8 @@ drv_nss.so: drivers/nss.o | libvxcore.so libvxpdb.so
 XLDFLAGS_drv_nss1_so            := -lvxcore -lvxpdb -lvxutil
 drv_nss1.so: drivers/nss1.o | libvxcore.so libvxpdb.so libvxutil.so
 
-XLDFLAGS_drv_dummy_so           := -lvxcore
-drv_dummy.so: drivers/dummy.o | libvxcore.so
+XLDFLAGS_drv_dummy_so           := -lvxcore -lvxpdb
+drv_dummy.so: drivers/dummy.o | libvxcore.so libvxpdb.so
 
 ### CGI PROGRAMS --------------------------------------------------------------
 #
