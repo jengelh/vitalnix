@@ -38,8 +38,8 @@ drivers/mysql/mysql.c - MYSQL back-end module
 #include "libvxutil/libvxutil.h"
 
 #define CHECK_ACCESS() \
-    if((state->sp_table != NULL && !state->perm_shadow) || \
-     (state->vs_table != NULL && !state->perm_vxshadow)) \
+    if((state->names.sp_table != NULL && !state->perm_shadow) || \
+     (state->names.vs_table != NULL && !state->perm_vxshadow)) \
             return -EACCES;
 #define Z_32 sizeof("4294967296")
 
@@ -52,24 +52,30 @@ enum {
     MASK_SET    = 1 << 1,
 };
 
-struct mysql_state {
-    struct mq_conn {
-        MYSQL *handle;
-        char *host, *socket, *user, *passwd, *database, *user2, *passwd2;
-        unsigned int port;
-    } cn;
+struct mq_conn {
+    MYSQL *handle;
+    char *host, *socket, *user, *passwd, *database, *user2, *passwd2;
+    unsigned int port;
+};
 
-    // SQL fields
+struct mq_names {
     char *pw_table, *pw_name, *pw_uid, *pw_gid, *pw_real, *pw_home, *pw_shell,
          *sp_table, *sp_user, *sp_passwd, *sp_lastchg, *sp_min, *sp_max,
          *sp_warn, *sp_expire, *sp_inact,
          *gr_table, *gr_name, *gr_gid,
          *gm_table, *gm_user, *gm_group,
          *vs_table, *vs_user, *vs_uuid, *vs_pvgrp, *vs_defer;
-    // column selects (SELECT <csl> FROM <tsl>)
+
+    // SELECT <csl> FROM <tsl>
     char *csl_passwd, *csl_shadow, *csl_group, *csl_vxshadow;
     // table selects
     hmc_t *tsl_user;
+};
+
+struct mysql_state {
+    struct mq_conn  cn;
+    struct mq_names names;
+
     int perm_shadow, perm_vxshadow;
 
     // Misc
@@ -96,7 +102,7 @@ static inline void export_group(struct vxpdb_group *, const MYSQL_ROW);
 static long find_next_id(struct mysql_state *, long);
 static inline long ito_expire(long);
 static inline long ito_inact(long);
-static size_t nd_row_strlen(MYSQL_RES *, MYSQL_ROW, size_t);
+static int queryf(MYSQL *, const char *, ...);
 static void read_config(struct mysql_state *, unsigned int, const char *);
 static void read_config_cb(const struct HXoptcb *);
 static char *s_join(const char *, ...);
@@ -105,10 +111,10 @@ static hmc_t *sql_groupmask(hmc_t **, const struct mysql_state *,
 static hmc_t *sql_usermask(hmc_t **, const struct mysql_state *,
     const struct vxpdb_user *, unsigned int);
 
-// Variables
 //-----------------------------------------------------------------------------
 static int vmysql_init(struct vxpdb_state *vp, const char *config_file) {
     struct mysql_state *st;
+    struct mq_names *nm;
 
     if((st = vp->state = calloc(1, sizeof(struct mysql_state))) == NULL)
         return -errno;
@@ -123,18 +129,19 @@ static int vmysql_init(struct vxpdb_state *vp, const char *config_file) {
 
     /* Check that all config fields are present. Only if ->sp_table is given,
     ->sp_* must be there; only if ->vs_table is given, ->vs_* must be there. */
-    if(st->pw_table   == NULL || st->pw_name    == NULL   ||
-       st->pw_uid     == NULL || st->pw_gid     == NULL   ||
-       st->pw_real    == NULL || st->pw_home    == NULL   ||
-       st->pw_shell   == NULL || st->gr_table   == NULL   ||
-       st->gr_name    == NULL || st->gr_gid     == NULL   ||
-      (st->sp_table   != NULL && (st->sp_passwd == NULL   ||
-       st->sp_lastchg == NULL || st->sp_min     == NULL   ||
-       st->sp_max     == NULL || st->sp_warn    == NULL   ||
-       st->sp_expire  == NULL || st->sp_inact   == NULL)) ||
-      (st->vs_table   != NULL && (st->vs_user   == NULL   ||
-       st->vs_uuid    == NULL || st->vs_pvgrp   == NULL   ||
-       st->vs_defer   == NULL)))
+    nm = &st->names;
+    if(nm->pw_table   == NULL || nm->pw_name    == NULL   ||
+       nm->pw_uid     == NULL || nm->pw_gid     == NULL   ||
+       nm->pw_real    == NULL || nm->pw_home    == NULL   ||
+       nm->pw_shell   == NULL || nm->gr_table   == NULL   ||
+       nm->gr_name    == NULL || nm->gr_gid     == NULL   ||
+      (nm->sp_table   != NULL && (nm->sp_passwd == NULL   ||
+       nm->sp_lastchg == NULL || nm->sp_min     == NULL   ||
+       nm->sp_max     == NULL || nm->sp_warn    == NULL   ||
+       nm->sp_expire  == NULL || nm->sp_inact   == NULL)) ||
+      (nm->vs_table   != NULL && (nm->vs_user   == NULL   ||
+       nm->vs_uuid    == NULL || nm->vs_pvgrp   == NULL   ||
+       nm->vs_defer   == NULL)))
             return -1500;
 
     if(strncmp(st->cn.host, "unix:", 5) == 0) {
@@ -143,14 +150,14 @@ static int vmysql_init(struct vxpdb_state *vp, const char *config_file) {
         st->cn.host = NULL;
     }
 
-    st->csl_passwd   = s_join(",", st->pw_name, st->pw_uid, st->pw_gid,
-                       st->pw_real, st->pw_home, st->pw_shell, NULL);
-    st->csl_shadow   = s_join(",", st->sp_user, st->sp_passwd, st->sp_lastchg,
-                       st->sp_min, st->sp_max, st->sp_warn, st->sp_expire,
-                       st->sp_inact, NULL);
-    st->csl_group    = s_join(",", st->gr_name, st->gr_gid, NULL);
-    st->csl_vxshadow = s_join(",", st->vs_user, st->vs_uuid, st->vs_pvgrp,
-                       st->vs_defer, NULL);
+    nm->csl_passwd   = s_join(",", nm->pw_name, nm->pw_uid, nm->pw_gid,
+                       nm->pw_real, nm->pw_home, nm->pw_shell, NULL);
+    nm->csl_shadow   = s_join(",", nm->sp_user, nm->sp_passwd, nm->sp_lastchg,
+                       nm->sp_min, nm->sp_max, nm->sp_warn, nm->sp_expire,
+                       nm->sp_inact, NULL);
+    nm->csl_group    = s_join(",", nm->gr_name, nm->gr_gid, NULL);
+    nm->csl_vxshadow = s_join(",", nm->vs_user, nm->vs_uuid, nm->vs_pvgrp,
+                       nm->vs_defer, NULL);
 
     return 1;
 }
@@ -163,32 +170,32 @@ static void vmysql_deinit(struct vxpdb_state *vp) {
 }
 
 static int vmysql_open(struct vxpdb_state *vp, long flags) {
-    struct mysql_state *state = vp->state;
-    const struct mq_conn *cn  = &state->cn;
+    struct mysql_state *state  = vp->state;
+    const struct mq_conn *conn = &state->cn;
+    struct mq_names *names     = &state->names;
     MYSQL_RES *result;
     void *ret = NULL;   // only used for error checking, so no MYSQL *ret
-    char buf[128];
 
-    if(cn->user2 != NULL && cn->passwd2 != NULL)
-        ret = mysql_real_connect(cn->handle, cn->host,
-              cn->user2, cn->passwd2, cn->database,
-              cn->port, cn->socket, 0);
+    if(conn->user2 != NULL && conn->passwd2 != NULL)
+        ret = mysql_real_connect(conn->handle, conn->host,
+              conn->user2, conn->passwd2, conn->database,
+              conn->port, conn->socket, 0);
 
-    if(ret == NULL && mysql_real_connect(cn->handle, cn->host, cn->user,
-     cn->passwd, cn->database, cn->port, cn->socket, 0) == NULL)
-            return -mysql_errno(cn->handle);
+    if(ret == NULL && mysql_real_connect(conn->handle, conn->host, conn->user,
+     conn->passwd, conn->database, conn->port, conn->socket, 0) == NULL)
+            return -mysql_errno(conn->handle);
 
-    if(state->sp_table != NULL) {
-        snprintf(buf, sizeof(buf), "select * from %s limit 0", state->sp_table);
-        state->perm_shadow = mysql_query(cn->handle, buf) == 0;
-        result = mysql_use_result(cn->handle);
+    if(names->sp_table != NULL) {
+        state->perm_shadow = queryf(conn->handle, "select * from %s limit 0",
+                             names->sp_table) == 0;
+        result = mysql_use_result(conn->handle);
         while(mysql_fetch_row(result) != NULL);
         mysql_free_result(result);
     }
-    if(state->vs_table != NULL) {
-        snprintf(buf, sizeof(buf), "select * from %s limit 0", state->vs_table);
-        state->perm_vxshadow = mysql_query(cn->handle, buf) == 0;
-        result = mysql_use_result(cn->handle);
+    if(names->vs_table != NULL) {
+        state->perm_vxshadow = queryf(conn->handle, "select * from %s limit 0",
+                               names->vs_table) == 0;
+        result = mysql_use_result(conn->handle);
         while(mysql_fetch_row(result) != NULL);
         mysql_free_result(result);
     }
@@ -196,24 +203,24 @@ static int vmysql_open(struct vxpdb_state *vp, long flags) {
     /* FROM part for user UPDATE */
     {
         hmc_t *s = hmc_minit(NULL, 256);
-        hmc_strcat(&s, state->pw_table);
+        hmc_strcat(&s, names->pw_table);
         if(state->perm_shadow) {
             hmc_strcat(&s, " left join ");
-            hmc_strcat(&s, state->sp_table);
+            hmc_strcat(&s, names->sp_table);
             hmc_strcat(&s, " on ");
-            hmc_strcat(&s, state->pw_name);
+            hmc_strcat(&s, names->pw_name);
             hmc_strcat(&s, "=");
-            hmc_strcat(&s, state->sp_user);
+            hmc_strcat(&s, names->sp_user);
         }
         if(state->perm_vxshadow) {
             hmc_strcat(&s, " left join ");
-            hmc_strcat(&s, state->vs_table);
+            hmc_strcat(&s, names->vs_table);
             hmc_strcat(&s, " on ");
-            hmc_strcat(&s, state->pw_name);
+            hmc_strcat(&s, names->pw_name);
             hmc_strcat(&s, "=");
-            hmc_strcat(&s, state->vs_user);
+            hmc_strcat(&s, names->vs_user);
         }
-        state->tsl_user = s;
+        names->tsl_user = s;
     }
 
     return 1;
@@ -222,38 +229,39 @@ static int vmysql_open(struct vxpdb_state *vp, long flags) {
 static void vmysql_close(struct vxpdb_state *vp) {
     struct mysql_state *state = vp->state;
     mysql_close(state->cn.handle);
-    hmc_free(state->tsl_user);
+    hmc_free(state->names.tsl_user);
     return;
 }
 
 static int vmysql_xlock_user(struct mysql_state *state) {
-    char query[128];
+    const struct mq_names *names = &state->names;
+    MYSQL *c = state->cn.handle;
     int ret = 1;
 
     if(!state->perm_vxshadow)
-        snprintf(query, sizeof(query), "lock tables %s write, %s write",
-                 state->pw_table, state->sp_table);
+        ret = queryf(c, "lock tables %s write, %s write",
+              names->pw_table, names->sp_table);
     else
-        snprintf(query, sizeof(query), "lock tables %s write, %s write, %s "
-                 "write", state->pw_table, state->sp_table, state->vs_table);
+        ret = queryf(c, "lock tables %s write, %s write, %s write",
+              names->pw_table, names->sp_table, names->vs_table);
 
-    if(mysql_query(state->cn.handle, query) != 0)
-        ret = -mysql_errno(state->cn.handle);
+    if(ret != 0)
+        ret = -mysql_errno(c);
 
     return ret;
 }
 
 static int vmysql_xlock_group(struct mysql_state *state) {
-    char query[64];
-    snprintf(query, sizeof(query), "lock tables %s write", state->gr_table);
-    if(mysql_query(state->cn.handle, query) != 0)
-        return -mysql_errno(state->cn.handle);
-    return 1;
+    return (queryf(state->cn.handle, "lock tables %s write",
+           state->names.gr_table) == 0) ? 1 : -mysql_errno(state->cn.handle);
 }
 
 static inline void vmysql_xunlock(struct mysql_state *state) {
     mysql_query(state->cn.handle, "unlock tables");
     // FIXME: does it require fetch_result?
+    MYSQL_RES *r = mysql_store_result(state->cn.handle);
+    if(r != NULL)
+        mysql_free_result(r);
     return;
 }
 
@@ -263,9 +271,9 @@ static long vmysql_modctl(struct vxpdb_state *vp, long command, ...) {
 
     switch(command) {
         case PDB_COUNT_USERS:
-            return count_rows(state, state->pw_table);
+            return count_rows(state, state->names.pw_table);
         case PDB_COUNT_GROUPS:
-            return count_rows(state, state->gr_table);
+            return count_rows(state, state->names.gr_table);
         case PDB_NEXTUID_SYS:
         case PDB_NEXTUID:
         case PDB_NEXTGID_SYS:
@@ -276,13 +284,12 @@ static long vmysql_modctl(struct vxpdb_state *vp, long command, ...) {
     return -ENOSYS;
 }
 
-
 //-----------------------------------------------------------------------------
 static int vmysql_useradd(struct vxpdb_state *vp,
   const struct vxpdb_user *rq)
 {
-    struct mysql_state *state = vp->state;
-    char query[1024], *esc_name, *free_me[4];
+    struct mysql_state *state    = vp->state;
+    const struct mq_names *names = &state->names;
     int ret = 0;
 
     if(rq->pw_name == NULL)
@@ -291,18 +298,14 @@ static int vmysql_useradd(struct vxpdb_state *vp,
     if((ret = vmysql_xlock_user(state)) <= 0)
         return ret;
 
-    esc_name = vxutil_quote(rq->pw_name, 0, &free_me[0]);
-
     // shadow part
-    if(state->sp_table != NULL) {
-        snprintf(query, sizeof(query),
-            "insert into %s (%s) values ('%s','%s',%ld,%ld,%ld,%ld,%ld,%ld)",
-            state->sp_table, state->csl_shadow, esc_name,
-            vxutil_quote(rq->sp_passwd, VXQUOTE_SINGLE, &free_me[1]),
-            rq->sp_lastchg, rq->sp_min, rq->sp_max, rq->sp_warn,
-            rq->sp_expire, rq->sp_inact);
-        free(free_me[1]);
-        if(mysql_query(state->cn.handle, query) != 0) {
+    if(names->sp_table != NULL) {
+        ret = queryf(state->cn.handle, "insert into %s (%s) values "
+              "('%S','%S',%ld,%ld,%ld,%ld,%ld,%ld)",
+              names->sp_table, names->csl_shadow, rq->pw_name, rq->sp_passwd,
+              rq->sp_lastchg, rq->sp_min, rq->sp_max, rq->sp_warn,
+              rq->sp_expire, rq->sp_inact);
+        if(ret != 0) {
             if((ret = -mysql_errno(state->cn.handle)) == -ER_DUP_ENTRY)
                 ret = -EEXIST;
             goto out;
@@ -310,17 +313,11 @@ static int vmysql_useradd(struct vxpdb_state *vp,
     }
 
     // vxshadow part
-    if(state->vs_table != NULL) {
-        snprintf(query, sizeof(query),
-            "insert into %s (%s) values ('%s','%s','%s',%ld)",
-            state->vs_table, state->csl_vxshadow, esc_name,
-            vxutil_quote(rq->vs_uuid, VXQUOTE_SINGLE, &free_me[1]),
-            vxutil_quote(rq->vs_pvgrp, VXQUOTE_SINGLE, &free_me[2]),
-            rq->vs_defer
-        );
-        free(free_me[1]);
-        free(free_me[2]);
-        if(mysql_query(state->cn.handle, query) != 0) {
+    if(names->vs_table != NULL) {
+        ret = queryf(state->cn.handle, "insert into %s (%s) values "
+              "('%S','%S','%s',%ld)", names->vs_table, names->csl_vxshadow,
+              rq->pw_name, rq->vs_uuid, rq->vs_pvgrp, rq->vs_defer);
+        if(ret != 0) {
             if((ret = -mysql_errno(state->cn.handle)) == -ER_DUP_ENTRY)
                 ret = -EEXIST;
             goto out;
@@ -329,20 +326,13 @@ static int vmysql_useradd(struct vxpdb_state *vp,
 
     /* passwd part -- comes last, because this is THE entry which makes a user
     really "visible" in the system. */
-    snprintf(query, sizeof(query),
+    ret = queryf(state->cn.handle,
         "insert into %s (%s,%s,%s,%s,%s,%s) "
-        "values ('%s','%ld','%ld','%s','%s','%s')",
-        state->pw_table, state->pw_name, state->pw_uid, state->pw_gid,
-        state->pw_real, state->pw_home, state->pw_shell, esc_name, rq->pw_uid,
-        rq->pw_gid, vxutil_quote(rq->pw_real, 0, &free_me[1]),
-        vxutil_quote(rq->pw_home, VXQUOTE_SINGLE, &free_me[2]),
-        vxutil_quote(rq->pw_shell, VXQUOTE_SINGLE, &free_me[3])
-    );
-    free(free_me[0]);
-    free(free_me[1]);
-    free(free_me[2]);
-    free(free_me[3]);
-    if(mysql_query(state->cn.handle, query) != 0) {
+        "values ('%S','%ld','%ld','%s','%s','%s')",
+        names->pw_table, names->pw_name, names->pw_uid, names->pw_gid,
+        names->pw_real, names->pw_home, names->pw_shell, rq->pw_name,
+        rq->pw_uid, rq->pw_gid, rq->pw_real, rq->pw_home, rq->pw_shell);
+    if(ret != 0) {
         if((ret = -mysql_errno(state->cn.handle)) == -ER_DUP_ENTRY)
             ret = -EEXIST;
         goto out;
@@ -426,24 +416,25 @@ static int vmysql_userdel_unlocked(struct mysql_state *state,
 }
 
 static void *vmysql_usertrav_init(struct vxpdb_state *vp) {
-    struct mysql_state *state = vp->state;
+    struct mysql_state *state    = vp->state;
+    const struct mq_names *names = &state->names;
     hmc_t *query = hmc_minit(NULL, 1024);
     struct traverser_state trav;
 
     // Build query
     hmc_strasg(&query, "select ");
-    hmc_strcat(&query, state->csl_passwd);
+    hmc_strcat(&query, names->csl_passwd);
     if(state->perm_shadow) {
         hmc_strcat(&query, ",");
-        hmc_strcat(&query, state->csl_shadow);
+        hmc_strcat(&query, names->csl_shadow);
     }
     if(state->perm_vxshadow) {
         hmc_strcat(&query, ",");
-        hmc_strcat(&query, state->csl_vxshadow);
+        hmc_strcat(&query, names->csl_vxshadow);
     }
 
     hmc_strcat(&query, " from ");
-    hmc_strcat(&query, state->tsl_user);
+    hmc_strcat(&query, names->tsl_user);
 
     // Do the query
     if(mysql_query(state->cn.handle, query) != 0) {
@@ -467,9 +458,8 @@ static int vmysql_usertrav_walk(struct vxpdb_state *vp, void *ptr,
 {
     struct mysql_state *state = vp->state;
     struct traverser_state *trav = ptr;
-    size_t columns, colstart = 0, rem;
+    size_t columns, colstart = 0;
     MYSQL_ROW row;
-    char *wp;
     int ret;
 
     // -- part 0 --
@@ -479,8 +469,6 @@ static int vmysql_usertrav_walk(struct vxpdb_state *vp, void *ptr,
         return -ret;
     columns = mysql_num_fields(trav->res);
     vxpdb_user_clean(res);
-    rem = nd_row_strlen(trav->res, row, columns);
-    wp  = vxpdb_user_alloc(res, rem);
 
     // -- part 1 --
     if(columns < 6)
@@ -577,16 +565,15 @@ static int vmysql_groupdel(struct vxpdb_state *vp,
 }
 
 static void *vmysql_grouptrav_init(struct vxpdb_state *vp) {
-    struct mysql_state *st = vp->state;
+    struct mysql_state *state    = vp->state;
+    const struct mq_names *names = &state->names;
     struct traverser_state trav;
-    char query[1024];
+    int ret;
 
-    snprintf(query, sizeof(query), "select %s from %s",
-      st->csl_group, st->gr_table);
-
-    if(mysql_query(st->cn.handle, query) != 0 ||
-     (trav.res = mysql_store_result(st->cn.handle)) == NULL) {
-        errno = mysql_errno(st->cn.handle);
+    ret = queryf(state->cn.handle, "select %s from %s",
+          names->csl_group, names->gr_table);
+    if(ret != 0 || (trav.res = mysql_store_result(state->cn.handle)) == NULL) {
+        errno = mysql_errno(state->cn.handle);
         return NULL;
     }
 
@@ -599,9 +586,8 @@ static int vmysql_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
 {
     struct mysql_state *st = vp->state;
     struct traverser_state *trav = ptr;
-    size_t columns, rem;
+    size_t columns;
     MYSQL_ROW row;
-    char *wp;
     int ret;
 
     if((row = mysql_fetch_row(trav->res)) == NULL)
@@ -610,8 +596,7 @@ static int vmysql_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
         return -ret;
     if((columns = mysql_num_fields(trav->res)) != 2)
         fprintf(stderr, "%s: columns != 2, crash imminent\n", __FUNCTION__);
-    rem = nd_row_strlen(trav->res, row, columns);
-    wp  = vxpdb_group_alloc(res, rem);
+
     export_group(res, row);
     return 1;
 }
@@ -652,18 +637,18 @@ static long count_rows(struct mysql_state *state, const char *table) {
 }
 
 static void export_passwd(struct vxpdb_user *dest, const MYSQL_ROW in) {
-    HX_strclone(&dest->pw_name, in[0]);
+    hmc_strasg(&dest->pw_name, in[0]);
     if(in[1] != NULL) dest->pw_uid = strtol(in[1], NULL, 0);
     if(in[2] != NULL) dest->pw_gid = strtol(in[2], NULL, 0);
-    HX_strclone(&dest->pw_real, in[3]);
-    HX_strclone(&dest->pw_home, in[4]);
-    HX_strclone(&dest->pw_shell, in[5]);
+    hmc_strasg(&dest->pw_real, in[3]);
+    hmc_strasg(&dest->pw_home, in[4]);
+    hmc_strasg(&dest->pw_shell, in[5]);
     return;
 }
 
 static void export_shadow(struct vxpdb_user *dest, const MYSQL_ROW in) {
-    // in[0] is username, we do not need that
-    HX_strclone(&dest->sp_passwd, in[1]);
+    // in[0] is username, we do not to copy it again
+    hmc_strasg(&dest->sp_passwd, in[1]);
     if(in[2] != NULL) dest->sp_lastchg = strtol(in[2], NULL, 0);
     if(in[3] != NULL) dest->sp_min     = strtol(in[3], NULL, 0);
     if(in[4] != NULL) dest->sp_max     = strtol(in[4], NULL, 0);
@@ -676,33 +661,34 @@ static void export_shadow(struct vxpdb_user *dest, const MYSQL_ROW in) {
 static inline void export_vxshadow(struct vxpdb_user *dest,
   const MYSQL_ROW in)
 {
-    // in[0] is username
-    HX_strclone(&dest->vs_uuid, in[1]);
-    HX_strclone(&dest->vs_pvgrp, in[2]);
+    hmc_strasg(&dest->vs_uuid, in[1]);
+    hmc_strasg(&dest->vs_pvgrp, in[2]);
     if(in[3] != NULL)
         dest->vs_defer = strtol(in[3], NULL, 0);
     return;
 }
 
 static inline void export_group(struct vxpdb_group *dest, const MYSQL_ROW in) {
-    HX_strclone(&dest->gr_name, in[0]);
-    // FIXME misses gid
+    hmc_strasg(&dest->gr_name, in[0]);
+    if(in[1] != NULL)
+        dest->gr_gid = strtol(in[1], NULL, 0);
     return;
 }
 
 static long find_next_id(struct mysql_state *state, long command) {
+    struct mq_names *names = &state->names;
     const char *field, *table;
     long start, end;
     char query[256];
 
     if(command == PDB_NEXTGID_SYS || command == PDB_NEXTGID) {
-        field = state->gr_gid;
-        table = state->gr_table;
+        field = names->gr_gid;
+        table = names->gr_table;
         start = state->gid_min;
         end   = state->gid_max;
     } else {
-        field = state->pw_uid;
-        table = state->pw_table;
+        field = names->pw_uid;
+        table = names->pw_table;
         start = state->uid_min;
         end   = state->uid_max;
     }
@@ -712,7 +698,7 @@ static long find_next_id(struct mysql_state *state, long command) {
     }
 
     snprintf(query, sizeof(query), "select %s from %s where %s=%ld",
-     field, table, field, start);
+             field, table, field, start);
 
 //    if(empty)
 //        return start;
@@ -739,16 +725,49 @@ static inline long ito_inact(long d) {
     return (d == -1) ? PDB_NO_INACTIVE : d;
 }
 
-static size_t nd_row_strlen(MYSQL_RES *res, MYSQL_ROW row, size_t col) {
-    MYSQL_FIELD *f = mysql_fetch_fields(res);
-    size_t size = 0;
+static int queryf(MYSQL *handle, const char *fmt, ...) {
+    const char *last_ptr, *next_ptr;
+    va_list argp;
+    hmc_t *query;
+    char *quote;
+    int ret;
 
-    while(col--) {
-        if(!IS_NUM(f[col].type) && row[col] != NULL)
-            size += strlen(row[col]) + 1;
+    query = hmc_minit(NULL, 256);
+    va_start(argp, fmt);
+    last_ptr = fmt;
+
+    while((next_ptr = strchr(last_ptr, '%')) != NULL) {
+        hmc_memcat(&query, last_ptr, next_ptr - last_ptr);
+        if(strncmp(next_ptr, "%s", 2) == 0) {
+            hmc_strcat(&query, va_arg(argp, const char *));
+            last_ptr += 2;
+        } else if(strncmp(next_ptr, "%S", 2) == 0) {
+            vxutil_quote(va_arg(argp, const char *), VXQUOTE_SINGLE, &quote);
+            hmc_strcat(&query, "'");
+            hmc_strcat(&query, quote);
+            hmc_strcat(&query, "'");
+            last_ptr += 2;
+        } else if(strncmp(next_ptr, "%ld", 3) == 0) {
+            char buf[2*sizeof(long)+1];
+            snprintf(buf, sizeof(buf), "%ld", va_arg(argp, long));
+            hmc_strcat(&query, buf);
+            last_ptr += 3;
+        } else if(strncmp(next_ptr, "%d", 2) == 0) {
+            char buf[2*sizeof(int)+1];
+            snprintf(buf, sizeof(buf), "%d", va_arg(argp, int));
+            hmc_strcat(&query, buf);
+            last_ptr += 3;
+        } else {
+            last_ptr = next_ptr;
+        }
     }
 
-    return size;
+    hmc_memcat(&query, last_ptr, strlen(last_ptr));
+    ret = mysql_query(handle, query);
+    hmc_free(query);
+    free(quote);
+    va_end(argp);
+    return ret;
 }
 
 static void quote_append(hmc_t **dest, const char *s) {
@@ -773,6 +792,7 @@ static void quote_append(hmc_t **dest, const char *s) {
 static void read_config(struct mysql_state *state, unsigned int action,
   const char *file)
 {
+    struct mq_names *names = &state->names;
     struct HXoption options_table[] = {
         {.ln = "SOURCE_PRI",            .type = HXTYPE_STRING, .cb = read_config_cb, .uptr = state},
         {.ln = "SOURCE_SEC",            .type = HXTYPE_STRING, .cb = read_config_cb, .uptr = state},
@@ -780,47 +800,47 @@ static void read_config(struct mysql_state *state, unsigned int action,
         {.ln = "users.database",        .type = HXTYPE_STRING, .ptr = &state->cn.database},
         {.ln = "users.db_user",         .type = HXTYPE_STRING, .ptr = &state->cn.user},
         {.ln = "users.db_password",     .type = HXTYPE_STRING, .ptr = &state->cn.passwd},
-        {.ln = "users.table",           .type = HXTYPE_STRING, .ptr = &state->pw_table},
+        {.ln = "users.table",           .type = HXTYPE_STRING, .ptr = &names->pw_table},
         //{.ln = "users.where_clause",    .type = HXTYPE_STRING, .ptr = NULL},
-        {.ln = "users.user_column",     .type = HXTYPE_STRING, .ptr = &state->pw_name},
+        {.ln = "users.user_column",     .type = HXTYPE_STRING, .ptr = &names->pw_name},
         //{.ln = "users.password_column", .type = HXTYPE_STRING, .ptr = NULL},
         //{.ln = "users.userid_column",   .type = HXTYPE_STRING, .ptr = NULL},
-        {.ln = "users.uid_column",      .type = HXTYPE_STRING, .ptr = &state->pw_uid},
-        {.ln = "users.gid_column",      .type = HXTYPE_STRING, .ptr = &state->pw_gid},
-        {.ln = "users.realname_column", .type = HXTYPE_STRING, .ptr = &state->pw_real},
-        {.ln = "users.homedir_column",  .type = HXTYPE_STRING, .ptr = &state->pw_home},
-        {.ln = "users.shell_column",    .type = HXTYPE_STRING, .ptr = &state->pw_shell},
+        {.ln = "users.uid_column",      .type = HXTYPE_STRING, .ptr = &names->pw_uid},
+        {.ln = "users.gid_column",      .type = HXTYPE_STRING, .ptr = &names->pw_gid},
+        {.ln = "users.realname_column", .type = HXTYPE_STRING, .ptr = &names->pw_real},
+        {.ln = "users.homedir_column",  .type = HXTYPE_STRING, .ptr = &names->pw_home},
+        {.ln = "users.shell_column",    .type = HXTYPE_STRING, .ptr = &names->pw_shell},
 
         //{.ln = "shadow.host",              .type = HXTYPE_STRING, .ptr = NULL},
         {.ln = "shadow.db_user",           .type = HXTYPE_STRING, .ptr = &state->cn.user2},
         {.ln = "shadow.db_password",       .type = HXTYPE_STRING, .ptr = &state->cn.passwd2},
-        {.ln = "shadow.table",             .type = HXTYPE_STRING, .ptr = &state->sp_table},
+        {.ln = "shadow.table",             .type = HXTYPE_STRING, .ptr = &names->sp_table},
         //{.ln = "shadow.userid_column",     .type = HXTYPE_STRING, .ptr = NULL},
         //{.ln = "shadow.user_column",       .type = HXTYPE_STRING, .ptr = NULL},
-        {.ln = "shadow.password_column",   .type = HXTYPE_STRING, .ptr = &state->sp_passwd},
-        {.ln = "shadow.lastchange_column", .type = HXTYPE_STRING, .ptr = &state->sp_lastchg},
-        {.ln = "shadow.min_column",        .type = HXTYPE_STRING, .ptr = &state->sp_min},
-        {.ln = "shadow.max_column",        .type = HXTYPE_STRING, .ptr = &state->sp_max},
-        {.ln = "shadow.warn_column",       .type = HXTYPE_STRING, .ptr = &state->sp_warn},
-        {.ln = "shadow.expire_column",     .type = HXTYPE_STRING, .ptr = &state->sp_expire},
-        {.ln = "shadow.inact_column",      .type = HXTYPE_STRING, .ptr = &state->sp_inact},
+        {.ln = "shadow.password_column",   .type = HXTYPE_STRING, .ptr = &names->sp_passwd},
+        {.ln = "shadow.lastchange_column", .type = HXTYPE_STRING, .ptr = &names->sp_lastchg},
+        {.ln = "shadow.min_column",        .type = HXTYPE_STRING, .ptr = &names->sp_min},
+        {.ln = "shadow.max_column",        .type = HXTYPE_STRING, .ptr = &names->sp_max},
+        {.ln = "shadow.warn_column",       .type = HXTYPE_STRING, .ptr = &names->sp_warn},
+        {.ln = "shadow.expire_column",     .type = HXTYPE_STRING, .ptr = &names->sp_expire},
+        {.ln = "shadow.inact_column",      .type = HXTYPE_STRING, .ptr = &names->sp_inact},
 
-        {.ln = "groups.group_info_table",  .type = HXTYPE_STRING, .ptr = &state->gr_table},
+        {.ln = "groups.group_info_table",  .type = HXTYPE_STRING, .ptr = &names->gr_table},
         //{.ln = "groups.where_clause",      .type = HXTYPE_STRING, .ptr = NULL},
-        {.ln = "groups.group_name_column", .type = HXTYPE_STRING, .ptr = &state->gr_name},
+        {.ln = "groups.group_name_column", .type = HXTYPE_STRING, .ptr = &names->gr_name},
         //{.ln = "groups.groupid_column",    .type = HXTYPE_STRING, .ptr = NULL},
-        {.ln = "groups.gid_column",        .type = HXTYPE_STRING, .ptr = &state->gr_gid},
+        {.ln = "groups.gid_column",        .type = HXTYPE_STRING, .ptr = &names->gr_gid},
         //{.ln = "groups.password_column",   .type = HXTYPE_STRING, .ptr = NULL}, // no SGRP
 
-        //{.ln = "groups.members_table",     .type = HXTYPE_STRING, .ptr = &state->gm_table}, // no SGRP
-        //{.ln = "groups.member_uid_column", .type = HXTYPE_STRING, .ptr = &state->gm_user},
-        //{.ln = "groups.member_gid_column", .type = HXTYPE_STRING, .ptr = &state->gm_group},
+        //{.ln = "groups.members_table",     .type = HXTYPE_STRING, .ptr = &names->gm_table}, // no SGRP
+        //{.ln = "groups.member_uid_column", .type = HXTYPE_STRING, .ptr = &names->gm_user},
+        //{.ln = "groups.member_gid_column", .type = HXTYPE_STRING, .ptr = &names->gm_group},
 
-        {.ln = "vxshadow.table_name", .type = HXTYPE_STRING, .ptr = &state->vs_table},
-        {.ln = "vxshadow.user_col",   .type = HXTYPE_STRING, .ptr = &state->vs_user},
-        {.ln = "vxshadow.uuid_col",   .type = HXTYPE_STRING, .ptr = &state->vs_uuid},
-        {.ln = "vxshadow.pvgrp_col",  .type = HXTYPE_STRING, .ptr = &state->vs_pvgrp},
-        {.ln = "vxshadow.defer_col",  .type = HXTYPE_STRING, .ptr = &state->vs_defer},
+        {.ln = "vxshadow.table_name", .type = HXTYPE_STRING, .ptr = &names->vs_table},
+        {.ln = "vxshadow.user_col",   .type = HXTYPE_STRING, .ptr = &names->vs_user},
+        {.ln = "vxshadow.uuid_col",   .type = HXTYPE_STRING, .ptr = &names->vs_uuid},
+        {.ln = "vxshadow.pvgrp_col",  .type = HXTYPE_STRING, .ptr = &names->vs_pvgrp},
+        {.ln = "vxshadow.defer_col",  .type = HXTYPE_STRING, .ptr = &names->vs_defer},
         HXOPT_TABLEEND,
     };
 
@@ -901,14 +921,16 @@ static char *s_join(const char *delim, ...) {
 static hmc_t *sql_groupmask(hmc_t **s, const struct mysql_state *state,
   const struct vxpdb_group *mask, unsigned int flags)
 {
+    const struct mq_names *names = &state->names;
     char tmp[Z_32];
     int n = 0;
+
     if(*s == NULL)
         fprintf(stderr, "Error: %s called with *s == NULL\n", __FUNCTION__);
     if(mask->gr_name != NULL)
-        PUT_S(state->gr_name, mask->gr_name);
+        PUT_S(names->gr_name, mask->gr_name);
     if(mask->gr_gid != PDB_NOGID)
-        PUT_I(state->gr_gid, mask->gr_gid);
+        PUT_I(names->gr_gid, mask->gr_gid);
     return *s;
 }
 
@@ -921,6 +943,7 @@ flags can contain:
 static hmc_t *sql_usermask(hmc_t **s, const struct mysql_state *state,
   const struct vxpdb_user *mask, unsigned int flags)
 {
+    const struct mq_names *names = &state->names;
     char tmp[Z_32];
     int n = 0;
 
@@ -928,20 +951,20 @@ static hmc_t *sql_usermask(hmc_t **s, const struct mysql_state *state,
         fprintf(stderr, "Error: %s called with *s == NULL\n", __FUNCTION__);
 
     if(mask->pw_name != NULL) {
-        PUT_S(state->pw_name, mask->pw_name);
+        PUT_S(names->pw_name, mask->pw_name);
         if((flags & MASK_SET) && state->perm_shadow)
-            PUT_S(state->sp_user, mask->pw_name);
+            PUT_S(names->sp_user, mask->pw_name);
         if((flags & MASK_SET) && state->perm_vxshadow)
-            PUT_S(state->vs_user, mask->pw_name);
+            PUT_S(names->vs_user, mask->pw_name);
     }
     if(mask->pw_uid != PDB_NOUID)
-        PUT_I(state->pw_uid, mask->pw_uid);
+        PUT_I(names->pw_uid, mask->pw_uid);
     if(flags & MASK_DELETE)
         return *s;
-    if(mask->pw_gid   != PDB_NOGID) PUT_I(state->pw_gid,   mask->pw_gid);
-    if(mask->pw_real  != NULL)      PUT_S(state->pw_real,  mask->pw_real);
-    if(mask->pw_home  != NULL)      PUT_S(state->pw_home,  mask->pw_home);
-    if(mask->pw_shell != NULL)      PUT_S(state->pw_shell, mask->pw_shell);
+    if(mask->pw_gid   != PDB_NOGID) PUT_I(names->pw_gid,   mask->pw_gid);
+    if(mask->pw_real  != NULL)      PUT_S(names->pw_real,  mask->pw_real);
+    if(mask->pw_home  != NULL)      PUT_S(names->pw_home,  mask->pw_home);
+    if(mask->pw_shell != NULL)      PUT_S(names->pw_shell, mask->pw_shell);
     return *s;
 }
 #undef PUT_I
