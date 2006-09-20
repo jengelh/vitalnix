@@ -95,7 +95,7 @@ sub encoded {
     }
 
     binmode FH;
-    $data = join("", <FH>);
+    $data = join(undef, <FH>);
     $data =~ s/\\/\\\\/go;
     $data =~ s/([^\x21\x23-\x7e])/sprintf "\\%03o", ord $1/egs;
     $data =~ s/\?\?(?=[-\(\)<>=\/'!])/?\\077/g;

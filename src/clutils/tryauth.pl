@@ -44,7 +44,7 @@ sub authenticate($$) {
     waitpid($pid, 0);
     if(($status = $?) != 0) {
         if(ref($eref) eq "SCALAR") {
-            $$eref = join("", <FERR>);
+            $$eref = join(undef, <FERR>);
         } elsif(ref($eref) eq "ARRAY") {
             @$eref = <FERR>;
         }
