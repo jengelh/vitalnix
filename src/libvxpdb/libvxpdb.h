@@ -71,6 +71,8 @@ struct vxconfig_useradd;
 struct vxconfig_usermod;
 struct vxconfig_userdel;
 
+/* When vxpdb functions return something, the string fields must be handled
+like "hmc_t"s. */
 struct vxpdb_user {
     // passwd part
     char *pw_name, *pw_real, *pw_home, *pw_shell, *pw_igrp;
@@ -93,9 +95,6 @@ struct vxpdb_group {
     char *gr_name;
     long gr_gid;
     void *be_priv;
-
-    // internal data storage
-    hmc_t *_storage;
 };
 
 struct vxpdb_mvtable;
