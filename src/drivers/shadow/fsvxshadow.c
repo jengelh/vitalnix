@@ -45,7 +45,6 @@ void db_read_vxshadow(const char *file, struct HXdeque *dq) {
 
     if(dq->itemcount == 0)
         return;
-    xmlKeepBlanksDefault(0);
     if((doc = xmlParseFile(file)) == NULL)
         return;
     if((ptr = xmlDocGetRootElement(doc)) == NULL ||

@@ -63,8 +63,6 @@ static int xml_open(const char *filename, void **state_pptr) {
     if((state = *state_pptr = calloc(1, sizeof(struct xml_state))) == NULL)
         return -errno;
 
-    //xmlKeepBlanksDefault(0);
-
     /* xmlParseFile() already scans the file completely and stores the
     structure tree plus components in memory. */
     if((state->doc = xmlParseFile(filename)) == NULL) {
