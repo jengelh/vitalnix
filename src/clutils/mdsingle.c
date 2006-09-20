@@ -144,7 +144,7 @@ static int single_run(struct private_info *priv) {
     priv->pref_username = NULL;
 
     if((ee.uuid = priv->uuid) == NULL && priv->bday != NULL)
-        ee.uuid = vxuuid_vx3(ee.full_name, vxutil_string_iday(priv->bday));
+        ee.uuid = vxuuid_vx3(ee.full_name, vxutil_string_xday(priv->bday));
 
     HXbtree_add(mdsw->add_req, ee.uuid, HX_memdup(&ee, sizeof(ee)));
     mdsync_compare_simple(mdsw);

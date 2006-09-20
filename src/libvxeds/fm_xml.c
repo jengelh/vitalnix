@@ -107,7 +107,7 @@ static int xml_read(void *state_ptr, struct vxeds_entry *e) {
 
         if((e->uuid = xmlGetProp_2s(state->ptr, "uuid")) == NULL)
             if((bd = xmlGetProp_2s(state->ptr, "bday")) != NULL)
-                e->uuid = vxuuid_vx3(e->full_name, vxutil_string_iday(bd));
+                e->uuid = vxuuid_vx3(e->full_name, vxutil_string_xday(bd));
     }
 
     state->ptr = state->ptr->next;

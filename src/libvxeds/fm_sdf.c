@@ -119,7 +119,7 @@ static int sdf_read(void *state_ptr, struct vxeds_entry *e) {
     e->surname    = HX_strdup(data[0]);
     e->full_name  = vxeds_bfullname(e->first_name, e->surname);
     e->pvgrp      = HX_strdup(data[3]);
-    e->uuid       = vxuuid_vx3(e->full_name, vxutil_string_iday(data[2]));
+    e->uuid       = vxuuid_vx3(e->full_name, vxutil_string_xday(data[2]));
 
     /* In Vitalnix2, the birthdate was used as UUID, and the <Full Name, UUID>
     _tuple_ was unique among all users. In Vitalnix3, the UUID is generated

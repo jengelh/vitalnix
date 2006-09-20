@@ -34,6 +34,7 @@ libvxutil/util.c
 #include "libvxutil/libvxutil.h"
 
 // Functions
+static int vxutil_parse_date(const char *, int *, int *, int *);
 static size_t quoted_size(const char *, unsigned int);
 static const char *surname_pointer(const char *);
 static char *transform7(const char *, char *, size_t);
@@ -200,44 +201,26 @@ EXPORT_SYMBOL char *vxutil_slurp_file(const char *fn)
 EXPORT_SYMBOL long vxutil_string_iday(const char *s)
 {
     int day = 0, month = 0, year = 0, ret = 0;
+    struct tm td;
+    long sec;
 
-    if(strchr(s, '-') != NULL)
-        /* ISO-8601 style YYYY-MM-DD,
-        http://www.cl.cam.ac.uk/~mgk25/iso-time.html
-        http://en.wikipedia.org/wiki/ISO-8601 */
-        ret = sscanf(s, "%u-%u-%u", &year, &month, &day);
-    else if(strchr(s, '.') != NULL)
-        // European style DD.MM.YYYY
-        ret = sscanf(s, "%u.%u.%u", &day, &month, &year);
-    else if(strchr(s, '/') != NULL)
-        // American style MM/DD/YYYY
-        ret = sscanf(s, "%u/%u/%u", &month, &day, &year);
-    if(ret != 3)
+    if((ret = vxutil_parse_date(s, &day, &month, &year)) != 3)
+        return ret;
+
+    td.tm_mday = day;
+    td.tm_mon  = month - 1;
+    td.tm_year = year - 1900;
+    if((sec = mktime(&td)) == -1)
         return -1;
 
-    /* If any of the three are zero, the input date is illegal. If all three
-    are zero, the equivalent meaning is "no date given". */
-    if(day == 0 && month == 0 && year == 0)
-        return 0;
-    if(day == 0 || month == 0 || year == 0)
-        return -1;
+    return (unsigned long)sec / 86400;
+}
 
-    if(year >= 100 && year < 1000) {
-        year += 1900;
-    } else if(year < 100) {
-        /* Fix two-digit year numbers. The range of two-digit years is always
-        [now-50yrs ... now+50yrs]. */
-        time_t now_sec = time(NULL);
-        struct tm now_tm;
-        int bp, nc;
-
-        localtime_r(&now_sec, &now_tm);
-        bp = (now_tm.tm_year + 50) % 100;
-        nc = now_tm.tm_year - now_tm.tm_year % 100 + ((bp < 50) ? 100 : 0);
-        year += 1900 + ((year > bp) ? (nc - 100) : nc);
-    }
-
-    /* YYYMDD */
+EXPORT_SYMBOL long vxutil_string_xday(const char *s)
+{
+    int day = 0, month = 0, year = 0, ret = 0;
+    if((ret = vxutil_parse_date(s, &day, &month, &year)) <= 0)
+        return ret;
     return ((year & 0xFFF) << 12) | ((month & 0xF) << 8) | (day & 0xFF);
 }
 
@@ -266,6 +249,48 @@ EXPORT_SYMBOL int vxutil_valid_username(const char *n)
 }
 
 //-----------------------------------------------------------------------------
+static int vxutil_parse_date(const char *s, int *day, int *month, int *year) {
+    int ret = 0;
+
+    if(strchr(s, '-') != NULL)
+        /* ISO-8601 style YYYY-MM-DD,
+        http://www.cl.cam.ac.uk/~mgk25/iso-time.html
+        http://en.wikipedia.org/wiki/ISO-8601 */
+        ret = sscanf(s, "%u-%u-%u", year, month, day);
+    else if(strchr(s, '.') != NULL)
+        // European style DD.MM.YYYY
+        ret = sscanf(s, "%u.%u.%u", day, month, year);
+    else if(strchr(s, '/') != NULL)
+        // American style MM/DD/YYYY
+        ret = sscanf(s, "%u/%u/%u", month, day, year);
+    if(ret != 3)
+        return -1;
+
+    /* If any of the three are zero, the input date is illegal. If all three
+    are zero, the equivalent meaning is "no date given". */
+    if(*day == 0 && *month == 0 && *year == 0)
+        return 0;
+    if(*day == 0 || *month == 0 || *year == 0)
+        return -1;
+
+    if(*year >= 100 && *year < 1000) {
+        *year += 1900;
+    } else if(*year < 100) {
+        /* Fix two-digit year numbers. The range of two-digit years is always
+        [now-50yrs ... now+50yrs]. */
+        time_t now_sec = time(NULL);
+        struct tm now_tm;
+        int bp, nc;
+
+        localtime_r(&now_sec, &now_tm);
+        bp = (now_tm.tm_year + 50) % 100;
+        nc = now_tm.tm_year - now_tm.tm_year % 100 + ((bp < 50) ? 100 : 0);
+        *year += 1900 + ((*year > bp) ? (nc - 100) : nc);
+    }
+
+    return 1;
+}
+
 /*  quoted_size
     @s:         string to analyze
     @type:      non-zero if double quoted

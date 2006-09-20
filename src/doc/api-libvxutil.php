@@ -22,6 +22,7 @@ Vitalnix code base.</p>
 <b>int</b> vxutil_replace_run(<b>const char *</b>command, <b>const struct</b> HXoption <b>*</b>map);<br />
 <b>char *</b>vxutil_slurp_file(<b>const char *</b>filename);<br />
 <b>long</b> vxutil_string_iday(<b>const char *</b>date);<br />
+<b>long</b> vxutil_string_xday(<b>const char *</b>date);<br />
 <b>int</b> vxutil_valid_username(<b>const char *</b>username);<br />
 <b>char *</b>vxutil_vx3uuid(<b>const char *</b>full_name, <b>long</b> iday);
 </tt></p>
@@ -188,6 +189,12 @@ accordingly.</p>
 <p class="block">Transforms the string <tt>date</tt>, which is of either format
 of <tt>DD.MM.YYYY</tt>, <tt>MM/DD/YYYY</tt> or <tt>YYYY-MM-DD</tt> into an
 integer representing the days since January 01 1970.</p>
+
+<h2>vxutil_string_xday</h2>
+
+<p class="block">Transforms the string <tt>date</tt>, which is of either format
+of <tt>DD.MM.YYYY</tt>, <tt>MM/DD/YYYY</tt> or <tt>YYYY-MM-DD</tt> into a
+BCD-style encoded integer representing the date.</p>
 
 <h2>vxutil_valid_username</h2>
 

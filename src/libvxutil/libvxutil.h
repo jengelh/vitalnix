@@ -84,13 +84,14 @@ extern char *vxutil_quote(const char *, unsigned int, char **);
 extern int vxutil_replace_run(const char *, const struct HXoption *);
 extern char *vxutil_slurp_file(const char *);
 extern long vxutil_string_iday(const char *);
+extern long vxutil_string_xday(const char *);
 extern int vxutil_valid_username(const char *);
 
 /*
  *      UUID.C
  */
 extern char *vxuuid_vx3(const char *, long);
-extern long vxuuid_vx3_get_iday(const char *);
+extern long vxuuid_vx3_get_xday(const char *);
 
 /*
  *      INLINE FUNCTIONS

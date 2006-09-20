@@ -81,7 +81,7 @@ int main(int argc, const char **argv) {
 static char *rebuild_uuid(const struct mdf_priv *p, struct vxpdb_state *db) {
     struct vxpdb_user info = {};
     char *res = NULL, *name;
-    long iday = 0;
+    long xday = 0;
     int ret;
 
     if((ret = vxpdb_getpwnam(db, p->username, &info)) <= 0) {
@@ -90,20 +90,20 @@ static char *rebuild_uuid(const struct mdf_priv *p, struct vxpdb_state *db) {
     }
 
     if(p->bday != NULL) {
-        if((iday = vxutil_string_iday(p->bday)) == -1) {
+        if((xday = vxutil_string_xday(p->bday)) == -1) {
             fprintf(stderr, "Invalid date\n");
             goto out;
         }
     } else if(info.vs_uuid != NULL) {
-        iday = vxuuid_vx3_get_iday(info.vs_uuid);
-        if(iday == -1)
-            iday = 0;
+        xday = vxuuid_vx3_get_xday(info.vs_uuid);
+        if(xday == -1)
+            xday = 0;
     }
 
     if((name = p->realname) == NULL)
         name = info.pw_real;
     if(name != NULL)
-        res = vxuuid_vx3(name, iday);
+        res = vxuuid_vx3(name, xday);
 
  out:
     vxpdb_user_free(&info, 0);
