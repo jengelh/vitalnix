@@ -28,6 +28,7 @@ clutils/mdsync.c
 #include <string.h>
 #include <time.h>
 #include <libHX.h>
+#include "compiler.h"
 #include "vitalnix-config.h"
 #include "libvxcli/libvxcli.h"
 #include "libvxeds/libvxeds.h"
@@ -41,7 +42,7 @@ clutils/mdsync.c
 // Structures
 struct private_info {
     char *backend_module, *group_name, *input_file, *input_fmt, *output_file;
-    int no_add, no_update, no_delete, yestoall;
+    int debug, no_add, no_update, no_delete, yestoall;
 
     int open_status;
     struct vxpdb_state *module_handle;
@@ -62,6 +63,7 @@ static void cb_report(unsigned int, const struct mdsync_workspace *,
     unsigned long, unsigned long);
 static void print_compare_input(const struct mdsync_workspace *);
 static void print_compare_output(const struct mdsync_workspace *);
+static void print_compare_output2(const struct mdsync_workspace *);
 
 static int get_options(int *, const char ***, struct private_info *);
 static void show_version(const struct HXoptcb *);
@@ -161,8 +163,11 @@ static int sync_run(struct private_info *priv) {
     print_compare_input(mdsw);
     mdsync_compare(mdsw);
     print_compare_output(mdsw);
-
     mdsync_fixup(mdsw);
+    if(priv->debug) {
+        print_compare_output2(mdsw);
+        return 1;
+    }
 
     return sync_add(priv) && sync_mod(priv) && sync_del(priv);
 }
@@ -306,9 +311,43 @@ static void print_compare_output(const struct mdsync_workspace *mdsw) {
     return;
 }
 
+static void print_compare_output2(const struct mdsync_workspace *mdsw) {
+    const struct HXbtree_node *b;
+    const struct HXdeque_node *d;
+    void *travp;
+
+    if((travp = HXbtrav_init(mdsw->add_req, NULL)) != NULL) {
+        while((b = HXbtraverse(travp)) != NULL) {
+            const struct vxeds_entry *entry = b->data;
+            printf("A   %s (%s)\n", entry->username, entry->full_name);
+        }
+        HXbtrav_free(travp);
+    }
+
+    if((travp = HXbtrav_init(mdsw->update_req, NULL)) != NULL) {
+        while((b = HXbtraverse(travp)) != NULL) {
+            const struct vxpdb_user *user = b->data;
+            printf("U   %s (%s)\n", user->pw_name, user->pw_real);
+        }
+        HXbtrav_free(travp);
+    }
+
+    for(d = mdsw->defer_start->first; d != NULL; d = d->Next)
+        printf("XA  %s\n", static_cast(const char *, d->ptr));
+    for(d = mdsw->defer_wait->first; d != NULL; d = d->Next)
+        printf("XW  %s\n", static_cast(const char *, d->ptr));
+    for(d = mdsw->defer_stop->first; d != NULL; d = d->Next)
+        printf("XR  %s\n", static_cast(const char *, d->ptr));
+    for(d = mdsw->delete_now->first; d != NULL; d = d->Next)
+        printf("D   %s\n", static_cast(const char *, d->ptr));
+    return;
+}
+
 //-----------------------------------------------------------------------------
 static int get_options(int *argc, const char ***argv, struct private_info *p) {
     struct HXoption options_table[] = {
+        {.sh = 'D', .type = HXTYPE_NONE, .ptr = &p->debug,
+         .help = "Enable some more debugging output"},
         {.sh = 'M', .type = HXTYPE_STRING, .ptr = &p->backend_module,
          .help = "Backend module", .htyp = "NAME"},
         {.sh = 'V', .type = HXTYPE_NONE, .cb = show_version,
