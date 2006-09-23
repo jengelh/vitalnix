@@ -5,7 +5,7 @@
 ifeq (${S},)
     $(error "S" variable is not defined. Please run configure first)
 endif
-include ${S}/Makevars.inc
+include ${S}/GNUmakefile.var
 vpath %.c    ${S}
 vpath %.cpp  ${S}
 vpath %.h    ${S}
