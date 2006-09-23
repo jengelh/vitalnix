@@ -32,6 +32,7 @@ libvxmdfmt/pwlfmt.c
 #include "libvxmdfmt/internal.h"
 #include "libvxmdfmt/libvxmdfmt.h"
 #include "libvxmdfmt/vtable.h"
+#include "libvxmdsync/logversion.h"
 #include "libvxutil/defines.h"
 
 // Functions
