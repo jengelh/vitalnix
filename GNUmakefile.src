@@ -3,19 +3,17 @@
 .POSIX:
 
 ifeq (${S},)
-    $(error You need to specify S=/path/to/vitalnix/src)
+    $(error "S" variable is not defined. Please run configure first)
 endif
 include ${S}/Makevars.inc
-ifneq (${S},)
-    vpath %.c   ${S}
-    vpath %.cpp ${S}
-    vpath %.h   ${S}
-    vpath %.hpp ${S}
-    vpath %.S   ${S}
-    vpath %.php ${S}
-    vpath %.png ${S}
-    vpath %.icss ${S}
-endif
+vpath %.c    ${S}
+vpath %.cpp  ${S}
+vpath %.h    ${S}
+vpath %.hpp  ${S}
+vpath %.S    ${S}
+vpath %.php  ${S}
+vpath %.png  ${S}
+vpath %.icss ${S}
 
 ifneq ($(shell uname -m | grep -i i.86),)
     MCPU_IS_X86 := 1
