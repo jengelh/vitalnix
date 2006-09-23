@@ -9,6 +9,7 @@ URL:            http://vitalnix.sourceforge.net/
 
 Source:         http://heanet.dl.sourceforge.net/sourceforge/%name/%name-%version.tar.bz2
 BuildRoot:      %_tmppath/%name-%version-build
+BuildRequires:  wxWidgets-devel
 %define pfx     /opt/%name-%version
 
 %description
