@@ -242,8 +242,9 @@ static int vmmd_groupinfo(struct vxpdb_state *vp,
 
 //-----------------------------------------------------------------------------
 static int modules_construct(struct multi_state *state) {
-    char **rdmod_list = HX_split(state->rdmod_str, ":", NULL, 0), **name;
+    char **rdmod_list = HX_split(state->rdmod_str, ":", NULL, 0);
     struct module_handle *wr;
+    char **name = rdmod_list;
     int ret = 0;
 
     state->rd_mod = HXdeque_init();
@@ -334,7 +335,7 @@ static void read_config(struct multi_state *state) {
         HXOPT_TABLEEND,
     };
 
-    HX_shconfig(CONFIG_ETC_VITALNIX "/db_multi.conf", options_table);
+    HX_shconfig(CONFIG_SYSCONFDIR "/db_multi.conf", options_table);
     return;
 }
 
