@@ -34,25 +34,7 @@ external advertisements for this software. */
 #include "libvxmdfmt/vtable.h"
 #include "libvxutil/defines.h"
 
-// Functions
-static printfunc_t pghtml_file_header, pghtml_tbl_header, pghtml_tbl_entry,
-                   pghtml_tbl_footer, pghtml_file_footer;
-
-// Variables
-static const struct pwlstyle_vtable THIS_STYLE = {
-    .name        = "pg_html",
-    .desc        = "pvgrp-sorted text/html",
-
-    .file_header = pghtml_file_header,
-    .tbl_header  = pghtml_tbl_header,
-    .tbl_entry   = pghtml_tbl_entry,
-    .tbl_footer  = pghtml_tbl_footer,
-    .file_footer = pghtml_file_footer,
-};
-
 //-----------------------------------------------------------------------------
-REGISTER_MODULE(pg_html, &THIS_STYLE);
-
 static void pghtml_file_header(struct pwlfmt_workspace *state,
   const struct pwl_data *data)
 {
@@ -113,5 +95,20 @@ static void pghtml_file_footer(struct pwlfmt_workspace *state,
     fprintf(state->output_fh, "</body></html>");
     return;
 }
+
+//-----------------------------------------------------------------------------
+static const struct pwlstyle_vtable THIS_STYLE = {
+    .name        = "pg_html",
+    .desc        = "pvgrp-sorted text/html",
+    .author      = "Jan Engelhardt <jengelh [at] gmx de>, 2005 - 2006",
+
+    .file_header = pghtml_file_header,
+    .tbl_header  = pghtml_tbl_header,
+    .tbl_entry   = pghtml_tbl_entry,
+    .tbl_footer  = pghtml_tbl_footer,
+    .file_footer = pghtml_file_footer,
+};
+
+REGISTER_MODULE(pg_html, &THIS_STYLE);
 
 //=============================================================================

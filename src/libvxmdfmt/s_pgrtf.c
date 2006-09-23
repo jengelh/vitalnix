@@ -49,24 +49,7 @@ static printfunc_t pgrtf_file_header, pgrtf_tbl_header, pgrtf_tbl_entry,
 static int pgrtf_read_template(const char *, struct pgrtf_data *);
 static hmc_t *utf8_to_rtfuni(const char *);
 
-// Variables
-static const struct pwlstyle_vtable THIS_STYLE = {
-    .name             = "pg_rtf",
-    .desc             = "pvgrp-sorted text/rtf",
-    .require_template = 1,
-
-    .init             = pgrtf_construct,
-    .exit             = pgrtf_destruct,
-    .file_header      = pgrtf_file_header,
-    .tbl_header       = pgrtf_tbl_header,
-    .tbl_entry        = pgrtf_tbl_entry,
-    .tbl_footer       = pgrtf_tbl_footer,
-    .file_footer      = pgrtf_file_footer,
-};
-
 //-----------------------------------------------------------------------------
-REGISTER_MODULE(pg_rtf, &THIS_STYLE);
-
 static int pgrtf_construct(struct pwlfmt_workspace *w) {
     struct pgrtf_data priv;
     int ret;
@@ -201,5 +184,23 @@ static hmc_t *utf8_to_rtfuni(const char *ip) {
         hmc_strcat(&dest, cfh);
     return dest;
 }
+
+//-----------------------------------------------------------------------------
+static const struct pwlstyle_vtable THIS_STYLE = {
+    .name             = "pg_rtf",
+    .desc             = "pvgrp-sorted text/rtf",
+    .author           = "Jan Engelhardt <jengelh [at] gmx de>, 2005 - 2006",
+    .require_template = 1,
+
+    .init             = pgrtf_construct,
+    .exit             = pgrtf_destruct,
+    .file_header      = pgrtf_file_header,
+    .tbl_header       = pgrtf_tbl_header,
+    .tbl_entry        = pgrtf_tbl_entry,
+    .tbl_footer       = pgrtf_tbl_footer,
+    .file_footer      = pgrtf_file_footer,
+};
+
+REGISTER_MODULE(pg_rtf, &THIS_STYLE);
 
 //=============================================================================

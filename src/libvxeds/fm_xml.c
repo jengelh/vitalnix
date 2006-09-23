@@ -39,24 +39,11 @@ struct xml_state {
 };
 
 // Functions
-static int xml_open(const char *, void **);
-static int xml_read(void *, struct vxeds_entry *);
 static void xml_close(void *);
 static inline int strcmp_1u(const xmlChar *, const char *);
 static inline char *xmlGetProp_2s(xmlNode *, const char *);
 
-// Variables
-static const struct edsformat_vtable THIS_FORMAT = {
-    .desc  = "Vitalnix XML Input Format",
-    .ext   = "xml",
-    .open  = xml_open,
-    .read  = xml_read,
-    .close = xml_close,
-};
-
 //-----------------------------------------------------------------------------
-REGISTER_MODULE(xml, &THIS_FORMAT);
-
 static int xml_open(const char *filename, void **state_pptr) {
     struct xml_state *state;
 
@@ -131,5 +118,17 @@ static inline char *xmlGetProp_2s(xmlNode *p, const char *v) {
     return reinterpret_cast(char *, xmlGetProp(p,
            reinterpret_cast(const xmlChar *, v)));
 }
+
+//-----------------------------------------------------------------------------
+static const struct edsformat_vtable THIS_FORMAT = {
+    .desc   = "Vitalnix XML Input Format",
+    .author = "Jan Engelhardt <jengelh [at] gmx de>, 2003 - 2006",
+    .ext    = "xml",
+    .open   = xml_open,
+    .read   = xml_read,
+    .close  = xml_close,
+};
+
+REGISTER_MODULE(xml, &THIS_FORMAT);
 
 //=============================================================================

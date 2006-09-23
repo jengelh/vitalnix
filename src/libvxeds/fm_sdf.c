@@ -45,23 +45,9 @@ struct sdf_state {
 };
 
 // Functions
-static int sdf_open(const char *, void **);
-static int sdf_read(void *, struct vxeds_entry *);
-static void sdf_close(void *);
 static char *convert(iconv_t, char *);
 
-// Module
-static const struct edsformat_vtable THIS_FORMAT = {
-    .desc  = "Kolleg SDF",
-    .ext   = "sdf",
-    .open  = sdf_open,
-    .read  = sdf_read,
-    .close = sdf_close,
-};
-
 //-----------------------------------------------------------------------------
-REGISTER_MODULE(sdf, &THIS_FORMAT);
-
 static int sdf_open(const char *filename, void **state_pptr) {
     struct sdf_state *state;
 
@@ -157,5 +143,17 @@ static char *convert(iconv_t cd, char *in) {
     iconv(cd, &inp, &inl, &outp, &outl);
     return out;
 }
+
+//-----------------------------------------------------------------------------
+static const struct edsformat_vtable THIS_FORMAT = {
+    .desc   = "Kolleg SDF",
+    .author = "Jan Engelhardt <jengelh [at] gmx de>, 1999 - 2006",
+    .ext    = "sdf",
+    .open   = sdf_open,
+    .read   = sdf_read,
+    .close  = sdf_close,
+};
+
+REGISTER_MODULE(sdf, &THIS_FORMAT);
 
 //=============================================================================

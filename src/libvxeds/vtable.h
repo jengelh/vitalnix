@@ -30,7 +30,7 @@ extern "C" {
 
 struct vxeds_entry;
 struct edsformat_vtable {
-    const char *desc, *ext;
+    const char *desc, *ext, *author;
     int (*open)(const char *, void **);
     int (*read)(void *, struct vxeds_entry *);
     void (*close)(void *);

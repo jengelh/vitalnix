@@ -75,9 +75,7 @@ struct mq_names {
 struct mysql_state {
     struct mq_conn  cn;
     struct mq_names names;
-
     int perm_shadow, perm_vxshadow;
-
     // Misc
     long uid_min, uid_max, gid_min, gid_max;
 };

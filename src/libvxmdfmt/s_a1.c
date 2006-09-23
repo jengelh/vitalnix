@@ -29,21 +29,7 @@ libvxmdfmt/s_a1.c
 #include "libvxmdfmt/vtable.h"
 #include "libvxutil/defines.h"
 
-// Functions
-static printfunc_t a1_file_header, a1_tbl_entry;
-
-// Variables
-static const struct pwlstyle_vtable THIS_STYLE = {
-    .name        = "a1",
-    .desc        = "user-sorted text/plain",
-
-    .file_header = a1_file_header,
-    .tbl_entry   = a1_tbl_entry,
-};
-
 //-----------------------------------------------------------------------------
-REGISTER_MODULE(a1, &THIS_STYLE);
-
 static void a1_file_header(struct pwlfmt_workspace *state,
   const struct pwl_data *data)
 {
@@ -67,5 +53,17 @@ static void a1_tbl_entry(struct pwlfmt_workspace *state,
             data->username, data->password);
     return;
 }
+
+//-----------------------------------------------------------------------------
+static const struct pwlstyle_vtable THIS_STYLE = {
+    .name        = "a1",
+    .desc        = "user-sorted text/plain",
+    .author      = "Jan Engelhardt <jengelh [at] gmx de>, 2000 - 2006",
+
+    .file_header = a1_file_header,
+    .tbl_entry   = a1_tbl_entry,
+};
+
+REGISTER_MODULE(a1, &THIS_STYLE);
 
 //=============================================================================

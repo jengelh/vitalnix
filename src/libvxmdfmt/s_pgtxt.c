@@ -29,21 +29,7 @@ libvxmdfmt/s_pgtxt.c
 #include "libvxmdfmt/vtable.h"
 #include "libvxutil/defines.h"
 
-// Functions
-static printfunc_t pgtxt_tbl_header, pgtxt_tbl_entry, pgtxt_tbl_footer;
-
-// Variables
-static const struct pwlstyle_vtable THIS_STYLE = {
-    .name       = "pg_txt",
-    .desc       = "pvgrp-sorted text/plain",
-    .tbl_header = pgtxt_tbl_header,
-    .tbl_entry  = pgtxt_tbl_entry,
-    .tbl_footer = pgtxt_tbl_footer,
-};
-
 //-----------------------------------------------------------------------------
-REGISTER_MODULE(pg_txt, &THIS_STYLE);
-
 static void pgtxt_tbl_header(struct pwlfmt_workspace *state,
   const struct pwl_data *data)
 {
@@ -75,5 +61,18 @@ static void pgtxt_tbl_footer(struct pwlfmt_workspace *state,
     fputc('\f', state->output_fh);
     return;
 }
+
+//-----------------------------------------------------------------------------
+static const struct pwlstyle_vtable THIS_STYLE = {
+    .name       = "pg_txt",
+    .desc       = "pvgrp-sorted text/plain",
+    .author     = "Jan Engelhardt <jengelh [at] gmx de>, 2000 - 2006",
+
+    .tbl_header = pgtxt_tbl_header,
+    .tbl_entry  = pgtxt_tbl_entry,
+    .tbl_footer = pgtxt_tbl_footer,
+};
+
+REGISTER_MODULE(pg_txt, &THIS_STYLE);
 
 //=============================================================================

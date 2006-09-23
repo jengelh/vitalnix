@@ -34,24 +34,8 @@ libvxmdfmt/s_sb.c
 // Functions
 static int sb_construct(struct pwlfmt_workspace *);
 static void sb_destruct(struct pwlfmt_workspace *);
-static printfunc_t sb_file_header, sb_tbl_entry, sb_file_footer;
-
-// Variables
-static const struct pwlstyle_vtable THIS_STYLE = {
-    .name             = "sb",
-    .desc             = "per-user application/x-latex",
-    .require_template = 1,
-
-    .init             = sb_construct,
-    .exit             = sb_destruct,
-    .file_header      = sb_file_header,
-    .tbl_entry        = sb_tbl_entry,
-    .file_footer      = sb_file_footer,
-};
 
 //-----------------------------------------------------------------------------
-REGISTER_MODULE(sb, &THIS_STYLE);
-
 static int sb_construct(struct pwlfmt_workspace *state) {
     /* Unlike SG_rtf, this template should only contain the
     THDR/ENTRY parts! (TFOOT is handled in sb_entry().) */
@@ -102,5 +86,21 @@ static void sb_file_footer(struct pwlfmt_workspace *state,
     fprintf(state->output_fh, "\\end{document}\n");
     return;
 }
+
+//-----------------------------------------------------------------------------
+static const struct pwlstyle_vtable THIS_STYLE = {
+    .name             = "sb",
+    .desc             = "per-user application/x-latex",
+    .author           = "Christoph Thiel <cthiel1 [at] linux01 gwdg de>, 2002",
+    .require_template = 1,
+
+    .init             = sb_construct,
+    .exit             = sb_destruct,
+    .file_header      = sb_file_header,
+    .tbl_entry        = sb_tbl_entry,
+    .file_footer      = sb_file_footer,
+};
+
+REGISTER_MODULE(sb, &THIS_STYLE);
 
 //=============================================================================
