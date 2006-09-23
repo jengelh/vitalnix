@@ -1,8 +1,8 @@
 <?php include_once("Base-header.php"); ?>
 
-<h1>Synopsis</h1>
+<h1>Usage</h1>
 
-<p class="code"><tt>vxcl_mdpwlfmt <b>[</b>-w<b>]</b> <b>[</b>-i
+<p class="code"><tt>mdpwlfmt <b>[</b>-w<b>]</b> <b>[</b>-i
 <i>file</i><b>]</b> <b>[</b>-o <i>file</i><b>]</b> <b>[</b>-s
 <i>name</i><b>]</b> <b>[</b>-t <i>file</i><b>]</b></tt></p>
 
@@ -23,11 +23,53 @@
       "readable" output</td>
   </tr>
   <tr>
-    <td class="t2">-w</td>
-    <td class="t2">Instead of converting, show all available styles</td>
+    <td class="t2">-t <i>file</i></td>
+    <td class="t2">Use the specified template file for output. This option is
+      only required one styles that require one.</td>
+  </tr>
+  <tr>
+    <td class="t1">-w</td>
+    <td class="t1">Instead of converting, show all available styles. Those that
+      require a template will be marked appropriately.</td>
   </tr>
 </table>
 
 <h1>Description</h1>
+
+<p class="block">When <i>mdsync</i> adds and deletes users, it notes
+down their usernames and, for new users, their passwords in a simple
+textfile. <i>mdpwlfmt</i> will take such a logfile and "pretty print" it
+in a more advanced format, suitable for distribution. Each "style", as
+it is called, outputs the data in a different layout and possibly
+different format.</p>
+
+<h1>Examples</h1>
+
+<p class="block">Assuming <i>mdsync</i> created a logfile called
+<tt>run0919.log</tt>, and you want to have a nice ASCII page of all new
+users:</p>
+
+<p class="code"><tt>mdpwlfmt -i run0919.log -o run0919.txt -s pg_txt</tt></p>
+
+<p class="block">You may then use `<tt>lpr</tt>` or other means to print
+it, if you wish so. Of course, it also nice to look at on-screen.</p>
+
+<p class="block">The <i>pg_rtf</i> (as is <i>pg_html</i>) style is
+especially important, because it allows you to change the layout a
+little bit more, depending on how you would like to have it.
+<i>pg_rtf</i> uses a (quite complex) pre-created RTF file for its
+output, and as such, requires a the template option <tt>-t</tt>:</p>
+
+<p class="code"><tt>mdpwlfmt -i run0919.log -o run0919.rtf -s pg_rtf -t
+/opt/vitalnix/share/pg.rtf</tt></p>
+
+<p class="block">The resulting file may then be opened using a word processor
+(most likely Microsoft Word) and adjusted as needed.</p>
+
+<h1>List of styles</h1>
+
+<p class="block">A brief description of what styles are available and
+what they are intended for can be found <a
+href="extra-pwlstyles.php">List of PWL styles page</a>.</p>
 
 <?php include_once("Base-footer.php"); ?>

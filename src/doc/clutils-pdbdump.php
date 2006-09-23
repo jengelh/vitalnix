@@ -1,9 +1,9 @@
 <?php include_once("Base-header.php"); ?>
 
-<h1>Synopsis</h1>
+<h1>Usage</h1>
 
-<p class="code"><tt>vxcl_pdbdump <b>[</b>--ldap<b>]</b> <b>[</b>--mysql<b>]</b>
-<b>[</b>--shadow<b>]</b></tt></p>
+<p class="code"><tt>pdbdump <b>[</b>--ldif<b>]</b>
+<b>[</b>--mysql<b>]</b> <b>[</b>--shadow<b>]</b></tt></p>
 
 <h1>Description</h1>
 

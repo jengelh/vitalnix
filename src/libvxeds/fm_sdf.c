@@ -35,7 +35,7 @@ libvxeds/d_sdf.c - SDF parsing module
 #include "libvxutil/libvxutil.h"
 #define ICONV_NULL reinterpret_cast(iconv_t, -1)
 
-// Structures
+// Definitions
 struct sdf_state {
     char *input_file;
     FILE *input_fh;

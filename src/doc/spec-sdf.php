@@ -11,7 +11,7 @@ schematic description is a real-world example.</p>
 (* one-line comment *)<br />
 # new-style comment</tt></p>
 
-<p class="code"><tt>1;Engelhardt;Jan;12.3.45;Grade 13</tt></p>
+<p class="code"><tt>1;Engelhardt;Jan;12.3.45;Grade 13;</tt></p>
 
 <p class="block">The different fields are:</p>
 

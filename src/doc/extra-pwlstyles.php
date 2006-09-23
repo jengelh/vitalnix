@@ -33,4 +33,8 @@ system outputs for <tt>'\n'</tt>. Under UNIX this means it is just
 <p class="block">Generates a nice form for each user where his/her login
 details and possibly other info is noted. The output is a TeX document.</p>
 
+<p class="block">The purpose of this style is that each user gets a
+letter, possibly wrapped into an envelope to not unnecessarily reveal
+the password or other sensitive information.</p>
+
 <?php include_once("Base-footer.php"); ?>

@@ -39,7 +39,7 @@ clutils/mdsingle.c
 #include "libvxpdb/xwfunc.h"
 #include "libvxutil/libvxutil.h"
 
-// Structures
+// Definitions
 struct private_info {
     char *backend_module, *bday, *first_name, *group_name, *pref_username,
          *pvgrp, *surname, *uuid;
@@ -323,8 +323,8 @@ static int get_options(int *argc, const char ***argv, struct private_info *p) {
          .help = "Backend module", .htyp = "NAME"},
         {.sh = 'V', .type = HXTYPE_NONE, .cb = show_version,
          .help = "Show version information"},
-        {.sh = 'b', .type = HXTYPE_STRING, .ptr = &p->bday, .htyp = "BDAY",
-         .help = "Generate UUID from birthdate (overridden by -x)"},
+        {.sh = 'b', .type = HXTYPE_STRING, .ptr = &p->bday, .htyp = "DATE",
+         .help = "Generate a UUID from name and birthdate (overridden by -x)"},
         {.sh = 'f', .type = HXTYPE_STRING, .ptr = &p->first_name,
          .help = "First name of the user"},
         {.sh = 'g', .type = HXTYPE_STRING, .ptr = &p->group_name,

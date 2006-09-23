@@ -4,6 +4,8 @@
 
 <p>groupadd&nbsp;-- Create a new group</p>
 
+<h1>Usage</h1>
+
 <p class="code"><tt><b>vxgroupadd</b> <b>[</b>-A
 <b>[</b><i>command</i><b>]]</b> <b>[</b>-B <b>[</b><i>command</i><b>]]</b>
 <b>[</b>-I<b>]</b> <b>[</b>-M <i>backend</i><b>]</b> <b>[</b>-g <i>gid</i>

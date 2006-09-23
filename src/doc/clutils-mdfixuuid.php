@@ -1,6 +1,6 @@
 <?php include_once("Base-header.php"); ?>
 
-<h1>Synopsis</h1>
+<h1>Usage</h1>
 
 <p class="code"><tt>mdfixuuid -u <i>username</i> <b>[</b>-b <i>date</i><b>]</b>
 <b>[</b>-r <i>name</i><b>]</b></tt></p>

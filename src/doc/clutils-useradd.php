@@ -4,7 +4,7 @@
 
 <p>useradd&nbsp;-- Create a new user</p>
 
-<h1>Synopsis</h1>
+<h1>Usage</h1>
 
 <p class="code"><tt><b>vxuseradd</b> <b>[</b>-A <b>[</b><i>command</i><b>]]</b>
 <b>[</b>-B <b>[</b><i>command</i><b>]]</b> <b>[</b>-I<b>]</b> <b>[</b>-M

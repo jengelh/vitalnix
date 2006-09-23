@@ -4,7 +4,7 @@
 
 <p>groupmod&nbsp;-- Modify a group</p>
 
-<h1>Synopsis</h1>
+<h1>Usage</h1>
 
 <p class="code"><tt><b>vxgroupmod</b> <b>[</b>-A
 <b>[</b><i>command</i><b>]]</b> <b>[</b>-B <b>[</b><i>command</i><b>]]</b>

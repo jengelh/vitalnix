@@ -32,7 +32,7 @@ libvxeds/fm_xml.c - XML parsing module
 #include "libvxeds/vtable.h"
 #include "libvxutil/libvxutil.h"
 
-// Structures
+// Definitions
 struct xml_state {
     xmlDoc *doc;
     xmlNode *ptr;

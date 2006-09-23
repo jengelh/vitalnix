@@ -94,7 +94,7 @@ char *v0_encode(const char *date) {
 
 //-----------------------------------------------------------------------------
 static int get_date_parts(const char *date, unsigned int *year,
- unsigned int *month, unsigned int *day)
+  unsigned int *month, unsigned int *day)
 {
     int ret = 0;
     if(strchr(date, '-') != NULL)

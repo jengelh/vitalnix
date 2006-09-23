@@ -4,7 +4,7 @@
 
 <p class="block">usermod&nbsp;-- Modify a user account</p>
 
-<h1>Synopsis</h1>
+<h1>Usage</h1>
 
 <p class="code"><tt><b>vxusermod</b> <b>[</b>-A <b>[</b><i>command</i><b>]]</b>
 <b>[</b>-B <b>[</b><i>command</i><b>]]</b> <b>[</b>-M <i>backend</i><b>]</b>

@@ -1,9 +1,9 @@
 <?php include_once("Base-header.php"); ?>
 
-<h1>Synopsis</h1>
+<h1>Usage</h1>
 
-<p class="code"><tt>vxcl_randpw <b>[</b>-01BCDJMZcr<b>]</b> <b>[</b>-l
-ARG<b>]</b></tt></p>
+<p class="code"><tt>randpw <b>[</b>-01BCDJMZcr<b>]</b> <b>[</b>-l
+<i>length</i><b>]</b></tt></p>
 
 <h1>Description</h1>
 
@@ -17,35 +17,35 @@ Various flags control the generation and encryption behavior.</p>
 
 <table border="1" class="bordered">
   <tr>
-    <td class="t1"><tt>-0</tt></td>
+    <td class="t1">-0</td>
     <td class="t1">Possibly have a digit in the password</td>
   </tr>
   <tr>
-    <td class="t2"><tt>-1</tt></td>
+    <td class="t2">-1</td>
     <td class="t2">Always have a digit in the password</td>
   </tr>
   <tr>
-    <td class="t1"><tt>-C</tt></td>
+    <td class="t1">-C</td>
     <td class="t1">Always have an uppercase character in the password</td>
   </tr>
   <tr>
-    <td class="t2"><tt>-J</tt></td>
+    <td class="t2">-J</td>
     <td class="t2">Use "GENPW_JP" generation method</td>
   </tr>
   <tr>
-    <td class="t1"><tt>-Z</tt></td>
+    <td class="t1">-Z</td>
     <td class="t1">Use "GENPW_ZH" generation method</td>
   </tr>
   <tr>
-    <td class="t2"><tt>-c</tt></td>
+    <td class="t2">-c</td>
     <td class="t2">Possibly have an uppercase character in the password</td>
   </tr>
   <tr>
-    <td class="t1"><tt>-l LENGTH</tt></td>
+    <td class="t1">-l <i>length</i></td>
     <td class="t1">Password length</td>
   </tr>
   <tr>
-    <td class="t2"><tt>-r</tt></td>
+    <td class="t2">-r</td>
     <td class="t2">Use "random" generation method</td>
   </tr>
 </table>
@@ -54,16 +54,16 @@ Various flags control the generation and encryption behavior.</p>
 
 <table border="1" class="bordered">
   <tr>
-    <td class="t1"><tt>-B</tt></td>
+    <td class="t1">-B</td>
     <td class="t1">Use Blowfish encryption</td>
   </tr>
   <tr>
-    <td class="t2"><tt>-D</tt></td>
+    <td class="t2">-D</td>
     <td class="t2">Use DES encryption (this might not be available on all
       platforms)</td>
   </tr>
   <tr>
-    <td class="t1"><tt>-M</tt></td>
+    <td class="t1">-M</td>
     <td class="t1">Use MD5 encryption (this might not be available on all
       platforms)</td>
   </tr>

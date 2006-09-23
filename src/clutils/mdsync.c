@@ -36,10 +36,10 @@ clutils/mdsync.c
 #include "libvxpdb/libvxpdb.h"
 #include "libvxpdb/xafunc.h"
 
+// Definitions
 #define NOTICE_REDO     "Error during operation. You might need to redo " \
                         "the Synchronization process\n" \
                         "to complete all jobs.\n"
-// Structures
 struct private_info {
     char *backend_module, *group_name, *input_file, *input_fmt, *output_file;
     int debug, no_add, no_update, no_delete, yestoall;

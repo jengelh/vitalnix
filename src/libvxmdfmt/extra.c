@@ -30,7 +30,7 @@ libvxmdfmt/extra.c
 #include "libvxmdfmt/internal.h"
 #include "libvxutil/defines.h"
 
-// Structures
+// Definitions
 enum {
     CLASS_NONE = 0,
     CLASS_DIGIT,

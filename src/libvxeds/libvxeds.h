@@ -28,7 +28,7 @@ libvxeds/libvxeds.h
 extern "C" {
 #endif
 
-// Structures
+// Definitions
 struct edsformat_vtable;
 struct vxeds_entry {
     char *username, *first_name, *surname, *full_name, *pvgrp, *uuid;

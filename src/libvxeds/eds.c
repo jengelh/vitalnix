@@ -31,7 +31,7 @@ libvxeds/eds.c
 #include "libvxutil/defines.h"
 #include "libvxutil/libvxutil.h"
 
-// Structures
+// Definitions
 struct vxeds_state {
     const struct edsformat_vtable *vtable;
     void *private_data;

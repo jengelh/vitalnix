@@ -34,7 +34,7 @@ libvxmdfmt/s_pgrtf.c
 #include "libvxmdfmt/vtable.h"
 #include "libvxutil/libvxutil.h"
 
-// Structures
+// Definitions
 struct pgrtf_data {
     char *template_data;
     const char *tps_file_header, *tps_tbl_header, *tps_tbl_entry,
