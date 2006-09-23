@@ -228,7 +228,7 @@ doc/%.css: doc/%.icss
 %.o: %.S
 	${PREREQ}
 	${VECHO_AS}
-	${Q}${AS} ${ASFLAGS} ${XASFLAGS_$(subst /,_,$(@D))} ${XASFLAGS_$(subst /,_,$(@:%.o=%))} -c -o $@ $<;
+	${Q}${AS} ${AFLAGS} ${XAFLAGS_$(subst /,_,$(@D))} ${XAFLAGS_$(subst /,_,$(@:%.o=%))} -c -o $@ $<;
 
 %.so:
 	${PREREQ}

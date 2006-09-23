@@ -23,7 +23,7 @@ CXXFLAGS := -D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
             $(if ${S},-I${S},) $(if ${O},-I${O},)
 DEPFLAGS  = -Wp,-MMD,$(@D)/.$(@F).d,-MT,$@ 
 AS       := gcc # as
-ASFLAGS  :=
+AFLAGS   :=
 LD       := gcc # ld
 LDXX     := g++ # ld
 LDFLAGS  := -L. -Wl,-rpath-link,.
@@ -46,7 +46,7 @@ WX_LDFLAGS     := $(shell wx-config --libs)
 ifeq (${DEBUG},1)
   CFLAGS   += -ggdb3
   CXXFLAGS += -ggdb3
-  ASFLAGS  += -ggdb3
+  AFLAGS   += -ggdb3
   LDFLAGS  += -Wl,-rpath,${O}
   STRIP    := true
 else
@@ -58,14 +58,14 @@ endif
 ifeq (${PROF},1)
   CFLAGS   += -pg -fprofile-arcs -ftest-coverage -fno-omit-frame-pointer
   CXXFLAGS += -pg -fprofile-arcs -ftest-coverage -fno-omit-frame-pointer
-  ASFLAGS  += -pg -fprofile-arcs -ftest-coverage
+  AFLAGS   += -pg -fprofile-arcs -ftest-coverage
   LDFLAGS  += -pg -fprofile-arcs -ftest-coverage
   STRIP    := true
 endif
 
 CFLAGS   += ${EXT_CFLAGS}
 CXXFLAGS += ${EXT_CXXFLAGS}
-ASFLAGS  += ${EXT_ASFLAGS}
+AFLAGS   += ${EXT_AFLAGS}
 LDFLAGS  += ${EXT_LDFLAGS}
 SOFLAGS  += ${EXT_SOFLAGS}
 ARFLAGS  += ${EXT_ARFLAGS}
