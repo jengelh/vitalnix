@@ -5,33 +5,33 @@
 DEBUG    := 1
 V        := 0
 
-cc-option = $(shell if ${CC} ${CFLAGS} $(1) -c -o .dev.null.o -xc /dev/null \
+cc-option = $(shell if ${CC} ${XCFLAGS} ${CFLAGS} $(1) -c -o .dev.null.o -xc /dev/null \
             >/dev/null 2>/dev/null; then echo -en "$(2)"; else echo "$(3)"; \
             fi; rm -f .dev.null.o)
 check_gcc = $(call cc-option,$(1),$(2),$(3))
 
 CC       := gcc
 CXX      := g++
-CFLAGS   := -D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
+XCFLAGS   := -D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
             -D_REENTRANT -DPIC -Wall -Waggregate-return \
             -Wmissing-declarations -Wmissing-prototypes -Wredundant-decls \
             -Wshadow -Wstrict-prototypes -Winline -fPIC -pipe \
             $(if ${S},-I${S},) $(if ${O},-I${O},)
-CXXFLAGS := -D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
+XCXXFLAGS := -D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
             -D_REENTRANT -DPIC -Wall -Wno-pointer-arith -Wredundant-decls \
             -fPIC -pipe \
             $(if ${S},-I${S},) $(if ${O},-I${O},)
-DEPFLAGS  = -Wp,-MMD,$(@D)/.$(@F).d,-MT,$@ 
+XDEPFLAGS  = -Wp,-MMD,$(@D)/.$(@F).d,-MT,$@ 
 AS       := gcc # as
-AFLAGS   :=
+XAFLAGS   :=
 LD       := gcc # ld
 LDXX     := g++ # ld
-LDFLAGS  := -L. -Wl,-rpath-link,.
+XLDFLAGS  := -L. -Wl,-rpath-link,.
 
 cc_funit_at_a_time := $(call check_gcc,-funit-at-a-time,-funit-at-a-time)
 cc_fvisibility_hid := $(call check_gcc,-fvisibility=hidden,-fvisibility=hidden -DHAVE_VISIBILITY)
-CFLAGS         += ${cc_funit_at_a_time} ${cc_fvisibility_hid}
-CXXFLAGS       += ${cc_funit_at_a_time} ${cc_fvisibility_hid}
+XCFLAGS        += ${cc_funit_at_a_time} ${cc_fvisibility_hid}
+XCXXFLAGS      += ${cc_funit_at_a_time} ${cc_fvisibility_hid}
 
 MYSQL_CFLAGS   := $(filter -I%,$(shell mysql_config --cflags))
 MYSQL_LDFLAGS  := $(filter -L% -l% -pthread,$(shell mysql_config --libs_r))
@@ -41,29 +41,24 @@ WX_CXXFLAGS    := $(shell wx-config --cxxflags)
 WX_LDFLAGS     := $(shell wx-config --libs)
 
 ifeq (${DEBUG},1)
-  CFLAGS   += -ggdb3
-  CXXFLAGS += -ggdb3
-  AFLAGS   += -ggdb3
-  LDFLAGS  += -Wl,-rpath,${O}
-  STRIP    := true
+  XCFLAGS   += -ggdb3
+  XCXXFLAGS += -ggdb3
+  XAFLAGS   += -ggdb3
+  XLDFLAGS  += -Wl,-rpath,${O}
+  STRIP     := true
 else
-  CFLAGS   += -O2 -finline-functions -fomit-frame-pointer
-  CXXFLAGS += -O2 -finline-functions -fomit-frame-pointer
-  LDFLAGS  += -Wl,-O1
-  STRIP    := strip -s
+  XCFLAGS   += -O2 -finline-functions -fomit-frame-pointer
+  XCXXFLAGS += -O2 -finline-functions -fomit-frame-pointer
+  XLDFLAGS  += -Wl,-O1
+  STRIP     := strip -s
 endif
 ifeq (${PROF},1)
-  CFLAGS   += -pg -fprofile-arcs -ftest-coverage -fno-omit-frame-pointer
-  CXXFLAGS += -pg -fprofile-arcs -ftest-coverage -fno-omit-frame-pointer
-  AFLAGS   += -pg -fprofile-arcs -ftest-coverage
-  LDFLAGS  += -pg -fprofile-arcs -ftest-coverage
-  STRIP    := true
+  XCFLAGS   += -pg -fprofile-arcs -ftest-coverage -fno-omit-frame-pointer
+  XCXXFLAGS += -pg -fprofile-arcs -ftest-coverage -fno-omit-frame-pointer
+  XAFLAGS   += -pg -fprofile-arcs -ftest-coverage
+  XLDFLAGS  += -pg -fprofile-arcs -ftest-coverage
+  STRIP     := true
 endif
-
-CFLAGS   += ${EXT_CFLAGS}
-CXXFLAGS += ${EXT_CXXFLAGS}
-AFLAGS   += ${EXT_AFLAGS}
-LDFLAGS  += ${EXT_LDFLAGS}
 
 ifeq (${V},0)
   Q := @

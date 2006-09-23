@@ -220,28 +220,28 @@ doc/%.css: doc/%.icss
 %.o: %.c
 	${PREREQ}
 	${VECHO_CC}
-	${Q}${CC} ${CFLAGS} ${DEPFLAGS} ${XCFLAGS_$(subst /,_,$(@D))} ${XCFLAGS_$(subst /,_,$(@:%.o=%))} -c -o $@ $<;
+	${Q}${CC} ${XCFLAGS} ${XCFLAGS_$(subst /,_,$(@D))} ${XCFLAGS_$(subst /,_,$(@:%.o=%))} ${XDEPFLAGS} ${CFLAGS} -c -o $@ $<;
 
 %.o: %.cpp
 	${PREREQ}
 	${VECHO_CXX}
-	${Q}${CXX} ${CXXFLAGS} ${DEPFLAGS} ${XCFLAGS_$(subst /,_,$(@D))} ${XCFLAGS_$(subst /,_,$(@:%.o=%))} -c -o $@ $<;
+	${Q}${CXX} ${XCXXFLAGS} ${XCFLAGS_$(subst /,_,$(@D))} ${XCFLAGS_$(subst /,_,$(@:%.o=%))} ${XDEPFLAGS} ${CXXFLAGS} -c -o $@ $<;
 
 %.o: %.S
 	${PREREQ}
 	${VECHO_AS}
-	${Q}${AS} ${AFLAGS} ${XAFLAGS_$(subst /,_,$(@D))} ${XAFLAGS_$(subst /,_,$(@:%.o=%))} -c -o $@ $<;
+	${Q}${AS} ${XAFLAGS} ${XAFLAGS_$(subst /,_,$(@D))} ${XAFLAGS_$(subst /,_,$(@:%.o=%))} ${AFLAGS} -c -o $@ $<;
 
 %.so:
 	${PREREQ}
 	${VECHO_LD}
-	${Q}${LD} -shared ${LDFLAGS} -o $@ $^ ${XLDFLAGS_$(subst /,_,$(subst .,_,$@))} ${EXT_LDFLAGS};
+	${Q}${LD} -shared ${XLDFLAGS} -o $@ $^ ${XLDFLAGS_$(subst /,_,$(subst .,_,$@))} ${LDFLAGS};
 	${Q}${STRIP} $@;
 
 ${EXEC_TARGETS}:
 	${PREREQ}
 	${VECHO_LD}
-	${Q}$(if ${XLD_$(subst /,_,$(subst .,_,$@))},${XLD_$(subst /,_,$(subst .,_,$@))},${LD}) ${LDFLAGS} -o $@ $^ ${XLDFLAGS_$(subst /,_,$(subst .,_,$@))} ${EXT_LDFLAGS};
+	${Q}$(if ${XLD_$(subst /,_,$(subst .,_,$@))},${XLD_$(subst /,_,$(subst .,_,$@))},${LD}) ${XLDFLAGS} -o $@ $^ ${XLDFLAGS_$(subst /,_,$(subst .,_,$@))} ${LDFLAGS};
 	${Q}${STRIP} $@;
 
 -include */.*.d
