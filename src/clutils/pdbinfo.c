@@ -52,8 +52,8 @@ int main(int argc, const char **argv) {
     Dirs = HXdeque_init();
     HXdeque_push(Dirs, ".");
     read_ldso_conf();
-#ifdef VITALNIX_LIBDIR
-    HXdeque_push(Dirs, VITALNIX_LIBDIR);
+#ifdef CONFIG_LIBDIR
+    HXdeque_push(Dirs, CONFIG_LIBDIR);
 #endif
     read_environment();
 
@@ -73,7 +73,7 @@ int main(int argc, const char **argv) {
             char buf[MAXFNLEN];
             if(strncmp(dentry, "drv_", 8) != 0)
                 continue;
-            snprintf(buf, MAXLNLEN, "%s/%s",
+            snprintf(buf, sizeof(buf), "%s/%s",
                      static_cast(const char *, cd->ptr), dentry);
             backend_info(buf);
         }
