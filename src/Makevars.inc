@@ -27,8 +27,6 @@ AFLAGS   :=
 LD       := gcc # ld
 LDXX     := g++ # ld
 LDFLAGS  := -L. -Wl,-rpath-link,.
-AR       := ar
-ARFLAGS  :=
 
 cc_funit_at_a_time := $(call check_gcc,-funit-at-a-time,-funit-at-a-time)
 cc_fvisibility_hid := $(call check_gcc,-fvisibility=hidden,-fvisibility=hidden -DHAVE_VISIBILITY)
@@ -66,7 +64,6 @@ CFLAGS   += ${EXT_CFLAGS}
 CXXFLAGS += ${EXT_CXXFLAGS}
 AFLAGS   += ${EXT_AFLAGS}
 LDFLAGS  += ${EXT_LDFLAGS}
-ARFLAGS  += ${EXT_ARFLAGS}
 
 ifeq (${V},0)
   Q := @
@@ -74,7 +71,6 @@ ifeq (${V},0)
   VECHO_CXX = ${Q}echo "  CXX     " $@
   VECHO_AS  = ${Q}echo "  AS      " $@
   VECHO_LD  = ${Q}echo "  LD      " $@
-  VECHO_AR  = ${Q}echo "  AR      " $@
   VECHO_GEN = ${Q}echo "  GEN     " $@
 else
   Q :=
