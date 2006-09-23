@@ -27,7 +27,6 @@ AFLAGS   :=
 LD       := gcc # ld
 LDXX     := g++ # ld
 LDFLAGS  := -L. -Wl,-rpath-link,.
-SOFLAGS  := -shared
 AR       := ar
 ARFLAGS  :=
 
@@ -67,7 +66,6 @@ CFLAGS   += ${EXT_CFLAGS}
 CXXFLAGS += ${EXT_CXXFLAGS}
 AFLAGS   += ${EXT_AFLAGS}
 LDFLAGS  += ${EXT_LDFLAGS}
-SOFLAGS  += ${EXT_SOFLAGS}
 ARFLAGS  += ${EXT_ARFLAGS}
 
 ifeq (${V},0)

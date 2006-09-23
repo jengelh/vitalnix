@@ -1,5 +1,7 @@
 # -*- Makefile -*-
 
+.POSIX:
+
 ifeq (${S},)
     $(error You need to specify S=/path/to/vitalnix/src)
 endif
@@ -233,7 +235,7 @@ doc/%.css: doc/%.icss
 %.so:
 	${PREREQ}
 	${VECHO_LD}
-	${Q}${LD} ${LDFLAGS} ${SOFLAGS} -o $@ $^ ${XLDFLAGS_$(subst /,_,$(subst .,_,$@))} ${EXT_LDFLAGS};
+	${Q}${LD} -shared ${LDFLAGS} -o $@ $^ ${XLDFLAGS_$(subst /,_,$(subst .,_,$@))} ${EXT_LDFLAGS};
 	${Q}${STRIP} $@;
 
 ${EXEC_TARGETS}:
