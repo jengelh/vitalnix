@@ -188,7 +188,7 @@ static int usermod_read_config(struct usermod_state *sp) {
         {.ln = "MOVE_HOME", .type = HXTYPE_BOOL,   .ptr = &sp->move_home},
         HXOPT_TABLEEND,
     };
-    return HX_shconfig(CONFIG_ETC_VITALNIX "/usermod.conf", config_table);
+    return HX_shconfig(CONFIG_SYSCONFDIR "/usermod.conf", config_table);
 }
 
 //=============================================================================

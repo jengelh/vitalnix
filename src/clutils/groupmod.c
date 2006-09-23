@@ -194,7 +194,7 @@ static int groupmod_read_config(void) {
         {.ln = "AC_AFTER",  .type = HXTYPE_STRING, .ptr = &Opt.ac_after},
         HXOPT_TABLEEND,
     };
-    return HX_shconfig(CONFIG_ETC_VITALNIX "/groupmod.conf", config_table);
+    return HX_shconfig(CONFIG_SYSCONFDIR "/groupmod.conf", config_table);
 }
 
 //=============================================================================

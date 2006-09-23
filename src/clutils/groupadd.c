@@ -180,7 +180,7 @@ static int groupadd_read_config(void) {
         {.ln = "GROUP_POSTADD", .type = HXTYPE_STRING, .ptr = &Opt.ac_after},
         HXOPT_TABLEEND,
     };
-    return HX_shconfig(CONFIG_ETC_VITALNIX "/groupadd.conf", config_table);
+    return HX_shconfig(CONFIG_SYSCONFDIR "/groupadd.conf", config_table);
 }
 
 //=============================================================================

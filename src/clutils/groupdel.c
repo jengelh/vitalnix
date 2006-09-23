@@ -177,7 +177,7 @@ static int groupdel_read_config(void) {
         {.ln = "GROUP_PREDEL", .type = HXTYPE_STRING, .ptr = &Opt.ac_after},
         HXOPT_TABLEEND,
     };
-    return HX_shconfig(CONFIG_ETC_VITALNIX "/groupdel.conf", config_table);
+    return HX_shconfig(CONFIG_SYSCONFDIR "/groupdel.conf", config_table);
 }
 
 //=============================================================================

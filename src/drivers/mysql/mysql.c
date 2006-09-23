@@ -854,7 +854,7 @@ static void read_config(struct mysql_state *state, unsigned int action,
         };
         state->uid_min = state->gid_min = 1000;
         state->uid_max = state->gid_max = 60000;
-        HX_shconfig(CONFIG_ETC_VITALNIX "/autouid.conf", autouid_table);
+        HX_shconfig(CONFIG_SYSCONFDIR "/autouid.conf", autouid_table);
         HX_shconfig(file, options_table);
     } else if(action == CONFIG_READ_NEST) {
         HX_shconfig(file, options_table);

@@ -194,7 +194,7 @@ static int userdel_read_config(struct userdel_state *state) {
         {.ln = "REMOVE_MAIL", .type = HXTYPE_BOOL,   .ptr = &state->rm_mail},
         HXOPT_TABLEEND,
     };
-    return HX_shconfig(CONFIG_ETC_VITALNIX "/userdel.conf", config_table);
+    return HX_shconfig(CONFIG_SYSCONFDIR "/userdel.conf", config_table);
 }
 
 static int userdel_slash_count(const char *fn) {

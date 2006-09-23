@@ -299,7 +299,7 @@ static int useradd_read_config(struct useradd_state *state) {
          .cb = useradd_umask, .uptr = state},
         HXOPT_TABLEEND,
     };
-    return HX_shconfig(CONFIG_ETC_VITALNIX "/useradd.conf", config_table);
+    return HX_shconfig(CONFIG_SYSCONFDIR "/useradd.conf", config_table);
 }
 
 static void useradd_umask(const struct HXoptcb *cbi) {
