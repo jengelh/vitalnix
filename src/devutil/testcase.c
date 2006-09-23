@@ -7,7 +7,7 @@
 
 //-----------------------------------------------------------------------------
 static void test_1(void) {
-    printf("--- TEST 1 --- IDAY conversion\n");
+    printf("--- TEST 1 --- XDAY conversion\n");
     printf("2006-03-04 = %lx (should be 7d6304)\n",
            vxutil_string_xday("2006-03-04"));
     return;
@@ -69,11 +69,12 @@ static void test_4(void) {
 }
 
 static void test_5(void) {
-    char lname[16];
-    printf("--- TEST 5: Login name creation\n");
 #define CHK(s, f) \
     vxutil_propose_lname(lname, sizeof(lname), (s), (f)); \
     printf(f " " s " = %s\n", lname);
+
+    char lname[16];
+    printf("--- TEST 5: Login name creation\n");
 
     CHK("van der Foobar", "Ölte");
     CHK("van Yksi", "Ölte");
@@ -86,6 +87,7 @@ static void test_5(void) {
     CHK("Ji-Go Ku", "ōtōsan");
     CHK("Ji go Ku", "@erv");
     return;
+#undef CHK
 }
 
 //-----------------------------------------------------------------------------
@@ -93,7 +95,7 @@ int main(int argc, const char **argv) {
     setvbuf(stdout, NULL, _IONBF, 0);
     test_1();
     test_2();
-    test_3("daten3.sdf");
+    test_3("daten.sdf");
     test_3("daten.xml");
     test_4();
     test_5();

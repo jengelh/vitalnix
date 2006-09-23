@@ -34,15 +34,13 @@ pushd obj;
     --sysconfdir="%_sysconfdir/vitalnix" \
     --includedir="%pfx/include" \
     --libdir="%pfx/%_lib" \
-    CFLAGS="$RPM_OPT_FLAGS";
+    CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS";
 make;
 popd;
 
 %install
 b="%buildroot";
 rm -Rf "$b";
-
-pushd obj;
 
 # /etc
 mkdir -p "$b/%_sysconfdir";
@@ -76,7 +74,7 @@ find obj -maxdepth 1 -type f ! -iname "*.so" -perm +111 -exec install -pm0755 "{
 install -dm0755 "$b/%pfx/%_lib";
 find obj -maxdepth 1 -type f -iname "*.so" -perm +111 -exec install -pm0755 "{}" "$b/%pfx/%_lib/" ";";
 
-# /usr/share/vitalnix
+# ./share
 install -dm0755 "$b/%pfx/share";
 install -pm0644 share/* "$b/%pfx/share/";
 
