@@ -43,6 +43,7 @@ Following options may be passed:
   --prefix=PREFIX           install architecture-independent files in PREFIX
   --exec-prefix=EPREFIX     install architecture-dependent files in EPREFIX
   --sysconfdir=DIR          read-only single machine data [PREFIX/etc]
+  --includedir=DIR          C header files [PREFIX/include]
   --libdir=DIR              object code libraries [EPREFIX/lib]
 
   --enable-profile          create code with profiling information
@@ -116,6 +117,8 @@ function parse_args() {
                 cf_strip="${ac_val:-strip -s}";;
             (--exec-prefix)
                 cf_eprefix="$ac_val";;
+            (--includedir)
+                cf_includedir="$ac_val";;
             (--libdir)
                 cf_libdir="$ac_val";;
             (--prefix)
@@ -140,6 +143,7 @@ function set_defaults() {
     [ -z "$LDXX" ] && LDXX="g++";
     [ -z "$AS"   ] && AS="gcc";
 
+    [ -z "$cf_includedir" ] && cf_includedir="$cf_prefix/include";
     [ -z "$cf_libdir"     ] && cf_libdir="$cf_eprefix/lib";
     [ -z "$cf_sysconfdir" ] && cf_sysconfdir="$cf_prefix/etc";
 }
@@ -182,6 +186,7 @@ function output_vars() {
     xecho "Debug level" "$cf_debug";
     xecho "Enable profiling" "$cf_profile";
     xecho "etc directory" "$cf_sysconfdir";
+    xecho "include directory" "$cf_includedir";
     xecho "lib directory" "$cf_libdir";
 }
 
@@ -234,6 +239,19 @@ $fh_visibility
 
 #endif // _VITALNIX_CONFIG_H
 EOF
+
+    echo "Creating vitalnix-config";
+    perl -lpe "
+        s{^INCLUDE=.*}{INCLUDE='$cf_includedir';}g;
+        s{^LIBDIR=.*}{LIBDIR='$cf_libdir';}g;
+    " <"$cf_basedir/src/devutil/vitalnix-config" >vitalnix-config && \
+    chmod a+rx vitalnix-config;
+
+    echo "Creating vitalnix.pc";
+    perl -lpe "
+        s{^includedir=.*}{includedir=$cf_includedir}g;
+        s{^libdir=.*}{libdir=$cf_libdir}g;
+    " <"$cf_basedir/src/devutil/vitalnix.pc" >vitalnix.pc;
 }
 
 parse_args "$@";

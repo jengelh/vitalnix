@@ -9,7 +9,7 @@ URL:            http://vitalnix.sourceforge.net/
 
 Source:         http://heanet.dl.sourceforge.net/sourceforge/%name/%name-%version.tar.bz2
 BuildRoot:      %_tmppath/%name-%version-build
-BuildRequires:  wxWidgets-devel
+BuildRequires:  perl >= 5.6.0, wxWidgets-devel >= 2.7.0
 %define pfx     /opt/%name-%version
 
 %description
@@ -32,6 +32,7 @@ mkdir obj;
 pushd obj;
 ../configure \
     --sysconfdir="%_sysconfdir/vitalnix" \
+    --includedir="%pfx/include" \
     --libdir="%pfx/%_lib" \
     CFLAGS="$RPM_OPT_FLAGS";
 make;
@@ -41,24 +42,19 @@ popd;
 b="%buildroot";
 rm -Rf "$b";
 
+pushd obj;
+
 # /etc
 mkdir -p "$b/%_sysconfdir";
 cp -a etc "$b/%_sysconfdir/%name";
 
 # /usr/bin
 install -dm0755 "$b/%_bindir";
-perl -lpe "
-    s{^INCLUDE=.*}{INCLUDE='%pfx/include'}g;
-    s{^LIBDIR=.*}{LIBDIR='%pfx/%_lib'}g;
-" <src/devutil/vitalnix-config >"$b/%_bindir/vitalnix-config";
-chmod 755 "$b/%_bindir/vitalnix-config";
+install -pm0755 obj/vitalnix-config "$b/%_bindir/";
 
 # /usr/lib/pkgconfig
 install -dm0755 "$b/%_libdir/pkgconfig";
-perl -lpe "
-    s{^includedir=.*}{includedir=%pfx/include}g;
-    s{^libdir=.*}{libdir=%pfx/%_lib}g;
-" <src/devutil/vitalnix.pc >"$b/%_libdir/pkgconfig/vitalnix.pc";
+install -pm0644 obj/vitalnix.pc "$b/%_libdir/pkgconfig/";
 
 # /opt/vitalnix3
 install -dm0755 "$b/%pfx";

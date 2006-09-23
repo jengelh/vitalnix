@@ -1,7 +1,7 @@
 #!/bin/bash
 
-INCLUDE=".";
-LIBDIR=".";
+INCLUDE=.;
+LIBDIR=.;
 usage="Usage: vitalnix-config [--cflags] [--ldflags] [--libs]";
 
 if [ $# -eq 0 ]; then
@@ -11,17 +11,17 @@ fi;
 
 while [ $# -gt 0 ]; do
     case "$1" in
-      (--cflags)
-        echo "-I$INCLUDE";
-        ;;
-      (--ldflags)
-        echo "-L$LIBDIR -Wl,-rpath,$LIBDIR";
-        ;;
-      (--libs)
-        ;;
-      (*)
-        echo -e "$usage";
-        ;;
+        (--cflags)
+            echo "-I$INCLUDE";
+            ;;
+        (--ldflags|--libs)
+            # --libs does not output any libraries because there is
+            # no list of fixed libraries for the Vitalnix Suite
+            echo "-L$LIBDIR -Wl,-rpath,$LIBDIR";
+            ;;
+        (*)
+            echo -e "$usage";
+            ;;
     esac;
     shift;
 done;
