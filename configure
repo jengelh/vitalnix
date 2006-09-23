@@ -1,0 +1,254 @@
+#!/bin/bash -e
+#==============================================================================
+# Vitalnix User Management Suite
+# configure
+#   Copyright © Jan Engelhardt <jengelh [at] gmx de>, 2006
+#   -- License restrictions apply (LGPL v2.1)
+#
+#   This file is part of Vitalnix.
+#   Vitalnix is free software; you can redistribute it and/or modify it
+#   under the terms of the GNU Lesser General Public License as published
+#   by the Free Software Foundation; however ONLY version 2 of the License.
+#
+#   Vitalnix is distributed in the hope that it will be useful, but
+#   WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+#   Lesser General Public License for more details.
+#
+#   You should have received a copy of the GNU Lesser General Public
+#   License along with this program kit; if not, write to:
+#   Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+#   Boston, MA  02110-1301  USA
+#
+#   -- For details, see the file named "LICENSE.LGPL2"
+#==============================================================================
+unset XCFLAGS1;
+cf_pkgver="2.99_beta7";
+cf_nicver="3.0-beta7";
+cf_basedir="${0%/*}";
+cf_prefix="/opt/vitalnix-$cf_pkgver";
+cf_eprefix="$cf_prefix";
+cf_cpux86="0";
+cf_debug="1";
+cf_profile="0";
+cf_strip="true";
+
+function show_usage() {
+    cat <<EOF;
+
+Following options may be passed:
+
+  -h, --help                display this help and exit
+
+  --prefix=PREFIX           install architecture-independent files in PREFIX
+  --exec-prefix=EPREFIX     install architecture-dependent files in EPREFIX
+  --sysconfdir=DIR          read-only single machine data [PREFIX/etc]
+  --libdir=DIR              object code libraries [EPREFIX/lib]
+
+  --enable-profile          create code with profiling information
+  --enable-strip=PRG        strip program
+
+Note that your CFLAGS variable may override flags set by the following options:
+
+  --enable-developer    create code with excessive debug information and
+                        special linker path redirection
+  --enable-optimize     create code with excessive optimization
+
+Following options may be passed or set via environment:
+
+    CC                  C compiler command [gcc]
+    CXX                 C++ compiler command [g++]
+    LD                  Linker for programs with C components only [gcc]
+    LDXX                Linker for programs with C++ components [g++]
+    AS                  Assembler [gcc]
+    CFLAGS              C compiler flags
+    CXXFLAGS            C++ compiler flags
+    LDFLAGS             Linker flags
+    AFLAGS              Assembler flags
+
+EOF
+}
+
+function parse_args() {
+    while [ "$#" -gt 0 ]; do
+        local ac_val_set;
+        local ac_key;
+        local ac_val;
+
+        for((i = 0; i < ${#1}; ++i)); do
+            if [ "${1:$i:1}" == "=" ]; then
+                ac_key="${1:0:$i}";
+                ac_val="${1:$i+1}";
+                ac_val_set=1;
+                break;
+            fi;
+        done;
+
+        [ -z "$ac_key" ] && ac_key="$1";
+        shift;
+
+        case "$ac_key" in
+            (AS)
+                AS="$ac_val";;
+            (AFLAGS)
+                AFLAGS="$ac_val";;
+            (CC)
+                CC="$ac_val";;
+            (CFLAGS)
+                CFLAGS="$ac_val";;
+            (CXX)
+                CXX="$ac_val";;
+            (CXXFLAGS)
+                CXXFLAGS="$ac_val";;
+            (LD)
+                LD="$ac_val";;
+            (LDXX)
+                LDXX="$ac_val";;
+            (LDFLAGS)
+                LDFLAGS="$ac_val";;
+            (--enable-developer)
+                cf_debug="2";;
+            (--enable-optimize)
+                cf_debug="0";;
+            (--enable-profile)
+                cf_profile="1";;
+            (--enable-strip)
+                cf_strip="${ac_val:-strip -s}";;
+            (--exec-prefix)
+                cf_eprefix="$ac_val";;
+            (--libdir)
+                cf_libdir="$ac_val";;
+            (--prefix)
+                cf_prefix="$ac_val";;
+            (--sysconfdir)
+                cf_sysconfdir="$ac_val";;
+            (-h|--help)
+                show_usage;
+                exit 0;;
+            (*)
+                echo "Unrecognized option: $ac_key";;
+        esac;
+    done;
+}
+
+function set_defaults() {
+    # Set defaults
+    #
+    [ -z "$CC"   ] && CC="gcc";
+    [ -z "$CXX"  ] && CXX="g++";
+    [ -z "$LD"   ] && LD="gcc";
+    [ -z "$LDXX" ] && LDXX="g++";
+    [ -z "$AS"   ] && AS="gcc";
+
+    [ -z "$cf_libdir"     ] && cf_libdir="$cf_eprefix/lib";
+    [ -z "$cf_sysconfdir" ] && cf_sysconfdir="$cf_prefix/etc";
+}
+
+function do_checks() {
+    uname -m | grep -qi i.86 && cf_cpux86="1";
+
+    LIBXML_CFLAGS=`xml2-config --cflags`;
+    LIBXML_LDFLAGS=`xml2-config --libs`;
+    WX_CXXFLAGS=`wx-config --cxxflags`;
+    WX_LDFLAGS=`wx-config --libs`;
+
+    if "$CC" -funit-at-a-time -c -o .dev.null.o -xc /dev/null; then
+        XCFLAGS1="$XCFLAGS1 -funit-at-a-time";
+    fi;
+    if "$CC" -fvisibility=hidden -c -o .dev.null.o -xc /dev/null &>/dev/null; then
+        XCFLAGS1="$XCFLAGS1 -fvisibility=hidden";
+        fh_visibility="#define HAVE_VISIBILITY 1";
+    fi;
+    rm -f .dev.null.o;
+    XLDFLAGS1="-Wl,-rpath,$cf_libdir";
+    :;
+}
+
+function xecho() {
+    printf "%-25s" "$1:"
+    if [ -t 1 ]; then echo -en "\e[32m"; fi;
+    echo "$2";
+    if [ -t 1 ]; then echo -en "\e[0m"; fi;
+}
+
+function output_vars() {
+    xecho "C compiler" "$CC";
+    xecho "C++ compiler" "$CXX";
+    xecho "Extra compiler flags" "$XCFLAGS1";
+    xecho "Linker for C programs" "$LD";
+    xecho "Linker for C++ programs" "$LDXX";
+    xecho "Assembler" "$AS";
+    xecho "strip program" "$cf_strip";
+    xecho "Use x86 assembly code" "$cf_cpux86";
+    xecho "Debug mode" "$cf_debug";
+    xecho "Enable profiling" "$cf_profile";
+    xecho "etc directory" "$cf_sysconfdir";
+    xecho "lib directory" "$cf_libdir";
+}
+
+function generate_files() {
+    # Generate files
+    #
+    echo "Creating GNUmakefile";
+    cat >GNUmakefile <<EOF;
+# -*- Makefile -*-
+
+S               := $cf_basedir/src
+DEBUG           := $cf_debug
+PROF            := $cf_profile
+V               := 0
+
+CC              := $CC
+CFLAGS          := $CFLAGS
+CXX             := $CXX
+CXXFLAGS        := $CXXFLAGS
+LD              := $LD
+LDXX            := $LDXX
+LDFLAGS         := $LDFLAGS
+AS              := $AS
+AFLAGS          := $AFLAGS
+STRIP           := $cf_strip
+
+MCPU_IS_X86     := $cf_cpux86
+
+# Internal flags
+XCFLAGS1        := $XCFLAGS1
+XLDFLAGS1       := $XLDFLAGS1
+
+LIBXML_CFLAGS   := $LIBXML_CFLAGS
+LIBXML_LDFLAGS  := $LIBXML_LDFLAGS
+WX_CXXFLAGS     := $WX_CXXFLAGS
+WX_LDFLAGS      := $WX_LDFLAGS
+
+include $cf_basedir/GNUmakefile.src
+EOF
+
+    echo "Creating vitalnix-config.h";
+    cat >vitalnix-config.h <<EOF;
+#ifndef _VITALNIX_CONFIG_H
+#define _VITALNIX_CONFIG_H 1
+
+#define CONFIG_SYSCONFDIR       "$cf_sysconfdir"
+#define CONFIG_LIBDIR           "$cf_libdir"
+#define VITALNIX_VERSION        "$cf_nicver"
+$fh_visibility
+
+#endif // _VITALNIX_CONFIG_H
+EOF
+}
+
+parse_args "$@";
+if [ -d src ]; then
+    cat <<EOF;
+Please run configure from an empty directory, e.g.:
+    md obj;
+    (cd obj && ../configure);
+EOF
+    exit 1;
+fi;
+set_defaults;
+do_checks;
+output_vars;
+generate_files;
+
+#==============================================================================

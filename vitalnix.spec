@@ -27,9 +27,14 @@ Developers:
 %setup
 
 %build
-./Mk %{?jobs:-j%jobs} O=obj DEBUG=0 \
-    EXT_CFLAGS='-DCONFIG_ETC_VITALNIX=\"/etc/vitalnix\" -DCONFIG_VITALNIX_LIBDIR=\"%pfx/%_lib\"' \
-    EXT_LDFLAGS="-Wl,-rpath,%pfx/%_lib";
+mkdir obj;
+pushd obj;
+../configure \
+    --sysconfdir="%_sysconfdir/vitalnix" \
+    --libdir="%pfx/%_lib" \
+    CFLAGS="$RPM_OPT_FLAGS";
+make;
+popd;
 
 %install
 b="%buildroot";

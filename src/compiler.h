@@ -1,6 +1,8 @@
 #ifndef _VITALNIX_GENERIC_COMPILER_H
 #define _VITALNIX_GENERIC_COMPILER_H 1
 
+#include "vitalnix-config.h"
+
 #define CONSTRUCTOR     __attribute__((constructor))
 #define DESTRUCTOR      __attribute__((destructor))
 

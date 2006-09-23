@@ -199,9 +199,9 @@ static int mdsync_read_config(struct mdsync_config *c) {
         {.ln = "GENPW_TYPE",        .type = HXTYPE_INT,    .cb  = pconfig_genpw, .uptr = &c->genpw_type},
         HXOPT_TABLEEND,
     };
-    vxconfig_read_useradd(CONFIG_ETC_VITALNIX "/useradd.conf", &c->add_opts);
-    vxconfig_read_useradd(CONFIG_ETC_VITALNIX "/libvxmdsync.conf", &c->add_opts);
-    HX_shconfig(CONFIG_ETC_VITALNIX "/libvxmdsync.conf", mdsync_options_table);
+    vxconfig_read_useradd(CONFIG_SYSCONFDIR "/useradd.conf", &c->add_opts);
+    vxconfig_read_useradd(CONFIG_SYSCONFDIR "/libvxmdsync.conf", &c->add_opts);
+    HX_shconfig(CONFIG_SYSCONFDIR "/libvxmdsync.conf", mdsync_options_table);
     return 1;
 }
 

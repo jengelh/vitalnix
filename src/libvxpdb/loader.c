@@ -145,7 +145,7 @@ static int vxpdb_config(struct opt *cf, unsigned int action,
 
         // If @name == "*", then read the database from libvxpdb.conf.
         if(strcmp(L1_name, "*") == 0) {
-            HX_shconfig(CONFIG_ETC_VITALNIX "/libvxpdb.conf", opt_database);
+            HX_shconfig(CONFIG_SYSCONFDIR "/libvxpdb.conf", opt_database);
             if(L2_name == NULL) {
                 HX_shconfig_free(opt_database);
                 return 0;
@@ -155,7 +155,7 @@ static int vxpdb_config(struct opt *cf, unsigned int action,
         }
 
         snprintf(L2_file, sizeof(L2_file), "%s/db_%s.conf",
-                 CONFIG_ETC_VITALNIX, L2_name);
+                 CONFIG_SYSCONFDIR, L2_name);
 
         if(strpbrk(L2_name, "./") != NULL) // direct file spec
             HX_strlcpy(cf->driver_file, L2_name, sizeof(cf->driver_file));

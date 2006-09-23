@@ -15,12 +15,6 @@ vpath %.php  ${S}
 vpath %.png  ${S}
 vpath %.icss ${S}
 
-ifneq ($(shell uname -m | grep -i i.86),)
-    MCPU_IS_X86 := 1
-else
-    MCPU_IS_X86 := 0
-endif
-
 # BASE ---------------------------------
 #
 .PHONY: all doc clean distclean
@@ -46,12 +40,15 @@ doc: $(patsubst ${S}/%.php,%.html,$(wildcard ${S}/doc/[a-z]*.php)) \
      $(patsubst ${S}/%.php,%.txt,$(wildcard ${S}/doc/[a-z]*.php)) \
      $(patsubst ${S}/%.icss,%.css,$(wildcard ${S}/doc/*.icss))
 
+# The clean commands actually require that all object files be in a separate
+# directory so that we do not inadvertently kill the source tree.
+#
 clean:
-ifneq (${O},)
-	rm -Rf ${O};
-endif
+	find . -mindepth 1 -maxdepth 1 ! -name GNUmakefile \
+	    ! -name vitalnix-config.h -print0 | xargs -0 rm -Rf;
 
-distclean: clean
+distclean:
+	find . -mindepth 1 -maxdepth 1 -print0 | xargs -0 rm -Rf;
 
 # LIBS ---------------------------------
 #
@@ -187,11 +184,10 @@ vitalnix: $(call srcobj,steelmill) steelmill/images.o | \
     libvxeds.so libvxmdfmt.so libvxmdsync.so libvxpdb.so
 
 $(wildcard ${S}/steelmill/*.cpp): steelmill/images.hpp
-ifneq (${O},)
-${O}/steelmill/images.cpp: steelmill/images.cpp
-${O}/steelmill/images.hpp: steelmill/images.hpp
-endif
+
 steelmill/images.cpp: steelmill/images.hpp
+	${VECHO_GEN}
+
 steelmill/images.hpp: $(wildcard ${S}/steelmill/*.png)
 	${PREREQ}
 	${VECHO_GEN}
