@@ -179,7 +179,7 @@ function output_vars() {
     xecho "Assembler" "$AS";
     xecho "strip program" "$cf_strip";
     xecho "Use x86 assembly code" "$cf_cpux86";
-    xecho "Debug mode" "$cf_debug";
+    xecho "Debug level" "$cf_debug";
     xecho "Enable profiling" "$cf_profile";
     xecho "etc directory" "$cf_sysconfdir";
     xecho "lib directory" "$cf_libdir";
@@ -216,7 +216,7 @@ XLDFLAGS1       := $XLDFLAGS1
 
 LIBXML_CFLAGS   := $LIBXML_CFLAGS
 LIBXML_LDFLAGS  := $LIBXML_LDFLAGS
-WX_CXXFLAGS     := $WX_CXXFLAGS
+WX_CXXFLAGS     := $WX_CXXFLAGS -Wno-strict-aliasing
 WX_LDFLAGS      := $WX_LDFLAGS
 
 include $cf_basedir/src/GNUmakefile.tgt
@@ -240,8 +240,7 @@ parse_args "$@";
 if [ -d src ]; then
     cat <<EOF;
 Please run configure from an empty directory, e.g.:
-    md obj;
-    (cd obj && ../configure);
+    mkdir obj; cd obj; ../configure;
 EOF
     exit 1;
 fi;
