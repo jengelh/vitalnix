@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 #==============================================================================
 # Vitalnix User Management Suite
 # configure
@@ -161,14 +161,13 @@ function do_checks() {
     fi;
     rm -f .dev.null.o;
     XLDFLAGS1="-Wl,-rpath,$cf_libdir";
-    :;
 }
 
 function xecho() {
     printf "%-25s" "$1:"
-    if [ -t 1 ]; then echo -en "\e[32m"; fi;
+    [ -t 1 ] && echo -en "\e[32m";
     echo "$2";
-    if [ -t 1 ]; then echo -en "\e[0m"; fi;
+    [ -t 1 ] && echo -en "\e[0m";
 }
 
 function output_vars() {
