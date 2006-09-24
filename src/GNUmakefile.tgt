@@ -61,7 +61,7 @@ libvxcli.so: $(call srcobj,libvxcli)
 XLDFLAGS_libvxcore_so           := -lHX
 libvxcore.so: $(call srcobj,libvxcore)
 
-XCFLAGS_libvxeds_d_xml          := ${LIBXML_CFLAGS}
+XCFLAGS_libvxeds_fm_xml         := ${LIBXML_CFLAGS}
 XLDFLAGS_libvxeds_so            := ${LIBXML_LDFLAGS} -lHX -lvxcore -lvxutil
 libvxeds.so: $(call srcobj,libvxeds) | libvxcore.so libvxutil.so
 
@@ -81,7 +81,7 @@ ifeq (${MCPU_IS_X86},1)
     XOBJS_libvxutil             += libvxutil/blowfish_x86.o
     XCFLAGS_libvxutil_blowfish  := -DBF_ASM=1
 endif
-XLDFLAGS_libvxutil_so  := -lHX -lcrypt -lssl
+XLDFLAGS_libvxutil_so  := -lHX -lcrypt -lcrypto
 libvxutil.so: $(call srcobj,libvxutil) ${XOBJS_libvxutil}
 
 # PDB DRIVERS --------------------------
