@@ -21,10 +21,15 @@ libvxcgi/auth.c - Authentication
 
   -- For details, see the file named "LICENSE.LGPL2"
 =============================================================================*/
+#ifndef _WIN32
+#    include <sys/types.h>
+#    include <sys/wait.h>
+#endif
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <security/pam_appl.h>
 #include <libHX.h>
 #include "compiler.h"
@@ -53,6 +58,37 @@ EXPORT_SYMBOL int vxcgi_authenticate(const char *user, const char *password)
         return 1;
     return (ret < 0) ? ret : -ret;
 }
+
+#ifndef _WIN32
+EXPORT_SYMBOL int vxcgi_authenticate_ext(const char *user,
+  const char *password, const char *prog)
+{
+    int fd[2], ret;
+    long pid;
+
+    if(pipe(fd) != 0) {
+        perror("Unable to create pipe");
+        return -errno;
+    }
+
+    if((pid = fork()) < 0) {
+        return -errno;
+    } else if(pid == 0) {
+        dup2(fd[0], STDIN_FILENO);
+        close(fd[1]);
+        close(fd[0]);
+        execl(prog, prog, NULL);
+        return 127;
+    }
+
+    write(fd[1], user, strlen(user));
+    write(fd[1], ":", 1);
+    write(fd[1], password, strlen(password));
+    close(fd[1]);
+    waitpid(pid, &ret, 0);
+    return WEXITSTATUS(ret) == EXIT_SUCCESS;
+}
+#endif
 
 //-----------------------------------------------------------------------------
 static int my_conv(int num_msg, const struct pam_message **msg_ap,

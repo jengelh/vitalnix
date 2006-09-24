@@ -34,6 +34,7 @@ struct HXbtree;
  *      AUTH.C
  */
 extern int vxcgi_authenticate(const char *, const char *);
+extern int vxcgi_authenticate_ext(const char *, const char *, const char *);
 
 /*
  *      CGI.C
