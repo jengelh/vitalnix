@@ -82,8 +82,9 @@ EXPORT_SYMBOL int vxcgi_authenticate_ext(const char *user,
     }
 
     write(fd[1], user, strlen(user));
-    write(fd[1], ":", 1);
+    write(fd[1], "\n", 1);
     write(fd[1], password, strlen(password));
+    write(fd[1], "\n", 1);
     close(fd[1]);
     waitpid(pid, &ret, 0);
     return WEXITSTATUS(ret) == EXIT_SUCCESS;
