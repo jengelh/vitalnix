@@ -35,7 +35,7 @@ pushd obj;
     --includedir="%pfx/include" \
     --libdir="%pfx/%_lib" \
     CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS";
-make;
+make %{?jobs:-j%jobs};
 popd;
 
 %install
