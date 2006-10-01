@@ -103,6 +103,12 @@ class GW_FTC : public wxPanel {
     DECLARE_EVENT_TABLE();
 };
 
+class GW_UserCombo : public wxComboBox {
+  public: // functions
+    GW_UserCombo(wxWindow *, wxWindowID = wxID_ANY, const char * = "*");
+    void switch_database(const char *);
+};
+
 #endif // STEELMILL_COMMON_HPP
 
 //=============================================================================

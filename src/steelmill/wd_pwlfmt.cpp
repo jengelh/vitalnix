@@ -36,8 +36,10 @@ enum {
     ID_STYLE = 1,
 };
 
-// Functions
-static void add_pwlstyles(wxChoice *);
+class GW_PwlstylesChoice : public wxChoice {
+  public: // functions
+    GW_PwlstylesChoice(wxWindow *, wxWindowID = wxID_ANY);
+};
 
 //-----------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(WD_Pwlfmt, wxDialog)
@@ -60,11 +62,10 @@ WD_Pwlfmt::WD_Pwlfmt(wxWindow *parent) :
     gp->Add(new wxStaticText(this, wxID_ANY, wxT("Output file:")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
     gp->Add(ct_output = new GW_FTC(this, wxEmptyString, 3), 0, wxGROW | wxACV);
     gp->Add(new wxStaticText(this, wxID_ANY, wxT("Style:")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
-    gp->Add(ct_style = new wxChoice(this, ID_STYLE, wxDPOS, wxDSIZE, 0, NULL), 0, wxALIGN_LEFT | wxACV | wxALL, 3);
+    gp->Add(ct_style = new GW_PwlstylesChoice(this, ID_STYLE), 0, wxALIGN_LEFT | wxACV | wxALL, 3);
     gp->Add(ct_tpltext = new wxStaticText(this, wxID_ANY, wxT("Template file:")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
     gp->Add(ct_template = new GW_FTC(this, wxEmptyString, 3), 0, wxGROW | wxACV);
 
-    add_pwlstyles(ct_style);
     ct_style->SetSelection(0);
     change_style(empty_event);
 
@@ -91,13 +92,15 @@ void WD_Pwlfmt::process(wxCommandEvent &event) {
 }
 
 //-----------------------------------------------------------------------------
-static void add_pwlstyles(wxChoice *c) {
+GW_PwlstylesChoice::GW_PwlstylesChoice(wxWindow *parent, wxWindowID id) :
+    wxChoice(parent, id, wxDPOS, wxDSIZE, 0, NULL)
+{
     const struct pwlstyle_vtable *vtable;
     void *trav = NULL;
 
     while((vtable = pwlstyles_trav(&trav)) != NULL)
-        c->Append(fU8(vtable->name) + wxT(" (") + fU8(vtable->desc) + wxT(")"),
-                  const_cast<void *>(static_cast<const void *>(vtable)));
+        Append(fU8(vtable->name) + wxT(" (") + fU8(vtable->desc) + wxT(")"),
+               const_cast<void *>(static_cast<const void *>(vtable)));
 
     return;
 }

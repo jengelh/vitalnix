@@ -48,7 +48,7 @@ WD_FixUUID::WD_FixUUID(wxWindow *parent) :
     wxFlexGridSizer *sf = new wxFlexGridSizer(2);
     sf->AddGrowableCol(1);
     sf->Add(new wxStaticText(this, wxID_ANY, wxT("Username:")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
-    sf->Add(ct_username = new wxComboBox(this, wxID_FIND, wxEmptyString, wxDPOS, wxDSIZE, 0, static_cast<const wxString *>(NULL), wxCB_SORT), 0, wxACV | wxALL, 3);
+    sf->Add(ct_username = new GW_UserCombo(this, wxID_FIND), 0, wxACV | wxALL, 3);
     sf->Add(new wxStaticText(this, wxID_ANY, wxT("New real name:")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
     sf->Add(ct_realname = new wxTextCtrl(this, wxID_ANY, wxEmptyString), 0, wxGROW | wxACV | wxALL, 3);
     sf->Add(new wxStaticText(this, wxID_ANY, wxT("New birthdate:")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
@@ -61,25 +61,10 @@ WD_FixUUID::WD_FixUUID(wxWindow *parent) :
     smc_size_aspect(this);
     Center();
 
-    if((db_handle = database_open(0, this)) != NULL)
-        Fill_Users(ct_username);
     return;
 }
 
 void WD_FixUUID::Fill_Defaults(wxCommandEvent &event) {
-    return;
-}
-
-void WD_FixUUID::Fill_Users(wxComboBox *b) {
-    struct vxpdb_user user = {};
-    void *trav = NULL;
-
-    if((trav = vxpdb_usertrav_init(db_handle)) == NULL)
-        return;
-    while(vxpdb_usertrav_walk(db_handle, trav, &user) > 0)
-        b->Append(fU8(user.pw_name));
-    vxpdb_usertrav_free(db_handle, trav);
-    vxpdb_user_free(&user, 0);
     return;
 }
 

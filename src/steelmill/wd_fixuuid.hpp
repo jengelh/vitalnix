@@ -39,7 +39,6 @@ class WD_FixUUID : public wxDialog {
 
   private: // functions
     void Fill_Defaults(wxCommandEvent &);
-    void Fill_Users(wxComboBox *);
     void Ok(wxCommandEvent &);
 
   private: // variables

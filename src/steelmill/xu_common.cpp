@@ -277,4 +277,43 @@ void GW_FTC::Browse(wxCommandEvent &event) {
     return;
 }
 
+//-----------------------------------------------------------------------------
+GW_UserCombo::GW_UserCombo(wxWindow *parent, wxWindowID id, const char *db) :
+    wxComboBox(parent, id, wxEmptyString, wxDPOS, wxDSIZE, 0, NULL, wxCB_SORT)
+{
+    switch_database(db);
+    return;
+}
+
+void GW_UserCombo::switch_database(const char *db_name) {
+    struct vxpdb_user user = {};
+    struct vxpdb_state *db;
+    void *trav;
+    int ret;
+
+    Clear();
+
+    if((db = vxpdb_load(db_name)) == NULL)
+        return;
+
+    if((ret = vxpdb_open(db, 0)) <= 0) {
+        fprintf(stderr, "%s: vxpdb_open: %s\n", __PRETTY_FUNCTION__,
+                strerror(ret));
+        goto out_unload;
+    }
+
+    if((trav = vxpdb_usertrav_init(db)) == NULL)
+        goto out_close;
+    while(vxpdb_usertrav_walk(db, trav, &user) > 0)
+        Append(fU8(user.pw_name));
+
+    vxpdb_usertrav_free(db, trav);
+    vxpdb_user_free(&user, 0);
+ out_close:
+    vxpdb_close(db);
+ out_unload:
+    vxpdb_unload(db);
+    return;
+}
+
 //=============================================================================

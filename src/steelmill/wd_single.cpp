@@ -64,7 +64,7 @@ WD_Single::WD_Single(wxWindow *parent) :
     sg->Add(new wxTextCtrl(this, wxID_ANY, wxEmptyString), wxGBPosition(4, 1), wxDefaultSpan, wxGROW | wxACV | wxALL, 3);
 
     sg->Add(new wxStaticText(this, wxID_ANY, wxT("System group")), wxGBPosition(5, 0), wxDefaultSpan, wxALIGN_RIGHT | wxACV | wxALL, 3);
-    sg->Add(new wxComboBox(this, wxID_ANY, wxEmptyString, wxDPOS, wxDSIZE, 0, static_cast<const wxString *>(NULL), wxCB_SORT), wxGBPosition(5, 1), wxDefaultSpan, wxACV | wxALL, 3);
+    sg->Add(new GD_GroupComboBox(this), wxGBPosition(5, 1), wxDefaultSpan, wxACV | wxALL, 3);
 
 
     sg->Add(new wxStaticText(this, wxID_ANY, wxT(

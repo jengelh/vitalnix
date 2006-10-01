@@ -42,6 +42,7 @@ steelmill/wd_sync.cpp
 #include "steelmill/wd_sync.hpp"
 #include "steelmill/xu_common.hpp"
 
+// Definitions
 enum {
     // StaticText for countdowns
     ID_CD_BASE          = 0x10,
@@ -115,10 +116,14 @@ class WD_SyncProg : public wxDialog {
     DECLARE_EVENT_TABLE();
 };
 
+class GW_EdsformatChoice : public wxChoice {
+  public: // functions
+    GW_EdsformatChoice(wxWindow *, wxWindowID = wxID_ANY);
+};
+
 class UserException {};
 
 // Functions
-static void add_edsformats(wxChoice *);
 static void cb_report(unsigned int, const struct mdsync_workspace *,
     unsigned long, unsigned long);
 template<class Object> static inline Object find_window(long, wxWindow *);
@@ -149,7 +154,7 @@ WD_SyncParam::WD_SyncParam(wxWindow *parent) :
     sf_src->Add(new wxStaticText(this, wxID_ANY, wxT("Resource Identifier:")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
     sf_src->Add(ct_source = new GW_FTC(this, wxT("../../../Vitalnix_SEC/daten3.sdf"), 3), 0, wxACV | wxGROW);
     sf_src->Add(new wxStaticText(this, wxID_ANY, wxT("Type:")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
-    sf_src->Add(ct_srctype = new wxChoice(this, wxID_ANY, wxDPOS, wxDSIZE, 0, NULL), 0, wxACV | wxALL, 3);
+    sf_src->Add(ct_srctype = new GW_EdsformatChoice(this), 0, wxACV | wxALL, 3);
     sp_src->Add(sf_src, 1, wxGROW);
 
     wxStaticBox *sb_dst      = new wxStaticBox(this, wxID_ANY, wxT("Destination"));
@@ -160,7 +165,6 @@ WD_SyncParam::WD_SyncParam(wxWindow *parent) :
     sf_dst->Add(ct_module = new wxComboBox(this, wxID_ANY, wxT("*")), 0, wxACV | wxALL, 3);
     sf_dst->Add(new wxStaticText(this, wxID_ANY, wxT("Group or GID")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
     sf_dst->Add(ct_group = new GD_GroupComboBox(this, wxID_ANY), 0, wxACV | wxALL, 3);
-//    sf_dst->Add(ct_group = new wxComboBox(this, wxID_ANY, wxEmptyString), 0, wxACV | wxALL, 3);
     sp_dst->Add(sf_dst, 1, wxGROW);
 
     wxStaticBox *sb_out      = new wxStaticBox(this, wxID_ANY, wxT("Output"));
@@ -173,7 +177,6 @@ WD_SyncParam::WD_SyncParam(wxWindow *parent) :
 
     sp_out->Add(ct_prompt = new wxCheckBox(this, wxID_ANY, wxT("Prompt before operations")), 0, wxALIGN_LEFT | wxALL, 3);
 
-    add_edsformats(ct_srctype);
     ct_srctype->SetSelection(0);
     ct_group->SetValue(wxT("extern"));
 
@@ -489,18 +492,21 @@ void WD_SyncProg::Details_Delete(wxCommandEvent &event) {
 }
 
 //-----------------------------------------------------------------------------
-static void add_edsformats(wxChoice *c) {
+GW_EdsformatChoice::GW_EdsformatChoice(wxWindow *parent, wxWindowID id) :
+    wxChoice(parent, id, wxDPOS, wxDSIZE, 0, NULL)
+{
     const struct edsformat_vtable *vtable;
     void *trav = NULL;
 
-    c->Append(wxT("(autodetect)"), static_cast<void *>(NULL));
+    Append(wxT("(autodetect)"), static_cast<void *>(NULL));
     while((vtable = vxeds_formats_trav(&trav)) != NULL)
-        c->Append(fU8(vtable->desc),
-                  const_cast<struct edsformat_vtable *>(vtable));
+        Append(fU8(vtable->desc),
+               const_cast<struct edsformat_vtable *>(vtable));
 
     return;
 }
 
+//-----------------------------------------------------------------------------
 static void cb_report(unsigned int type, const struct mdsync_workspace *mdsw,
   unsigned long current, unsigned long max)
 {
