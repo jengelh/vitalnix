@@ -77,20 +77,21 @@ bool Loader::OnInit(void) {
     while(this->splash_done < 2)
         Yield(); */
 
-    delete spl;
+    spl->Destroy();
     delete timer;
     return true;
 }
 
 void Loader::splash_tick(wxTimerEvent &event) {
-    ++this->splash_done;
+    ++splash_done;
     return;
 }
 
 //-----------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(WD_Console, wxFrame)
     EVT_BUTTON(wxID_CLEAR, WD_Console::Clear)
-    EVT_BUTTON(wxID_OK,    WD_Console::Ok)
+    EVT_BUTTON(wxID_OK,    WD_Console::hide_command)
+    EVT_CLOSE(WD_Console::hide_close)
 END_EVENT_TABLE()
 
 WD_Console::WD_Console(void) :
@@ -145,8 +146,18 @@ void WD_Console::Clear(wxCommandEvent &event) {
     return;
 }
 
-void WD_Console::Ok(wxCommandEvent &event) {
+void WD_Console::hide_command(wxCommandEvent &event) {
     Hide();
+    return;
+}
+
+void WD_Console::hide_close(wxCloseEvent &event) {
+    if(event.CanVeto()) {
+        Hide();
+        event.Veto();
+    } else {
+        wxFrame::Destroy();
+    }
     return;
 }
 

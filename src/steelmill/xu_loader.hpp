@@ -40,7 +40,8 @@ class WD_Console : public wxFrame {
   private: // functions
     void Append(const char *);
     void Clear(wxCommandEvent &);
-    void Ok(wxCommandEvent &);
+    void hide_command(wxCommandEvent &);
+    void hide_close(wxCloseEvent &);
 
   private: // variables
     FILE *saved_stdout, *saved_stderr, *current;
@@ -55,7 +56,7 @@ class Loader : public wxApp {
   public: // variables
     WD_Console *console;
 
-  private: //functions
+  private: // functions
     void splash_tick(wxTimerEvent &);
 
   private: // variables

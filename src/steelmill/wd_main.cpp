@@ -90,7 +90,7 @@ WD_MainMenu::WD_MainMenu(const char *title, const wxSize &size,
 
 WD_MainMenu::~WD_MainMenu(void) {
     // Kill the console window. Even if it is invisible, it still exists.
-    static_cast<Loader *>(wxTheApp)->console->Close();
+    static_cast<Loader *>(wxTheApp)->console->Destroy();
     return;
 }
 
