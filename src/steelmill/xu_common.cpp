@@ -114,7 +114,7 @@ void smc_size_minimum(wxWindow *w, const wxSize &ps) {
 }
 
 //-----------------------------------------------------------------------------
-GD_GroupComboBox::GD_GroupComboBox(wxWindow *parent, wxWindowID id,
+GW_GroupCombo::GW_GroupCombo(wxWindow *parent, wxWindowID id,
  const char *db) :
     wxComboBox(parent, id, wxEmptyString)
 {
@@ -122,7 +122,7 @@ GD_GroupComboBox::GD_GroupComboBox(wxWindow *parent, wxWindowID id,
     return;
 }
 
-void GD_GroupComboBox::switch_database(const char *db_name) {
+void GW_GroupCombo::switch_database(const char *db_name) {
     struct vxpdb_group group = {};
     struct vxpdb_state *db;
     void *trav;
@@ -155,7 +155,7 @@ void GD_GroupComboBox::switch_database(const char *db_name) {
 }
 
 //-----------------------------------------------------------------------------
-GD_Listbox::GD_Listbox(wxWindow *parent, const wxString &title,
+GW_Listbox::GW_Listbox(wxWindow *parent, const wxString &title,
  void (*callback)(wxListBox *, const void *), const void *uptr, long style) :
     wxDialog(parent, wxID_ANY, title, wxDPOS, wxDSIZE, wxCFF)
 {
@@ -173,7 +173,7 @@ GD_Listbox::GD_Listbox(wxWindow *parent, const wxString &title,
     return;
 }
 
-GD_Listbox::GD_Listbox(wxWindow *parent, const wxString &title,
+GW_Listbox::GW_Listbox(wxWindow *parent, const wxString &title,
  const struct HXdeque *dq, long style) :
     wxDialog(parent, wxID_ANY, title, wxDPOS, wxDSIZE, wxCFF)
 {
@@ -197,13 +197,13 @@ GD_Listbox::GD_Listbox(wxWindow *parent, const wxString &title,
 }
 
 //-----------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(GD_Message, wxDialog)
-    EVT_BUTTON(wxID_YES,    GD_Message::Yes)
-    EVT_BUTTON(wxID_NO,     GD_Message::No)
-    EVT_BUTTON(wxID_CANCEL, GD_Message::Cancel)
+BEGIN_EVENT_TABLE(GW_Message, wxDialog)
+    EVT_BUTTON(wxID_YES,    GW_Message::Yes)
+    EVT_BUTTON(wxID_NO,     GW_Message::No)
+    EVT_BUTTON(wxID_CANCEL, GW_Message::Cancel)
 END_EVENT_TABLE()
 
-GD_Message::GD_Message(wxWindow *parent, const wxString &title,
+GW_Message::GW_Message(wxWindow *parent, const wxString &title,
  const wxString &prompt, const char *button_mask) :
     wxDialog(parent, wxID_ANY, title, wxDPOS, wxDSIZE, wxCFF)
 {
@@ -222,17 +222,17 @@ GD_Message::GD_Message(wxWindow *parent, const wxString &title,
     return;
 }
 
-void GD_Message::Yes(wxCommandEvent &event) {
+void GW_Message::Yes(wxCommandEvent &event) {
     EndModal(wxID_YES);
     return;
 }
 
-void GD_Message::No(wxCommandEvent &event) {
+void GW_Message::No(wxCommandEvent &event) {
     EndModal(wxID_NO);
     return;
 }
 
-void GD_Message::Cancel(wxCommandEvent &event) {
+void GW_Message::Cancel(wxCommandEvent &event) {
     EndModal(wxID_CANCEL);
     return;
 }

@@ -138,11 +138,11 @@ void WD_Config::Save(wxCommandEvent &event) {
         char buf[256];
         snprintf(buf, sizeof(buf), "Error saving to vitalnix.cfg: %s",
          strerror(eax));
-        GD_Message(this, "Configuration > Save", buf, "-o").ShowModal();
+        GW_Message(this, "Configuration > Save", buf, "-o").ShowModal();
         return;
     }
 
-    GD_Message(this, "Configuration > Save", "Successfully wrote vitalnix.cfg",
+    GW_Message(this, "Configuration > Save", "Successfully wrote vitalnix.cfg",
         "-o").ShowModal();
     
     return;

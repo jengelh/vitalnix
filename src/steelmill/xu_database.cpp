@@ -42,14 +42,14 @@ struct vxpdb_state *database_open(long open_flags, wxWindow *parent) {
         wxString s;
         s.Printf(wxT("Could not load backend module \"%s\": %s\n"),
             wxT("*"), fV8(strerror(errno)));
-        GD_Message(parent, wxT("Failure"), s, "-o").ShowModal();
+        GW_Message(parent, wxT("Failure"), s, "-o").ShowModal();
         return NULL;
     }
 
     if((ret = vxpdb_open(dbh, open_flags)) <= 0) {
         wxString s;
         s.Printf(wxT("Could not open backend module: %s\n"), fV8(strerror(-ret)));
-        GD_Message(parent, wxT("Failure"), s, "-o").ShowModal();
+        GW_Message(parent, wxT("Failure"), s, "-o").ShowModal();
         vxpdb_unload(dbh);
         return NULL;
     }

@@ -164,7 +164,7 @@ WD_SyncParam::WD_SyncParam(wxWindow *parent) :
     sf_dst->Add(new wxStaticText(this, wxID_ANY, wxT("Database")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
     sf_dst->Add(ct_module = new wxComboBox(this, wxID_ANY, wxT("*")), 0, wxACV | wxALL, 3);
     sf_dst->Add(new wxStaticText(this, wxID_ANY, wxT("Group or GID")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
-    sf_dst->Add(ct_group = new GD_GroupComboBox(this, wxID_ANY), 0, wxACV | wxALL, 3);
+    sf_dst->Add(ct_group = new GW_GroupCombo(this), 0, wxACV | wxALL, 3);
     sp_dst->Add(sf_dst, 1, wxGROW);
 
     wxStaticBox *sb_out      = new wxStaticBox(this, wxID_ANY, wxT("Output"));
@@ -288,7 +288,7 @@ void WD_SyncParam::Compare(wxCommandEvent &event) {
         WD_SyncProg(this, priv).ShowModal();
         Close(true);
     } catch(...) {
-        GD_Message(this, wxT("Error"), str, "-o").ShowModal();
+        GW_Message(this, wxT("Error"), str, "-o").ShowModal();
     }
 
     release_priv(priv);
@@ -417,7 +417,7 @@ void WD_SyncProg::Continue(wxCommandEvent &event) {
     btn = find_window<wxButton *>(wxID_FORWARD, this);
     btn->Disable();
 
-    GD_Message dlg_add(this, wxT(PROD_NAME " > Synchronize > Adding users"),
+    GW_Message dlg_add(this, wxT(PROD_NAME " > Synchronize > Adding users"),
         wxT("Continue with adding users?"), "-oc-");
     if(mdsw->add_req->itemcount > 0 && (!priv->prompt ||
      dlg_add.ShowModal() == wxID_OK))
@@ -425,7 +425,7 @@ void WD_SyncProg::Continue(wxCommandEvent &event) {
 
     update_max(this, MDREP_ADD);
 
-    GD_Message dlg_mod(this, wxT(PROD_NAME " > Synchronize > Update timers"),
+    GW_Message dlg_mod(this, wxT(PROD_NAME " > Synchronize > Update timers"),
         wxT("Continue with updating the deferred deletion timers?"), "-oc");
     if(mdsw->defer_start->itemcount + mdsw->defer_stop->itemcount > 0 &&
      (!priv->prompt || dlg_mod.ShowModal() == wxID_OK))
@@ -435,7 +435,7 @@ void WD_SyncProg::Continue(wxCommandEvent &event) {
     update_max(this, MDREP_DSTART);
     update_max(this, MDREP_DSTOP);
 
-    GD_Message dlg_del(this, wxT(PROD_NAME " > Synchronize > Delete users"),
+    GW_Message dlg_del(this, wxT(PROD_NAME " > Synchronize > Delete users"),
         wxT("Continue with deleting old users?"), "-oc-");
     if(mdsw->delete_now->itemcount > 0 && (!priv->prompt ||
      dlg_del.ShowModal() == wxID_OK))
@@ -456,37 +456,37 @@ void WD_SyncProg::Continue(wxCommandEvent &event) {
 }
 
 void WD_SyncProg::Details_Update(wxCommandEvent &event) {
-    GD_Listbox(this, wxEmptyString, listbox_fill_user,
+    GW_Listbox(this, wxEmptyString, listbox_fill_user,
         priv->mdsw->update_req->root, wxLB_SORT).ShowModal();
     return;
 }
 
 void WD_SyncProg::Details_Add(wxCommandEvent &event) {
-    GD_Listbox(this, wxEmptyString, listbox_fill_eds, priv->mdsw->add_req->root,
+    GW_Listbox(this, wxEmptyString, listbox_fill_eds, priv->mdsw->add_req->root,
         wxLB_SORT).ShowModal();
     return;
 }
 
 void WD_SyncProg::Details_Defer_Start(wxCommandEvent &event) {
-    GD_Listbox(this, wxEmptyString, priv->mdsw->defer_start,
+    GW_Listbox(this, wxEmptyString, priv->mdsw->defer_start,
         wxLB_SORT).ShowModal();
     return;
 }
 
 void WD_SyncProg::Details_Defer_Wait(wxCommandEvent &event) {
-    GD_Listbox(this, wxEmptyString, priv->mdsw->defer_wait,
+    GW_Listbox(this, wxEmptyString, priv->mdsw->defer_wait,
         wxLB_SORT).ShowModal();
     return;
 }
 
 void WD_SyncProg::Details_Defer_Stop(wxCommandEvent &event) {
-    GD_Listbox(this, wxEmptyString, priv->mdsw->defer_stop,
+    GW_Listbox(this, wxEmptyString, priv->mdsw->defer_stop,
         wxLB_SORT).ShowModal();
     return;
 }
 
 void WD_SyncProg::Details_Delete(wxCommandEvent &event) {
-    GD_Listbox(this, wxEmptyString, priv->mdsw->delete_now,
+    GW_Listbox(this, wxEmptyString, priv->mdsw->delete_now,
         wxLB_SORT).ShowModal();
     return;
 }

@@ -53,16 +53,16 @@ extern void smc_size_aspect(wxWindow *, double = 1.5);
 extern void smc_size_minimum(wxWindow *, int, int);
 extern void smc_size_minimum(wxWindow *, const wxSize &);
 
-class GD_GroupComboBox : public wxComboBox {
+class GW_GroupCombo : public wxComboBox {
   public: // functions
-    GD_GroupComboBox(wxWindow *, wxWindowID = wxID_ANY, const char * = "*");
+    GW_GroupCombo(wxWindow *, wxWindowID = wxID_ANY, const char * = "*");
     void switch_database(const char *);
 };
 
-class GD_Listbox : public wxDialog {
+class GW_Listbox : public wxDialog {
   public: // functions
-    GD_Listbox(wxWindow *, const wxString &, const struct HXdeque *, long = 0);
-    GD_Listbox(wxWindow *, const wxString & = wxEmptyString,
+    GW_Listbox(wxWindow *, const wxString &, const struct HXdeque *, long = 0);
+    GW_Listbox(wxWindow *, const wxString & = wxEmptyString,
         void (*)(wxListBox *, const void *) = NULL, const void * = NULL,
         long = 0);
         
@@ -72,9 +72,9 @@ class GD_Listbox : public wxDialog {
     wxListBox *ct_listbox;
 };
 
-class GD_Message : public wxDialog {
+class GW_Message : public wxDialog {
   public: // functions
-    GD_Message(wxWindow *, const wxString & = wxEmptyString,
+    GW_Message(wxWindow *, const wxString & = wxEmptyString,
         const wxString & = wxEmptyString, const char * = "");
 
   protected: // functions
