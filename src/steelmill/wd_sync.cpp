@@ -119,7 +119,6 @@ class UserException {};
 
 // Functions
 static void add_edsformats(wxChoice *);
-static void add_groups(wxComboBox *);
 static void cb_report(unsigned int, const struct mdsync_workspace *,
     unsigned long, unsigned long);
 template<class Object> static inline Object find_window(long, wxWindow *);
@@ -148,7 +147,7 @@ WD_SyncParam::WD_SyncParam(wxWindow *parent) :
     wxFlexGridSizer *sf_src  = new wxFlexGridSizer(2);
     sf_src->AddGrowableCol(1);
     sf_src->Add(new wxStaticText(this, wxID_ANY, wxT("Resource Identifier:")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
-    sf_src->Add(ct_source = new GW_FTC(this, wxT("../../Vitalnix-PRV/daten3.sdf"), 3), 0, wxACV | wxGROW);
+    sf_src->Add(ct_source = new GW_FTC(this, wxT("../../../Vitalnix_SEC/daten3.sdf"), 3), 0, wxACV | wxGROW);
     sf_src->Add(new wxStaticText(this, wxID_ANY, wxT("Type:")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
     sf_src->Add(ct_srctype = new wxChoice(this, wxID_ANY, wxDPOS, wxDSIZE, 0, NULL), 0, wxACV | wxALL, 3);
     sp_src->Add(sf_src, 1, wxGROW);
@@ -160,7 +159,8 @@ WD_SyncParam::WD_SyncParam(wxWindow *parent) :
     sf_dst->Add(new wxStaticText(this, wxID_ANY, wxT("Database")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
     sf_dst->Add(ct_module = new wxComboBox(this, wxID_ANY, wxT("*")), 0, wxACV | wxALL, 3);
     sf_dst->Add(new wxStaticText(this, wxID_ANY, wxT("Group or GID")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
-    sf_dst->Add(ct_group = new wxComboBox(this, wxID_ANY, wxEmptyString), 0, wxACV | wxALL, 3);
+    sf_dst->Add(ct_group = new GD_GroupComboBox(this, wxID_ANY), 0, wxACV | wxALL, 3);
+//    sf_dst->Add(ct_group = new wxComboBox(this, wxID_ANY, wxEmptyString), 0, wxACV | wxALL, 3);
     sp_dst->Add(sf_dst, 1, wxGROW);
 
     wxStaticBox *sb_out      = new wxStaticBox(this, wxID_ANY, wxT("Output"));
@@ -174,7 +174,6 @@ WD_SyncParam::WD_SyncParam(wxWindow *parent) :
     sp_out->Add(ct_prompt = new wxCheckBox(this, wxID_ANY, wxT("Prompt before operations")), 0, wxALIGN_LEFT | wxALL, 3);
 
     add_edsformats(ct_srctype);
-    add_groups(ct_group);
     ct_srctype->SetSelection(0);
     ct_group->SetValue(wxT("extern"));
 
@@ -499,30 +498,6 @@ static void add_edsformats(wxChoice *c) {
         c->Append(fU8(vtable->desc),
                   const_cast<struct edsformat_vtable *>(vtable));
 
-    return;
-}
-
-static void add_groups(wxComboBox *b) {
-    struct vxpdb_group group = {};
-    struct vxpdb_state *db;
-    void *trav = NULL;
-
-    if((db = vxpdb_load("*")) == NULL)
-        return;
-    if(vxpdb_open(db, 0) <= 0)
-        goto out_unload;
-    if((trav = vxpdb_grouptrav_init(db)) == NULL)
-        goto out_close;
-    while(vxpdb_grouptrav_walk(db, trav, &group) > 0)
-        if(group.gr_gid > 0)
-            b->Append(fU8(group.gr_name));
-    vxpdb_grouptrav_free(db, trav);
-    vxpdb_group_free(&group, 0);
-
- out_close:
-    vxpdb_close(db);
- out_unload:
-    vxpdb_unload(db);
     return;
 }
 

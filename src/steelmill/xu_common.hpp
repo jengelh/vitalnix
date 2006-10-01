@@ -53,6 +53,12 @@ extern void smc_size_aspect(wxWindow *, double = 1.5);
 extern void smc_size_minimum(wxWindow *, int, int);
 extern void smc_size_minimum(wxWindow *, const wxSize &);
 
+class GD_GroupComboBox : public wxComboBox {
+  public: // functions
+    GD_GroupComboBox(wxWindow *, wxWindowID = wxID_ANY, const char * = "*");
+    void switch_database(const char *);
+};
+
 class GD_Listbox : public wxDialog {
   public: // functions
     GD_Listbox(wxWindow *, const wxString &, const struct HXdeque *, long = 0);
@@ -64,9 +70,6 @@ class GD_Listbox : public wxDialog {
 
   protected: // variables
     wxListBox *ct_listbox;
-
-  private: // variables
-    DECLARE_EVENT_TABLE();
 };
 
 class GD_Message : public wxDialog {

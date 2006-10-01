@@ -28,6 +28,8 @@ steelmill/xu_common.cpp
 #    include <wx/wx.h>
 #endif
 #include <wx/statline.h>
+#include "libvxpdb/libvxpdb.h"
+#include "libvxpdb/xafunc.h"
 #include "steelmill/images.hpp"
 #include "steelmill/xu_common.hpp"
 #define MAX_BUTTONS 8
@@ -112,10 +114,47 @@ void smc_size_minimum(wxWindow *w, const wxSize &ps) {
 }
 
 //-----------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(GD_Listbox, wxDialog)
-    // wxID_OK inherited
-END_EVENT_TABLE()
+GD_GroupComboBox::GD_GroupComboBox(wxWindow *parent, wxWindowID id,
+ const char *db) :
+    wxComboBox(parent, id, wxEmptyString)
+{
+    switch_database(db);
+    return;
+}
 
+void GD_GroupComboBox::switch_database(const char *db_name) {
+    struct vxpdb_group group = {};
+    struct vxpdb_state *db;
+    void *trav;
+    int ret;
+
+    Clear();
+
+    if((db = vxpdb_load(db_name)) == NULL)
+        return;
+
+    if((ret = vxpdb_open(db, 0)) <= 0) {
+        fprintf(stderr, "%s: vxpdb_open: %s\n", __PRETTY_FUNCTION__,
+                strerror(ret));
+        goto out_unload;
+    }
+
+    if((trav = vxpdb_grouptrav_init(db)) == NULL)
+        goto out_close;
+    while(vxpdb_grouptrav_walk(db, trav, &group) > 0)
+        if(group.gr_gid > 0)
+            Append(fU8(group.gr_name));
+
+    vxpdb_grouptrav_free(db, trav);
+    vxpdb_group_free(&group, 0);
+ out_close:
+    vxpdb_close(db);
+ out_unload:
+    vxpdb_unload(db);
+    return;
+}
+
+//-----------------------------------------------------------------------------
 GD_Listbox::GD_Listbox(wxWindow *parent, const wxString &title,
  void (*callback)(wxListBox *, const void *), const void *uptr, long style) :
     wxDialog(parent, wxID_ANY, title, wxDPOS, wxDSIZE, wxCFF)
