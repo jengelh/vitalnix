@@ -52,7 +52,8 @@ Following options may be passed:
 Note that your CFLAGS variable may override flags set by the following options:
 
   --enable-developer    create code with excessive debug information and
-                        special linker path redirection
+                        special linker path redirection, also
+                        overrides --sysconfdir with local directory
   --enable-optimize     create code with excessive optimization
 
 Following options may be passed or set via environment:
@@ -108,7 +109,9 @@ function parse_args() {
             (LDFLAGS)
                 LDFLAGS="$ac_val";;
             (--enable-developer)
-                cf_debug="2";;
+                cf_debug="2";
+                cf_sysconfdir="$PWD/../etc";
+                ;;
             (--enable-optimize)
                 cf_debug="0";;
             (--enable-profile)
@@ -149,6 +152,7 @@ function set_defaults() {
 }
 
 function do_checks() {
+    # Detect 32-bit x86 environment.
     uname -m | grep -qi i.86 && cf_cpux86="1";
 
     LIBXML_CFLAGS=`xml2-config --cflags`;
@@ -156,12 +160,15 @@ function do_checks() {
     WX_CXXFLAGS=`wx-config --cxxflags`;
     WX_LDFLAGS=`wx-config --libs`;
 
-    if "$CC" -funit-at-a-time -c -o .dev.null.o -xc /dev/null; then
+    if "$CC" -funit-at-a-time -c -o .dev.null.o -xc /dev/null &>/dev/null; then
         XCFLAGS1="$XCFLAGS1 -funit-at-a-time";
     fi;
     if "$CC" -fvisibility=hidden -c -o .dev.null.o -xc /dev/null &>/dev/null; then
         XCFLAGS1="$XCFLAGS1 -fvisibility=hidden";
         fh_visibility="#define HAVE_VISIBILITY 1";
+    fi;
+    if "$CC" -shared -pie -o .dev.null.o -xc /dev/null &>/dev/null; then
+        PIEFLAG="-pie";
     fi;
     rm -f .dev.null.o;
     XLDFLAGS1="-Wl,-rpath,$cf_libdir";
@@ -218,6 +225,7 @@ MCPU_IS_X86     := $cf_cpux86
 # Internal flags
 XCFLAGS1        := $XCFLAGS1
 XLDFLAGS1       := $XLDFLAGS1
+PIEFLAG         := $PIEFLAG
 
 LIBXML_CFLAGS   := $LIBXML_CFLAGS
 LIBXML_LDFLAGS  := $LIBXML_LDFLAGS

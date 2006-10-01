@@ -151,10 +151,10 @@ XLDFLAGS_vxuseradd      := -lvxcli -lvxutil -lvxplex
 vxuseradd: clutils/useradd.o useradd_lib.so | libvxcli.so libvxplex.so
 
 XLDFLAGS_vxusermod      := -lvxcli -lvxutil -lvxplex
-vxusermod: clutils/usermod.o usermod_lib.so | libvxcli.so libvxutil.so
+vxusermod: clutils/usermod.o usermod_lib.so | libvxcli.so libvxplex.so libvxutil.so
 
 XLDFLAGS_vxuserdel      := -lvxcli -lvxutil -lvxplex
-vxuserdel: clutils/userdel.o userdel_lib.so | libvxcli.so libvxutil.so
+vxuserdel: clutils/userdel.o userdel_lib.so | libvxcli.so libvxplex.so libvxutil.so
 
 XLDFLAGS_vxgroupadd     := -lHX -lvxpdb -lvxutil
 vxgroupadd: clutils/groupadd.o | libvxpdb.so libvxutil.so
@@ -235,7 +235,7 @@ doc/%.css: doc/%.icss
 ${EXEC_TARGETS}:
 	${PREREQ}
 	${VECHO_LD}
-	${Q}$(if ${XLD_$(subst /,_,$(subst .,_,$@))},${XLD_$(subst /,_,$(subst .,_,$@))},${LD}) ${XLDFLAGS} -o $@ $^ ${XLDFLAGS_$(subst /,_,$(subst .,_,$@))} ${LDFLAGS};
+	${Q}$(if ${XLD_$(subst /,_,$(subst .,_,$@))},${XLD_$(subst /,_,$(subst .,_,$@))},${LD}) ${XLDFLAGS} ${PIEFLAG} -o $@ $^ ${XLDFLAGS_$(subst /,_,$(subst .,_,$@))} ${LDFLAGS};
 	${Q}${STRIP} $@;
 
 -include */.*.d

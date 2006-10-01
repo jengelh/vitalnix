@@ -9,7 +9,7 @@ XCFLAGS   := -D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
 XCXXFLAGS := -D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
              -D_REENTRANT -Wall -Wno-pointer-arith -Wredundant-decls -fPIC \
              -pipe -I${S} -I. ${XCFLAGS1}
-XLDFLAGS  := -L. -Wl,-rpath-link,. ${XLDFLAGS1}
+XLDFLAGS  := -L. -Wl,-rpath-link,. -fPIC ${XLDFLAGS1}
 XDEPFLAGS  = -Wp,-MMD,$(@D)/.$(@F).d,-MT,$@ 
 
 MYSQL_CFLAGS   := $(filter -I%,$(shell mysql_config --cflags))
