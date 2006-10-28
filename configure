@@ -252,7 +252,6 @@ EOF
     perl -lpe "
         s{^INCLUDE=.*}{INCLUDE='$cf_includedir';}g;
         s{^LIBDIR=.*}{LIBDIR='$cf_libdir';}g;
-        s{^Version:.*}{Version: $cf_pkgver}g;
     " <"$cf_basedir/src/devutil/vitalnix-config" >vitalnix-config && \
     chmod a+rx vitalnix-config;
 
@@ -260,6 +259,7 @@ EOF
     perl -lpe "
         s{^includedir=.*}{includedir=$cf_includedir}g;
         s{^libdir=.*}{libdir=$cf_libdir}g;
+        s{^Version:.*}{Version: $cf_pkgver}g;
     " <"$cf_basedir/src/devutil/vitalnix.pc" >vitalnix.pc;
 }
 
