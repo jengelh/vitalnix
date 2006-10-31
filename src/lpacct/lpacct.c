@@ -48,17 +48,17 @@ static int lpacct_analyze_main(int argc, const char **argv)
         .colorspace = COLORSPACE_CMYK,
         .verbose    = 1,
     };
-    struct options *parg = &proc_opt;
+    struct options *p = &proc_opt;
     struct HXoption options_table[] = {
-        {.ln = "a4",   .type = HXTYPE_NONE, .ptr = &proc_opt.unit_a4,      .help = "Display results measured in FI A4"},
-        {.ln = "drop", .type = HXTYPE_NONE, .ptr = &proc_opt.unit_droplet, .help = "Display results in droplets (1/255 FI pixel)"},
-        {.ln = "sqcm", .type = HXTYPE_NONE, .ptr = &proc_opt.unit_i_sqcm,  .help = "Display results in i*cm²"},
-        {.ln = "sqm",  .type = HXTYPE_NONE, .ptr = &proc_opt.unit_i_sqm,   .help = "Display results in i*m²"},
-        {.ln = "sqin", .type = HXTYPE_NONE, .ptr = &proc_opt.unit_i_sqin,  .help = "Display results in i*in²"},
+        {.ln = "a4",   .type = HXTYPE_NONE, .ptr = &p->unit_a4,      .help = "Display results measured in FI A4"},
+        {.ln = "drop", .type = HXTYPE_NONE, .ptr = &p->unit_droplet, .help = "Display results in droplets (1/255 FI pixel)"},
+        {.ln = "sqcm", .type = HXTYPE_NONE, .ptr = &p->unit_i_sqcm,  .help = "Display results in i*cm²"},
+        {.ln = "sqm",  .type = HXTYPE_NONE, .ptr = &p->unit_i_sqm,   .help = "Display results in i*m²"},
+        {.ln = "sqin", .type = HXTYPE_NONE, .ptr = &p->unit_i_sqin,  .help = "Display results in i*in²"},
 
-        {.ln = "cmyk", .type = HXTYPE_VAL, .val = COLORSPACE_CMYK, .help = "CMYK colorspace",      .ptr = &proc_opt.colorspace},
-        {.ln = "cmy",  .type = HXTYPE_VAL, .val = COLORSPACE_CMY,  .help = "CMY colorspace",       .ptr = &proc_opt.colorspace},
-        {.ln = "gray", .type = HXTYPE_VAL, .val = COLORSPACE_GRAY, .help = "Grayscale colorspace", .ptr = &proc_opt.colorspace},
+        {.ln = "cmyk", .type = HXTYPE_VAL, .val = COLORSPACE_CMYK, .ptr = &p->colorspace, .help = "Calculate for CMYK colorspace"},
+        {.ln = "cmy",  .type = HXTYPE_VAL, .val = COLORSPACE_CMY,  .ptr = &p->colorspace, .help = "Calculate for CMY colorspace"},
+        {.ln = "gray", .type = HXTYPE_VAL, .val = COLORSPACE_GRAY, .ptr = &p->colorspace, .help = "Calculate for grayscale colorspace"},
 
 	{.sh = 'd', .ln = "dpi",  .type = HXTYPE_UINT,   .ptr = &proc_opt.dpi,	    .help = "Dots per inch"},
 	{.sh = 'f', .ln = "file", .type = HXTYPE_STRING, .ptr = &proc_opt.filename, .help = "File to analyze"},
@@ -69,20 +69,20 @@ static int lpacct_analyze_main(int argc, const char **argv)
     if(HX_getopt(options_table, &argc, &argv, HXOPT_USAGEONERR) <= 0)
         return EXIT_FAILURE;
 
-    if(parg->filename == NULL) {
+    if(p->filename == NULL) {
         fprintf(stderr, PREFIX "Specify a filename with the -f option,"
                 " and preferably the DPI with -D\n");
         return EXIT_FAILURE;
     }
 
     // Set some default display options if none was given
-    if(!(parg->unit_droplet | parg->unit_i_sqcm | parg->unit_i_sqm |
-      parg->unit_i_sqin | parg->unit_a4))
-            parg->unit_a4 = parg->unit_i_sqcm = 1;
+    if(!(p->unit_droplet | p->unit_i_sqcm | p->unit_i_sqm |
+      p->unit_i_sqin | p->unit_a4))
+            p->unit_a4 = p->unit_i_sqcm = 1;
 
-    parg->unit_metric = parg->unit_i_sqcm | parg->unit_i_sqm | parg->unit_a4;
+    p->unit_metric = p->unit_i_sqcm | p->unit_i_sqm | p->unit_a4;
 
-    return proc_image(parg) ? EXIT_SUCCESS : EXIT_FAILURE;
+    return proc_image(p) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 /*  lpacct_filter_main
