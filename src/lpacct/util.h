@@ -40,26 +40,6 @@ struct options {
  */
 extern void fd_tee(int, int, int);
 
-/*
- *      INLINE FUNCTIONS
- */
-static inline unsigned int min3(unsigned int a, unsigned int b,
-  unsigned int c)
-{
-    unsigned int r = (a < b) ? a : b;
-    return (r < c) ? r : c;
-}
-
-static inline double px_to_cm(unsigned int p, unsigned int dpi)
-{
-    return 2.54 * p / dpi;
-}
-
-static inline double px_to_in(unsigned int p, unsigned int dpi)
-{
-    return (double)p / dpi;
-}
-
 #endif // LPACCT_UTIL_H
 
 //=============================================================================

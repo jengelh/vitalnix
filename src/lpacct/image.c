@@ -23,6 +23,8 @@ struct mapping {
 // Functions
 static int image_map(const char *, struct mapping *, struct image *);
 static int image_get_header(FILE *, struct image *);
+static inline double px_to_cm(unsigned int, unsigned int);
+static inline double px_to_in(unsigned int, unsigned int);
 
 //-----------------------------------------------------------------------------
 /*  proc_image
@@ -197,6 +199,17 @@ static int image_get_header(FILE *fp, struct image *image)
         return 0;
 
     return image->type != FILETYPE_NONE;
+}
+
+//-----------------------------------------------------------------------------
+static inline double px_to_cm(unsigned int p, unsigned int dpi)
+{
+    return 2.54 * p / dpi;
+}
+
+static inline double px_to_in(unsigned int p, unsigned int dpi)
+{
+    return (double)p / dpi;
 }
 
 //=============================================================================

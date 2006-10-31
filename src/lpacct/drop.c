@@ -12,8 +12,9 @@
 static void pxcost_cmyk_mmap(const struct image *, struct cost *);
 static void pxcost_cmy_mmap(const struct image *, struct cost *);
 static void pxcost_gray_mmap(const struct image *, struct cost *);
-static inline unsigned int rgb_to_gray(unsigned char, unsigned char,
-  unsigned char);
+static inline unsigned int min3(unsigned int, unsigned int, unsigned int);
+static inline unsigned int rgb_to_gray(unsigned int, unsigned int,
+  unsigned int);
 
 // Variables
 void (*const pixel_cost[])(const struct image *, struct cost *) = {
@@ -176,8 +177,15 @@ static void pxcost_gray_mmap(const struct image *image, struct cost *cost)
 }
 
 //-----------------------------------------------------------------------------
-static inline unsigned int rgb_to_gray(unsigned char r, unsigned char g,
-  unsigned char b)
+static inline unsigned int min3(unsigned int a, unsigned int b,
+  unsigned int c)
+{
+    unsigned int r = (a < b) ? a : b;
+    return (r < c) ? r : c;
+}
+
+static inline unsigned int rgb_to_gray(unsigned int r, unsigned int g,
+  unsigned int b)
 {
     return (78 * r + 151 * g + 27 * b) / 256;
 }
