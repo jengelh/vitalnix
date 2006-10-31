@@ -38,7 +38,6 @@ struct options {
 /*
  *      FUNCTIONS
  */
-extern void fd_tee(int, int, int);
 
 #endif // LPACCT_UTIL_H
 

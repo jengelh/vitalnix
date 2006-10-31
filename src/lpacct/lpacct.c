@@ -22,6 +22,7 @@
 // Functions
 static int lpacct_analyze_main(int argc, const char **);
 static int lpacct_filter_main(int argc, const char **);
+static int generic_tee(int, int, int);
 
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv)
@@ -121,7 +122,7 @@ static int lpacct_filter_main(int argc, const char **argv)
     if((gs_output_fd = mkstemp(gs_output_file)) < 0)
         fprintf(stderr, PREFIX "mkstemp() failed with %d\n", errno);
 
-    fd_tee(data_input_fd, STDOUT_FILENO, gs_input_fd);
+    generic_tee(data_input_fd, STDOUT_FILENO, gs_input_fd);
     /* Closing STDOUT here allows the next filter to asynchronously start
     processing the data. @gs_output_fd is also closed because we do not need
     the fd, just the filename. */
@@ -148,5 +149,36 @@ static int lpacct_filter_main(int argc, const char **argv)
 
     return EXIT_SUCCESS;
 }
+
+//-----------------------------------------------------------------------------
+static int generic_tee(int fi, int fa, int fb)
+{
+    int ret = 0, ret2 = 0, ret3 = 0;
+    char buf[8192];
+
+    if(fa == -1)
+        while((ret = read(fi, buf, sizeof(buf))) > 0 &&
+              (ret2 = write(fb, buf, ret)) > 0);
+    else if(fb == -1)
+        while((ret = read(fi, buf, sizeof(buf))) > 0 &&
+              (ret2 = write(fa, buf, ret)) > 0);
+    else
+        while((ret = read(fi, buf, sizeof(buf))) > 0) {
+            ret2 = write(fa, buf, ret);
+            ret3 = write(fb, buf, ret);
+            if(ret2 <= 0 && ret3 <= 0)
+                break;
+        }
+
+    if(ret < 0)
+        return ret;
+    if(ret2 < 0)
+        return ret2;
+    if(ret3 < 0)
+        return ret3;
+
+    return 1;
+}
+
 
 //=============================================================================
