@@ -22,7 +22,7 @@ vpath %.icss ${S}
 EXEC_TARGETS := \
     vitalnix \
     cgi_chpasswd cgi_vwquota \
-    mdfixuuid mdpwlfmt mdsingle mdsync pdbdump pdbinfo \
+    lpacct_filter mdfixuuid mdpwlfmt mdsingle mdsync pdbdump pdbinfo \
     randpw tryauth testcase \
     vxuseradd vxusermod vxuserdel vxgroupadd vxgroupmod vxgroupdel
 
@@ -120,6 +120,12 @@ cgi_vwquota: cgiutils/vwquota.o | libvxcgi.so libvxutil.so
 
 # COMMAND-LINE TOOLS -------------------
 #
+XCFLAGS_lpacct_acct     := ${MYSQL_CFLAGS}
+XLDFLAGS_lpacct_filter  := ${MYSQL_LDFLAGS} -lHX -lvxutil
+lpacct_filter: $(call srcobj,lpacct) | libvxutil.so
+lpacct_analyze: lpacct_filter
+	ln -s $< $@;
+
 XLDFLAGS_mdfixuuid      := -lHX -lvxpdb -lvxutil
 mdfixuuid: clutils/mdfixuuid.o | libvxpdb.so libvxutil.so
 
