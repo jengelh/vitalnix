@@ -15,50 +15,88 @@
 #include "gsfilter.h"
 
 //-----------------------------------------------------------------------------
-/*  proc_gs
-    @input_file:        Input file, in application/postscript
-    @output_file:       Output file, either PGM or PPM
+/*  ghostscript_init
+    @input_file:        gs param -- postscript file to parse
+    @pid:               store point for PID
+    @dpi:               gs param -- dots per inch
 
-    Runs Ghostscript on the file to produce something we can read easily.
+    Starts the GhostScript interpreter on @input_file with @dpi x @dpi
+    resolution. Puts the PID of the subprocess into @pid and returns the
+    file descriptor for it. Returns -errno on error.
 */
-int proc_gs(const char *input_file, const char *output_file)
+int ghostscript_init(const char *input_file, pid_t *pid, int dpi)
 {
-    char of_param[256];
+    char dpi_string[sizeof("-r3600")];
     const char *argv[] = {
-        "gs",
-        "-dBATCH",
-        "-dNOPAUSE",
-        "-r300",
-        "-sDEVICE=ppmraw",
-        of_param,
-        input_file,
-        NULL,
+        "gs", "-dBATCH", "-dNOPAUSE", "-dQUIET", "-dSAFER", dpi_string,
+        "-sDEVICE=ppmraw", "-sOutputFile=-", input_file, NULL,
     };
-    int s, status;
-    pid_t pid;
+    int fd, ret, output_pipe[2];
 
-    snprintf(of_param, sizeof(of_param), "-sOutputFile=%s", output_file);
-    if((pid = fork()) < 0) {
-        fprintf(stderr, PREFIX "run_gs: fork() failed with %d\n", errno);
-        return 0;
-    } else if(pid == 0) {
-        int null_fd = open("/dev/null", O_WRONLY);
-        close(STDOUT_FILENO);
-        dup2(STDOUT_FILENO, null_fd);
-        execvp(*argv, (char * const *)argv);
-        exit(99);
+    if(pipe(output_pipe) != 0) {
+        ret = errno;
+        fprintf(stderr, PREFIX "%s: pipe() failed: %s\n",
+                __func__, strerror(ret));
+        goto err;
     }
 
+    if((fd = open(input_file, O_RDONLY)) < 0) {
+        ret = errno;
+        fprintf(stderr, PREFIX "%s: Could not open %s: %s\n",
+                __func__, input_file, strerror(ret));
+        goto err;
+    }
+
+    snprintf(dpi_string, sizeof(dpi_string), "-r%d", (dpi < 2) ? 2 : dpi);
+
+    if((*pid = fork()) < 0) {
+        ret = errno;
+        fprintf(stderr, PREFIX "%s: fork() failed: %s\n",
+                __func__, strerror(ret));
+        goto err;
+    } else if(*pid == 0) {
+        dup2(fd, STDIN_FILENO);
+        dup2(output_pipe[1], STDOUT_FILENO);
+        close(fd);
+        close(output_pipe[0]);
+        close(output_pipe[1]);
+        // keep STDERR_FILENO -- user or cups pick it up
+        ret = execvp(*argv, (char * const *)argv);
+        fprintf(stderr, "%s: execvp() failed: %s\n", __func__, strerror(ret));
+        exit(127);
+    }
+
+    if(waitpid(*pid, &ret, WNOHANG) > 0) {
+        fprintf(stderr, PREFIX "%s: Ghostscript terminated%s, exit status %d\n",
+                __func__, !WIFEXITED(ret) ? " abnormally" : "",
+                WEXITSTATUS(ret));
+        goto err;
+    }
+
+    close(fd);
+    close(output_pipe[1]);
+    return output_pipe[0];
+
+ err:
+    close(fd);
+    close(output_pipe[0]);
+    close(output_pipe[1]);
+    return -ret;
+}
+
+void ghostscript_exit(pid_t pid)
+{
+    int status;
     waitpid(pid, &status, 0);
-    if(!WIFEXITED(status)) {
-        fprintf(stderr, PREFIX "%s: gs subprocess terminated abnormally\n", __FUNCTION__);
-        return 0;
-    }
-    if((s = WEXITSTATUS(status)) != 0) {
-        fprintf(stderr, PREFIX "%s: gs subprocess exited with %d\n", __FUNCTION__, s);
-        return 0;
-    }
-    return 1;
+    if(WIFEXITED(status))
+        return;
+    if(WIFSIGNALED(status))
+        fprintf(stderr, "%s: GhostScript terminated abnormally, signal %d\n",
+                __func__, WTERMSIG(status));
+    else
+        fprintf(stderr, "%s: GhostScript terminated abnormally\n", __func__);
+
+    return;
 }
 
 //=============================================================================

@@ -2,6 +2,7 @@
     Copyright © Jan Engelhardt <jengelh@gmx.de>, 2006
     This code is released under version 2.1 of the GNU LGPL.
 */
+#include <sys/select.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <errno.h>
@@ -23,6 +24,7 @@
 static int lpacct_analyze_main(int argc, const char **);
 static int lpacct_filter_main(int argc, const char **);
 static int generic_tee(int, int, int);
+static int generic_tee_named(const char *, int, int);
 
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv)
@@ -50,6 +52,9 @@ static int lpacct_analyze_main(int argc, const char **argv)
         .verbose    = 1,
     };
     struct options *p = &proc_opt;
+    char *input_file = NULL;
+    pid_t pid;
+    int ret;
     struct HXoption options_table[] = {
         {.ln = "a4",   .type = HXTYPE_NONE, .ptr = &p->unit_a4,      .help = "Display results measured in FI A4"},
         {.ln = "drop", .type = HXTYPE_NONE, .ptr = &p->unit_droplet, .help = "Display results in droplets (1/255 FI pixel)"},
@@ -61,8 +66,8 @@ static int lpacct_analyze_main(int argc, const char **argv)
         {.ln = "cmy",  .type = HXTYPE_VAL, .val = COLORSPACE_CMY,  .ptr = &p->colorspace, .help = "Calculate for CMY colorspace"},
         {.ln = "gray", .type = HXTYPE_VAL, .val = COLORSPACE_GRAY, .ptr = &p->colorspace, .help = "Calculate for grayscale colorspace"},
 
-	{.sh = 'd', .ln = "dpi",  .type = HXTYPE_UINT,   .ptr = &proc_opt.dpi,	    .help = "Dots per inch"},
-	{.sh = 'f', .ln = "file", .type = HXTYPE_STRING, .ptr = &proc_opt.filename, .help = "File to analyze"},
+	{.sh = 'd', .ln = "dpi",  .type = HXTYPE_UINT,   .ptr = &proc_opt.dpi, .help = "Dots per inch"},
+	{.sh = 'f', .ln = "file", .type = HXTYPE_STRING, .ptr = &input_file,   .help = "File to analyze"},
 	HXOPT_AUTOHELP,
 	HXOPT_TABLEEND,
     };
@@ -70,8 +75,8 @@ static int lpacct_analyze_main(int argc, const char **argv)
     if(HX_getopt(options_table, &argc, &argv, HXOPT_USAGEONERR) <= 0)
         return EXIT_FAILURE;
 
-    if(p->filename == NULL) {
-        fprintf(stderr, PREFIX "Specify a filename with the -f option,"
+    if(input_file == NULL) {
+        fprintf(stderr, "Specify a filename with the -f option,"
                 " and preferably the DPI with -D\n");
         return EXIT_FAILURE;
     }
@@ -83,7 +88,14 @@ static int lpacct_analyze_main(int argc, const char **argv)
 
     p->unit_metric = p->unit_i_sqcm | p->unit_i_sqm | p->unit_a4;
 
-    return proc_image(p) ? EXIT_SUCCESS : EXIT_FAILURE;
+    ret = ghostscript_init(input_file, &pid, p->dpi);
+    if(ret < 0) {
+        fprintf(stderr, PREFIX "GhostScript init failed: %s\n", strerror(ret));
+        return EXIT_FAILURE;
+    }
+    ret = (mpxm_process(ret, p) > 0) ? EXIT_SUCCESS : EXIT_FAILURE;
+    ghostscript_exit(pid);
+    return ret;
 }
 
 /*  lpacct_filter_main
@@ -94,58 +106,52 @@ static int lpacct_analyze_main(int argc, const char **argv)
 */
 static int lpacct_filter_main(int argc, const char **argv)
 {
-    char gs_input_file[256]  = "/tmp/lpacctXXXXXX",
-         gs_output_file[256] = "/tmp/lpacctXXXXXX";
-    int data_input_fd, gs_input_fd, gs_output_fd;
-
-/*    FILE *f = fopen("/dev/tty2", "w");
-    fprintf(f, "[%d]\n", getpid());
-    fclose(f);
-    sleep(10);*/
+    const char *input_file = NULL;
+    char input_tmp[] = "/tmp/lpacctXXXXXX";
+    pid_t pid;
+    int fd, ret;
 
     if(argc == 7) {
-        if((data_input_fd = open(argv[6], O_RDONLY)) < 0) {
-            fprintf(stderr, PREFIX "Could not open %s: %s\n",
-                    argv[6], strerror(errno));
-            exit(EXIT_FAILURE);
+        input_file = argv[6];
+        if((ret = generic_tee_named(input_file, STDOUT_FILENO, -1)) < 0) {
+            fprintf(stderr, PREFIX "generic_named_tee: %s\n", strerror(ret));
+            return EXIT_FAILURE;
         }
     } else if(argc == 6) {
-        data_input_fd = STDIN_FILENO;
+        if((fd = mkstemp(input_tmp)) < 0) {
+            fprintf(stderr, PREFIX "mkstemp: %s\n", strerror(errno));
+            return EXIT_FAILURE;
+        }
+        if((ret = generic_tee(STDIN_FILENO, STDOUT_FILENO, fd)) < 0) {
+            fprintf(stderr, PREFIX "generic_tee: %s\n", strerror(ret));
+            return EXIT_FAILURE;
+        }
+        input_file = input_tmp;
+        close(STDOUT_FILENO);
+        close(fd);
     } else {
         fprintf(stderr, "Usage: %s JOB_ID USER TITLE COPIES OPTIONS [FILE]\n", *argv);
         return EXIT_FAILURE;
     }
 
-    umask(~(S_IRUSR | S_IWUSR));
-    if((gs_input_fd = mkstemp(gs_input_file)) < 0)
-        fprintf(stderr, PREFIX "mkstemp() failed with %d\n", errno);
-    if((gs_output_fd = mkstemp(gs_output_file)) < 0)
-        fprintf(stderr, PREFIX "mkstemp() failed with %d\n", errno);
-
-    generic_tee(data_input_fd, STDOUT_FILENO, gs_input_fd);
-    /* Closing STDOUT here allows the next filter to asynchronously start
-    processing the data. @gs_output_fd is also closed because we do not need
-    the fd, just the filename. */
-    close(STDOUT_FILENO);
-    close(gs_output_fd);
-
-    if(gs_input_fd > 0 && gs_output_fd > 0) {
+    fd = ret = ghostscript_init(input_file, &pid, DEFAULT_GS_DPI);
+    if(ret < 0) {
+        fprintf(stderr, PREFIX "GhostScript init failed: %s\n", strerror(ret));
+        ret = EXIT_FAILURE;
+    } else {
         // Accounting starts here.
         struct options op = {
             .do_account = 1,
             .dpi        = DEFAULT_GS_DPI,
             .colorspace = COLORSPACE_CMYK,
-            .filename   = gs_output_file,
             .cups_args  = argv,
         };
-        if(proc_gs(gs_input_file, gs_output_file))
-            proc_image(&op);
+        ret = (mpxm_process(fd, &op) > 0) ? EXIT_SUCCESS : EXIT_FAILURE;
     }
 
-    if(gs_input_fd > 0)
-        unlink(gs_input_file);
-    if(gs_output_fd > 0)
-        unlink(gs_output_file);
+    ghostscript_exit(pid);
+    if(input_file == input_tmp)
+        unlink(input_tmp);
 
     return EXIT_SUCCESS;
 }
@@ -180,5 +186,14 @@ static int generic_tee(int fi, int fa, int fb)
     return 1;
 }
 
+static int generic_tee_named(const char *file, int fa, int fb)
+{
+    int fi, ret;
+    if((fi = open(file, O_RDONLY)) < 0)
+        return -errno;
+    ret = generic_tee(fi, fa, fb);
+    close(fi);
+    return 0;
+}
 
 //=============================================================================

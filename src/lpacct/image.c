@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include <libHX.h>
 #include "acct.h"
 #include "drop.h"
@@ -14,41 +15,38 @@
 #include "image.h"
 #include "util.h"
 
-// Definitions
-struct mapping {
-    void *addr;
-    off_t size;
-};
-
 // Functions
-static int image_map(const char *, struct mapping *, struct image *);
-static int image_get_header(FILE *, struct image *);
+static int mpxm_fdgetl(int, hmc_t **);
+static int mpxm_get_header(int, struct image *);
+static int mpxm_get_image(int, struct image *);
 static inline double px_to_cm(unsigned int, unsigned int);
 static inline double px_to_in(unsigned int, unsigned int);
 
 //-----------------------------------------------------------------------------
-/*  proc_image
-    @file:      File to analyze
+/*  mpxm_process
+    @fd:        file descriptor to read from
+    @cost:      accounting structure
 
-    Account for the file.
+    Process all pages from @fd and write accounting results into @cost.
+    Propagates the error from any subfunction to the caller.
 */
-int proc_image(const struct options *op)
+int mpxm_process(int fd, const struct options *op)
 {
-    struct mapping mapping;
+    struct costf sqcm, sqm, sqin, bl;
     struct image image;
     struct cost cost = {};
-    struct costf sqcm, sqm, sqin, bl;
+    int ret;
 
-    if(!image_map(op->filename, &mapping, &image))
-        return 0;
+    while((ret = mpxm_get_header(fd, &image)) > 0 &&
+      (ret = mpxm_get_image(fd, &image)) > 0)
+    {
+        pixel_cost[op->colorspace](&image, &cost);
+        free(image.data);
 
-    pixel_cost[op->colorspace](&image, &cost);
-    munmap(mapping.addr, mapping.size);
-
-    drop2sqcm(&sqcm, &cost, op->dpi);
-    drop2sqm(&sqm, &cost, op->dpi);
-    drop2sqin(&sqin, &cost, op->dpi);
-    drop2bl(&bl, &cost, op->dpi);
+        drop2sqcm(&sqcm, &cost, op->dpi);
+        drop2sqm(&sqm, &cost, op->dpi);
+        drop2sqin(&sqin, &cost, op->dpi);
+        drop2bl(&bl, &cost, op->dpi);
 
     if(op->verbose) {
         if(op->unit_metric) {
@@ -86,119 +84,120 @@ int proc_image(const struct options *op)
 #undef COLOR
     }
 
+    }
+
     // ->do_account is only set when called as a CUPS filter.
-    if(op->do_account) {
+    if(ret > 0 && op->do_account) {
         acct_syslog(op, &sqm);
         acct_mysql(op, &sqm);
     }
 
-    return 1;
+    return ret;
 }
 
 //-----------------------------------------------------------------------------
-/*  image_map
-    @file:      File to map
-    @mapping:   Store point for mapping parameters
-    @image:     Store point for image parameters
+/*  mpxm_fdgetl
+    @fd:        file descriptor to read from
+    @res:       buffer to put data into
 
-    Maps @file, fills in the mapping parameters into @mapping (needed for
-    unmap) and fills in @image with image parameters such as width, height and
-    the actual pixels (being a pointer to the mapped space).
+    Reads a line from @fd and puts it into @res.
 */
-static int image_map(const char *file, struct mapping *mapping,
-  struct image *image)
+static int mpxm_fdgetl(int fd, hmc_t **res)
 {
-    struct stat sb;
-    FILE *fp;
+    char temp[256], *temp_ptr = temp;
+    int ret;
 
-    if((fp = fopen(file, "rb")) == NULL) {
-        fprintf(stderr, PREFIX "image_map: fopen() failed with %d\n", errno);
-        return 0;
-    }
-    if(fstat(fileno(fp), &sb) != 0) {
-        fprintf(stderr, PREFIX "proc_image: fstat() failed with %d\n", errno);
-        fclose(fp);
-        return 0;
-    }
+    if(*res == NULL) *res = hmc_sinit("");
+    else             hmc_trunc(res, 0);
 
-    mapping->size = sb.st_size;
-    if(!image_get_header(fp, image)) {
-        fclose(fp);
-        return 0;
-    }
-
-    if(image->type != FILETYPE_PGM && image->type != FILETYPE_PPM) {
-        fprintf(stderr, PREFIX "pxm_get_handler: Could not identify image\n");
-        fclose(fp);
-        return 0;
+    while(1) {
+        /* On read error or newline (make sure newlines makes
+        it into @res), flush and return. */
+        if((ret = read(fd, temp_ptr, 1)) <= 0 || *temp_ptr++ == '\n') {
+            *temp_ptr = '\0';
+            hmc_strcat(res, temp);
+            break;
+        }
+        if(temp_ptr == temp + sizeof(temp) - 1) {
+            *temp_ptr = '\0';
+            hmc_strcat(res, temp);
+            temp_ptr = temp;
+        }
     }
 
-    if((mapping->addr = mmap(NULL, mapping->size, PROT_READ, MAP_SHARED,
-      fileno(fp), 0)) == MMAP_FAILED)
-    {
-        fprintf(stderr, PREFIX "proc_image: mmap() failed with %d\n", errno);
-        fclose(fp);
-        return 0;
-    }
+    return (ret < 0) ? -errno : 0;
+}
 
-    image->data   = mapping->addr + ftell(fp);
+/*  mpxm_get_header
+    @fd:        file descriptor to read from
+    @image:     pointer to image parameters
+
+    Reads the next PPM header from the stream @fd into @image. Returns true on
+    success, otherwise false.
+*/
+static int mpxm_get_header(int fd, struct image *image)
+{
+    hmc_t *ln = NULL;
+    int ret;
+
+    if((ret = mpxm_fdgetl(fd, &ln)) < 0)
+        return 0;
+    HX_chomp(ln);
+
+    if(strcmp(ln, "P6") == 0)
+        image->type = FILETYPE_PPM;
+    else if(strcmp(ln, "P3") == 0)
+        image->type = FILETYPE_PGM;
+    else
+        return 0;
+
+    // Some programs put a comment line in it
+    do {
+        if((ret = mpxm_fdgetl(fd, &ln)) < 0)
+            return 0;
+    } while(*ln == '#');
+
+    if(sscanf(ln, "%lu %lu", &image->width, &image->height) != 2)
+        return 0;
+
+    // colorspace line (unused)
+    mpxm_fdgetl(fd, &ln);
+    hmc_free(ln);
+
     image->pixels = image->width * image->height;
-
-    fclose(fp);
     return 1;
 }
 
-//-----------------------------------------------------------------------------
-/*  image_get_header
-    @fp:        file handle to read from
-    @image:     store point for image info
+/*  mpxm_get_image
+    @fd:        file descriptor to read from
+    @image:     image to fill
 
-    Reads the header of a PGM/PPM file, fills in @image.
+    Reads the pixel stream from @fd into @image->data. Returns true on success,
+    otherwise false.
 */
-static int image_get_header(FILE *fp, struct image *image)
+static int mpxm_get_image(int fd, struct image *image)
 {
-    const char *p;
-    char buf[80];
+    ssize_t bytes, ret;
+    unsigned char *p;
 
-    image->type = FILETYPE_NONE;
+    if(image->type == FILETYPE_PPM)
+        p = image->data = malloc(bytes = 3 * image->pixels);
+    else if(image->type == FILETYPE_PGM)
+        p = image->data = malloc(bytes = image->pixels);
+    else
+        return -EINVAL;
 
-    /*
-     *  Read filetype
-     */
-    while((p = fgets(buf, sizeof(buf), fp)) != NULL) {
-        HX_chomp(buf);
-        if(strcmp(buf, "P5") == 0) {
-            image->type = FILETYPE_PGM;
-            break;
-        }
-        if(strcmp(buf, "P6") == 0) {
-            image->type = FILETYPE_PPM;
-            break;
-        }
+    if(image->data == NULL)
+        return -errno;
+    while((ret = read(fd, p, bytes)) > 0) {
+        bytes -= ret;
+        p     += ret;
     }
-    if(p == NULL) // EOF before P5/P6 found
+    if(bytes > 0) {
+        fprintf(stderr, "%s: Did not read enough, %zd left\n", __func__, bytes);
         return 0;
-
-    /*
-     *  Skip comments.
-     */
-    while((p = fgets(buf, sizeof(buf), fp)) != NULL) {
-        HX_chomp(buf);
-        if(*buf != '#')
-            break;
     }
-    if(p == NULL) // EOF before size header
-        return 0;
-
-    /*
-     *  Image size
-     */
-    sscanf(buf, "%ld %ld", &image->width, &image->height);
-    p = fgets(buf, sizeof(buf), fp);
-    if(p == NULL) // EOF before color header
-        return 0;
-
-    return image->type != FILETYPE_NONE;
+    return 1;
 }
 
 //-----------------------------------------------------------------------------

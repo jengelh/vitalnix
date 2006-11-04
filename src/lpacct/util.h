@@ -24,15 +24,23 @@ enum {
     ARGP_FILE,
 };
 
+struct unit {
+    unsigned int droplet, sqcm, sqm, sqin, a4, metric;
+};
+
 struct options {
-    // Options
+    // generic
     unsigned int dpi;
     enum colorspace colorspace;
-    char *filename;
-    const char **cups_args;
-    // Flags
-    unsigned int do_account, verbose, unit_droplet, unit_i_sqcm, unit_i_sqm,
+    unsigned int verbose, unit_droplet, unit_i_sqcm, unit_i_sqm,
                  unit_i_sqin, unit_a4, unit_metric;
+
+    // console
+    unsigned int run_ghostscript;
+
+    // filter
+    const char **cups_args;
+    unsigned int do_account;
 };
 
 /*

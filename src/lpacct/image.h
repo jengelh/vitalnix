@@ -13,13 +13,13 @@ struct options;
 
 struct image {
     enum imagetype type;
-    const unsigned char *data;
+    unsigned char *data;
     unsigned long width, height, pixels;
 };
 
 /*
  *      FUNCTIONS
  */
-extern int proc_image(const struct options *);
+extern int mpxm_process(int, const struct options *);
 
 #endif // LPACCT_IMAGE_H
