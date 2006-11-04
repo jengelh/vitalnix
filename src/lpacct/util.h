@@ -35,9 +35,6 @@ struct options {
     unsigned int verbose, unit_droplet, unit_i_sqcm, unit_i_sqm,
                  unit_i_sqin, unit_a4, unit_metric;
 
-    // console
-    unsigned int run_ghostscript;
-
     // filter
     const char **cups_args;
     unsigned int do_account;

@@ -2,11 +2,11 @@
     Copyright © Jan Engelhardt <jengelh@gmx.de>, 2006
     This code is released under version 2.1 of the GNU LGPL.
 
-    Accounting boilerplate for lpacct, in a simple syslog and a more
+    Accounting boilerplate for lpacct, to a simple syslog or a more
     advanced mysql target.
 */
 
-#define _GNU_SOURCE 1
+#define _GNU_SOURCE 1 // for asprintf
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,6 +14,7 @@
 #include <syslog.h>
 #include <libHX.h>
 #include <mysql.h>
+#include "vitalnix-config.h"
 #include "libvxutil/libvxutil.h"
 #include "acct.h"
 #include "drop.h"
@@ -39,7 +40,7 @@ void acct_mysql(const struct options *op, const struct costf *cost)
     char *qqueue, *quser, *qtitle, *sql_query;
     MYSQL *conn;
 
-    if((conn = acct_mysql_init("")) == NULL)
+    if((conn = acct_mysql_init(CONFIG_SYSCONFDIR "/lpacct.conf")) == NULL)
         return;
 
     vxutil_quote(op->cups_args[ARGP_QUEUE], VXQUOTE_SINGLE, &qqueue);
@@ -78,19 +79,18 @@ static MYSQL *acct_mysql_init(const char *file)
     int ret;
 
     if((ret = HX_shconfig(file, options_table)) <= 0) {
-        fprintf(stderr, "%s: Error parsing %s: %s\n", __FUNCTION__, file,
-                strerror(ret));
-        return NULL;
+        fprintf(stderr, PREFIX "%s: Warning: Error parsing %s: %s\n",
+                __func__, file, strerror(ret));
     }
 
     if((conn = acct_mysql_init(NULL)) == NULL) {
-        fprintf(stderr, "mysql_init: %s\n", strerror(errno));
+        fprintf(stderr, PREFIX "mysql_init: %s\n", strerror(errno));
         return NULL;
     }
 
     chk = mysql_real_connect(conn, host, user, pass, db, 0, NULL, 0);
     if(chk == NULL) {
-        fprintf(stderr, "mysql_real_connect: %s\n", mysql_error(conn));
+        fprintf(stderr, PREFIX "mysql_real_connect: %s\n", mysql_error(conn));
         mysql_close(conn);
         return NULL;
     }

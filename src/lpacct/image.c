@@ -19,6 +19,8 @@
 static int mpxm_fdgetl(int, hmc_t **);
 static int mpxm_get_header(int, struct image *);
 static int mpxm_get_image(int, struct image *);
+static void print_stats(const struct options *, const struct cost *,
+    const struct image *);
 static inline double px_to_cm(unsigned int, unsigned int);
 static inline double px_to_in(unsigned int, unsigned int);
 
@@ -32,7 +34,6 @@ static inline double px_to_in(unsigned int, unsigned int);
 */
 int mpxm_process(int fd, const struct options *op)
 {
-    struct costf sqcm, sqm, sqin, bl;
     struct image image;
     struct cost cost = {};
     int ret;
@@ -43,54 +44,17 @@ int mpxm_process(int fd, const struct options *op)
         pixel_cost[op->colorspace](&image, &cost);
         free(image.data);
 
-        drop2sqcm(&sqcm, &cost, op->dpi);
-        drop2sqm(&sqm, &cost, op->dpi);
-        drop2sqin(&sqin, &cost, op->dpi);
-        drop2bl(&bl, &cost, op->dpi);
-
-    if(op->verbose) {
-        if(op->unit_metric) {
-            double w = px_to_cm(image.width, op->dpi),
-                   h = px_to_cm(image.height, op->dpi);
-            printf("%lu x %lu px @ %u dpi = %.2f x %.2f cm (%.2f cm²)\n",
-                image.width, image.height, op->dpi,
-                w, h, w * h);
-        }
-        if(op->unit_i_sqin) {
-            double w = px_to_in(image.width, op->dpi),
-                   h = px_to_in(image.height, op->dpi);
-            printf("%lu x %lu px @ %u dpi = %.2f x %.2f in (%.2f in²)\n",
-                image.width, image.height, op->dpi,
-                w, h, w * h);
-        }
-        if(op->unit_metric)
-            printf("\t(1 ISO A4-Blatt Full Intensity = 1*0.06237 i*m²)\n");
-
-#define COLOR(x) \
-        if(op->unit_droplet) printf("  %9lld d", cost.x); \
-        if(op->unit_i_sqcm)  printf("  %6.2f i*cm²", sqcm.x); \
-        if(op->unit_i_sqm)   printf("  %6.5f i*m²", sqm.x); \
-        if(op->unit_i_sqin)  printf("  %6.2f i*in²", sqin.x); \
-        if(op->unit_a4)      printf("  %6.4f A4", bl.x); \
-        printf("\n");
-
-        printf("Cyan   "); COLOR(c);
-        printf("Magenta"); COLOR(m);
-        printf("Yellow "); COLOR(y);
-        printf("Black  "); COLOR(k);
-        printf("----------------------------------------"
-               "---------------------------------------\n");
-        printf("Total  "); COLOR(t);
-#undef COLOR
-    }
-
+        if(op->verbose)
+            print_stats(op, &cost, &image);
     }
 
     // ->do_account is only set when called as a CUPS filter.
+/*
     if(ret > 0 && op->do_account) {
         acct_syslog(op, &sqm);
         acct_mysql(op, &sqm);
     }
+*/
 
     return ret;
 }
@@ -200,7 +164,54 @@ static int mpxm_get_image(int fd, struct image *image)
     return 1;
 }
 
-//-----------------------------------------------------------------------------
+static void print_stats(const struct options *op, const struct cost *cost,
+  const struct image *image)
+{
+    struct costf sqcm, sqm, sqin, bl;
+
+    drop2sqcm(&sqcm, cost, op->dpi);
+    drop2sqm (&sqm,  cost, op->dpi);
+    drop2sqin(&sqin, cost, op->dpi);
+    drop2bl  (&bl,   cost, op->dpi);
+
+    if(op->unit_metric) {
+        double w = px_to_cm(image->width, op->dpi),
+               h = px_to_cm(image->height, op->dpi);
+        printf("%lu x %lu px @ %u dpi = %.2f x %.2f cm (%.2f cm²)\n",
+            image->width, image->height, op->dpi,
+            w, h, w * h);
+    }
+
+    if(op->unit_i_sqin) {
+        double w = px_to_in(image->width, op->dpi),
+               h = px_to_in(image->height, op->dpi);
+        printf("%lu x %lu px @ %u dpi = %.2f x %.2f in (%.2f in²)\n",
+            image->width, image->height, op->dpi,
+            w, h, w * h);
+    }
+
+    if(op->unit_metric)
+        printf("\t(1 ISO A4-Blatt Full Intensity = 1*0.06237 i*m²)\n");
+
+#define COLOR(x) \
+    if(op->unit_droplet) printf("  %9lld d", cost->x); \
+    if(op->unit_i_sqcm)  printf("  %6.2f i*cm²", sqcm.x); \
+    if(op->unit_i_sqm)   printf("  %6.5f i*m²", sqm.x); \
+    if(op->unit_i_sqin)  printf("  %6.2f i*in²", sqin.x); \
+    if(op->unit_a4)      printf("  %6.4f A4", bl.x); \
+    printf("\n");
+
+    printf("Cyan   "); COLOR(c);
+    printf("Magenta"); COLOR(m);
+    printf("Yellow "); COLOR(y);
+    printf("Black  "); COLOR(k);
+    printf("----------------------------------------"
+           "---------------------------------------\n");
+    printf("Total  "); COLOR(t);
+    return;
+#undef COLOR
+}
+
 static inline double px_to_cm(unsigned int p, unsigned int dpi)
 {
     return 2.54 * p / dpi;
