@@ -91,10 +91,10 @@ static void pxcost_cmyk_mmap(const struct image *image, struct cost *cost)
 {
     unsigned long long tc = 0, tm = 0, ty = 0, tk = 0;
     const unsigned char *current = image->data;
-    long pixels = image->pixels;
+    unsigned long pixels = image->pixels;
     unsigned char c, m, y, k;
 
-    while(pixels--) {
+    while(pixels-- > 0) {
         c = 255 - current[0];
         m = 255 - current[1];
         y = 255 - current[2];
@@ -132,9 +132,9 @@ static void pxcost_cmy_mmap(const struct image *image, struct cost *cost)
 {
     const unsigned char *current = image->data;
     unsigned long long c = 0, m = 0, y = 0;
-    long pixels = image->pixels;
+    unsigned long pixels = image->pixels;
 
-    while(pixels--) {
+    while(pixels-- > 0) {
         c += 255 - current[0];
         m += 255 - current[1];
         y += 255 - current[2];
@@ -158,14 +158,14 @@ static void pxcost_cmy_mmap(const struct image *image, struct cost *cost)
 static void pxcost_gray_mmap(const struct image *image, struct cost *cost)
 {
     const unsigned char *current  = image->data;
-    long pixels = image->pixels;
+    unsigned long pixels = image->pixels;
     unsigned long long k = 0;
 
     if(image->type == FILETYPE_PGM) {
-        while(pixels--)
+        while(pixels-- > 0)
             k += 255 - *current++;
     } else {
-        while(pixels--) {
+        while(pixels-- > 0) {
             k += 255 - rgb_to_gray(current[0], current[1], current[2]);
             current += 3;
         }
