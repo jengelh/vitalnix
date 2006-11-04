@@ -124,7 +124,7 @@ XCFLAGS_lpacct_acct     := ${MYSQL_CFLAGS}
 XLDFLAGS_lpacct_filter  := ${MYSQL_LDFLAGS} -lHX -lvxutil
 lpacct_filter: $(call srcobj,lpacct) | libvxutil.so
 lpacct_analyze: lpacct_filter
-	ln -s $< $@;
+	ln -fs $< $@;
 
 XLDFLAGS_mdfixuuid      := -lHX -lvxpdb -lvxutil
 mdfixuuid: clutils/mdfixuuid.o | libvxpdb.so libvxutil.so
