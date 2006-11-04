@@ -113,11 +113,11 @@ static void pxcost_cmyk_mmap(const struct image *image, struct cost *cost)
         current += 3;
     }
 
-    cost->c = tc;
-    cost->m = tm;
-    cost->y = ty;
-    cost->k = tk;
-    cost->t = tc + tm + ty + tk;
+    cost->c += tc;
+    cost->m += tm;
+    cost->y += ty;
+    cost->k += tk;
+    cost->t += tc + tm + ty + tk;
     return;
 }
 
@@ -141,11 +141,10 @@ static void pxcost_cmy_mmap(const struct image *image, struct cost *cost)
         current += 3;
     }
 
-    cost->c = c;
-    cost->m = m;
-    cost->y = y;
-    cost->k = 0;
-    cost->t = c + m + y;
+    cost->c += c;
+    cost->m += m;
+    cost->y += y;
+    cost->t += c + m + y;
     return;
 }
 
@@ -171,8 +170,7 @@ static void pxcost_gray_mmap(const struct image *image, struct cost *cost)
         }
     }
 
-    cost->c = cost->m = cost->y = 0;
-    cost->k = k;
+    cost->k += k;
     return;
 }
 

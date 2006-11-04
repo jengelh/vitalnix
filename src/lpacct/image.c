@@ -36,7 +36,7 @@ int proc_image(const struct options *op)
 {
     struct mapping mapping;
     struct image image;
-    struct cost cost;
+    struct cost cost = {};
     struct costf sqcm, sqm, sqin, bl;
 
     if(!image_map(op->filename, &mapping, &image))
