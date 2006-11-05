@@ -5,10 +5,12 @@ struct image;
 
 struct cost {
     unsigned long long c, m, y, k, t;
+    unsigned int p;
 };
 
 struct costf {
     double c, m, y, k, t;
+    unsigned int p;
 };
 
 /*

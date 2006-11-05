@@ -16,6 +16,7 @@
 #include "util.h"
 
 // Functions
+static void cost_add(struct cost *, const struct cost *);
 static int mpxm_fdgetl(int, hmc_t **);
 static int mpxm_get_header(int, struct image *);
 static int mpxm_get_image(int, struct image *);
@@ -35,17 +36,26 @@ static inline double px_to_in(unsigned int, unsigned int);
 int mpxm_process(int fd, const struct options *op)
 {
     struct image image;
-    struct cost cost = {};
+    struct cost all_cost = {}, page_cost = {};
     int ret;
 
     while((ret = mpxm_get_header(fd, &image)) > 0 &&
       (ret = mpxm_get_image(fd, &image)) > 0)
     {
-        pixel_cost[op->colorspace](&image, &cost);
+        pixel_cost[op->colorspace](&image, &page_cost);
         free(image.data);
+        cost_add(&all_cost, &page_cost);
+        ++all_cost.p;
 
-        if(op->verbose)
-            print_stats(op, &cost, &image);
+        if(op->verbose) {
+            printf("Page %u\n", all_cost.p);
+            print_stats(op, &page_cost, &image);
+        }
+    }
+
+    if(op->verbose) {
+        printf("Total cost of all %u pages\n", all_cost.p);
+        print_stats(op, &all_cost, NULL);
     }
 
     // ->do_account is only set when called as a CUPS filter.
@@ -60,6 +70,17 @@ int mpxm_process(int fd, const struct options *op)
 }
 
 //-----------------------------------------------------------------------------
+static void cost_add(struct cost *out, const struct cost *in)
+{
+    out->c += in->c;
+    out->m += in->m;
+    out->y += in->y;
+    out->k += in->k;
+    out->t += in->c + in->m + in->y + in->k;
+    out->p += in->p;
+    return;
+}
+
 /*  mpxm_fdgetl
     @fd:        file descriptor to read from
     @res:       buffer to put data into
@@ -174,20 +195,22 @@ static void print_stats(const struct options *op, const struct cost *cost,
     drop2sqin(&sqin, cost, op->dpi);
     drop2bl  (&bl,   cost, op->dpi);
 
-    if(op->unit_metric) {
-        double w = px_to_cm(image->width, op->dpi),
-               h = px_to_cm(image->height, op->dpi);
-        printf("%lu x %lu px @ %u dpi = %.2f x %.2f cm (%.2f cm²)\n",
-            image->width, image->height, op->dpi,
-            w, h, w * h);
-    }
+    if(image != NULL) {
+        if(op->unit_metric) {
+            double w = px_to_cm(image->width, op->dpi),
+                   h = px_to_cm(image->height, op->dpi);
+            printf("%lu x %lu px @ %u dpi = %.2f x %.2f cm (%.2f cm²)\n",
+                image->width, image->height, op->dpi,
+                w, h, w * h);
+        }
 
-    if(op->unit_i_sqin) {
-        double w = px_to_in(image->width, op->dpi),
-               h = px_to_in(image->height, op->dpi);
-        printf("%lu x %lu px @ %u dpi = %.2f x %.2f in (%.2f in²)\n",
-            image->width, image->height, op->dpi,
-            w, h, w * h);
+        if(op->unit_i_sqin) {
+            double w = px_to_in(image->width, op->dpi),
+                   h = px_to_in(image->height, op->dpi);
+            printf("%lu x %lu px @ %u dpi = %.2f x %.2f in (%.2f in²)\n",
+                image->width, image->height, op->dpi,
+                w, h, w * h);
+        }
     }
 
     if(op->unit_metric)
