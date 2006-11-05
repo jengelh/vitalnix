@@ -6,7 +6,7 @@
 */
 #include "drop.h"
 #include "image.h"
-#include "util.h"
+#include "lpacct.h"
 
 // Functions
 static void pxcost_cmyk_mmap(const struct image *, struct cost *);

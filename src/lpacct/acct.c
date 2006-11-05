@@ -19,7 +19,7 @@
 #include "acct.h"
 #include "drop.h"
 #include "global.h"
-#include "util.h"
+#include "lpacct.h"
 
 // Functions
 static MYSQL *acct_mysql_init(const char *);

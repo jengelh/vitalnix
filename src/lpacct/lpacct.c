@@ -15,7 +15,7 @@
 #include "global.h"
 #include "gsfilter.h"
 #include "image.h"
-#include "util.h"
+#include "lpacct.h"
 
 // Definitions
 #define DEFAULT_GS_DPI  96

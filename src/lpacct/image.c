@@ -13,7 +13,7 @@
 #include "drop.h"
 #include "global.h"
 #include "image.h"
-#include "util.h"
+#include "lpacct.h"
 
 // Functions
 static void cost_add(struct cost *, const struct cost *);
