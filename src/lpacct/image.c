@@ -193,21 +193,25 @@ static void print_stats(const struct options *op, const struct cost *cost,
     if(op->unit_metric)
         printf("\t(1 ISO A4-Blatt Full Intensity = 1*0.06237 i*m²)\n");
 
-#define COLOR(x) \
-    if(op->unit_droplet) printf("  %9lld d", cost->x); \
-    if(op->unit_i_sqcm)  printf("  %6.2f i*cm²", sqcm.x); \
-    if(op->unit_i_sqm)   printf("  %6.5f i*m²", sqm.x); \
-    if(op->unit_i_sqin)  printf("  %6.2f i*in²", sqin.x); \
-    if(op->unit_a4)      printf("  %6.4f A4", bl.x); \
+    printf("%-8s  %7s  %7s  %7s  %7s  %7s\n",
+           "UNIT", "CYAN", "MAGENTA", "YELLOW", "BLACK", "TOTAL");
+    if(op->unit_droplet)
+        printf("Droplets  %7lld  %7lld  %7lld  %7lld  %7lld\n",
+               cost->c, cost->m, cost->y, cost->k, cost->t);
+    if(op->unit_i_sqcm)
+        printf("i*cm²     %7.2f  %7.2f  %7.2f  %7.2f  %7.2f\n",
+               sqcm.c, sqcm.m, sqcm.y, sqcm.k, sqcm.t);
+    if(op->unit_i_sqm)
+        printf("i*m²      %7.2f  %7.2f  %7.2f  %7.2f  %7.2f\n",
+               sqm.c, sqm.m, sqm.y, sqm.k, sqm.t);
+    if(op->unit_i_sqin)
+        printf("i*in²     %7.2f  %7.2f  %7.2f  %7.2f  %7.2f\n",
+               sqin.c, sqin.m, sqin.y, sqin.k, sqin.t);
+    if(op->unit_a4)
+        printf("FI*A4     %7.2f  %7.2f  %7.2f  %7.2f  %7.2f\n",
+               bl.c, bl.m, bl.y, bl.k, bl.t);
     printf("\n");
 
-    printf("Cyan   "); COLOR(c);
-    printf("Magenta"); COLOR(m);
-    printf("Yellow "); COLOR(y);
-    printf("Black  "); COLOR(k);
-    printf("----------------------------------------"
-           "---------------------------------------\n");
-    printf("Total  "); COLOR(t);
     return;
 #undef COLOR
 }
