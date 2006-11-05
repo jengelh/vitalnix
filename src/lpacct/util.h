@@ -24,10 +24,6 @@ enum {
     ARGP_FILE,
 };
 
-struct unit {
-    unsigned int droplet, sqcm, sqm, sqin, a4, metric;
-};
-
 struct options {
     // generic
     unsigned int dpi;
