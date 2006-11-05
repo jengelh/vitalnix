@@ -152,6 +152,8 @@ function set_defaults() {
 }
 
 function do_checks() {
+    local w;
+
     # Detect 32-bit x86 environment.
     uname -m | grep -qi i.86 && cf_cpux86="1";
 
@@ -167,7 +169,8 @@ function do_checks() {
         XCFLAGS1="$XCFLAGS1 -fvisibility=hidden";
         fh_visibility="#define HAVE_VISIBILITY 1";
     fi;
-    if "$CC" -shared -pie -o .dev.null.o -xc /dev/null &>/dev/null; then
+    w=` "$CC" -shared -pie -o .dev.null.o -xc /dev/null 2>&1 >/dev/null`;
+    if [ "$e" -eq 0 -a -z "$w" ]; then
         PIEFLAG="-pie";
     fi;
     rm -f .dev.null.o;
