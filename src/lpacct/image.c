@@ -47,13 +47,13 @@ int mpxm_process(int fd, const struct options *op)
         cost_add(&all_cost, &page_cost);
         ++all_cost.p;
 
-        if(op->verbose) {
-            printf("Page %u\n", all_cost.p);
+        if(op->per_page_stats) {
+            printf("Page %u:\n", all_cost.p);
             print_stats(op, &page_cost, &image);
         }
     }
 
-    if(op->verbose) {
+    if(op->per_doc_stats) {
         printf("Total cost of all %u pages\n", all_cost.p);
         print_stats(op, &all_cost, NULL);
     }
@@ -196,43 +196,33 @@ static void print_stats(const struct options *op, const struct cost *cost,
     drop2bl  (&bl,   cost, op->dpi);
 
     if(image != NULL) {
-        if(op->unit_metric) {
-            double w = px_to_cm(image->width, op->dpi),
-                   h = px_to_cm(image->height, op->dpi);
-            printf("%lu x %lu px @ %u dpi = %.2f x %.2f cm (%.2f cm²)\n",
-                image->width, image->height, op->dpi,
-                w, h, w * h);
-        }
+        double w, h;
 
-        if(op->unit_i_sqin) {
-            double w = px_to_in(image->width, op->dpi),
-                   h = px_to_in(image->height, op->dpi);
-            printf("%lu x %lu px @ %u dpi = %.2f x %.2f in (%.2f in²)\n",
-                image->width, image->height, op->dpi,
-                w, h, w * h);
-        }
+        w = px_to_cm(image->width, op->dpi);
+        h = px_to_cm(image->height, op->dpi);
+        printf("%lu x %lu px @ %u dpi = %.2f x %.2f cm (%.2f cm²)\n",
+               image->width, image->height, op->dpi, w, h, w * h);
+
+        w = px_to_in(image->width, op->dpi);
+        h = px_to_in(image->height, op->dpi);
+        printf("%lu x %lu px @ %u dpi = %.2f x %.2f in (%.2f in²)\n",
+               image->width, image->height, op->dpi, w, h, w * h);
     }
 
-    if(op->unit_metric)
-        printf("\t(1 ISO A4-Blatt Full Intensity = 1*0.06237 i*m²)\n");
+    printf("\t(1 ISO A4-Blatt = 0.06237 m²; 1 Droplet = 1/255 px)\n");
 
     printf("%-8s  %7s  %7s  %7s  %7s  %7s\n",
            "UNIT", "CYAN", "MAGENTA", "YELLOW", "BLACK", "TOTAL");
-    if(op->unit_droplet)
-        printf("Droplets  %7lld  %7lld  %7lld  %7lld  %7lld\n",
-               cost->c, cost->m, cost->y, cost->k, cost->t);
-    if(op->unit_i_sqcm)
-        printf("i*cm²     %7.2f  %7.2f  %7.2f  %7.2f  %7.2f\n",
-               sqcm.c, sqcm.m, sqcm.y, sqcm.k, sqcm.t);
-    if(op->unit_i_sqm)
-        printf("i*m²      %7.2f  %7.2f  %7.2f  %7.2f  %7.2f\n",
-               sqm.c, sqm.m, sqm.y, sqm.k, sqm.t);
-    if(op->unit_i_sqin)
-        printf("i*in²     %7.2f  %7.2f  %7.2f  %7.2f  %7.2f\n",
-               sqin.c, sqin.m, sqin.y, sqin.k, sqin.t);
-    if(op->unit_a4)
-        printf("FI*A4     %7.2f  %7.2f  %7.2f  %7.2f  %7.2f\n",
-               bl.c, bl.m, bl.y, bl.k, bl.t);
+    printf("Droplets  %7lld  %7lld  %7lld  %7lld  %7lld\n",
+           cost->c, cost->m, cost->y, cost->k, cost->t);
+    printf("i*cm²     %7.2f  %7.2f  %7.2f  %7.2f  %7.2f\n",
+           sqcm.c, sqcm.m, sqcm.y, sqcm.k, sqcm.t);
+    printf("i*m²      %7.2f  %7.2f  %7.2f  %7.2f  %7.2f\n",
+           sqm.c, sqm.m, sqm.y, sqm.k, sqm.t);
+    printf("i*in²     %7.2f  %7.2f  %7.2f  %7.2f  %7.2f\n",
+           sqin.c, sqin.m, sqin.y, sqin.k, sqin.t);
+    printf("i*A4      %7.2f  %7.2f  %7.2f  %7.2f  %7.2f\n",
+           bl.c, bl.m, bl.y, bl.k, bl.t);
     printf("\n");
 
     return;

@@ -47,27 +47,22 @@ int main(int argc, const char **argv)
 static int lpacct_analyze_main(int argc, const char **argv)
 {
     struct options proc_opt = {
-        .dpi        = 96,
+        .dpi        = DEFAULT_GS_DPI,
         .colorspace = COLORSPACE_CMYK,
-        .verbose    = 1,
     };
     struct options *p = &proc_opt;
     char *input_file = NULL;
     pid_t pid;
     int ret;
     struct HXoption options_table[] = {
-        {.ln = "a4",   .type = HXTYPE_NONE, .ptr = &p->unit_a4,      .help = "Display results measured in FI A4"},
-        {.ln = "drop", .type = HXTYPE_NONE, .ptr = &p->unit_droplet, .help = "Display results in droplets (1/255 FI pixel)"},
-        {.ln = "sqcm", .type = HXTYPE_NONE, .ptr = &p->unit_i_sqcm,  .help = "Display results in i*cm²"},
-        {.ln = "sqm",  .type = HXTYPE_NONE, .ptr = &p->unit_i_sqm,   .help = "Display results in i*m²"},
-        {.ln = "sqin", .type = HXTYPE_NONE, .ptr = &p->unit_i_sqin,  .help = "Display results in i*in²"},
-
         {.ln = "cmyk", .type = HXTYPE_VAL, .val = COLORSPACE_CMYK, .ptr = &p->colorspace, .help = "Calculate for CMYK colorspace"},
         {.ln = "cmy",  .type = HXTYPE_VAL, .val = COLORSPACE_CMY,  .ptr = &p->colorspace, .help = "Calculate for CMY colorspace"},
         {.ln = "gray", .type = HXTYPE_VAL, .val = COLORSPACE_GRAY, .ptr = &p->colorspace, .help = "Calculate for grayscale colorspace"},
 
 	{.sh = 'd', .ln = "dpi",  .type = HXTYPE_UINT,   .ptr = &proc_opt.dpi, .help = "Dots per inch"},
 	{.sh = 'f', .ln = "file", .type = HXTYPE_STRING, .ptr = &input_file,   .help = "File to analyze"},
+        {.sh = 'p', .type = HXTYPE_NONE, .ptr = &p->per_page_stats, .help = "Display per-page statistics"},
+        {.sh = 's', .type = HXTYPE_NONE, .ptr = &p->per_doc_stats,  .help = "Display statistics"},
 	HXOPT_AUTOHELP,
 	HXOPT_TABLEEND,
     };
@@ -77,16 +72,9 @@ static int lpacct_analyze_main(int argc, const char **argv)
 
     if(input_file == NULL) {
         fprintf(stderr, "Specify a filename with the -f option,"
-                " and preferably the DPI with -D\n");
+                " and preferably the DPI with -d\n");
         return EXIT_FAILURE;
     }
-
-    // Set some default display options if none was given
-    if(!(p->unit_droplet | p->unit_i_sqcm | p->unit_i_sqm |
-      p->unit_i_sqin | p->unit_a4))
-            p->unit_a4 = p->unit_i_sqcm = 1;
-
-    p->unit_metric = p->unit_i_sqcm | p->unit_i_sqm | p->unit_a4;
 
     ret = ghostscript_init(input_file, &pid, p->dpi);
     if(ret < 0) {
