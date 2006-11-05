@@ -2,8 +2,8 @@
     Copyright © Jan Engelhardt <jengelh@gmx.de>, 2006
     This code is released under version 2.1 of the GNU LGPL.
 */
-#ifndef LPACCT_UTIL_H
-#define LPACCT_UTIL_H 1
+#ifndef LPACCT_LPACCT_H
+#define LPACCT_LPACCT_H 1
 
 /*
  *      DEFINITIONS
@@ -35,10 +35,6 @@ struct options {
     unsigned int do_account;
 };
 
-/*
- *      FUNCTIONS
- */
-
-#endif // LPACCT_UTIL_H
+#endif // LPACCT_LPACCT_H
 
 //=============================================================================
