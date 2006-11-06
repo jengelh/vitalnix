@@ -29,7 +29,7 @@ clutils/mdsingle.c
 #include <time.h>
 #include <libHX.h>
 #include "compiler.h"
-#include "vitalnix-config.h"
+#include <vitalnix/config.h>
 #include "libvxcli/libvxcli.h"
 #include "libvxeds/libvxeds.h"
 #include "libvxmdsync/libvxmdsync.h"

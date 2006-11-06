@@ -30,7 +30,7 @@ libvxmdfmt/internal.h
 #    include <cstdio>
 #endif
 #include <libHX.h>
-#include "vitalnix-config.h"
+#include <vitalnix/config.h>
 #include "libvxmdfmt/static-build.h"
 
 #ifdef __cplusplus

@@ -35,7 +35,7 @@ drivers/nss.c
 #include <grp.h>
 #include <pwd.h>
 #include <shadow.h>
-#include "vitalnix-config.h"
+#include <vitalnix/config.h>
 #include "drivers/proto.h"
 #include "drivers/static-build.h"
 #include "libvxpdb/libvxpdb.h"

@@ -26,7 +26,7 @@ clutils/groupdel.c - Delete a group
 #include <stdlib.h>
 #include <string.h>
 #include <libHX.h>
-#include "vitalnix-config.h"
+#include <vitalnix/config.h>
 #include "libvxpdb/libvxpdb.h"
 #include "libvxpdb/xafunc.h"
 #include "libvxutil/libvxutil.h"

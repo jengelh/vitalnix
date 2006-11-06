@@ -14,7 +14,7 @@
 #include <syslog.h>
 #include <libHX.h>
 #include <mysql.h>
-#include "vitalnix-config.h"
+#include <vitalnix/config.h>
 #include "libvxutil/libvxutil.h"
 #include "acct.h"
 #include "drop.h"

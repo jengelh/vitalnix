@@ -22,7 +22,7 @@ libvxmdfmt/s_pgtxt.c
   -- For details, see the file named "LICENSE.LGPL2"
 =============================================================================*/
 #include <stdio.h>
-#include "vitalnix-config.h"
+#include <vitalnix/config.h>
 #include "libvxmdfmt/internal.h"
 #include "libvxmdfmt/libvxmdfmt.h"
 #include "libvxmdfmt/static-build.h"

@@ -238,8 +238,9 @@ WX_LDFLAGS      := $WX_LDFLAGS
 include $cf_basedir/src/GNUmakefile.tgt
 EOF
 
-    echo "Creating vitalnix-config.h";
-    cat >vitalnix-config.h <<EOF;
+    echo "Creating vitalnix/config.h";
+    mkdir -p include/vitalnix;
+    cat >include/vitalnix/config.h <<EOF;
 #ifndef _VITALNIX_CONFIG_H
 #define _VITALNIX_CONFIG_H 1
 

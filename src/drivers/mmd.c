@@ -25,7 +25,7 @@ drivers/mmd.c
 #include <stdio.h>
 #include <stdlib.h>
 #include <libHX.h>
-#include "vitalnix-config.h"
+#include <vitalnix/config.h>
 #include "drivers/proto.h"
 #include "drivers/static-build.h"
 #include "libvxpdb/libvxpdb.h"

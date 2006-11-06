@@ -45,7 +45,7 @@ doc: $(patsubst ${S}/%.php,%.html,$(wildcard ${S}/doc/[a-z]*.php)) \
 #
 clean:
 	find . -mindepth 1 -maxdepth 1 ! -name GNUmakefile \
-	    ! -name vitalnix-config.h -print0 | xargs -0 rm -Rf;
+	    ! -name include -print0 | xargs -0 rm -Rf;
 
 distclean:
 	find . -mindepth 1 -maxdepth 1 -print0 | xargs -0 rm -Rf;

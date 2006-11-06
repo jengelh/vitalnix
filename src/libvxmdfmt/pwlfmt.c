@@ -27,7 +27,7 @@ libvxmdfmt/pwlfmt.c
 #include <string.h>
 #include <libHX.h>
 #include "compiler.h"
-#include "vitalnix-config.h"
+#include <vitalnix/config.h>
 #include "libvxcore/loader.h"
 #include "libvxmdfmt/internal.h"
 #include "libvxmdfmt/libvxmdfmt.h"

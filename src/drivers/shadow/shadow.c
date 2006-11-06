@@ -28,7 +28,7 @@ drivers/shadow/shadow.c - Shadow driver
 #include <string.h>
 #include <unistd.h>
 #include <libHX.h>
-#include "vitalnix-config.h"
+#include <vitalnix/config.h>
 #include "drivers/proto.h"
 #include "drivers/static-build.h"
 #include "drivers/shadow/shadow.h"

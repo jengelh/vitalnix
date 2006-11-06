@@ -26,7 +26,7 @@ drivers/shadow/aux.c
 #include <stdlib.h>
 #include <string.h>
 #include <libHX.h>
-#include "vitalnix-config.h"
+#include <vitalnix/config.h>
 #include "drivers/shadow/shadow.h"
 #include "libvxpdb/libvxpdb.h"
 

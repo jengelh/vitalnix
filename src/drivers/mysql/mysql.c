@@ -31,7 +31,7 @@ drivers/mysql/mysql.c - MYSQL back-end module
 #include <libHX.h>
 #include <mysql.h>
 #include <mysqld_error.h>
-#include "vitalnix-config.h"
+#include <vitalnix/config.h>
 #include "drivers/proto.h"
 #include "drivers/static-build.h"
 #include "libvxpdb/libvxpdb.h"

@@ -26,7 +26,7 @@ steelmill/wd_about.cpp
 #    include <wx/wx.h>
 #endif
 #include <wx/statline.h>
-#include "vitalnix-config.h"
+#include <vitalnix/config.h>
 #include "steelmill/images.hpp"
 #include "steelmill/wd_about.hpp"
 #include "steelmill/xu_common.hpp"
