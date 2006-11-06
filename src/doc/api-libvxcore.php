@@ -8,7 +8,7 @@ functions such as module registering and lookup functions for such.</p>
 <h1>Function overview</h1>
 
 <p class="code"><tt>
-<b>#</b>include &lt;libvxcore/loader.h&gt;<br />
+<b>#</b>include &lt;vitalnix/libvxcore/loader.h&gt;<br />
 <br />
 <b>int</b> vxcore_module_register(<b>const char *</b>section, <b>const char *</b>name, <b>const void *</b>ptr);<br />
 <b>void</b> vxcore_module_unregister(<b>const char *</b>section, <b>const char *</b>name);<br />

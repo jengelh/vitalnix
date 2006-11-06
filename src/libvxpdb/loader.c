@@ -30,7 +30,7 @@ libvxpdb/loader.c
 #include <libHX.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
-#include "libvxcore/loader.h"
+#include <vitalnix/libvxcore/loader.h>
 #include "libvxpdb/libvxpdb.h"
 #include <vitalnix/libvxutil/defines.h>
 

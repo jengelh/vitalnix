@@ -25,7 +25,7 @@ libvxcore/loader.c
 #include <stdio.h>
 #include <libHX.h>
 #include <vitalnix/compiler.h>
-#include "libvxcore/loader.h"
+#include <vitalnix/libvxcore/loader.h>
 
 // Variables
 static struct HXbtree *module_tree = NULL;
