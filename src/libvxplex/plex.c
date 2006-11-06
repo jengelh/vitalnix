@@ -24,7 +24,7 @@ libvxplex/plex.c
 #include <stdio.h>
 #include <libHX.h>
 #include <vitalnix/compiler.h>
-#include "libvxplex/libvxplex.h"
+#include <vitalnix/libvxplex/libvxplex.h>
 
 enum {
     COMMAND_NOT_FOUND = 127, // see bash(1)

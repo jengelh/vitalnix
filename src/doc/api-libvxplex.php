@@ -23,7 +23,7 @@ development and distribution of binary packages.</p>
 
 <h2>Include file</h2>
 
-<p class="code"><tt><b>#</b>include &lt;libvxplex/libvxplex.h&gt;</tt></p>
+<p class="code"><tt><b>#</b>include &lt;vitalnix/libvxplex/libvxplex.h&gt;</tt></p>
 
 <h2>plex_enter</h2>
 

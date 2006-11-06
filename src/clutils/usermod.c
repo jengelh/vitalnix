@@ -26,7 +26,7 @@ clutils/usermod.c - Modify a user account
 #include <libHX.h>
 #include "clutils/usermod_lib.h"
 #include "libvxcli/libvxcli.h"
-#include "libvxplex/libvxplex.h"
+#include <vitalnix/libvxplex/libvxplex.h>
 #include "libvxpdb/libvxpdb.h"
 #include <vitalnix/libvxutil/libvxutil.h>
 

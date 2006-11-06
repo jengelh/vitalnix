@@ -26,7 +26,7 @@ clutils/userdel.c
 #include <libHX.h>
 #include "clutils/userdel_lib.h"
 #include "libvxpdb/libvxpdb.h"
-#include "libvxplex/libvxplex.h"
+#include <vitalnix/libvxplex/libvxplex.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
 // Functions
