@@ -36,7 +36,7 @@ clutils/mdsingle.c
 #include "libvxpdb/config.h"
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxpdb/xafunc.h>
-#include "libvxpdb/xwfunc.h"
+#include <vitalnix/libvxpdb/xwfunc.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
 // Definitions
