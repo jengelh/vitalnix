@@ -170,7 +170,7 @@ function do_checks() {
         fh_visibility="#define HAVE_VISIBILITY 1";
     fi;
     w=` "$CC" -shared -pie -o .dev.null.o -xc /dev/null 2>&1 >/dev/null`;
-    if [ "$e" -eq 0 -a -z "$w" ]; then
+    if [ "$?" -eq 0 -a -z "$w" ]; then
         PIEFLAG="-pie";
     fi;
     rm -f .dev.null.o;
