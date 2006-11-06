@@ -8,7 +8,7 @@ Vitalnix code base.</p>
 <h1>Function overview</h1>
 
 <p class="code"><tt>
-<b>#</b>include &lt;libvxutil/libvxutil.h&gt;<br />
+<b>#</b>include &lt;vitalnix/libvxutil/libvxutil.h&gt;<br />
 <br />
 <b>char *</b>vxutil_azstr(<b>const char *</b>string);<br />
 <b>int</b> vxutil_cryptpw(<b>const char *</b>key, <b>const char *</b>salt, <b>int</b> method, <b>char **</b>result);<br />
