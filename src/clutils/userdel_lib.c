@@ -30,7 +30,7 @@ clutils/userdel_lib.c
 #include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
 #include "clutils/userdel_lib.h"
-#include "libvxpdb/xafunc.h"
+#include <vitalnix/libvxpdb/xafunc.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxutil/defines.h>
 

@@ -34,7 +34,7 @@ clutils/mdsync.c
 #include <vitalnix/libvxeds/libvxeds.h>
 #include "libvxmdsync/libvxmdsync.h"
 #include <vitalnix/libvxpdb/libvxpdb.h>
-#include "libvxpdb/xafunc.h"
+#include <vitalnix/libvxpdb/xafunc.h>
 
 // Definitions
 #define NOTICE_REDO     "Error during operation. You might need to redo " \

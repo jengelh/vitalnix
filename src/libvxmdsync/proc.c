@@ -33,7 +33,7 @@ libvxmdsync/proc.c
 #include <vitalnix/libvxeds/libvxeds.h>
 #include "libvxmdsync/libvxmdsync.h"
 #include <vitalnix/libvxpdb/libvxpdb.h>
-#include "libvxpdb/xafunc.h"
+#include <vitalnix/libvxpdb/xafunc.h>
 #include "libvxpdb/xwfunc.h"
 #include <vitalnix/libvxutil/defines.h>
 #include <vitalnix/libvxutil/libvxutil.h>

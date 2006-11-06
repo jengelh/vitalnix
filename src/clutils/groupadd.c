@@ -28,7 +28,7 @@ clutils/groupadd.c - Create a new group
 #include <libHX.h>
 #include <vitalnix/config.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
-#include "libvxpdb/xafunc.h"
+#include <vitalnix/libvxpdb/xafunc.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
 enum {

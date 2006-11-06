@@ -29,7 +29,7 @@ steelmill/xu_common.cpp
 #endif
 #include <wx/statline.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
-#include "libvxpdb/xafunc.h"
+#include <vitalnix/libvxpdb/xafunc.h>
 #include "steelmill/images.hpp"
 #include "steelmill/xu_common.hpp"
 #define MAX_BUTTONS 8

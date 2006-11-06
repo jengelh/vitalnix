@@ -29,7 +29,7 @@ drivers/mmd.c
 #include "drivers/proto.h"
 #include "drivers/static-build.h"
 #include <vitalnix/libvxpdb/libvxpdb.h>
-#include "libvxpdb/xafunc.h"
+#include <vitalnix/libvxpdb/xafunc.h>
 
 #define WR_OPEN(state)  ((state)->wr_mod.mh_state == STATE_OPEN)
 #define WR_MOD(state)   ((state)->wr_mod.mh_instance)
