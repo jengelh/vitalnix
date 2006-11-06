@@ -22,7 +22,7 @@ libvxpdb/config.c
   -- For details, see the file named "LICENSE.LGPL2"
 =============================================================================*/
 #include <libHX.h>
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include "libvxpdb/config.h"
 #include "libvxpdb/libvxpdb.h"
 #include "libvxutil/libvxutil.h"

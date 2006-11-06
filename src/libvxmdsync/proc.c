@@ -29,7 +29,7 @@ libvxmdsync/proc.c
 #include <time.h>
 #include <unistd.h>
 #include <libHX.h>
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include "libvxeds/libvxeds.h"
 #include "libvxmdsync/libvxmdsync.h"
 #include "libvxpdb/libvxpdb.h"

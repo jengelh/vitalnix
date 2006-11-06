@@ -32,7 +32,7 @@ libvxcgi/auth.c - Authentication
 #include <unistd.h>
 #include <security/pam_appl.h>
 #include <libHX.h>
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include "libvxcgi/libvxcgi.h"
 
 // Functions

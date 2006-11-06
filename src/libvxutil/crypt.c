@@ -24,7 +24,7 @@ libvxutil/crypt.c - crypt routines
 #include <sys/types.h>
 #include <stdio.h>
 #include <libHX.h>
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include "libvxutil/blowfish.h"
 #include "libvxutil/defines.h"
 #include "libvxutil/libvxutil.h"

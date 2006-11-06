@@ -26,7 +26,7 @@ libvxeds/fm_xml.c - XML parsing module
 #include <stdlib.h>
 #include <string.h>
 #include <libxml/parser.h>
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include "libvxeds/libvxeds.h"
 #include "libvxeds/static-build.h"
 #include "libvxeds/vtable.h"

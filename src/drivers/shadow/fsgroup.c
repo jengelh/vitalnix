@@ -25,7 +25,7 @@ drivers/shadow/fsgroup.c
 #include <stdlib.h>
 #include <string.h>
 #include <libHX.h>
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include "drivers/shadow/shadow.h"
 #include "libvxpdb/libvxpdb.h"
 #include "libvxutil/defines.h"

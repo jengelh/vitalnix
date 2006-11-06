@@ -26,7 +26,7 @@ libvxpdb/aux.c - auxiliary functions
 #include <stdlib.h>
 #include <string.h>
 #include <libHX.h>
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include "libvxpdb/libvxpdb.h"
 #include "libvxutil/libvxutil.h"
 

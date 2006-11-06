@@ -26,7 +26,7 @@ cgiutils/vwquota.c - Web-frontend for quota information
 #include <stdlib.h>
 #include <string.h>
 #include <libHX.h>
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include "libvxcgi/libvxcgi.h"
 #include "libvxutil/defines.h"
 #include "libvxutil/libvxutil.h"

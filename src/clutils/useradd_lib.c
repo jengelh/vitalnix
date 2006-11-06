@@ -27,7 +27,7 @@ clutils/useradd_lib.c
 #include <stdlib.h>
 #include <string.h>
 #include <libHX.h>
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
 #include "clutils/useradd_lib.h"
 #include "libvxpdb/libvxpdb.h"

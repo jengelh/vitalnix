@@ -26,7 +26,7 @@ libvxmdfmt/extra.c
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include "libvxmdfmt/internal.h"
 #include "libvxutil/defines.h"
 

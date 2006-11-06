@@ -2,7 +2,7 @@
 Vitalnix User Management Suite
 libvxutil/blowfish.c - blowfish crypt algorithm
 =============================================================================*/
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include "libvxutil/blowfish.h"
 
 // This is crypt_blowfish-1.0.2.

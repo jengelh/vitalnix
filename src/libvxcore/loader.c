@@ -24,7 +24,7 @@ libvxcore/loader.c
 #include <pthread.h>
 #include <stdio.h>
 #include <libHX.h>
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include "libvxcore/loader.h"
 
 // Variables

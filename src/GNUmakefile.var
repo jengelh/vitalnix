@@ -5,11 +5,11 @@
 XCFLAGS   := -D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
              -D_REENTRANT -Wall -Waggregate-return -Wmissing-declarations \
              -Wmissing-prototypes -Wredundant-decls -Wshadow \
-             -Wstrict-prototypes -Winline -fPIC -pipe -Iinclude -I. -I${S} \
-             ${XCFLAGS1}
+             -Wstrict-prototypes -Winline -fPIC -pipe -Iinclude -I. \
+             -I${S}/include -I${S} ${XCFLAGS1}
 XCXXFLAGS := -D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
              -D_REENTRANT -Wall -Wno-pointer-arith -Wredundant-decls -fPIC \
-             -pipe -Iinclude -I. -I${S} ${XCFLAGS1}
+             -pipe -Iinclude -I. -I${S}/include -I${S} ${XCFLAGS1}
 XLDFLAGS  := -L. -Wl,-rpath-link,. -fPIC ${XLDFLAGS1}
 XDEPFLAGS  = -Wp,-MMD,$(@D)/.$(@F).d,-MT,$@ 
 

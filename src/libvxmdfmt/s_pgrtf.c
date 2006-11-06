@@ -27,7 +27,7 @@ libvxmdfmt/s_pgrtf.c
 #include <stdlib.h>
 #include <string.h>
 #include <libHX.h>
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include "libvxmdfmt/internal.h"
 #include "libvxmdfmt/libvxmdfmt.h"
 #include "libvxmdfmt/static-build.h"

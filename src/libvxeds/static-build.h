@@ -24,7 +24,7 @@ libvxeds/static-build.h
 #ifndef _VITALNIX_LIBVXEDS_STATICBUILD_H
 #define _VITALNIX_LIBVXEDS_STATICBUILD_H 1
 
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include "libvxcore/loader.h"
 
 #ifdef __cplusplus

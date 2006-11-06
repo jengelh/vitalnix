@@ -23,7 +23,7 @@ libvxplex/plex.c
 =============================================================================*/
 #include <stdio.h>
 #include <libHX.h>
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include "libvxplex/libvxplex.h"
 
 enum {

@@ -29,7 +29,7 @@ libvxutil/util.c
 #include <string.h>
 #include <time.h>
 #include <libHX.h>
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include "libvxutil/defines.h"
 #include "libvxutil/libvxutil.h"
 

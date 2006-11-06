@@ -23,7 +23,7 @@ libvxpdb/dummy.c
 =============================================================================*/
 #include <errno.h>
 #include <stdio.h>
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include "drivers/proto.h"
 #include "libvxpdb/libvxpdb.h"
 

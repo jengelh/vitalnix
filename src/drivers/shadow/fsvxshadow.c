@@ -26,7 +26,7 @@ drivers/shadow/fsvxshadow.c
 #include <string.h>
 #include <libxml/parser.h>
 #include <libHX.h>
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include "drivers/shadow/shadow.h"
 #include "libvxpdb/libvxpdb.h"
 #include "libvxutil/defines.h"

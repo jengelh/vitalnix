@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 
 static int get_date_parts(const char *, unsigned int *, unsigned int *,
     unsigned int *);

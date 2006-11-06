@@ -24,7 +24,7 @@ libvxmdsync/fixup.c
 #include <stdio.h>
 #include <string.h>
 #include <libHX.h>
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include "libvxeds/libvxeds.h"
 #include "libvxmdsync/internal.h" // MAX_LNAME
 #include "libvxmdsync/libvxmdsync.h"

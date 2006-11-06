@@ -27,7 +27,7 @@ clutils/userdel_lib.c
 #include <string.h>
 #include <unistd.h>
 #include <libHX.h>
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
 #include "clutils/userdel_lib.h"
 #include "libvxpdb/xafunc.h"

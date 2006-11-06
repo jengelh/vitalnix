@@ -25,7 +25,7 @@ clutils/pdbinfo.c
 #include <stdlib.h>
 #include <string.h>
 #include <libHX.h>
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
 #include "libvxpdb/libvxpdb.h"
 #include "libvxpdb/xafunc.h"

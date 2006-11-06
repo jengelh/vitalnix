@@ -25,7 +25,7 @@ libvxpdb/xwfunc.h - simple wrappers
 #define _VITALNIX_LIBVXPDB_XWFUNC_H 1
 
 #include <sys/types.h>
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include "libvxpdb/libvxpdb.h"
 #include "libvxpdb/xafunc.h"
 

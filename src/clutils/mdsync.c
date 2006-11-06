@@ -28,7 +28,7 @@ clutils/mdsync.c
 #include <string.h>
 #include <time.h>
 #include <libHX.h>
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
 #include "libvxcli/libvxcli.h"
 #include "libvxeds/libvxeds.h"

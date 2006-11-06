@@ -27,7 +27,7 @@ libvxeds/d_sdf.c - SDF parsing module
 #include <stdlib.h>
 #include <string.h>
 #include <libHX.h>
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include "libvxeds/libvxeds.h"
 #include "libvxeds/static-build.h"
 #include "libvxeds/vtable.h"

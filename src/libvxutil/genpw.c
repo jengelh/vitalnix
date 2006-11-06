@@ -24,7 +24,7 @@ libvxutil/genpw.c
 #include <ctype.h>
 #include <stdio.h>
 #include <libHX.h>
-#include "compiler.h"
+#include <vitalnix/compiler.h>
 #include "libvxutil/defines.h"
 #include "libvxutil/libvxutil.h"
 
