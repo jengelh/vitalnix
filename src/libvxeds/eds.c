@@ -25,8 +25,8 @@ libvxeds/eds.c
 #include <stdio.h>
 #include <libHX.h>
 #include <vitalnix/compiler.h>
-#include "libvxeds/libvxeds.h"
-#include "libvxeds/vtable.h"
+#include <vitalnix/libvxeds/libvxeds.h>
+#include <vitalnix/libvxeds/vtable.h>
 #include <vitalnix/libvxcore/loader.h>
 #include <vitalnix/libvxutil/defines.h>
 #include <vitalnix/libvxutil/libvxutil.h>

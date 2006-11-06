@@ -31,7 +31,7 @@ clutils/mdsync.c
 #include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
 #include <vitalnix/libvxcli/libvxcli.h>
-#include "libvxeds/libvxeds.h"
+#include <vitalnix/libvxeds/libvxeds.h>
 #include "libvxmdsync/libvxmdsync.h"
 #include "libvxpdb/libvxpdb.h"
 #include "libvxpdb/xafunc.h"

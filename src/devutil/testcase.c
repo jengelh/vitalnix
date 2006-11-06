@@ -1,8 +1,14 @@
+/*
+    Copyright © Jan Engelhardt <jengelh@gmx.de>, 2006
+    This code is released under version 2.1 of the GNU LGPL.
+
+    A small testcase for some functions.
+*/
 #include <assert.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
-#include "libvxeds/libvxeds.h"
+#include <vitalnix/libvxeds/libvxeds.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
 //-----------------------------------------------------------------------------

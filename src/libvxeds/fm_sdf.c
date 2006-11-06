@@ -28,9 +28,9 @@ libvxeds/d_sdf.c - SDF parsing module
 #include <string.h>
 #include <libHX.h>
 #include <vitalnix/compiler.h>
-#include "libvxeds/libvxeds.h"
+#include <vitalnix/libvxeds/libvxeds.h>
 #include "libvxeds/static-build.h"
-#include "libvxeds/vtable.h"
+#include <vitalnix/libvxeds/vtable.h>
 #include <vitalnix/libvxutil/defines.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 #define ICONV_NULL reinterpret_cast(iconv_t, -1)

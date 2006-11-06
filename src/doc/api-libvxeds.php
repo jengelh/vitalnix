@@ -9,7 +9,7 @@
 <h1>Structures</h1>
 
 <p class="code"><tt>
-<b>#</b>include &lt;libvxeds/libvxeds.h&gt;<br />
+<b>#</b>include &lt;vitalnix/libvxeds/libvxeds.h&gt;<br />
 <br />
 <b>struct</b> vxeds_entry {<br />
 &nbsp; &nbsp; <b>char *</b>username;<br />

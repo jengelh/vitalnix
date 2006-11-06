@@ -31,8 +31,8 @@ steelmill/wd_sync.cpp
 #endif
 #include <wx/spinctrl.h>
 #include <wx/statline.h>
-#include "libvxeds/libvxeds.h"
-#include "libvxeds/vtable.h"
+#include <vitalnix/libvxeds/libvxeds.h>
+#include <vitalnix/libvxeds/vtable.h>
 #include "libvxmdsync/libvxmdsync.h"
 #include "libvxpdb/libvxpdb.h"
 #include "libvxpdb/xafunc.h"
