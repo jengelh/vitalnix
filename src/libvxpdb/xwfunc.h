@@ -26,7 +26,7 @@ libvxpdb/xwfunc.h - simple wrappers
 
 #include <sys/types.h>
 #include <vitalnix/compiler.h>
-#include "libvxpdb/libvxpdb.h"
+#include <vitalnix/libvxpdb/libvxpdb.h>
 #include "libvxpdb/xafunc.h"
 
 #ifdef __cplusplus

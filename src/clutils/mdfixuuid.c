@@ -26,7 +26,7 @@ clutils/mdfixuuid.c
 #include <stdlib.h>
 #include <string.h>
 #include <libHX.h>
-#include "libvxpdb/libvxpdb.h"
+#include <vitalnix/libvxpdb/libvxpdb.h>
 #include "libvxpdb/xafunc.h"
 #include "libvxpdb/xwfunc.h"
 #include <vitalnix/libvxutil/libvxutil.h>

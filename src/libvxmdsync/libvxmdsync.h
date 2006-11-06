@@ -30,7 +30,7 @@ libvxmdsync/libvxmdsync.h
 #    include <cstdio>
 #endif
 #include "libvxpdb/config.h"
-#include "libvxpdb/libvxpdb.h"
+#include <vitalnix/libvxpdb/libvxpdb.h>
 
 #ifdef __cplusplus
 extern "C" {

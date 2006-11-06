@@ -24,7 +24,7 @@ libvxpdb/config.h
 #ifndef _VITALNIX_LIBVXPDB_CONFIG_H
 #define _VITALNIX_LIBVXPDB_CONFIG_H 1
 
-#include "libvxpdb/libvxpdb.h"
+#include <vitalnix/libvxpdb/libvxpdb.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,5 +1,5 @@
 #include "drivers/static-build.h"
-#include "libvxpdb/libvxpdb.h"
+#include <vitalnix/libvxpdb/libvxpdb.h>
 
 // Variables
 static struct vxpdb_mvtable THIS_MODULE = {

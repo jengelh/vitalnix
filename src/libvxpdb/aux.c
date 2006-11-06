@@ -27,7 +27,7 @@ libvxpdb/aux.c - auxiliary functions
 #include <string.h>
 #include <libHX.h>
 #include <vitalnix/compiler.h>
-#include "libvxpdb/libvxpdb.h"
+#include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
 #define NDSTRLEN(s) (((s) != NULL) ? strlen(s) + 1 : 0)

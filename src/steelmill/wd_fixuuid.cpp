@@ -26,7 +26,7 @@ steelmill/wd_about.cpp
 #ifndef WX_PRECOMP
 #    include <wx/wx.h>
 #endif
-#include "libvxpdb/libvxpdb.h"
+#include <vitalnix/libvxpdb/libvxpdb.h>
 #include "libvxpdb/xafunc.h"
 #include "steelmill/wd_fixuuid.hpp"
 #include "steelmill/xu_common.hpp"

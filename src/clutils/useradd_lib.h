@@ -24,7 +24,7 @@ clutils/useradd_lib.h
 #ifndef VITALNIX_CLUTILS_USERADD_LIB_H
 #define VITALNIX_CLUTILS_USERADD_LIB_H 1
 
-#include "libvxpdb/libvxpdb.h"
+#include <vitalnix/libvxpdb/libvxpdb.h>
 
 #ifdef __cplusplus
 extern "C" {

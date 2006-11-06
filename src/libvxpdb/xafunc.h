@@ -25,7 +25,7 @@ libvxpdb/xafunc.h - functions for backend access
 #define _VITALNIX_LIBVXPDB_XAFUNC_H 1
 
 #include <sys/types.h>
-#include "libvxpdb/libvxpdb.h"
+#include <vitalnix/libvxpdb/libvxpdb.h>
 
 #ifdef __cplusplus
 extern "C" {

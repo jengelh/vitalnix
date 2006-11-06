@@ -38,7 +38,7 @@ drivers/nss.c
 #include <vitalnix/config.h>
 #include "drivers/proto.h"
 #include "drivers/static-build.h"
-#include "libvxpdb/libvxpdb.h"
+#include <vitalnix/libvxpdb/libvxpdb.h>
 
 // Definitions
 enum {

@@ -32,7 +32,7 @@ drivers/shadow/shadow.c - Shadow driver
 #include "drivers/proto.h"
 #include "drivers/static-build.h"
 #include "drivers/shadow/shadow.h"
-#include "libvxpdb/libvxpdb.h"
+#include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxutil/defines.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 

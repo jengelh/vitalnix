@@ -30,7 +30,7 @@ clutils/useradd_lib.c
 #include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
 #include "clutils/useradd_lib.h"
-#include "libvxpdb/libvxpdb.h"
+#include <vitalnix/libvxpdb/libvxpdb.h>
 #include "libvxpdb/xafunc.h"
 #include "libvxpdb/xwfunc.h"
 #include <vitalnix/libvxutil/defines.h>

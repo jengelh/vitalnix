@@ -29,7 +29,7 @@ drivers/shadow/dbops.c
 #include <unistd.h>
 #include <libHX.h>
 #include "drivers/shadow/shadow.h"
-#include "libvxpdb/libvxpdb.h"
+#include <vitalnix/libvxpdb/libvxpdb.h>
 
 // Functions
 static void db_flush_users(struct shadow_state *);

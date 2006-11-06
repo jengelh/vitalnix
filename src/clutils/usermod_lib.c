@@ -29,7 +29,7 @@ clutils/usermod_lib.c
 #include <vitalnix/config.h>
 #include "clutils/usermod_lib.h"
 #include "libvxpdb/xafunc.h"
-#include "libvxpdb/libvxpdb.h"
+#include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
 // Functions

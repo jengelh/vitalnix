@@ -29,7 +29,7 @@ drivers/nss1.c
 #include <shadow.h>
 #include "drivers/proto.h"
 #include "drivers/static-build.h"
-#include "libvxpdb/libvxpdb.h"
+#include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
 // Functions

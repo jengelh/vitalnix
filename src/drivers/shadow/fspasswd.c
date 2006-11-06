@@ -27,7 +27,7 @@ drivers/shadow/fspasswd.c - Shadow driver
 #include <libHX.h>
 #include <vitalnix/compiler.h>
 #include "drivers/shadow/shadow.h"
-#include "libvxpdb/libvxpdb.h"
+#include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxutil/defines.h>
 
 //-----------------------------------------------------------------------------

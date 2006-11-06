@@ -25,7 +25,7 @@ libvxpdb/dummy.c
 #include <stdio.h>
 #include <vitalnix/compiler.h>
 #include "drivers/proto.h"
-#include "libvxpdb/libvxpdb.h"
+#include <vitalnix/libvxpdb/libvxpdb.h>
 
 #define ALIAS(orig, new) static typeof(orig) new __attribute__((alias(#orig)))
 

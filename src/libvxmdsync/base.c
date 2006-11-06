@@ -32,7 +32,7 @@ libvxmdsync/base.c
 #include <vitalnix/libvxeds/libvxeds.h>
 #include "libvxmdsync/libvxmdsync.h"
 #include "libvxmdsync/logversion.h"
-#include "libvxpdb/libvxpdb.h"
+#include <vitalnix/libvxpdb/libvxpdb.h>
 #include "libvxpdb/xwfunc.h"
 #include <vitalnix/libvxutil/defines.h>
 #include <vitalnix/libvxutil/libvxutil.h>

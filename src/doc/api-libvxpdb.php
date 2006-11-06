@@ -2,7 +2,7 @@
 
 <h1>General</h1>
 
-<p class="code"><tt><b>#</b>include &lt;libvxpdb/libvxpdb.h&gt;<br />
+<p class="code"><tt><b>#</b>include &lt;vitanlix/libvxpdb/libvxpdb.h&gt;<br />
 <br />
 <b>struct</b> vxpdb_user;<br />
 <b>struct</b> vxpdb_group;<br />
@@ -11,7 +11,7 @@
 
 <h1>Function overview</h1>
 
-<p class="code"><tt><b>#</b>include &lt;libvxpdb/libvxpdb.h&gt;<br />
+<p class="code"><tt><b>#</b>include &lt;vitalnix/libvxpdb/libvxpdb.h&gt;<br />
 <br />
 <b>struct</b> vxpdb_state <b>*</b>vxpdb_load(<b>const char *</b>module, <b>void *</b>private_data);<br />
 <b>void</b> vxpdb_unload(<b>struct</b> vxpdb_state <b>*</b>state);
@@ -48,7 +48,7 @@ and <tt>errno</tt> will be set.</p>
 
 <h1>Function overview&nbsp;-- Module access functions</h1>
 
-<p class="code"><tt><b>#</b>include &lt;libvxpdb/xafunc.h&gt;<br />
+<p class="code"><tt><b>#</b>include &lt;vitalnix/libvxpdb/xafunc.h&gt;<br />
 <br />
 <b>int</b> vxpdb_open(<b>struct</b> vxpdb_state <b>*</b>state, <b>long</b> flags);<br />
 <b>void</b> vxpdb_close(<b>struct</b> vxpdb_state <b>*</b>state);<br />
@@ -110,7 +110,7 @@ found.</p>
 
 <h1>Function overview&nbsp;-- Extra access functions</h1>
 
-<p class="code"><tt><b>#</b>include &lt;libvxpdb/xwfunc.h&gt;<br />
+<p class="code"><tt><b>#</b>include &lt;vitalnix/libvxpdb/xwfunc.h&gt;<br />
 <br />
 <b>int</b> vxpdb_getpwnam(<b>struct</b> vxpdb_state <b>*</b>state, <b>const char *</b>user, <b>struct</b> vxpdb_user <b>*</b>result);<br />
 <b>int</b> vxpdb_getpwuid(<b>struct</b> vxpdb_state <b>*</b>state, <b>long</b> uid, <b>struct</b> vxpdb_user <b>*</b>result);<br />
@@ -127,7 +127,7 @@ underlying function, they will all allocate the internal data buffer in the
 
 <h1>Auxiliary functions</h1>
 
-<p class="code"><tt><b>#</b>include &lt;libvxpdb/libvxpdb.h&gt;<br />
+<p class="code"><tt><b>#</b>include &lt;vitalnix/libvxpdb/libvxpdb.h&gt;<br />
 <br />
 <b>void</b> vxpdb_user_clean(<b>struct</b> vxpdb_user <b>*</b>user);<br />
 <b>void</b> vxpdb_user_copy(<b>struct</b> vxpdb_user <b>*</b>dest, <b>const struct</b> vxpdb_user <b>*</b>src);<br />
@@ -292,7 +292,7 @@ must be freed by the user application.<br />
 Because of lack of ideas, the process of copying strings into a local buffer is
 simply called "exporting" herein.</p>
 
-<p class="code"><tt><b>#</b>include &lt;libvxpdb/libvxpdb.h&gt;<br />
+<p class="code"><tt><b>#</b>include &lt;vitalnix/libvxpdb/libvxpdb.h&gt;<br />
 <br />
 <b>void</b> vxpdb_export_user(<b>const struct</b> vxpdb_user <b>*</b>src, <b>struct</b> vxpdb_user <b>*</b>dest);<br />
 <b>void</b> vxpdb_export_group(<b>const struct</b> vxpdb_group <b>*</b>src, <b>struct</b> vxpdb_group <b>*</b>dest);<br />

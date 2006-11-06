@@ -9,7 +9,7 @@ for name, author and description of the module for display with the
 <i>pdbinfo</i> utility. A reduced example definition could look like this:</p>
 
 <p class="code"><tt><b>#</b>include "drivers/static-build.h"<br />
-<b>#</b>include "libvxpdb/libvxpdb.h"<br />
+<b>#</b>include &lt;vitalnix/libvxpdb/libvxpdb.h&gt;<br />
 <br />
 COND_STATIC <b>struct</b> vxpdb_mvtable THIS_MODULE <b>=</b> {<br />
 &nbsp; &nbsp; .name &nbsp; &nbsp; &nbsp;<b>=</b> "Our sample module",<br />

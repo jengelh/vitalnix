@@ -34,7 +34,7 @@ drivers/mysql/mysql.c - MYSQL back-end module
 #include <vitalnix/config.h>
 #include "drivers/proto.h"
 #include "drivers/static-build.h"
-#include "libvxpdb/libvxpdb.h"
+#include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
 #define CHECK_ACCESS() \

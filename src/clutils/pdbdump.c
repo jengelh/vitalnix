@@ -28,7 +28,7 @@ clutils/pdbdump.c - Dump PDB contents
 #include <stdlib.h>
 #include <libHX.h>
 #include <vitalnix/config.h>
-#include "libvxpdb/libvxpdb.h"
+#include <vitalnix/libvxpdb/libvxpdb.h>
 #include "libvxpdb/xafunc.h"
 
 // Functions

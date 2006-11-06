@@ -19,7 +19,7 @@ drivers/ldap.c - LDAP back-end module
 #include <ldap.h>
 #include "drivers/proto.h"
 #include "drivers/static-build.h"
-#include "libvxpdb/libvxpdb.h"
+#include <vitalnix/libvxpdb/libvxpdb.h>
 
 struct ldap_state {
     // Connection

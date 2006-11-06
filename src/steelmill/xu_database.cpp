@@ -28,7 +28,7 @@ steelmill/xu_database.cpp
 #ifndef WX_PRECOMP
 #    include <wx/wx.h>
 #endif
-#include "libvxpdb/libvxpdb.h"
+#include <vitalnix/libvxpdb/libvxpdb.h>
 #include "libvxpdb/xafunc.h"
 #include "steelmill/xu_common.hpp"
 #include "steelmill/xu_database.hpp"

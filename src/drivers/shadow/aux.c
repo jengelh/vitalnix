@@ -28,7 +28,7 @@ drivers/shadow/aux.c
 #include <libHX.h>
 #include <vitalnix/config.h>
 #include "drivers/shadow/shadow.h"
-#include "libvxpdb/libvxpdb.h"
+#include <vitalnix/libvxpdb/libvxpdb.h>
 
 //-----------------------------------------------------------------------------
 long automatic_uid(struct shadow_state *state, long wanted) {

@@ -27,7 +27,7 @@ clutils/groupadd.c - Create a new group
 #include <string.h>
 #include <libHX.h>
 #include <vitalnix/config.h>
-#include "libvxpdb/libvxpdb.h"
+#include <vitalnix/libvxpdb/libvxpdb.h>
 #include "libvxpdb/xafunc.h"
 #include <vitalnix/libvxutil/libvxutil.h>
 
