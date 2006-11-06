@@ -29,8 +29,8 @@ drivers/shadow/fsvxshadow.c
 #include <vitalnix/compiler.h>
 #include "drivers/shadow/shadow.h"
 #include "libvxpdb/libvxpdb.h"
-#include "libvxutil/defines.h"
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/defines.h>
+#include <vitalnix/libvxutil/libvxutil.h>
 
 // Functions
 static inline int strcmp_1u(const xmlChar *, const char *);

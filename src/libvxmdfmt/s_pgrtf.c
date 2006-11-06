@@ -32,7 +32,7 @@ libvxmdfmt/s_pgrtf.c
 #include "libvxmdfmt/libvxmdfmt.h"
 #include "libvxmdfmt/static-build.h"
 #include "libvxmdfmt/vtable.h"
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/libvxutil.h>
 
 // Definitions
 struct pgrtf_data {

@@ -35,7 +35,7 @@ drivers/mysql/mysql.c - MYSQL back-end module
 #include "drivers/proto.h"
 #include "drivers/static-build.h"
 #include "libvxpdb/libvxpdb.h"
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/libvxutil.h>
 
 #define CHECK_ACCESS() \
     if((state->names.sp_table != NULL && !state->perm_shadow) || \

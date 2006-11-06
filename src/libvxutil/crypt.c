@@ -25,9 +25,9 @@ libvxutil/crypt.c - crypt routines
 #include <stdio.h>
 #include <libHX.h>
 #include <vitalnix/compiler.h>
+#include <vitalnix/libvxutil/defines.h>
+#include <vitalnix/libvxutil/libvxutil.h>
 #include "libvxutil/blowfish.h"
-#include "libvxutil/defines.h"
-#include "libvxutil/libvxutil.h"
 
 #ifdef __gnu_linux__ // I think this may be used to detect GNU libc
 #    define crypt3

@@ -33,8 +33,8 @@ drivers/shadow/shadow.c - Shadow driver
 #include "drivers/static-build.h"
 #include "drivers/shadow/shadow.h"
 #include "libvxpdb/libvxpdb.h"
-#include "libvxutil/defines.h"
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/defines.h>
+#include <vitalnix/libvxutil/libvxutil.h>
 
 #define RWLOCKED(z)     ((z)->flags & PDB_WRLOCK)
 #define RWLOCK_CHK(z)   if(!RWLOCKED(z)) return -EPERM;

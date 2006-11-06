@@ -30,7 +30,7 @@ drivers/nss1.c
 #include "drivers/proto.h"
 #include "drivers/static-build.h"
 #include "libvxpdb/libvxpdb.h"
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/libvxutil.h>
 
 // Functions
 static long count_users(void);

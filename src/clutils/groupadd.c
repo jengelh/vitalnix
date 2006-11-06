@@ -29,7 +29,7 @@ clutils/groupadd.c - Create a new group
 #include <vitalnix/config.h>
 #include "libvxpdb/libvxpdb.h"
 #include "libvxpdb/xafunc.h"
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/libvxutil.h>
 
 enum {
     E_SUCCESS = 0,

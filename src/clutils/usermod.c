@@ -28,7 +28,7 @@ clutils/usermod.c - Modify a user account
 #include "libvxcli/libvxcli.h"
 #include "libvxplex/libvxplex.h"
 #include "libvxpdb/libvxpdb.h"
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/libvxutil.h>
 
 // Functions
 static int usermod_nio(int, const char **, struct usermod_state *);

@@ -28,7 +28,7 @@ drivers/shadow/fsgroup.c
 #include <vitalnix/compiler.h>
 #include "drivers/shadow/shadow.h"
 #include "libvxpdb/libvxpdb.h"
-#include "libvxutil/defines.h"
+#include <vitalnix/libvxutil/defines.h>
 
 //-----------------------------------------------------------------------------
 struct HXdeque *db_read_groups(FILE *fp) {

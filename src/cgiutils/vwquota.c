@@ -28,8 +28,8 @@ cgiutils/vwquota.c - Web-frontend for quota information
 #include <libHX.h>
 #include <vitalnix/compiler.h>
 #include "libvxcgi/libvxcgi.h"
-#include "libvxutil/defines.h"
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/defines.h>
+#include <vitalnix/libvxutil/libvxutil.h>
 
 // Functions
 static void do_quota(const char *);

@@ -29,7 +29,7 @@ libvxcli/cli.c
 #include <libHX.h>
 #include <vitalnix/compiler.h>
 #include "libvxcli/libvxcli.h"
-#include "libvxutil/defines.h"
+#include <vitalnix/libvxutil/defines.h>
 
 //-----------------------------------------------------------------------------
 EXPORT_SYMBOL char *vxcli_query(const char *msg, const char *prompt,

@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "libvxeds/libvxeds.h"
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/libvxutil.h>
 
 //-----------------------------------------------------------------------------
 static void test_1(void) {

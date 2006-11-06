@@ -25,7 +25,7 @@ clutils/randpw.c - Generate a random password and print it
 #include <stdlib.h>
 #include <libHX.h>
 #include <vitalnix/config.h>
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/libvxutil.h>
 
 // Functions
 static int get_options(int *, const char ***);

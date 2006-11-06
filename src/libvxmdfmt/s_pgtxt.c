@@ -27,7 +27,7 @@ libvxmdfmt/s_pgtxt.c
 #include "libvxmdfmt/libvxmdfmt.h"
 #include "libvxmdfmt/static-build.h"
 #include "libvxmdfmt/vtable.h"
-#include "libvxutil/defines.h"
+#include <vitalnix/libvxutil/defines.h>
 
 //-----------------------------------------------------------------------------
 static void pgtxt_tbl_header(struct pwlfmt_workspace *state,

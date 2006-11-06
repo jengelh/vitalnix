@@ -29,7 +29,7 @@ clutils/pdbinfo.c
 #include <vitalnix/config.h>
 #include "libvxpdb/libvxpdb.h"
 #include "libvxpdb/xafunc.h"
-#include "libvxutil/defines.h"
+#include <vitalnix/libvxutil/defines.h>
 
 // Functions
 static void backend_info(char *);

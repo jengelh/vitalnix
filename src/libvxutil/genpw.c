@@ -25,8 +25,8 @@ libvxutil/genpw.c
 #include <stdio.h>
 #include <libHX.h>
 #include <vitalnix/compiler.h>
-#include "libvxutil/defines.h"
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/defines.h>
+#include <vitalnix/libvxutil/libvxutil.h>
 
 // Functions
 static void genpw_jp(char *, int, long);

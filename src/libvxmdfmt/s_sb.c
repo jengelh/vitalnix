@@ -29,7 +29,7 @@ libvxmdfmt/s_sb.c
 #include "libvxmdfmt/libvxmdfmt.h"
 #include "libvxmdfmt/static-build.h"
 #include "libvxmdfmt/vtable.h"
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/libvxutil.h>
 
 // Functions
 static int sb_construct(struct pwlfmt_workspace *);

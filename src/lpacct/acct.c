@@ -15,7 +15,7 @@
 #include <libHX.h>
 #include <mysql.h>
 #include <vitalnix/config.h>
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/libvxutil.h>
 #include "acct.h"
 #include "drop.h"
 #include "global.h"

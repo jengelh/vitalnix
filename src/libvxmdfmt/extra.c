@@ -28,7 +28,7 @@ libvxmdfmt/extra.c
 #include <string.h>
 #include <vitalnix/compiler.h>
 #include "libvxmdfmt/internal.h"
-#include "libvxutil/defines.h"
+#include <vitalnix/libvxutil/defines.h>
 
 // Definitions
 enum {

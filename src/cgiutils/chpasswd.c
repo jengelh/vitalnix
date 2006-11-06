@@ -28,7 +28,7 @@ cgiutils/chpasswd.c - Web-frontend for password change
 #include <unistd.h>
 #include <libHX.h>
 #include "libvxcgi/libvxcgi.h"
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/libvxutil.h>
 
 // Functions
 static void header(void);

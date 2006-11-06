@@ -30,7 +30,7 @@ clutils/usermod_lib.c
 #include "clutils/usermod_lib.h"
 #include "libvxpdb/xafunc.h"
 #include "libvxpdb/libvxpdb.h"
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/libvxutil.h>
 
 // Functions
 static void usermod_getopt_expire(const struct HXoptcb *);

@@ -27,7 +27,7 @@ clutils/userdel.c
 #include "clutils/userdel_lib.h"
 #include "libvxpdb/libvxpdb.h"
 #include "libvxplex/libvxplex.h"
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/libvxutil.h>
 
 // Functions
 static int userdel_nio(int, const char **, struct userdel_state *);

@@ -30,7 +30,7 @@ libvxeds/fm_xml.c - XML parsing module
 #include "libvxeds/libvxeds.h"
 #include "libvxeds/static-build.h"
 #include "libvxeds/vtable.h"
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/libvxutil.h>
 
 // Definitions
 struct xml_state {

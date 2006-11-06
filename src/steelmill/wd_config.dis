@@ -32,7 +32,7 @@ steelmill/wd_config.cpp
 #include <wx/notebook.h>
 #include <wx/spinctrl.h>
 #include <wx/statline.h>
-#include "libvxutil/defines.h"
+#include <vitalnix/libvxutil/defines.h>
 #include "steelmill/wd_config.hpp"
 #include "steelmill/xu_common.hpp"
 

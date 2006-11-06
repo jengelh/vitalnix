@@ -32,7 +32,7 @@ clutils/userdel_lib.c
 #include "clutils/userdel_lib.h"
 #include "libvxpdb/xafunc.h"
 #include "libvxpdb/libvxpdb.h"
-#include "libvxutil/defines.h"
+#include <vitalnix/libvxutil/defines.h>
 
 // Functions
 static int userdel_read_config(struct userdel_state *);

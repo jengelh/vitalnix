@@ -28,8 +28,8 @@ libvxeds/eds.c
 #include "libvxeds/libvxeds.h"
 #include "libvxeds/vtable.h"
 #include "libvxcore/loader.h"
-#include "libvxutil/defines.h"
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/defines.h>
+#include <vitalnix/libvxutil/libvxutil.h>
 
 // Definitions
 struct vxeds_state {

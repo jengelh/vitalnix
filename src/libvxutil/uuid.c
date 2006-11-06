@@ -27,7 +27,7 @@ libvxutil/uuid.c
 #include <openssl/md5.h>
 #include <libHX.h>
 #include <vitalnix/compiler.h>
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/libvxutil.h>
 
 #define CURRENT_TAG             "{VX3A}"
 #define CURRENT_TAG_SIZE        (sizeof(CURRENT_TAG) - 1)

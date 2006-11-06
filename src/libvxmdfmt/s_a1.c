@@ -27,7 +27,7 @@ libvxmdfmt/s_a1.c
 #include "libvxmdfmt/libvxmdfmt.h"
 #include "libvxmdfmt/static-build.h"
 #include "libvxmdfmt/vtable.h"
-#include "libvxutil/defines.h"
+#include <vitalnix/libvxutil/defines.h>
 
 //-----------------------------------------------------------------------------
 static void a1_file_header(struct pwlfmt_workspace *state,

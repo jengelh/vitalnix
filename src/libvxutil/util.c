@@ -30,8 +30,8 @@ libvxutil/util.c
 #include <time.h>
 #include <libHX.h>
 #include <vitalnix/compiler.h>
-#include "libvxutil/defines.h"
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/defines.h>
+#include <vitalnix/libvxutil/libvxutil.h>
 
 // Functions
 static int vxutil_parse_date(const char *, int *, int *, int *);

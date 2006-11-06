@@ -29,7 +29,7 @@ clutils/useradd.c
 #include "libvxcli/libvxcli.h"
 #include "libvxpdb/libvxpdb.h"
 #include "libvxplex/libvxplex.h"
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/libvxutil.h>
 
 // Functions
 static int useradd_nio(int, const char **, struct useradd_state *);

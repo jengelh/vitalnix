@@ -37,7 +37,7 @@ clutils/mdsingle.c
 #include "libvxpdb/libvxpdb.h"
 #include "libvxpdb/xafunc.h"
 #include "libvxpdb/xwfunc.h"
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/libvxutil.h>
 
 // Definitions
 struct private_info {

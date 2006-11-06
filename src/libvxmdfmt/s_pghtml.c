@@ -32,7 +32,7 @@ external advertisements for this software. */
 #include "libvxmdfmt/libvxmdfmt.h"
 #include "libvxmdfmt/static-build.h"
 #include "libvxmdfmt/vtable.h"
-#include "libvxutil/defines.h"
+#include <vitalnix/libvxutil/defines.h>
 
 //-----------------------------------------------------------------------------
 static void pghtml_file_header(struct pwlfmt_workspace *state,

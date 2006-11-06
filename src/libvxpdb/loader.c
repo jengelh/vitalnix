@@ -32,7 +32,7 @@ libvxpdb/loader.c
 #include <vitalnix/config.h>
 #include "libvxcore/loader.h"
 #include "libvxpdb/libvxpdb.h"
-#include "libvxutil/defines.h"
+#include <vitalnix/libvxutil/defines.h>
 
 // Definitions
 enum {

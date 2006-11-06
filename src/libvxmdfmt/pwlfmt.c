@@ -33,7 +33,7 @@ libvxmdfmt/pwlfmt.c
 #include "libvxmdfmt/libvxmdfmt.h"
 #include "libvxmdfmt/vtable.h"
 #include "libvxmdsync/logversion.h"
-#include "libvxutil/defines.h"
+#include <vitalnix/libvxutil/defines.h>
 
 // Functions
 static int pwl_build_tree(FILE *, struct HXbtree **);

@@ -31,8 +31,8 @@ libvxmdsync/read_file.c
 #include "libvxeds/libvxeds.h"
 #include "libvxmdsync/internal.h" // MAX_LNAME
 #include "libvxmdsync/libvxmdsync.h"
-#include "libvxutil/defines.h"
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/defines.h>
+#include <vitalnix/libvxutil/libvxutil.h>
 
 //-----------------------------------------------------------------------------
 EXPORT_SYMBOL int mdsync_read_file(struct mdsync_workspace *w,

@@ -25,7 +25,7 @@ libvxpdb/config.c
 #include <vitalnix/compiler.h>
 #include "libvxpdb/config.h"
 #include "libvxpdb/libvxpdb.h"
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/libvxutil.h>
 
 // Functions
 static void parse_group(const struct HXoptcb *);

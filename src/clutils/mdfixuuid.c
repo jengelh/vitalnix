@@ -29,7 +29,7 @@ clutils/mdfixuuid.c
 #include "libvxpdb/libvxpdb.h"
 #include "libvxpdb/xafunc.h"
 #include "libvxpdb/xwfunc.h"
-#include "libvxutil/libvxutil.h"
+#include <vitalnix/libvxutil/libvxutil.h>
 
 // Definitions
 struct mdf_priv {

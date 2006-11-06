@@ -28,7 +28,7 @@ drivers/shadow/fsshadow.c
 #include <vitalnix/compiler.h>
 #include "drivers/shadow/shadow.h"
 #include "libvxpdb/libvxpdb.h"
-#include "libvxutil/defines.h"
+#include <vitalnix/libvxutil/defines.h>
 
 //-----------------------------------------------------------------------------
 /*  db_read_shadow
