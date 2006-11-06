@@ -29,7 +29,7 @@ libvxcgi/cgi.c
 #include <string.h>
 #include <libHX.h>
 #include <vitalnix/compiler.h>
-#include "libvxcgi/libvxcgi.h"
+#include <vitalnix/libvxcgi/libvxcgi.h>
 
 //-----------------------------------------------------------------------------
 EXPORT_SYMBOL char *vxcgi_read_data(int argc, const char **argv)

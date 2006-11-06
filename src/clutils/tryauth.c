@@ -25,7 +25,7 @@ clutils/tryauth.c
 #include <stdlib.h>
 #include <libHX.h>
 #include <security/pam_appl.h>
-#include "libvxcgi/libvxcgi.h"
+#include <vitalnix/libvxcgi/libvxcgi.h>
 
 // Functions
 static int get_options(int *, const char ***);

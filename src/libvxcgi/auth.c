@@ -33,7 +33,7 @@ libvxcgi/auth.c - Authentication
 #include <security/pam_appl.h>
 #include <libHX.h>
 #include <vitalnix/compiler.h>
-#include "libvxcgi/libvxcgi.h"
+#include <vitalnix/libvxcgi/libvxcgi.h>
 
 // Functions
 static int my_conv(int, const struct pam_message **,

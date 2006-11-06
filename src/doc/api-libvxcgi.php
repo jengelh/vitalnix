@@ -8,7 +8,7 @@ in CGI environments.</p>
 <h1>Function overview</h1>
 
 <p class="code"><tt>
-<b>#</b>include &lt;libvxcgi/libvxcgi.h&gt;<br />
+<b>#</b>include &lt;vitalnix/libvxcgi/libvxcgi.h&gt;<br />
 <br />
 <b>int</b> vxcgi_authenticate(<b>const char *</b>user, <b>const char *</b>password);<br />
 <b>char *</b>vxcgi_read_data(<b>int</b> argc, <b>const char **</b>argv);<br />
