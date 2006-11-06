@@ -29,9 +29,9 @@ external advertisements for this software. */
 #include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
 #include "libvxmdfmt/internal.h"
-#include "libvxmdfmt/libvxmdfmt.h"
+#include <vitalnix/libvxmdfmt/libvxmdfmt.h>
 #include "libvxmdfmt/static-build.h"
-#include "libvxmdfmt/vtable.h"
+#include <vitalnix/libvxmdfmt/vtable.h>
 #include <vitalnix/libvxutil/defines.h>
 
 //-----------------------------------------------------------------------------

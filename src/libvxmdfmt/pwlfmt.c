@@ -30,8 +30,8 @@ libvxmdfmt/pwlfmt.c
 #include <vitalnix/config.h>
 #include <vitalnix/libvxcore/loader.h>
 #include "libvxmdfmt/internal.h"
-#include "libvxmdfmt/libvxmdfmt.h"
-#include "libvxmdfmt/vtable.h"
+#include <vitalnix/libvxmdfmt/libvxmdfmt.h>
+#include <vitalnix/libvxmdfmt/vtable.h>
 #include "libvxmdsync/logversion.h"
 #include <vitalnix/libvxutil/defines.h>
 

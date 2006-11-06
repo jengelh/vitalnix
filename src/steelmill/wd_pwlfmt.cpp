@@ -26,8 +26,8 @@ steelmill/wd_pwlfmt.cpp
 #ifndef WX_PRECOMP
 #    include <wx/wx.h>
 #endif
-#include "libvxmdfmt/libvxmdfmt.h"
-#include "libvxmdfmt/vtable.h"
+#include <vitalnix/libvxmdfmt/libvxmdfmt.h>
+#include <vitalnix/libvxmdfmt/vtable.h>
 #include "steelmill/wd_pwlfmt.hpp"
 #include "steelmill/xu_common.hpp"
 

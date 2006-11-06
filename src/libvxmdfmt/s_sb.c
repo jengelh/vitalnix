@@ -26,9 +26,9 @@ libvxmdfmt/s_sb.c
 #include <string.h>
 #include <libHX.h>
 #include "libvxmdfmt/internal.h"
-#include "libvxmdfmt/libvxmdfmt.h"
+#include <vitalnix/libvxmdfmt/libvxmdfmt.h>
 #include "libvxmdfmt/static-build.h"
-#include "libvxmdfmt/vtable.h"
+#include <vitalnix/libvxmdfmt/vtable.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
 // Functions

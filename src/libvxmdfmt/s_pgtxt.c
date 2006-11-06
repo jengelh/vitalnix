@@ -24,9 +24,9 @@ libvxmdfmt/s_pgtxt.c
 #include <stdio.h>
 #include <vitalnix/config.h>
 #include "libvxmdfmt/internal.h"
-#include "libvxmdfmt/libvxmdfmt.h"
+#include <vitalnix/libvxmdfmt/libvxmdfmt.h>
 #include "libvxmdfmt/static-build.h"
-#include "libvxmdfmt/vtable.h"
+#include <vitalnix/libvxmdfmt/vtable.h>
 #include <vitalnix/libvxutil/defines.h>
 
 //-----------------------------------------------------------------------------

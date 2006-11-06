@@ -27,8 +27,8 @@ clutils/mdpwlfmt.c
 #include <string.h>
 #include <libHX.h>
 #include <vitalnix/config.h>
-#include "libvxmdfmt/libvxmdfmt.h"
-#include "libvxmdfmt/vtable.h"
+#include <vitalnix/libvxmdfmt/libvxmdfmt.h>
+#include <vitalnix/libvxmdfmt/vtable.h>
 
 // Functions
 static int get_options(int *, const char ***, struct pwlfmt_workspace *);

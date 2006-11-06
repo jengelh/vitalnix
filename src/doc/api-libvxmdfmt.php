@@ -16,7 +16,7 @@ for detailed descriptions of the available styles.</p>
 <p class="block">Only the fields of interest are listed.</p>
 
 <p class="code"><tt>
-<b>#</b>include &lt;libvxmdfmt/libvxmdfmt.h&gt;<br /> 
+<b>#</b>include &lt;vitalnix/libvxmdfmt/libvxmdfmt.h&gt;<br /> 
 <br />
 <b>struct</b> pwlfmt_workspace {<br />
 &nbsp; &nbsp; ...<br />
@@ -32,7 +32,7 @@ for detailed descriptions of the available styles.</p>
 <h1>Function overview</h1>
 
 <p class="code"><tt>
-<b>#</b>include &lt;libvxmdfmt/libvxmdfmt.h&gt;<br />
+<b>#</b>include &lt;vitalnix/libvxmdfmt/libvxmdfmt.h&gt;<br />
 <br />
 <b>int</b> pwlfmt_new(<b>struct</b> pwlfmt_workspace <b>*</b>ws);<br />
 <b>int</b> pwlfmt_process(<b>struct</b> pwlfmt_workspace <b>*</b>ws);<br />
@@ -40,8 +40,8 @@ for detailed descriptions of the available styles.</p>
 </tt></p>
 
 <p class="code"><tt>
-<b>#</b>include &lt;libvxmdfmt/libvxmdfmt.h&gt;<br />
-<b>#</b>include &lt;libvxmdfmt/vtable.h&gt;<br />
+<b>#</b>include &lt;vitalnix/libvxmdfmt/libvxmdfmt.h&gt;<br />
+<b>#</b>include &lt;vitalnix/libvxmdfmt/vtable.h&gt;<br />
 <br />
 <b>struct</b> pwlstyle_vtable <b>*</b>pwlstyles_trav(<b>void **</b>trav);
 </tt></p>
