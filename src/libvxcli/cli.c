@@ -28,7 +28,7 @@ libvxcli/cli.c
 #include <string.h>
 #include <libHX.h>
 #include <vitalnix/compiler.h>
-#include "libvxcli/libvxcli.h"
+#include <vitalnix/libvxcli/libvxcli.h>
 #include <vitalnix/libvxutil/defines.h>
 
 //-----------------------------------------------------------------------------

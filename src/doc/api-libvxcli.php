@@ -8,7 +8,7 @@ for the command-line (CLI) variants of various programs included.</p>
 <h1>Structures</h1>
 
 <p class="code"><tt>
-<b>#</b>include &lt;libvxcli/libvxcli.h&gt;<br />
+<b>#</b>include &lt;vitalnix/libvxcli/libvxcli.h&gt;<br />
 <br />
 <b>struct</b> vxcq_entry {<br />
 &nbsp; &nbsp; <b>const char *</b>msg;<br />
