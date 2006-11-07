@@ -51,7 +51,9 @@ else
 endif
 
 PREREQ = @mkdir -p $(@D)
-srcobj = $(patsubst ${S}/%.c,%.o,$(wildcard ${S}/$(1)/*.c)) \
-         $(patsubst ${S}/%.cpp,%.o,$(wildcard ${S}/$(1)/*.cpp))
+srcobj = $(foreach subdir,$(1), \
+             $(patsubst ${S}/%.c,%.o,$(wildcard ${S}/$(subdir)/*.c)) \
+             $(patsubst ${S}/%.cpp,%.o,$(wildcard ${S}/$(subdir)/*.cpp)) \
+         )
 
 #==============================================================================

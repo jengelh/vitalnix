@@ -44,11 +44,12 @@ doc: $(patsubst ${S}/%.php,%.html,$(wildcard ${S}/doc/[a-z]*.php)) \
 # directory so that we do not inadvertently kill the source tree.
 #
 clean:
-	find . -mindepth 1 -maxdepth 1 ! -name GNUmakefile \
-	    ! -name include -print0 | xargs -0 rm -Rf;
+	find . "(" -iname "*.o" -o -iname "*.so" ")" -print0 | xargs -0r rm -f;
+	rm -Rf doc steelmill ${EXEC_TARGETS};
 
-distclean:
-	find . -mindepth 1 -maxdepth 1 -print0 | xargs -0 rm -Rf;
+depclean: clean
+	find . -iname ".*.d" -print0 | xargs -0 rm -f;
+	find . -mindepth 1 -maxdepth 1 -type d -print0 | xargs -0r rmdir -p 2>/dev/null || :;
 
 # LIBS ---------------------------------
 #

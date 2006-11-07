@@ -235,7 +235,7 @@ LIBXML_LDFLAGS  := $LIBXML_LDFLAGS
 WX_CXXFLAGS     := $WX_CXXFLAGS -Wno-strict-aliasing
 WX_LDFLAGS      := $WX_LDFLAGS
 
-include $cf_basedir/src/GNUmakefile.tgt
+include \${S}/GNUmakefile.tgt
 EOF
 
     echo "Creating vitalnix/config.h";
