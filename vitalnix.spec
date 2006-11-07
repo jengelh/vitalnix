@@ -1,15 +1,15 @@
 
 Name:           vitalnix
-Version:        2.99_beta7
+Version:        2.99_beta8
 Release:        0
 Group:          System/Base
-Summary:        Vitalnix User Management Suite
+Summary:        Vitalnix User Management Suite and Essential Tools
 License:        LGPL2
 URL:            http://vitalnix.sourceforge.net/
 
 Source:         http://heanet.dl.sourceforge.net/sourceforge/%name/%name-%version.tar.bz2
 BuildRoot:      %_tmppath/%name-%version-build
-BuildRequires:  openssl-devel, perl >= 5.6.0, wxWidgets-devel >= 2.7.0
+BuildRequires:  openssl-devel, perl >= 5.6.0, rsync, wxWidgets-devel >= 2.7.0
 %define pfx     /opt/%name-%version
 
 %description
@@ -58,13 +58,8 @@ install -pm0644 obj/vitalnix.pc "$b/%_libdir/pkgconfig/";
 install -dm0755 "$b/%pfx";
 
 # ./include
-pushd src;
-for fullfile in lib*/*.h; do
-    d="$b/%pfx/include/${fullfile%/*}";
-    install -dm0755 "$d";
-    install -pm0644 "$fullfile" "$d/";
-done;
-popd;
+rsync -PHSav src/include/ "$b/%pfx/include/";
+rsync -PHSav obj/include/ "$b/%pfx/include/";
 
 # ./bin
 install -dm0755 "$b/%pfx/bin";
