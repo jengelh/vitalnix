@@ -120,19 +120,13 @@ static int lpacct_filter_main(int argc, const char **argv)
 
     if(argc == 7) {
         input_file = argv[6];
-        if((ret = generic_tee_named(input_file, STDOUT_FILENO, -1)) < 0) {
-            fprintf(stderr, PREFIX "generic_named_tee: %s\n", strerror(ret));
-            return EXIT_FAILURE;
-        }
+        if((ret = generic_tee_named(input_file, STDOUT_FILENO, -1)) < 0)
+            pr_exit("generic_named_tee: %s\n", strerror(ret));
     } else if(argc == 6) {
-        if((fd = mkstemp(input_tmp)) < 0) {
-            fprintf(stderr, PREFIX "mkstemp: %s\n", strerror(errno));
-            return EXIT_FAILURE;
-        }
-        if((ret = generic_tee(STDIN_FILENO, STDOUT_FILENO, fd)) < 0) {
-            fprintf(stderr, PREFIX "generic_tee: %s\n", strerror(ret));
-            return EXIT_FAILURE;
-        }
+        if((fd = mkstemp(input_tmp)) < 0)
+            pr_exit("mkstemp: %s\n", strerror(errno));
+        if((ret = generic_tee(STDIN_FILENO, STDOUT_FILENO, fd)) < 0)
+            pr_exit("generic_tee: %s\n", strerror(ret));
         input_file = input_tmp;
         close(STDOUT_FILENO);
         close(fd);
