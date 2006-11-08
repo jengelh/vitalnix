@@ -8,6 +8,7 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,6 +40,26 @@ int main(int argc, const char **argv)
         return lpacct_filter_main(argc, argv);
 }
 
+void pr_exit(const char *func, const char *fmt, ...)
+{
+    va_list argp;
+    va_start(argp, fmt);
+    fprintf(stderr, PREFIX "%s: ", func);
+    vfprintf(stderr, fmt, argp);
+    va_end(argp);
+    exit(EXIT_FAILURE);
+}
+
+void pr_warn(const char *func, const char *fmt, ...)
+{
+    va_list argp;
+    va_start(argp, fmt);
+    fprintf(stderr, PREFIX "%s: ", func);
+    vfprintf(stderr, fmt, argp);
+    va_end(argp);
+    return;
+}
+
 //-----------------------------------------------------------------------------
 /*  lpacct_analyze_main
     @argc:      argument count
@@ -55,7 +76,7 @@ static int lpacct_analyze_main(int argc, const char **argv)
     struct options *p = &proc_opt;
     char *input_file = NULL;
     pid_t pid;
-    int ret;
+    int fd, ret;
     struct HXoption options_table[] = {
         {.ln = "cmyk", .type = HXTYPE_VAL, .val = COLORSPACE_CMYK, .ptr = &p->colorspace, .help = "Calculate for CMYK colorspace"},
         {.ln = "cmy",  .type = HXTYPE_VAL, .val = COLORSPACE_CMY,  .ptr = &p->colorspace, .help = "Calculate for CMY colorspace"},
@@ -78,12 +99,8 @@ static int lpacct_analyze_main(int argc, const char **argv)
         return EXIT_FAILURE;
     }
 
-    ret = ghostscript_init(input_file, &pid, p->dpi);
-    if(ret < 0) {
-        fprintf(stderr, PREFIX "GhostScript init failed: %s\n", strerror(ret));
-        return EXIT_FAILURE;
-    }
-    ret = (mpxm_process(ret, p) > 0) ? EXIT_SUCCESS : EXIT_FAILURE;
+    fd = ghostscript_init(input_file, &pid, p->dpi);
+    ret = (mpxm_process(fd, p) > 0) ? EXIT_SUCCESS : EXIT_FAILURE;
     ghostscript_exit(pid);
     return ret;
 }
@@ -124,11 +141,8 @@ static int lpacct_filter_main(int argc, const char **argv)
         return EXIT_FAILURE;
     }
 
-    fd = ret = ghostscript_init(input_file, &pid, DEFAULT_GS_DPI);
-    if(ret < 0) {
-        fprintf(stderr, PREFIX "GhostScript init failed: %s\n", strerror(ret));
-        ret = EXIT_FAILURE;
-    } else {
+    fd = ghostscript_init(input_file, &pid, DEFAULT_GS_DPI);
+    {
         // Accounting starts here.
         struct options op = {
             .do_account = 1,
@@ -153,7 +167,7 @@ static int lpacct_filter_main(int argc, const char **argv)
 
     Starts the GhostScript interpreter on @input_file with @dpi x @dpi
     resolution. Puts the PID of the subprocess into @pid and returns the
-    file descriptor for it. Returns -errno on error.
+    file descriptor for it. Aborts on error.
 */
 static int ghostscript_init(const char *input_file, pid_t *pid, int dpi)
 {
@@ -164,27 +178,16 @@ static int ghostscript_init(const char *input_file, pid_t *pid, int dpi)
     };
     int fd, ret, output_pipe[2];
 
-    if(pipe(output_pipe) != 0) {
-        ret = errno;
-        fprintf(stderr, PREFIX "%s: pipe() failed: %s\n",
-                __func__, strerror(ret));
-        goto err;
-    }
-
-    if((fd = open(input_file, O_RDONLY)) < 0) {
-        ret = errno;
-        fprintf(stderr, PREFIX "%s: Could not open %s: %s\n",
-                __func__, input_file, strerror(ret));
-        goto err;
-    }
+    if(pipe(output_pipe) != 0)
+        pr_exit(__func__, "pipe() failed: %s\n", strerror(errno));
+    if((fd = open(input_file, O_RDONLY)) < 0)
+        pr_exit(__func__, "Could not open %s: %s\n",
+                input_file, strerror(errno));
 
     snprintf(dpi_string, sizeof(dpi_string), "-r%d", (dpi < 2) ? 2 : dpi);
 
     if((*pid = fork()) < 0) {
-        ret = errno;
-        fprintf(stderr, PREFIX "%s: fork() failed: %s\n",
-                __func__, strerror(ret));
-        goto err;
+        pr_exit(__func__, "fork() failed: %s\n", strerror(errno));
     } else if(*pid == 0) {
         dup2(fd, STDIN_FILENO);
         dup2(output_pipe[1], STDOUT_FILENO);
@@ -192,27 +195,18 @@ static int ghostscript_init(const char *input_file, pid_t *pid, int dpi)
         close(output_pipe[0]);
         close(output_pipe[1]);
         // keep STDERR_FILENO -- user or cups pick it up
-        ret = execvp(*argv, (char * const *)argv);
-        fprintf(stderr, "%s: execvp() failed: %s\n", __func__, strerror(ret));
+        execvp(*argv, (char * const *)argv);
+        pr_exit(__func__, "execvp() failed: %s\n", strerror(errno));
         exit(127);
     }
 
-    if(waitpid(*pid, &ret, WNOHANG) > 0) {
-        fprintf(stderr, PREFIX "%s: Ghostscript terminated%s, exit status %d\n",
-                __func__, !WIFEXITED(ret) ? " abnormally" : "",
-                WEXITSTATUS(ret));
-        goto err;
-    }
+    if(waitpid(*pid, &ret, WNOHANG) > 0)
+        pr_exit(__func__, "Ghostscript terminated%s, exit status %d\n",
+                !WIFEXITED(ret) ? " abnormally" : "", WEXITSTATUS(ret));
 
     close(fd);
     close(output_pipe[1]);
     return output_pipe[0];
-
- err:
-    close(fd);
-    close(output_pipe[0]);
-    close(output_pipe[1]);
-    return -ret;
 }
 
 static void ghostscript_exit(pid_t pid)
@@ -222,10 +216,10 @@ static void ghostscript_exit(pid_t pid)
     if(WIFEXITED(status))
         return;
     if(WIFSIGNALED(status))
-        fprintf(stderr, "%s: GhostScript terminated abnormally, signal %d\n",
-                __func__, WTERMSIG(status));
+        pr_warn(__func__, "GhostScript terminated abnormally, signal %d\n",
+                WTERMSIG(status));
     else
-        fprintf(stderr, "%s: GhostScript terminated abnormally\n", __func__);
+        pr_warn(__func__, "GhostScript terminated abnormally\n");
 
     return;
 }

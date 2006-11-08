@@ -179,7 +179,7 @@ static int mpxm_get_image(int fd, struct image *image)
         p     += ret;
     }
     if(bytes > 0) {
-        fprintf(stderr, "%s: Did not read enough, %zd left\n", __func__, bytes);
+        pr_warn(__func__, "Did not read enough, %zd left\n", bytes);
         return 0;
     }
     return 1;

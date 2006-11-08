@@ -35,6 +35,12 @@ struct options {
     unsigned int do_account;
 };
 
+/*
+ *      FUNCTIONS
+ */
+extern void pr_exit(const char *, const char *, ...);
+extern void pr_warn(const char *, const char *, ...);
+
 #endif // LPACCT_LPACCT_H
 
 //=============================================================================
