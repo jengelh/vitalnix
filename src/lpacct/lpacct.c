@@ -44,7 +44,10 @@ void pr_exit(const char *func, const char *fmt, ...)
 {
     va_list argp;
     va_start(argp, fmt);
-    fprintf(stderr, PREFIX "%s: ", func);
+    if(func == NULL)
+        fprintf(stderr, PREFIX);
+    else
+        fprintf(stderr, PREFIX "%s: ", func);
     vfprintf(stderr, fmt, argp);
     va_end(argp);
     exit(EXIT_FAILURE);
@@ -121,12 +124,12 @@ static int lpacct_filter_main(int argc, const char **argv)
     if(argc == 7) {
         input_file = argv[6];
         if((ret = generic_tee_named(input_file, STDOUT_FILENO, -1)) < 0)
-            pr_exit("generic_named_tee: %s\n", strerror(ret));
+            pr_exit(NULL, "generic_named_tee: %s\n", strerror(ret));
     } else if(argc == 6) {
         if((fd = mkstemp(input_tmp)) < 0)
-            pr_exit("mkstemp: %s\n", strerror(errno));
+            pr_exit(NULL, "mkstemp: %s\n", strerror(errno));
         if((ret = generic_tee(STDIN_FILENO, STDOUT_FILENO, fd)) < 0)
-            pr_exit("generic_tee: %s\n", strerror(ret));
+            pr_exit(NULL, "generic_tee: %s\n", strerror(ret));
         input_file = input_tmp;
         close(STDOUT_FILENO);
         close(fd);
