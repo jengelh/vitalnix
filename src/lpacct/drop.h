@@ -20,9 +20,6 @@ extern void drop2bl(struct costf *, const struct cost *, int);
 extern void drop2sqcm(struct costf *, const struct cost *, int);
 extern void drop2sqm(struct costf *, const struct cost *, int);
 extern void drop2sqin(struct costf *, const struct cost *, int);
-extern void pixel_cost_cmyk(const struct image *, struct cost *);
-extern void pixel_cost_cmy(const struct image *, struct cost *);
-extern void pixel_cost_gray(const struct image *, struct cost *);
 
 /*
  *      VARIABLES
