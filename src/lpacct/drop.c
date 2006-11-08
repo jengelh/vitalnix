@@ -9,18 +9,18 @@
 #include "lpacct.h"
 
 // Functions
-static void pxcost_cmyk_mmap(const struct image *, struct cost *);
-static void pxcost_cmy_mmap(const struct image *, struct cost *);
-static void pxcost_gray_mmap(const struct image *, struct cost *);
+static int pxcost_cmyk(int, struct image *, struct cost *);
+static int pxcost_cmy(int, struct image *, struct cost *);
+static int pxcost_gray(int, struct image *, struct cost *);
 static inline unsigned int min3(unsigned int, unsigned int, unsigned int);
 static inline unsigned int rgb_to_gray(unsigned int, unsigned int,
   unsigned int);
 
 // Variables
-void (*const pixel_cost[])(const struct image *, struct cost *) = {
-    [COLORSPACE_GRAY] = pxcost_gray_mmap,
-    [COLORSPACE_CMYK] = pxcost_cmyk_mmap,
-    [COLORSPACE_CMY]  = pxcost_cmy_mmap,
+int (*const mpxm_analyzer[])(int, struct image *, struct cost *) = {
+    [COLORSPACE_GRAY] = pxcost_gray,
+    [COLORSPACE_CMYK] = pxcost_cmyk,
+    [COLORSPACE_CMY]  = pxcost_cmy,
 };
 
 //-----------------------------------------------------------------------------
@@ -73,7 +73,7 @@ void drop2sqin(struct costf *out, const struct cost *in, int dpi)
 }
 
 //-----------------------------------------------------------------------------
-/*  pixel_cost_cmyk
+/*  pxcost_cmyk
     @image:     Image data
     @cost:      Storage point for image cost
 
@@ -84,33 +84,37 @@ void drop2sqin(struct costf *out, const struct cost *in, int dpi)
 
         255 droplets = 1 px^2
 
-    This function and pixel_cost_cmy() use integer math to gain a little speed
+    This function and pxcost_cmy() use integer math to gain a little speed
     over floating point operations.
 */
-static void pxcost_cmyk_mmap(const struct image *image, struct cost *cost)
+static int pxcost_cmyk(int fd, struct image *image, struct cost *cost)
 {
     unsigned long long tc = 0, tm = 0, ty = 0, tk = 0;
-    const unsigned char *current = image->data;
-    unsigned long pixels = image->pixels;
+    const unsigned char *current;
     unsigned char c, m, y, k;
+    long ret, pixels;
 
-    while(pixels-- > 0) {
-        c = 255 - current[0];
-        m = 255 - current[1];
-        y = 255 - current[2];
-        k = min3(c, m, y);
-        if(k == 255) {
-            c = m = y = 0;
-        } else {
-            c = 255 * (c - k) / (255 - k);
-            m = 255 * (m - k) / (255 - k);
-            y = 255 * (y - k) / (255 - k);
+    while((ret = mpxm_chunk_next(fd, image)) > 0) {
+        current = image->buffer;
+        pixels  = ret / 3;
+        while(pixels-- > 0) {
+            c = 255 - current[0];
+            m = 255 - current[1];
+            y = 255 - current[2];
+            k = min3(c, m, y);
+            if(k == 255) {
+                c = m = y = 0;
+            } else {
+                c = 255 * (c - k) / (255 - k);
+                m = 255 * (m - k) / (255 - k);
+                y = 255 * (y - k) / (255 - k);
+            }
+            tc += c;
+            tm += m;
+            ty += y;
+            tk += k;
+            current += 3;
         }
-        tc += c;
-        tm += m;
-        ty += y;
-        tk += k;
-        current += 3;
     }
 
     cost->c = tc;
@@ -118,27 +122,31 @@ static void pxcost_cmyk_mmap(const struct image *image, struct cost *cost)
     cost->y = ty;
     cost->k = tk;
     cost->t = tc + tm + ty + tk;
-    return;
+    return ret;
 }
 
-/*  pixel_cost_cmy
+/*  pxcost_cmy
     @image:     Image data
     @cost:      Storage point for image cost
 
-    Like cmyk_cost_pixel(), but for CMY. Use with printers that do not have a
-    black component, like HP DeskJet 320.
+    Like pxcost_cmyk(), but for CMY. Use with printers that do not have a black
+    component, like HP DeskJet 320.
 */
-static void pxcost_cmy_mmap(const struct image *image, struct cost *cost)
+static int pxcost_cmy(int fd, struct image *image, struct cost *cost)
 {
-    const unsigned char *current = image->data;
     unsigned long long c = 0, m = 0, y = 0;
-    unsigned long pixels = image->pixels;
+    const unsigned char *current;
+    long ret, pixels;
 
-    while(pixels-- > 0) {
-        c += 255 - current[0];
-        m += 255 - current[1];
-        y += 255 - current[2];
-        current += 3;
+    while((ret = mpxm_chunk_next(fd, image)) > 0) {
+        current = image->buffer;
+        pixels  = ret / 3;
+        while(pixels-- > 0) {
+            c += 255 - current[0];
+            m += 255 - current[1];
+            y += 255 - current[2];
+            current += 3;
+        }
     }
 
     cost->c = c;
@@ -146,34 +154,41 @@ static void pxcost_cmy_mmap(const struct image *image, struct cost *cost)
     cost->y = y;
     cost->k = 0;
     cost->t = c + m + y;
-    return;
+    return ret;
 }
 
-/*  pixel_cost_gray
+/*  pxcost_gray
     @image:     Image data
     @cost:      Storage point for image cost
 
     Count the amount of black color used in an array of RGB24 or K8 pixels.
 */
-static void pxcost_gray_mmap(const struct image *image, struct cost *cost)
+static int pxcost_gray(int fd, struct image *image, struct cost *cost)
 {
-    const unsigned char *current  = image->data;
-    unsigned long pixels = image->pixels;
+    const unsigned char *current;
     unsigned long long k = 0;
+    long ret, pixels;
 
-    if(image->type == FILETYPE_PGM) {
-        while(pixels-- > 0)
-            k += 255 - *current++;
-    } else {
-        while(pixels-- > 0) {
-            k += 255 - rgb_to_gray(current[0], current[1], current[2]);
-            current += 3;
+    if(image->type == FILETYPE_PPM) {
+        while((ret = mpxm_chunk_next(fd, image)) > 0) {
+            current = image->buffer;
+            pixels  = ret / 3;
+            while(pixels-- > 0) {
+                k += 255 - rgb_to_gray(current[0], current[1], current[2]);
+                current += 3;
+            }
+        }
+    } else if(image->type == FILETYPE_PGM) {
+        while((pixels = ret = mpxm_chunk_next(fd, image)) > 0) {
+            current = image->buffer;
+            while(pixels-- > 0)
+                k += 255 - *current++;
         }
     }
 
     cost->c = cost->m = cost->y = 0;
     cost->k = cost->t = k;
-    return;
+    return ret;
 }
 
 //-----------------------------------------------------------------------------

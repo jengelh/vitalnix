@@ -17,15 +17,56 @@
 
 // Functions
 static void cost_add(struct cost *, const struct cost *);
+static inline unsigned long min2(unsigned long, unsigned long);
+static int mpxm_chunk_alloc(struct image *);
 static int mpxm_fdgetl(int, hmc_t **);
 static int mpxm_get_header(int, struct image *);
-static int mpxm_get_image(int, struct image *);
 static void print_stats(const struct options *, const struct cost *,
     const struct image *);
 static inline double px_to_cm(unsigned int, unsigned int);
 static inline double px_to_in(unsigned int, unsigned int);
 
 //-----------------------------------------------------------------------------
+/*  mpxm_chunk_next
+    @image:     image state to operate on
+
+    Reads the next chunk from @image->fd. Returns the number of bytes read,
+    or zero on end-of-image, and %-errno on failure. Returns %-EPIPE when
+    EOF is prematurely encountered.
+*/
+long mpxm_chunk_next(int fd, struct image *image)
+{
+    unsigned long block_size, read_size;
+    unsigned char *ptr = image->buffer;
+    long ret;
+
+    if(image->rem_bytes == 0)
+        return 0;
+
+    /* The caller may depend on the fact that this function always returns a
+    multiple of a certain number of bytes (e.g. 3 for RGB images).
+    @image->buffer_size is assured to be a multiple, however, a single read()
+    on a pipe might not yield a multiple, which is why we need a loop, to be
+    sure to read @image->buffer_size. */
+    block_size = read_size = min2(image->rem_bytes, image->buffer_size);
+
+    while(read_size > 0) {
+        if((ret = read(fd, ptr, read_size)) < 0)
+            return -errno;
+        else if(ret == 0)
+            /* If we were at EOF, the loop condition would be false, hence
+            we never should get here during the loop unless the pipe is
+            prematurely closed. */
+            return -EPIPE;
+
+        read_size -= ret;
+        ptr += ret;
+    }
+
+    image->rem_bytes -= block_size;
+    return block_size;
+}
+
 /*  mpxm_process
     @fd:        file descriptor to read from
     @cost:      accounting structure
@@ -35,15 +76,18 @@ static inline double px_to_in(unsigned int, unsigned int);
 */
 int mpxm_process(int fd, const struct options *op)
 {
-    struct image image;
+    struct image image = {};
     struct cost all_cost = {}, page_cost = {};
     int ret;
 
-    while((ret = mpxm_get_header(fd, &image)) > 0 &&
-      (ret = mpxm_get_image(fd, &image)) > 0)
-    {
-        pixel_cost[op->colorspace](&image, &page_cost);
-        free(image.data);
+    while((ret = mpxm_get_header(fd, &image)) > 0) {
+        if((ret = mpxm_chunk_alloc(&image)) <= 0)
+            pr_exit(NULL, "mpxm_chunk_alloc: %s\n", strerror(-ret));
+
+        image.rem_bytes = image.nr_bytes;
+        if((ret = mpxm_analyzer[op->colorspace](fd, &image, &page_cost)) < 0)
+            pr_exit(NULL, "mpxm_analyzer: %s\n", strerror(-ret));
+
         cost_add(&all_cost, &page_cost);
         ++all_cost.p;
 
@@ -53,6 +97,7 @@ int mpxm_process(int fd, const struct options *op)
         }
     }
 
+    free(image.buffer);
     if(op->per_doc_stats) {
         printf("Total cost of all %u pages\n", all_cost.p);
         print_stats(op, &all_cost, NULL);
@@ -79,6 +124,28 @@ static void cost_add(struct cost *out, const struct cost *in)
     out->t += in->c + in->m + in->y + in->k;
     out->p += in->p;
     return;
+}
+
+static inline unsigned long min2(unsigned long a, unsigned long b)
+{
+    return (a < b) ? a : b;
+}
+
+/*  mpxm_chunk_alloc
+    @image:     image state to operate on
+
+    Allocates the buffer for chunk reading. Returns positive non-zero on
+    success or %-errno otherwise.
+*/
+static int mpxm_chunk_alloc(struct image *image)
+{
+    if(image->buffer == NULL) {
+        image->buffer_size = 64 * 1024 * 3;
+        if((image->buffer = malloc(image->buffer_size)) == NULL)
+            return -errno;
+    }
+
+    return 1;
 }
 
 /*  mpxm_fdgetl
@@ -149,39 +216,11 @@ static int mpxm_get_header(int fd, struct image *image)
     mpxm_fdgetl(fd, &ln);
     hmc_free(ln);
 
-    image->pixels = image->width * image->height;
-    return 1;
-}
-
-/*  mpxm_get_image
-    @fd:        file descriptor to read from
-    @image:     image to fill
-
-    Reads the pixel stream from @fd into @image->data. Returns true on success,
-    otherwise false.
-*/
-static int mpxm_get_image(int fd, struct image *image)
-{
-    ssize_t bytes, ret;
-    unsigned char *p;
-
+    image->nr_pixels = image->width * image->height;
+    image->nr_bytes  = image->nr_pixels;
     if(image->type == FILETYPE_PPM)
-        p = image->data = malloc(bytes = 3 * image->pixels);
-    else if(image->type == FILETYPE_PGM)
-        p = image->data = malloc(bytes = image->pixels);
-    else
-        return -EINVAL;
+        image->nr_bytes *= 3;
 
-    if(image->data == NULL)
-        return -errno;
-    while((ret = read(fd, p, bytes)) > 0) {
-        bytes -= ret;
-        p     += ret;
-    }
-    if(bytes > 0) {
-        pr_warn(__func__, "Did not read enough, %zd left\n", bytes);
-        return 0;
-    }
     return 1;
 }
 

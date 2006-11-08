@@ -24,6 +24,6 @@ extern void drop2sqin(struct costf *, const struct cost *, int);
 /*
  *      VARIABLES
  */
-extern void (*const pixel_cost[])(const struct image *, struct cost *);
+extern int (*const mpxm_analyzer[])(int, struct image *, struct cost *);
 
 #endif // LPACCT_PIXELCOST_H
