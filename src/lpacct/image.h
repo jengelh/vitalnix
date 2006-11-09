@@ -14,8 +14,7 @@ struct options;
 struct image { // page
     enum imagetype type;
     unsigned long width, height;
-    unsigned long nr_pixels;
-    unsigned long long nr_bytes;
+    unsigned long long nr_pixels, nr_bytes;
 
     unsigned long long rem_bytes;
     unsigned char *buffer;

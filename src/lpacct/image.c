@@ -212,11 +212,11 @@ static int mpxm_get_header(int fd, struct image *image)
     if(sscanf(ln, "%lu %lu", &image->width, &image->height) != 2)
         return 0;
 
-    // colorspace line (unused)
+    // bits per pixel line (unused)
     mpxm_fdgetl(fd, &ln);
     hmc_free(ln);
 
-    image->nr_pixels = image->width * image->height;
+    image->nr_pixels = (unsigned long long)image->width * image->height;
     image->nr_bytes  = image->nr_pixels;
     if(image->type == FILETYPE_PPM)
         image->nr_bytes *= 3;
