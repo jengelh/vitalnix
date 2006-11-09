@@ -198,7 +198,7 @@ static int mpxm_get_header(int fd, struct image *image)
 
     if(strcmp(ln, "P6") == 0)
         image->type = FILETYPE_PPM;
-    else if(strcmp(ln, "P3") == 0)
+    else if(strcmp(ln, "P5") == 0)
         image->type = FILETYPE_PGM;
     else
         return 0;

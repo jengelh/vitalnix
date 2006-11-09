@@ -24,7 +24,7 @@
 // Functions
 static int lpacct_analyze_main(int argc, const char **);
 static int lpacct_filter_main(int argc, const char **);
-static int ghostscript_init(const char *, pid_t *, int);
+static int ghostscript_init(const char *, pid_t *, const struct options *);
 static void ghostscript_exit(pid_t);
 static int generic_tee(int, int, int);
 static int generic_tee_named(const char *, int, int);
@@ -102,7 +102,7 @@ static int lpacct_analyze_main(int argc, const char **argv)
         return EXIT_FAILURE;
     }
 
-    fd = ghostscript_init(input_file, &pid, p->dpi);
+    fd = ghostscript_init(input_file, &pid, p);
     ret = (mpxm_process(fd, p) > 0) ? EXIT_SUCCESS : EXIT_FAILURE;
     ghostscript_exit(pid);
     return ret;
@@ -121,6 +121,13 @@ static int lpacct_filter_main(int argc, const char **argv)
     pid_t pid;
     int fd, ret;
 
+    struct options op = {
+        .do_account = 1,
+        .dpi        = DEFAULT_GS_DPI,
+        .colorspace = COLORSPACE_CMYK,
+        .cups_args  = argv,
+    };
+
     if(argc == 7) {
         input_file = argv[6];
         if((ret = generic_tee_named(input_file, STDOUT_FILENO, -1)) < 0)
@@ -138,18 +145,8 @@ static int lpacct_filter_main(int argc, const char **argv)
         return EXIT_FAILURE;
     }
 
-    fd = ghostscript_init(input_file, &pid, DEFAULT_GS_DPI);
-    {
-        // Accounting starts here.
-        struct options op = {
-            .do_account = 1,
-            .dpi        = DEFAULT_GS_DPI,
-            .colorspace = COLORSPACE_CMYK,
-            .cups_args  = argv,
-        };
-        ret = (mpxm_process(fd, &op) > 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-    }
-
+    fd  = ghostscript_init(input_file, &pid, &op);
+    ret = (mpxm_process(fd, &op) > 0) ? EXIT_SUCCESS : EXIT_FAILURE;
     ghostscript_exit(pid);
     if(input_file == input_tmp)
         unlink(input_tmp);
@@ -166,12 +163,14 @@ static int lpacct_filter_main(int argc, const char **argv)
     resolution. Puts the PID of the subprocess into @pid and returns the
     file descriptor for it. Aborts on error.
 */
-static int ghostscript_init(const char *input_file, pid_t *pid, int dpi)
+static int ghostscript_init(const char *input_file, pid_t *pid,
+  const struct options *op)
 {
+    char device_string[sizeof("-sDEVICE=ppmraw")] = "-sDEVICE=ppmraw";
     char dpi_string[sizeof("-r3600")];
     const char *argv[] = {
         "gs", "-dBATCH", "-dNOPAUSE", "-dQUIET", "-dSAFER", dpi_string,
-        "-sDEVICE=ppmraw", "-sOutputFile=-", input_file, NULL,
+        device_string, "-sOutputFile=-", input_file, NULL,
     };
     int fd, ret, output_pipe[2];
 
@@ -181,7 +180,10 @@ static int ghostscript_init(const char *input_file, pid_t *pid, int dpi)
         pr_exit(__func__, "Could not open %s: %s\n",
                 input_file, strerror(errno));
 
-    snprintf(dpi_string, sizeof(dpi_string), "-r%d", (dpi < 2) ? 2 : dpi);
+    snprintf(dpi_string, sizeof(dpi_string), "-r%d",
+             (op->dpi < 2) ? 2 : op->dpi);
+    if(op->colorspace == COLORSPACE_GRAY)
+        snprintf(device_string, sizeof(device_string), "-sDEVICE=pgmraw");
 
     if((*pid = fork()) < 0) {
         pr_exit(__func__, "fork() failed: %s\n", strerror(errno));
