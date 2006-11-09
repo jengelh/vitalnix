@@ -195,8 +195,7 @@ static int pxcost_gray(int fd, struct image *image, struct cost *cost)
 static inline unsigned int min3(unsigned int a, unsigned int b,
   unsigned int c)
 {
-    unsigned int r = (a < b) ? a : b;
-    return (r < c) ? r : c;
+    return (a < b) ? a : (b < c) ? b : c;
 }
 
 static inline unsigned int rgb_to_gray(unsigned int r, unsigned int g,
