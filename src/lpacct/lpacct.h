@@ -28,7 +28,7 @@ struct options {
     // generic
     unsigned int dpi;
     enum colorspace colorspace;
-    unsigned int per_doc_stats, per_page_stats;
+    unsigned int per_doc_stats, per_page_stats, rasterize;
 
     // filter
     const char **cups_args;

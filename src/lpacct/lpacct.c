@@ -75,6 +75,7 @@ static int lpacct_analyze_main(int argc, const char **argv)
     struct options proc_opt = {
         .dpi        = DEFAULT_GS_DPI,
         .colorspace = COLORSPACE_CMYK,
+        .rasterize  = 1,
     };
     struct options *p = &proc_opt;
     char *input_file = NULL;
@@ -85,6 +86,7 @@ static int lpacct_analyze_main(int argc, const char **argv)
         {.ln = "cmy",  .type = HXTYPE_VAL, .val = COLORSPACE_CMY,  .ptr = &p->colorspace, .help = "Calculate for CMY colorspace"},
         {.ln = "gray", .type = HXTYPE_VAL, .val = COLORSPACE_GRAY, .ptr = &p->colorspace, .help = "Calculate for grayscale colorspace"},
 
+        {.sh = 'B', .type = HXTYPE_VAL, .val = 0, .ptr = &p->rasterize, .help = "Do not run rasterizer (debug)"},
 	{.sh = 'd', .ln = "dpi",  .type = HXTYPE_UINT,   .ptr = &proc_opt.dpi, .help = "Dots per inch"},
 	{.sh = 'f', .ln = "file", .type = HXTYPE_STRING, .ptr = &input_file,   .help = "File to analyze"},
         {.sh = 'p', .type = HXTYPE_NONE, .ptr = &p->per_page_stats, .help = "Display per-page statistics"},
@@ -96,15 +98,20 @@ static int lpacct_analyze_main(int argc, const char **argv)
     if(HX_getopt(options_table, &argc, &argv, HXOPT_USAGEONERR) <= 0)
         return EXIT_FAILURE;
 
-    if(input_file == NULL) {
-        fprintf(stderr, "Specify a filename with the -f option,"
+    if(input_file == NULL)
+        pr_exit(NULL, "Specify a filename with the -f option,"
                 " and preferably the DPI with -d\n");
-        return EXIT_FAILURE;
-    }
 
-    fd = ghostscript_init(input_file, &pid, p);
+    if(p->rasterize)
+        fd = ghostscript_init(input_file, &pid, p);
+    else
+        if((fd = open(input_file, O_RDONLY)) < 0)
+            pr_exit(NULL, "Could not open %s: %s\n",
+                    input_file, strerror(errno));
+
     ret = (mpxm_process(fd, p) > 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-    ghostscript_exit(pid);
+    if(p->rasterize)
+        ghostscript_exit(pid);
     return ret;
 }
 
