@@ -47,6 +47,13 @@ struct vxconfig_userdel {
     char *master_predel, *master_postdel, *user_predel, *user_postdel;
 };
 
+/*
+ *      CONFIG.C
+ */
+extern int vxconfig_read_useradd(const char *, struct vxconfig_useradd *);
+extern int vxconfig_read_usermod(const char *, struct vxconfig_usermod *);
+extern int vxconfig_read_userdel(const char *, struct vxconfig_userdel *);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

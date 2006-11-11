@@ -152,13 +152,6 @@ extern int vxpdb_group_match(const struct vxpdb_group *, const struct vxpdb_grou
 extern void vxpdb_group_nomodify(struct vxpdb_group *);
 
 /*
- *      CONFIG.C
- */
-extern int vxconfig_read_useradd(const char *, struct vxconfig_useradd *);
-extern int vxconfig_read_usermod(const char *, struct vxconfig_usermod *);
-extern int vxconfig_read_userdel(const char *, struct vxconfig_userdel *);
-
-/*
  *      DUMMY.C
  */
 extern void vxpdb_fix_vtable(struct vxpdb_mvtable *);
