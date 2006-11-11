@@ -27,7 +27,7 @@ libvxmdsync/fixup.c
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxeds/libvxeds.h>
 #include "libvxmdsync/internal.h" // MAX_LNAME
-#include "libvxmdsync/libvxmdsync.h"
+#include <vitalnix/libvxmdsync/libvxmdsync.h>
 
 // Functions
 static inline char *format_name(const char *, unsigned int, char *, size_t);
