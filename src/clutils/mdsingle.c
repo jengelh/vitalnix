@@ -33,7 +33,7 @@ clutils/mdsingle.c
 #include <vitalnix/libvxcli/libvxcli.h>
 #include <vitalnix/libvxeds/libvxeds.h>
 #include "libvxmdsync/libvxmdsync.h"
-#include "libvxpdb/config.h"
+#include <vitalnix/libvxpdb/config.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxpdb/xafunc.h>
 #include <vitalnix/libvxpdb/xwfunc.h>
