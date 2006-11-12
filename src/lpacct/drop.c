@@ -184,7 +184,6 @@ static int pxcost_gray(int fd, struct image *image, struct cost *cost)
             k -= (78 * r + 151 * g + 27 * b) / 256;
         }
     } else if(image->type == FILETYPE_PGM) {
-        k = 0;
         while((pixels = ret = mpxm_chunk_next(fd, image)) > 0) {
             current = image->buffer;
             k += 255 * pixels;
