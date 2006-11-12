@@ -17,13 +17,14 @@ struct image { // page
     unsigned long long nr_pixels, nr_bytes;
 
     unsigned long long rem_bytes;
-    unsigned char *buffer;
+    void *buffer;
     unsigned int buffer_size; // bytes
 };
 
 /*
  *      FUNCTIONS
  */
+extern void invert_image(struct image *);
 extern long mpxm_chunk_next(int, struct image *);
 extern int mpxm_process(int, const struct options *);
 

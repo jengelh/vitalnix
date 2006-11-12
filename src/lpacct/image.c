@@ -27,6 +27,28 @@ static inline double px_to_cm(unsigned int, unsigned int);
 static inline double px_to_in(unsigned int, unsigned int);
 
 //-----------------------------------------------------------------------------
+/*  invert_image
+    @image:     image to operate on
+
+    Efficiently inverts all pixels in the image.
+*/
+void invert_image(struct image *image)
+{
+    unsigned long *Lptr = image->buffer;
+    unsigned char *Bptr, *Bend = image->buffer + image->buffer_size;
+    unsigned long *Lend = (void *)((unsigned long)Bend & ~sizeof(long));
+    while(Lptr < Lend) {
+        *Lptr = ~*Lptr;
+        ++Lptr;
+    }
+    Bptr = (void *)Lptr;
+    while(Bptr < Bend) {
+        *Bptr = ~*Bptr;
+        ++Bptr;
+    }
+    return;
+}
+
 /*  mpxm_chunk_next
     @image:     image state to operate on
 

@@ -91,27 +91,21 @@ static int pxcost_cmyk(int fd, struct image *image, struct cost *cost)
 {
     unsigned long long tc = 0, tm = 0, ty = 0, tk = 0;
     const unsigned char *current;
-    unsigned char c, m, y, k;
+    unsigned int k, w;
     long ret, pixels;
 
     while((ret = mpxm_chunk_next(fd, image)) > 0) {
+        invert_image(image);
         current = image->buffer;
         pixels  = ret / 3;
         while(pixels-- > 0) {
-            c = 255 - current[0];
-            m = 255 - current[1];
-            y = 255 - current[2];
-            k = min3(c, m, y);
-            if(k == 255) {
-                c = m = y = 0;
-            } else {
-                c = 255 * (c - k) / (255 - k);
-                m = 255 * (m - k) / (255 - k);
-                y = 255 * (y - k) / (255 - k);
+            k = min3(current[0], current[1], current[2]);
+            if(k != 255) {
+                w = 255 - k;
+                tc += 255 * (current[0] - k) / w;
+                tm += 255 * (current[1] - k) / w;
+                ty += 255 * (current[2] - k) / w;
             }
-            tc += c;
-            tm += m;
-            ty += y;
             tk += k;
             current += 3;
         }
@@ -141,10 +135,13 @@ static int pxcost_cmy(int fd, struct image *image, struct cost *cost)
     while((ret = mpxm_chunk_next(fd, image)) > 0) {
         current = image->buffer;
         pixels  = ret / 3;
+        c += 255 * pixels;
+        m += 255 * pixels;
+        y += 255 * pixels;
         while(pixels-- > 0) {
-            c += 255 - current[0];
-            m += 255 - current[1];
-            y += 255 - current[2];
+            c -= current[0];
+            m -= current[1];
+            y -= current[2];
             current += 3;
         }
     }
@@ -171,18 +168,28 @@ static int pxcost_gray(int fd, struct image *image, struct cost *cost)
 
     if(image->type == FILETYPE_PPM) {
         while((ret = mpxm_chunk_next(fd, image)) > 0) {
+            /* If @r, @g and @b are 32 bit, then at most 16843009 pixels can
+            be processed per chunk without causing overflow. */
+            unsigned int r = 0, g = 0, b = 0;
             current = image->buffer;
             pixels  = ret / 3;
+            k      += 255 * pixels;
+
             while(pixels-- > 0) {
-                k += 255 - rgb_to_gray(current[0], current[1], current[2]);
+                r += current[0];
+                g += current[1];
+                b += current[2];
                 current += 3;
             }
+            k -= (78 * r + 151 * g + 27 * b) / 256;
         }
     } else if(image->type == FILETYPE_PGM) {
+        k = 0;
         while((pixels = ret = mpxm_chunk_next(fd, image)) > 0) {
             current = image->buffer;
+            k += 255 * pixels;
             while(pixels-- > 0)
-                k += 255 - *current++;
+                k -= *current++;
         }
     }
 
