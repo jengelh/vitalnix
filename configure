@@ -140,6 +140,8 @@ function parse_args() {
 function set_defaults() {
     # Set defaults
     #
+    local rev;
+
     [ -z "$CC"   ] && CC="gcc";
     [ -z "$CXX"  ] && CXX="g++";
     [ -z "$LD"   ] && LD="gcc";
@@ -149,6 +151,12 @@ function set_defaults() {
     [ -z "$cf_includedir" ] && cf_includedir="$cf_prefix/include";
     [ -z "$cf_libdir"     ] && cf_libdir="$cf_eprefix/lib";
     [ -z "$cf_sysconfdir" ] && cf_sysconfdir="$cf_prefix/etc";
+
+    if [ -x `which svn` ]; then
+        rev=`svn st -Nv "$cf_basedir" | perl -lne \
+            '/^.{7}\s+(\d+).* \Q'"$cf_basedir"'\E$/&&print($1)&&exit'`;
+        [ "$?" -eq 0 -a -n "$rev" ] && cf_nicver="${cf_nicver}_SVN$rev";
+    fi;
 }
 
 function do_checks() {
