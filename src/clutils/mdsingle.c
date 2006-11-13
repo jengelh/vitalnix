@@ -69,11 +69,13 @@ int main(int argc, const char **argv) {
     priv.backend_module = HX_strdup("*");
     priv.run_master     = 1;                    // on by default
 
+    if(!get_options(&argc, &argv, &priv))
+        return EXIT_FAILURE;
+    if(priv.interactive)
+        show_version(NULL);
     fprintf(stderr, "Note that Vitalnix/mdsingle will not check if a user "
                     "with the same UUID already exists. Make sure you do not "
                     "add a user twice by accident.\n");
-    if(!get_options(&argc, &argv, &priv))
-        return EXIT_FAILURE;
     if(priv.interactive)
         single_interactive(&priv);
     if(!single_init(&priv) || !single_run(&priv))
@@ -344,7 +346,9 @@ static int get_options(int *argc, const char ***argv, struct private_info *p) {
 
 static void show_version(const struct HXoptcb *cbi) {
     printf("Vitalnix " VITALNIX_VERSION " mdsingle\n");
-    exit(EXIT_SUCCESS);
+    if(cbi != NULL)
+        exit(EXIT_SUCCESS);
+    return;
 }
 
 //=============================================================================
