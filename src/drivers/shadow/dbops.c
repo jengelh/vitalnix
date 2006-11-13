@@ -70,7 +70,7 @@ int db_open(struct shadow_state *state, int flags) {
             .l_start  = 0,
             .l_len    = 0,
         };
-        
+
         if(fcntl(state->fpasswd.fd, F_SETLK, &lk) < 0) {
             fprintf(stderr, "db_shadow: passwd file (%s) currently "
                     "write-locked, waiting\n", state->fpasswd.path);

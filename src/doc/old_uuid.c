@@ -15,10 +15,10 @@ static int get_date_parts(const char *, unsigned int *, unsigned int *,
 char *tw0_encode(int day, int month, int year) {
     char *ret;
 
-    day   = 26 * day + 113; 
-    month = 73 * month + 113; 
-    year -= 1900; 
-    year  = 29 * (year - 75) + 113; 
+    day   = 26 * day + 113;
+    month = 73 * month + 113;
+    year -= 1900;
+    year  = 29 * (year - 75) + 113;
 
     asprintf(&ret, "%d%d%d", day, month, year);
     return ret;

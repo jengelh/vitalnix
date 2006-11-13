@@ -144,7 +144,7 @@ void WD_Config::Save(wxCommandEvent &event) {
 
     GW_Message(this, "Configuration > Save", "Successfully wrote vitalnix.cfg",
         "-o").ShowModal();
-    
+
     return;
 }
 

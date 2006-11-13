@@ -65,7 +65,7 @@ class GW_Listbox : public wxDialog {
     GW_Listbox(wxWindow *, const wxString & = wxEmptyString,
         void (*)(wxListBox *, const void *) = NULL, const void * = NULL,
         long = 0);
-        
+
     int Append(const wxString &s) { return ct_listbox->Append(s); };
 
   protected: // variables

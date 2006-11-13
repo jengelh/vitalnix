@@ -41,13 +41,13 @@ questions.</p>
   </tr>
   <tr>
     <td class="t2"><tt>-&gt;type</tt></td>
-    <td class="t2">the type of <tt>-&gt;ptr</tt>. Can be either of 
-      <tt>HXTYPE_STRING</tt>, <tt>HXTYPE_INT</tt>, <tt>HXTYPE_LONG</tt> or 
+    <td class="t2">the type of <tt>-&gt;ptr</tt>. Can be either of
+      <tt>HXTYPE_STRING</tt>, <tt>HXTYPE_INT</tt>, <tt>HXTYPE_LONG</tt> or
       <tt>HXTYPE_DOUBLE</tt></td>
   </tr>
   <tr>
     <td class="t1"><tt>-&gt;flags</tt></td>
-    <td class="t1">a bitmask of <tt>CQ_ABORT</tt> and/or 
+    <td class="t1">a bitmask of <tt>CQ_ABORT</tt> and/or
       <tt>CQ_EMPTY</tt> (see below for details). You can specify
       <tt>CQ_NONE</tt> for convenience in favor of <tt>0</tt></td>
   </tr>
@@ -57,7 +57,7 @@ questions.</p>
   </tr>
   <tr>
     <td class="t1"><tt>-&gt;validate</tt></td>
-    <td class="t1">a function that will be called (if 
+    <td class="t1">a function that will be called (if
       non-<tt>NULL</tt>) to validate the user input. The question is asked
       again if validation returns zero</td>
   </tr>
@@ -73,7 +73,7 @@ sentinel to a <tt>struct vxcq_entry</tt>.</p>
 <h1>Function overview</h1>
 
 <p class="code"><tt>
-<b>#</b>include &lt;libvxcli/libvxcli.h&gt;<br /> 
+<b>#</b>include &lt;libvxcli/libvxcli.h&gt;<br />
 <br />
 <b>char *</b>vxcli_query(<b>const char *</b>msg, <b>const char *</b>prompt, <b>const char *</b>defl, <b>long</b> flags, <b>char *</b>buf, <b>size_t</b> size);<br />
 <b>int</b> vxcli_query_v(<b>const struct</b> vxcq_entry <b>*</b>table);

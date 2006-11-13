@@ -8,7 +8,7 @@ user list to the system user database.</p>
 <h1>Structures</h1>
 
 <p class="code"><tt>
-<b>#</b>include &lt;libvxmdsync/libvxmdsync.h&gt;<br /> 
+<b>#</b>include &lt;libvxmdsync/libvxmdsync.h&gt;<br />
 <br />
 <b>struct</b> mdsync_config {<br />
 &nbsp; &nbsp; <b>struct</b> vxpdb_user user_defaults;<br />
@@ -88,8 +88,6 @@ jeng1000</tt>.</p>
 
 <h2>mdsync_init</h2>
 
-<h2>
-    
 <h1>Order</h1>
 
 <p class="block">The synchronization process is divided into a number of

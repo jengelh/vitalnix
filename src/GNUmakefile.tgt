@@ -20,11 +20,11 @@ vpath %.icss ${S}
 .PHONY: all doc clean distclean
 
 EXEC_TARGETS := \
-    vitalnix \
     cgi_chpasswd cgi_vwquota \
     lpacct_filter mdfixuuid mdpwlfmt mdsingle mdsync pdbdump pdbinfo \
     randpw tryauth testcase \
-    vxuseradd vxusermod vxuserdel vxgroupadd vxgroupmod vxgroupdel
+    vxuseradd vxusermod vxuserdel vxgroupadd vxgroupmod vxgroupdel \
+    vitalnix
 
 all: \
     ${EXEC_TARGETS} doc \
@@ -34,18 +34,15 @@ all: \
     drv_nss1.so drv_dummy.so \
     useradd_lib.so \
     usermod_lib.so \
-    userdel_lib.so \
+    userdel_lib.so
 
 doc: $(patsubst ${S}/%.php,%.html,$(wildcard ${S}/doc/[a-z]*.php)) \
      $(patsubst ${S}/%.php,%.txt,$(wildcard ${S}/doc/[a-z]*.php)) \
      $(patsubst ${S}/%.icss,%.css,$(wildcard ${S}/doc/*.icss))
 
-# The clean commands actually require that all object files be in a separate
-# directory so that we do not inadvertently kill the source tree.
-#
 clean:
 	find . "(" -iname "*.o" -o -iname "*.so" ")" -print0 | xargs -0r rm -f;
-	rm -Rf doc steelmill ${EXEC_TARGETS};
+	rm -f doc/*.{css,html,txt} steelmill/images.hpp ${EXEC_TARGETS};
 
 depclean: clean
 	find . -iname ".*.d" -print0 | xargs -0 rm -f;
@@ -87,7 +84,6 @@ libvxutil.so: $(call srcobj,libvxutil) ${XOBJS_libvxutil}
 
 # PDB DRIVERS --------------------------
 #
-
 XLDFLAGS_drv_mmd_so             := -lHX -lvxcore -lvxpdb
 drv_mmd.so: drivers/mmd.o | libvxcore.so libvxpdb.so
 

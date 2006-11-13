@@ -172,7 +172,7 @@ EXPORT_SYMBOL const char *usermod_strerror(int e)
             return "Error adding user";
     }
     return "(unknown usermod error)";
-}         
+}
 
 //-----------------------------------------------------------------------------
 static void usermod_getopt_expire(const struct HXoptcb *cbi) {

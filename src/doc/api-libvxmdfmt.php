@@ -16,7 +16,7 @@ for detailed descriptions of the available styles.</p>
 <p class="block">Only the fields of interest are listed.</p>
 
 <p class="code"><tt>
-<b>#</b>include &lt;vitalnix/libvxmdfmt/libvxmdfmt.h&gt;<br /> 
+<b>#</b>include &lt;vitalnix/libvxmdfmt/libvxmdfmt.h&gt;<br />
 <br />
 <b>struct</b> pwlfmt_workspace {<br />
 &nbsp; &nbsp; ...<br />
