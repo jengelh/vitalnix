@@ -28,7 +28,6 @@ steelmill/wd_main.cpp
 #endif
 #include <wx/statline.h>
 #include "steelmill/wd_about.hpp"
-#include "steelmill/wd_config.hpp"
 #include "steelmill/wd_fixuuid.hpp"
 #include "steelmill/wd_main.hpp"
 #include "steelmill/wd_overview.hpp"
@@ -57,7 +56,6 @@ BEGIN_EVENT_TABLE(WD_MainMenu, wxFrame)
     EVT_BUTTON(ID_FIXUUID,    WD_MainMenu::FixUUID)
     EVT_BUTTON(ID_VIEWUSERS,  WD_MainMenu::View_Users)
     EVT_BUTTON(ID_VIEWGROUPS, WD_MainMenu::View_Groups)
-    EVT_BUTTON(ID_CONFIGURE,  WD_MainMenu::Configure)
     EVT_BUTTON(wxID_MORE,     WD_MainMenu::Show_Console)
     EVT_BUTTON(wxID_ABOUT,    WD_MainMenu::About)
     EVT_BUTTON(wxID_EXIT,     WD_MainMenu::Exit)
@@ -102,11 +100,6 @@ void WD_MainMenu::About(wxCommandEvent &event) {
 
 void WD_MainMenu::Add_Single(wxCommandEvent &event) {
     WD_Single(this).ShowModal();
-    return;
-}
-
-void WD_MainMenu::Configure(wxCommandEvent &event) {
-    //WD_Config(this).ShowModal();
     return;
 }
 
