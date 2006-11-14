@@ -152,10 +152,11 @@ function set_defaults() {
     [ -z "$cf_libdir"     ] && cf_libdir="$cf_eprefix/lib";
     [ -z "$cf_sysconfdir" ] && cf_sysconfdir="$cf_prefix/etc";
 
-    if [ -x `which svn` ]; then
-        rev=`svn st -Nv "$cf_basedir" | perl -lne \
-            '/^.{7}\s+(\d+).* \Q'"$cf_basedir"'\E$/&&print($1)&&exit'`;
-        [ "$?" -eq 0 -a -n "$rev" ] && cf_nicver="${cf_nicver}_SVN$rev";
+    if [ -x `which svnversion` ]; then
+        rev=`svnversion "$cf_basedir"`;
+        if [ "$?" -eq 0 -a "$rev" != "exported" ]; then
+            cf_nicver="${cf_nicver}_SVN$rev";
+        fi;
     fi;
 }
 
