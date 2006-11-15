@@ -26,6 +26,7 @@ static int lpacct_analyze_main(int argc, const char **);
 static int lpacct_filter_main(int argc, const char **);
 static int ghostscript_init(const char *, pid_t *, const struct options *);
 static void ghostscript_exit(pid_t);
+static int fnopen(int, const char *);
 static int generic_tee(int, int, int);
 static int generic_tee_named(const char *, int, int);
 
@@ -139,6 +140,10 @@ static int lpacct_filter_main(int argc, const char **argv)
         input_file = argv[6];
         if((ret = generic_tee_named(input_file, STDOUT_FILENO, -1)) < 0)
             pr_exit(NULL, "generic_named_tee: %s\n", strerror(ret));
+        /* Close %STDOUT_FILENO so that the next filter can start processing
+        asynchronously. However, to have dup2() work as it should,
+        %STDOUT_FILENO must not be closed. */
+        fnopen(STDOUT_FILENO, "/dev/null");
     } else if(argc == 6) {
         if((fd = mkstemp(input_tmp)) < 0)
             pr_exit(NULL, "mkstemp: %s\n", strerror(errno));
@@ -231,6 +236,16 @@ static void ghostscript_exit(pid_t pid)
 }
 
 //-----------------------------------------------------------------------------
+static int fnopen(int to_fd, const char *file)
+{
+    int cur_fd;
+    if((cur_fd = open(file, O_RDWR)) < 0)
+        return -errno;
+    dup2(cur_fd, to_fd);
+    close(cur_fd);
+    return 1;
+}
+
 static int generic_tee(int fi, int fa, int fb)
 {
     int ret = 0, ret2 = 0, ret3 = 0;
