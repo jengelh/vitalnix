@@ -49,7 +49,7 @@ int main(int argc, const char **argv) {
 
     header();
 
-    if(*user == '\0' && *pw == '\0')
+    if(*user == '\0' || *pw == '\0')
         form(user);
     else if(vxutil_valid_username(user))
         printf("%s", Wrong_auth);
