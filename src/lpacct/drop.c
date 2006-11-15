@@ -32,6 +32,7 @@ void drop2bl(struct costf *out, const struct cost *in, int dpi)
     out->y = 6.4516 * in->y / d;
     out->k = 6.4516 * in->k / d;
     out->t = 6.4516 * in->t / d;
+    out->p = in->p;
     return;
 }
 
@@ -47,6 +48,7 @@ void drop2sqcm(struct costf *out, const struct cost *in, int dpi)
     out->y = 6.4516 * in->y / d;
     out->k = 6.4516 * in->k / d;
     out->t = 6.4516 * in->t / d;
+    out->p = in->p;
     return;
 }
 
@@ -58,6 +60,7 @@ void drop2sqm(struct costf *out, const struct cost *in, int dpi)
     out->y = 6.4516 * in->y / d;
     out->k = 6.4516 * in->k / d;
     out->t = 6.4516 * in->t / d;
+    out->p = in->p;
     return;
 }
 
@@ -69,6 +72,7 @@ void drop2sqin(struct costf *out, const struct cost *in, int dpi)
     out->y = (double)in->y / d;
     out->k = (double)in->k / d;
     out->t = (double)in->t / d;
+    out->p = in->p;
     return;
 }
 
