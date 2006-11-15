@@ -109,8 +109,8 @@ drv_dummy.so: drivers/dummy.o | libvxcore.so libvxpdb.so
 
 ### CGI PROGRAMS --------------------------------------------------------------
 #
-XLDFLAGS_cgi_chpasswd   := -lHX -lvxcgi
-cgi_chpasswd: cgiutils/chpasswd.o | libvxcgi.so
+XLDFLAGS_cgi_chpasswd   := -lHX -lvxcgi -lvxutil
+cgi_chpasswd: cgiutils/chpasswd.o | libvxcgi.so libvxutil.so
 
 XLDFLAGS_cgi_vwquota    := -lHX -lvxcgi -lvxutil
 cgi_vwquota: cgiutils/vwquota.o | libvxcgi.so libvxutil.so

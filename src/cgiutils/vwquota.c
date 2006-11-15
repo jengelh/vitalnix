@@ -51,7 +51,7 @@ int main(int argc, const char **argv) {
 
     if(*user == '\0' || *pw == '\0')
         form(user);
-    else if(vxutil_valid_username(user))
+    else if(!vxutil_valid_username(user))
         printf("%s", Wrong_auth);
     else if(vxcgi_authenticate(user, pw))
         do_quota(user);

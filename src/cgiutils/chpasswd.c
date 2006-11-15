@@ -36,6 +36,10 @@ static void form(const char *);
 static void footer(void);
 static int change_password(const char *, const char *);
 
+// Variables
+static const char *const Wrong_auth =
+    "<p class=\"red\"><b>Wrong username and/or password!</b></p>";
+
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv) {
     struct HXbtree *data = vxcgi_split(vxcgi_read_data(argc, argv));
@@ -47,7 +51,9 @@ int main(int argc, const char **argv) {
     header();
 
     if(strcmp(user, "") != 0) {
-        if(strcmp(oldpw, "") == 0)
+        if(!vxutil_valid_username(user))
+            printf("%s", Wrong_auth);
+        else if(strcmp(oldpw, "") == 0)
             printf("<p class=\"red\"><b>Old password is empty!</b></p>");
         else if(strlen(newpw) < 7)
             printf("<p class=\"red\"><b>New password is too short (at "
