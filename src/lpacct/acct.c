@@ -27,7 +27,7 @@ static MYSQL *acct_mysql_init(const char *);
 //-----------------------------------------------------------------------------
 void acct_syslog(const struct options *op, const struct costf *cost)
 {
-    openlog(PREFIX, LOG_NDELAY | LOG_PID, LOG_LPR);
+    openlog(SYSLPREFIX, LOG_NDELAY | LOG_PID, LOG_LPR);
     syslog(LOG_INFO, "q/id=%s/%s user=%s +cmyk(%.6f, %.6f, %.6f, %.6f) i*m^2\n",
            op->cups_args[ARGP_QUEUE], op->cups_args[ARGP_JOBID],
            op->cups_args[ARGP_USER], cost->c, cost->m, cost->y, cost->k);

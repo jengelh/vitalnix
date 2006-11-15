@@ -6,6 +6,7 @@
 #endif
 #define __STRINGIFY_EXPAND(s)   #s
 #define __STRINGIFY(s)          __STRINGIFY_EXPAND(s)
-#define PREFIX                  "[cmyk_acct] "
+#define SYSLPREFIX              "vxlpacct"
+#define PREFIX                  "[" SYSLPREFIX "] "
 
 #endif // LPACCT_GLOBAL_H
