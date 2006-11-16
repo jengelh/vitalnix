@@ -2,7 +2,7 @@
     Copyright © Jan Engelhardt <jengelh@gmx.de>, 2006
     This code is released under version 2.1 of the GNU LGPL.
 
-    Conversion and counting functions (pure math).
+    vxlpacct - Conversion and counting functions (pure math)
 */
 #include "drop.h"
 #include "image.h"

@@ -1,6 +1,8 @@
 /*
     Copyright © Jan Engelhardt <jengelh@gmx.de>, 2006
     This code is released under version 2.1 of the GNU LGPL.
+
+    vxlpacct - Image processing routines
 */
 #include <sys/mman.h>
 #include <sys/stat.h>

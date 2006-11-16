@@ -2,8 +2,8 @@
     Copyright © Jan Engelhardt <jengelh@gmx.de>, 2006
     This code is released under version 2.1 of the GNU LGPL.
 
-    Accounting boilerplate for lpacct, to a simple syslog or a more
-    advanced mysql target.
+    vxlpacct - accounting boilerplate for lpacct, to a simple syslog
+    or a more advanced mysql target
 */
 
 #define _GNU_SOURCE 1 // for asprintf
@@ -28,7 +28,7 @@ static MYSQL *acct_mysql_init(const char *);
 void acct_syslog(const struct options *op, const struct costf *cost)
 {
     openlog(SYSLPREFIX, LOG_NDELAY | LOG_PID, LOG_LPR);
-    syslog(LOG_INFO, "q/id=%s/%s user=%s +cmyk(%.6f, %.6f, %.6f, %.6f) i*m^2\n",
+    syslog(LOG_INFO, "q/id=%s/%s user=%s +cmyk(%f, %f, %f, %f) i*A4\n",
            op->cups_args[ARGP_QUEUE], op->cups_args[ARGP_JOBID],
            op->cups_args[ARGP_USER], cost->c, cost->m, cost->y, cost->k);
     closelog();

@@ -1,6 +1,8 @@
 /*
     Copyright © Jan Engelhardt <jengelh@gmx.de>, 2006
     This code is released under version 2.1 of the GNU LGPL.
+
+    vxlpacct - Entrypoint functions
 */
 #include <sys/select.h>
 #include <sys/stat.h>
@@ -19,11 +21,11 @@
 #include "lpacct.h"
 
 // Definitions
-#define DEFAULT_GS_DPI  96
+#define DEFAULT_GS_DPI  300
 
 // Functions
-static int lpacct_analyze_main(int argc, const char **);
-static int lpacct_filter_main(int argc, const char **);
+static int lpacct_analyze_main(int, const char **);
+static int lpacct_filter_main(int, const char **);
 static int ghostscript_init(const char *, pid_t *, const struct options *);
 static void ghostscript_exit(pid_t);
 static int fnopen(int, const char *);
@@ -146,7 +148,6 @@ static int lpacct_filter_main(int argc, const char **argv)
         if((ret = generic_tee(STDIN_FILENO, STDOUT_FILENO, fd)) < 0)
             pr_exit(NULL, "generic_tee: %s\n", strerror(ret));
         input_file = input_tmp;
-        close(STDOUT_FILENO);
         close(fd);
     } else {
         fprintf(stderr, "Usage: %s JOB_ID USER TITLE COPIES OPTIONS [FILE]\n", *argv);
