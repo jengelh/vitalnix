@@ -7,6 +7,7 @@ create table printlog (
     jid         int unsigned,
     queue       varchar(64),
     user        varchar(64),
+    title       varchar(255),
     cyan        double          not null        default 0,
     magenta     double          not null        default 0,
     yellow      double          not null        default 0,

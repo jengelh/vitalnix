@@ -128,12 +128,14 @@ int mpxm_process(int fd, const struct options *op)
     }
 
     // ->do_account is only set when called as a CUPS filter.
-/*
-    if(ret > 0 && op->do_account) {
-        acct_syslog(op, &sqm);
-        acct_mysql(op, &sqm);
+    if(ret >= 0) {
+        struct costf a4;
+        drop2bl(&a4, &all_cost, op->dpi);
+        if(op->do_account & ACCT_SYSLOG)
+            acct_syslog(op, &a4);
+        if(op->do_account & ACCT_MYSQL)
+            acct_mysql(op, &a4);
     }
-*/
 
     return ret;
 }

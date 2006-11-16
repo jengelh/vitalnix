@@ -16,6 +16,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <libHX.h>
+#include "acct.h"
 #include "global.h"
 #include "image.h"
 #include "lpacct.h"
@@ -132,7 +133,7 @@ static int lpacct_filter_main(int argc, const char **argv)
     int fd, ret;
 
     struct options op = {
-        .do_account = 1,
+        .do_account = ACCT_SYSLOG | ACCT_MYSQL,
         .dpi        = DEFAULT_GS_DPI,
         .colorspace = COLORSPACE_CMYK,
         .cups_args  = argv,

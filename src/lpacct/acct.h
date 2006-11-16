@@ -4,6 +4,11 @@
 struct options;
 struct costf;
 
+enum {
+    ACCT_SYSLOG = 1 << 0,
+    ACCT_MYSQL  = 1 << 1,
+};
+
 /*
  *      FUNCTIONS
  */

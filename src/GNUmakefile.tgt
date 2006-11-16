@@ -20,7 +20,7 @@ vpath %.icss ${S}
 .PHONY: all doc clean distclean
 
 EXEC_TARGETS := \
-    cgi_chpasswd cgi_vwquota \
+    cgi_chpasswd cgi_lpaview cgi_vwquota \
     lpacct_filter mdfixuuid mdpwlfmt mdsingle mdsync pdbdump pdbinfo \
     randpw tryauth testcase \
     vxuseradd vxusermod vxuserdel vxgroupadd vxgroupmod vxgroupdel \
@@ -112,12 +112,16 @@ drv_dummy.so: drivers/dummy.o | libvxcore.so libvxpdb.so
 XLDFLAGS_cgi_chpasswd   := -lHX -lvxcgi -lvxutil
 cgi_chpasswd: cgiutils/chpasswd.o | libvxcgi.so libvxutil.so
 
+XCFLAGS_cgiutils_lpaview        := ${MYSQL_CFLAGS}
+XLDFLAGS_cgi_lpaview            := ${MYSQL_LDFLAGS} -lHX -lvxcgi -lvxutil
+cgi_lpaview: cgiutils/lpaview.o lpacct/shared.o | libvxcgi.so libvxutil.so
+
 XLDFLAGS_cgi_vwquota    := -lHX -lvxcgi -lvxutil
 cgi_vwquota: cgiutils/vwquota.o | libvxcgi.so libvxutil.so
 
 # COMMAND-LINE TOOLS -------------------
 #
-XCFLAGS_lpacct_acct     := ${MYSQL_CFLAGS}
+XCFLAGS_lpacct          := ${MYSQL_CFLAGS}
 XLDFLAGS_lpacct_filter  := ${MYSQL_LDFLAGS} -lHX -lvxutil
 lpacct_filter: $(call srcobj,lpacct) | libvxutil.so
 lpacct_analyze: lpacct_filter
