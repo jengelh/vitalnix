@@ -140,10 +140,6 @@ static int lpacct_filter_main(int argc, const char **argv)
         input_file = argv[6];
         if((ret = generic_tee_named(input_file, STDOUT_FILENO, -1)) < 0)
             pr_exit(NULL, "generic_named_tee: %s\n", strerror(ret));
-        /* Close %STDOUT_FILENO so that the next filter can start processing
-        asynchronously. However, to have dup2() work as it should,
-        %STDOUT_FILENO must not be closed. */
-        fnopen(STDOUT_FILENO, "/dev/null");
     } else if(argc == 6) {
         if((fd = mkstemp(input_tmp)) < 0)
             pr_exit(NULL, "mkstemp: %s\n", strerror(errno));
@@ -157,6 +153,11 @@ static int lpacct_filter_main(int argc, const char **argv)
         return EXIT_FAILURE;
     }
 
+    /* There is a case where pipe() returns {%STDOUT_FILENO, @any} - but
+    dup2()ing @any onto %STDOUT_FILENO does not do anything, even though the
+    two filedescriptors should be considered different.
+    Just keep %STDOUT_FILENO open. */
+    fnopen(STDOUT_FILENO, "/dev/null");
     fd  = ghostscript_init(input_file, &pid, &op);
     ret = (mpxm_process(fd, &op) > 0) ? EXIT_SUCCESS : EXIT_FAILURE;
     ghostscript_exit(pid);
@@ -241,8 +242,10 @@ static int fnopen(int to_fd, const char *file)
     int cur_fd;
     if((cur_fd = open(file, O_RDWR)) < 0)
         return -errno;
-    dup2(cur_fd, to_fd);
-    close(cur_fd);
+    if(cur_fd != to_fd) {
+        dup2(cur_fd, to_fd);
+        close(cur_fd);
+    }
     return 1;
 }
 
