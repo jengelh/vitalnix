@@ -1,0 +1,109 @@
+diff -dpru cups-1.1.23~/scheduler/job.c cups-1.1.23/scheduler/job.c
+--- cups-1.1.23~/scheduler/job.c	2006-11-15 04:13:06.218697306 +0100
++++ cups-1.1.23/scheduler/job.c	2006-11-15 04:26:52.104945105 +0100
+@@ -61,7 +61,12 @@
+  */
+ 
+ #include "cupsd.h"
++#include <sys/stat.h>
+ #include <grp.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <unistd.h>
+ 
+ 
+ /*
+@@ -1162,6 +1167,83 @@ SetJobPriority(int id,		/* I - Job ID */
+     Jobs = job;
+ }
+ 
++static const mime_filter_t vxlpacct_filter_data = {
++    .src    = NULL,
++    .dst    = NULL,
++    .cost   = 0,
++    .filter = "lpacct_filter",
++};
++
++static int vxlpacct_enabled(void)
++{
++    struct stat sb;
++    char buf[128];
++    snprintf(buf, sizeof(buf), "%s/filter/lpacct_filter", ServerBin);
++    return stat(buf, &sb) == 0 && access(buf, X_OK) == 0;
++}
++
++static mime_filter_t *vxlpacct_create_chain1(mime_t *mimedb,
++  mime_type_t *src, mime_type_t *dst, int *num_filters, int max_depth)
++{
++    mime_filter_t *c1, *cf;
++    int n1;
++
++    c1 = mimeFilter(mimedb, src, dst, &n1, max_depth - 1);
++    if(c1 == NULL)
++        return NULL;
++    if((cf = realloc(c1, sizeof(mime_filter_t) * (n1 + 1))) == NULL) {
++        free(c1);
++        return NULL;
++    }
++    memmove(&cf[1], &cf[0], sizeof(mime_filter_t) * n1);
++    *cf = vxlpacct_filter_data;
++    *num_filters = n1 + 1;
++    return cf;
++}
++
++static mime_filter_t *vxlpacct_create_chain2(mime_t *mimedb,
++  mime_type_t *src, mime_type_t *dst, int *num_filters, int max_depth)
++{
++    mime_filter_t *c1, *c2, *cf;
++    int n1, n2;
++
++    c1 = mimeFilter(mimedb, src, mimeType(MimeDatabase, "application",
++         "vnd.cups-postscript"), &n1, max_depth);
++    c2 = mimeFilter(mimedb, mimeType(MimeDatabase, "application",
++         "vnd.cups-postscript"), dst, &n2, max_depth);
++
++    if(c1 == NULL || c2 == NULL || n1 + n2 > max_depth)
++        goto err;
++    if((cf = realloc(c1, sizeof(mime_filter_t) * (n1 + n2 + 1))) == NULL)
++        goto err;
++
++    cf[n1] = vxlpacct_filter_data;
++    memcpy(&cf[n1 + 1], c2, sizeof(mime_filter_t) * n2);
++    free(c2);
++    *num_filters = n1 + n2 + 1;
++    return cf;
++    
++ err:
++    free(c1);
++    free(c2);
++    return NULL;
++}
++
++static mime_filter_t *vxlpacct_mimefilter(mime_t *mimedb, mime_type_t *src,
++  mime_type_t *dst, int *num_filters, int max_depth)
++{
++    if(!vxlpacct_enabled())
++        return mimeFilter(mimedb, src, dst, num_filters, max_depth);
++
++    if(strcmp(src->super, "application") == 0 &&
++     (strcmp(src->type, "postscript") == 0 ||
++     strcmp(src->type, "vnd.cups-postscript") == 0))
++        // Input is already postscript 
++        return vxlpacct_create_chain1(mimedb, src, dst, num_filters, max_depth);
++    else
++        // Input is not postscript
++        return vxlpacct_create_chain2(mimedb, src, dst, num_filters, max_depth);
++}
+ 
+ /*
+  * 'StartJob()' - Start a print job.
+@@ -1266,7 +1348,7 @@ StartJob(int       id,			/* I - Job ID *
+     * Local jobs get filtered...
+     */
+ 
+-    filters = mimeFilter(MimeDatabase, current->filetypes[current->current_file],
++    filters = vxlpacct_mimefilter(MimeDatabase, current->filetypes[current->current_file],
+                          printer->filetype, &num_filters, MAX_FILTERS - 1);
+ 
+     if (num_filters == 0)
