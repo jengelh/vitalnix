@@ -1,7 +1,7 @@
 
-drop database lpacct;
-create database lpacct;
-use lpacct;
+drop database vxlpacct;
+create database vxlpacct;
+use vxlpacct;
 create table printlog (
     time        timestamp       not null        default current_timestamp,
     jid         int unsigned,
