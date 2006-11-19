@@ -46,7 +46,7 @@ clean:
 
 depclean: clean
 	find . -iname ".*.d" -print0 | xargs -0 rm -f;
-	find . -mindepth 1 -maxdepth 1 -type d -print0 | xargs -0r rmdir -p 2>/dev/null || :;
+	find . -mindepth 1 -type d -print0 | xargs -0r rmdir -p 2>/dev/null || :;
 
 # LIBS ---------------------------------
 #
