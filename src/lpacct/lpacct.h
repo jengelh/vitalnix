@@ -9,9 +9,10 @@
  *      DEFINITIONS
  */
 enum colorspace {
-    COLORSPACE_GRAY,
     COLORSPACE_CMYK,
+    COLORSPACE_CMYPK,
     COLORSPACE_CMY,
+    COLORSPACE_GRAY,
 };
 
 enum {

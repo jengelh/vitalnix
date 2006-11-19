@@ -86,9 +86,10 @@ static int lpacct_analyze_main(int argc, const char **argv)
     pid_t pid;
     int fd, ret;
     struct HXoption options_table[] = {
-        {.ln = "cmyk", .type = HXTYPE_VAL, .val = COLORSPACE_CMYK, .ptr = &p->colorspace, .help = "Calculate for CMYK colorspace"},
-        {.ln = "cmy",  .type = HXTYPE_VAL, .val = COLORSPACE_CMY,  .ptr = &p->colorspace, .help = "Calculate for CMY colorspace"},
-        {.ln = "gray", .type = HXTYPE_VAL, .val = COLORSPACE_GRAY, .ptr = &p->colorspace, .help = "Calculate for grayscale colorspace"},
+        {.ln = "cmyk",  .type = HXTYPE_VAL, .val = COLORSPACE_CMYK,  .ptr = &p->colorspace, .help = "Calculate for CMYK colorspace"},
+        {.ln = "cmypk", .type = HXTYPE_VAL, .val = COLORSPACE_CMYPK, .ptr = &p->colorspace, .help = "Calculate for CMY+K colorspace"},
+        {.ln = "cmy",   .type = HXTYPE_VAL, .val = COLORSPACE_CMY,   .ptr = &p->colorspace, .help = "Calculate for CMY colorspace"},
+        {.ln = "gray",  .type = HXTYPE_VAL, .val = COLORSPACE_GRAY,  .ptr = &p->colorspace, .help = "Calculate for grayscale colorspace"},
 
         {.sh = 'B', .type = HXTYPE_VAL, .val = 0, .ptr = &p->rasterize, .help = "Do not run rasterizer (debug)"},
         {.sh = 'd', .ln = "dpi",  .type = HXTYPE_UINT,   .ptr = &proc_opt.dpi, .help = "Dots per inch"},

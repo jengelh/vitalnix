@@ -10,17 +10,22 @@
 
 // Functions
 static int pxcost_cmyk(int, struct image *, struct cost *);
+static int pxcost_cmypk(int, struct image *, struct cost *);
 static int pxcost_cmy(int, struct image *, struct cost *);
 static int pxcost_gray(int, struct image *, struct cost *);
+static inline unsigned int abs1(int);
+static inline unsigned int kdist(unsigned int, unsigned int, unsigned int);
+static inline unsigned int mean3(unsigned int, unsigned int, unsigned int);
 static inline unsigned int min3(unsigned int, unsigned int, unsigned int);
 static inline unsigned int rgb_to_gray(unsigned int, unsigned int,
   unsigned int);
 
 // Variables
 int (*const mpxm_analyzer[])(int, struct image *, struct cost *) = {
-    [COLORSPACE_GRAY] = pxcost_gray,
-    [COLORSPACE_CMYK] = pxcost_cmyk,
-    [COLORSPACE_CMY]  = pxcost_cmy,
+    [COLORSPACE_CMYK]  = pxcost_cmyk,
+    [COLORSPACE_CMYPK] = pxcost_cmypk,
+    [COLORSPACE_CMY]   = pxcost_cmy,
+    [COLORSPACE_GRAY]  = pxcost_gray,
 };
 
 //-----------------------------------------------------------------------------
@@ -123,6 +128,43 @@ static int pxcost_cmyk(int fd, struct image *image, struct cost *cost)
     return ret;
 }
 
+/*  pxcost_cmypk
+    @image:     Image data
+    @cost:      Storage point for image cost
+
+    Cost analyzer for CMY+K. Experimental and probably not conforming quite
+    to actual printer implementations.
+*/
+static int pxcost_cmypk(int fd, struct image *image, struct cost *cost)
+{
+    unsigned long long tc = 0, tm = 0, ty = 0, tk = 0;
+    const unsigned char *current;
+    long ret, pixels;
+
+    while((ret = mpxm_chunk_next(fd, image)) > 0) {
+        invert_image(image);
+        current = image->buffer;
+        pixels  = ret / 3;
+        while(pixels-- > 0) {
+            if(kdist(current[0], current[1], current[2]) <= 8) {
+                tk += mean3(current[0], current[1], current[2]);
+            } else {
+                tc += current[0];
+                tm += current[1];
+                ty += current[2];
+            }
+            current += 3;
+        }
+    }
+
+    cost->c = tc;
+    cost->m = tm;
+    cost->y = ty;
+    cost->k = tk;
+    cost->t = tc + tm + ty + tk;
+    return ret;
+}
+
 /*  pxcost_cmy
     @image:     Image data
     @cost:      Storage point for image cost
@@ -202,6 +244,36 @@ static int pxcost_gray(int fd, struct image *image, struct cost *cost)
 }
 
 //-----------------------------------------------------------------------------
+static inline unsigned int abs1(int a)
+{
+    return (a < 0) ? -a : a;
+}
+
+/*  kdist
+    @r: red component
+    @g: green component
+    @b: blue component
+
+    Calculates the distance of (@r,@g,@b) to the gray baseline
+    (0,0,0)->(255,255,255). Input range is 0..255, output range is 0..43350.
+    http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
+*/
+static inline unsigned int kdist(unsigned int r, unsigned int g,
+  unsigned int b)
+{
+    unsigned int x = abs1(r - g);
+    unsigned int y = abs1(r - b);
+    unsigned int z = abs1(g - b);
+    // With slower floating point: ceil((x*x + y*y + z*z) / 3.0)
+    return (x * x + y * y + z * z + 2) / 3;
+}
+
+static inline unsigned int mean3(unsigned int a, unsigned int b,
+  unsigned int c)
+{
+    return (a + b + c) / 3;
+}
+
 static inline unsigned int min3(unsigned int a, unsigned int b,
   unsigned int c)
 {
