@@ -18,10 +18,6 @@ create table printlog (
 ) default charset=utf8;
 
 grant insert, select
-    on lpacct.printlog
-    to 'lp'@'localhost'
-    identified by 'FUNkyaCCounting';
-grant lock tables
-    on lpacct.*
+    on vxlpacct.printlog
     to 'lp'@'localhost'
     identified by 'FUNkyaCCounting';
