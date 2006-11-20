@@ -184,7 +184,8 @@ static int ghostscript_init(const char *input_file, pid_t *pid,
     char dpi_string[sizeof("-r3600")];
     const char *argv[] = {
         "gs", "-dBATCH", "-dNOPAUSE", "-dQUIET", "-dSAFER", dpi_string,
-        device_string, "-sOutputFile=-", input_file, NULL,
+        device_string, "-sOutputFile=-", "-sstdout=/dev/null",
+        input_file, NULL,
     };
     int fd, ret, output_pipe[2];
 
