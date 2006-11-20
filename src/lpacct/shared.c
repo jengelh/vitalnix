@@ -11,7 +11,7 @@
 #include <mysql.h>
 #include "drop.h"
 #include "global.h"
-#include "shared.h"
+#include "lpacct.h"
 
 // Variables
 const char *const lpacct_sql_fields =

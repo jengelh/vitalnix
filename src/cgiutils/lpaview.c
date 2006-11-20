@@ -14,7 +14,7 @@
 #include <vitalnix/libvxcgi/libvxcgi.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 #include "lpacct/drop.h"
-#include "lpacct/shared.h"
+#include "lpacct/lpacct.h"
 
 // Functions
 static void do_lpaview(const char *, struct HXbtree *);

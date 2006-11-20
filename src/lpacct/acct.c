@@ -20,7 +20,6 @@
 #include "drop.h"
 #include "global.h"
 #include "lpacct.h"
-#include "shared.h"
 
 //-----------------------------------------------------------------------------
 void acct_syslog(const struct options *op, const struct costf *cost)
