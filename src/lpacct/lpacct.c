@@ -17,6 +17,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <libHX.h>
+#include <vitalnix/compiler.h>
 #include <vitalnix/libvxutil/defines.h>
 #include "acct.h"
 #include "global.h"
@@ -157,6 +158,7 @@ static int lpacct_filter_main(int argc, const char **argv)
     two filedescriptors should be considered different.
     Just keep %STDOUT_FILENO open. */
     fnopen(STDOUT_FILENO, "/dev/null");
+    HX_strlower(const_cast(char *, argv[ARGP_USER])); // hack for samba!
     fd  = ghostscript_init(input_file, &pid, &op);
     ret = (mpxm_process(fd, &op) > 0) ? EXIT_SUCCESS : EXIT_FAILURE;
     ghostscript_exit(pid);
