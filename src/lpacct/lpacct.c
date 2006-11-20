@@ -134,7 +134,8 @@ static int lpacct_filter_main(int argc, const char **argv)
     int fd, ret;
 
     struct options op = {
-        .do_account = ACCT_SYSLOG | ACCT_MYSQL,
+        .acct_mysql = 1,
+        .acct_syslog = 1,
         .dpi        = DEFAULT_GS_DPI,
         .colorspace = COLORSPACE_CMYK,
         .cups_args  = argv,

@@ -28,14 +28,17 @@ enum {
 };
 
 struct options {
-    // generic
+    // general options
     unsigned int dpi;
     enum colorspace colorspace;
+
+    // analyzer mode specific options
     unsigned int per_doc_stats, per_page_stats, rasterize;
 
-    // filter
+    // filter mode specific options/objects
+    unsigned int acct_mysql, acct_syslog;
+    char *sqlhost, *sqluser, *sqlpw, *sqldb;
     const char **cups_args;
-    unsigned int do_account;
 };
 
 /*

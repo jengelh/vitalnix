@@ -131,9 +131,9 @@ int mpxm_process(int fd, const struct options *op)
     if(ret >= 0) {
         struct costf a4;
         drop2bl(&a4, &all_cost, op->dpi);
-        if(op->do_account & ACCT_SYSLOG)
+        if(op->acct_syslog)
             acct_syslog(op, &a4);
-        if(op->do_account & ACCT_MYSQL)
+        if(op->acct_mysql)
             acct_mysql(op, &a4);
     }
 
