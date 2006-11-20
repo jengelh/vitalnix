@@ -19,17 +19,6 @@ const char *const lpacct_sql_fields =
     "queue, jid, user, title, cyan, magenta, yellow, black, total, pages";
 
 //-----------------------------------------------------------------------------
-void lpacct_costf_add(struct costf *out, const struct costf *in)
-{
-    out->c += in->c;
-    out->m += in->m;
-    out->y += in->y;
-    out->k += in->k;
-    out->t += in->c + in->m + in->y + in->k;
-    out->p += in->p;
-    return;
-}
-
 /*  lpacct_readconfig
     @p: config structure
 

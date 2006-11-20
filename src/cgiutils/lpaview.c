@@ -19,6 +19,7 @@
 // Functions
 static void do_lpaview(const char *, struct HXbtree *);
 static void print_table(const char *, struct HXbtree *, MYSQL_RES *);
+static void costf_add(struct costf *, const struct costf *);
 static void header(void);
 static void form(const char *);
 static void footer(void);
@@ -144,7 +145,7 @@ static void print_table(const char *user, struct HXbtree *data, MYSQL_RES *res)
           "</tr>",
           job_cost.t, job_cost.p);
 
-        lpacct_costf_add(&all_cost, &job_cost);
+        costf_add(&all_cost, &job_cost);
     }
 
     printf("<tr><td colspan=\"2\">Total</td>");
@@ -166,6 +167,17 @@ static void print_table(const char *user, struct HXbtree *data, MYSQL_RES *res)
 }
 
 //-----------------------------------------------------------------------------
+static void costf_add(struct costf *out, const struct costf *in)
+{
+    out->c += in->c;
+    out->m += in->m;
+    out->y += in->y;
+    out->k += in->k;
+    out->t += in->c + in->m + in->y + in->k;
+    out->p += in->p;
+    return;
+}
+
 static void header(void)
 {
     printf(

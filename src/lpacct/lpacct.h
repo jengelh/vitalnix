@@ -52,7 +52,6 @@ extern void pr_warn(const char *, const char *, ...);
  */
 extern const char *const lpacct_sql_fields;
 
-extern void lpacct_costf_add(struct costf *, const struct costf *);
 extern int lpacct_readconfig(struct options *);
 extern MYSQL *lpacct_sql_start(const struct options *);
 
