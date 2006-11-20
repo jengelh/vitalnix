@@ -39,7 +39,7 @@ void acct_mysql(const struct options *op, const struct costf *cost)
     char *qqueue = NULL, *quser = NULL, *qtitle = NULL, *sql_query;
     MYSQL *conn;
 
-    if((conn = lpacct_sql_start(CONFIG_SYSCONFDIR "/lpacct.conf")) == NULL)
+    if((conn = lpacct_sql_start(op)) == NULL)
         return;
 
     asprintf(&sql_query,

@@ -21,9 +21,6 @@
 #include "image.h"
 #include "lpacct.h"
 
-// Definitions
-#define DEFAULT_GS_DPI  300
-
 // Functions
 static int lpacct_analyze_main(int, const char **);
 static int lpacct_filter_main(int, const char **);
@@ -76,12 +73,7 @@ void pr_warn(const char *func, const char *fmt, ...)
 */
 static int lpacct_analyze_main(int argc, const char **argv)
 {
-    struct options proc_opt = {
-        .dpi        = DEFAULT_GS_DPI,
-        .colorspace = COLORSPACE_CMYK,
-        .rasterize  = 1,
-    };
-    struct options *p = &proc_opt;
+    struct options proc_opt, *p = &proc_opt;
     char *input_file = NULL;
     pid_t pid;
     int fd, ret;
@@ -92,14 +84,15 @@ static int lpacct_analyze_main(int argc, const char **argv)
         {.ln = "gray",  .type = HXTYPE_VAL, .val = COLORSPACE_GRAY,  .ptr = &p->colorspace, .help = "Calculate for grayscale colorspace"},
 
         {.sh = 'B', .type = HXTYPE_VAL, .val = 0, .ptr = &p->rasterize, .help = "Do not run rasterizer (debug)"},
-        {.sh = 'd', .ln = "dpi",  .type = HXTYPE_UINT,   .ptr = &proc_opt.dpi, .help = "Dots per inch"},
-        {.sh = 'f', .ln = "file", .type = HXTYPE_STRING, .ptr = &input_file,   .help = "File to analyze"},
+        {.sh = 'd', .ln = "dpi",  .type = HXTYPE_UINT,   .ptr = &p->dpi,     .help = "Dots per inch"},
+        {.sh = 'f', .ln = "file", .type = HXTYPE_STRING, .ptr = &input_file, .help = "File to analyze"},
         {.sh = 'p', .type = HXTYPE_NONE, .ptr = &p->per_page_stats, .help = "Display per-page statistics"},
         {.sh = 's', .type = HXTYPE_NONE, .ptr = &p->per_doc_stats,  .help = "Display statistics"},
         HXOPT_AUTOHELP,
         HXOPT_TABLEEND,
     };
 
+    lpacct_readconfig(p);
     if(HX_getopt(options_table, &argc, &argv, HXOPT_USAGEONERR) <= 0)
         return EXIT_FAILURE;
 
@@ -130,16 +123,12 @@ static int lpacct_filter_main(int argc, const char **argv)
 {
     const char *input_file = NULL;
     char input_tmp[] = "/tmp/lpacctXXXXXX";
+    struct options op;
     pid_t pid;
     int fd, ret;
 
-    struct options op = {
-        .acct_mysql = 1,
-        .acct_syslog = 1,
-        .dpi        = DEFAULT_GS_DPI,
-        .colorspace = COLORSPACE_CMYK,
-        .cups_args  = argv,
-    };
+    lpacct_readconfig(&op);
+    op.cups_args = argv;
 
     if(argc == 7) {
         input_file = argv[6];

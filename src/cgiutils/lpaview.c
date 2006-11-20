@@ -53,11 +53,13 @@ int main(int argc, const char **argv)
 
 static void do_lpaview(const char *user, struct HXbtree *data)
 {
+    struct options p;
     hmc_t *query = NULL;
     MYSQL_RES *res;
     MYSQL *conn;
 
-    if((conn = lpacct_sql_start(CONFIG_SYSCONFDIR "/lpacct.conf")) == NULL) {
+    lpacct_readconfig(&p);
+    if((conn = lpacct_sql_start(&p)) == NULL) {
         printf("Error reading config: %s\n", strerror(errno));
         goto out;
     }
