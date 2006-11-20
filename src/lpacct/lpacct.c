@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdarg.h>
@@ -16,19 +17,23 @@
 #include <string.h>
 #include <unistd.h>
 #include <libHX.h>
+#include <vitalnix/libvxutil/defines.h>
 #include "acct.h"
 #include "global.h"
 #include "image.h"
 #include "lpacct.h"
+#define strnacmp(dai, sai) strncmp((dai), (sai), sizeof(sai)-1)
 
 // Functions
 static int lpacct_analyze_main(int, const char **);
 static int lpacct_filter_main(int, const char **);
 static int ghostscript_init(const char *, pid_t *, const struct options *);
 static void ghostscript_exit(pid_t);
+
 static int fnopen(int, const char *);
 static int generic_tee(int, int, int);
 static int generic_tee_named(const char *, int, int);
+static enum colorspace get_colorspace(void);
 
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv)
@@ -128,7 +133,8 @@ static int lpacct_filter_main(int argc, const char **argv)
     int fd, ret;
 
     lpacct_readconfig(&op);
-    op.cups_args = argv;
+    op.colorspace = get_colorspace();
+    op.cups_args  = argv;
 
     if(argc == 7) {
         input_file = argv[6];
@@ -279,6 +285,48 @@ static int generic_tee_named(const char *file, int fa, int fb)
     ret = generic_tee(fi, fa, fb);
     close(fi);
     return 0;
+}
+
+static enum colorspace get_colorspace(void)
+{
+    enum colorspace ret = COLORSPACE_GRAY;
+    const char *printer, *p;
+    char buf[MAXFNLEN];
+    hmc_t *ln = NULL;
+    FILE *fp;
+
+    if((printer = getenv("PRINTER")) == NULL) {
+        pr_warn(__func__, "PRINTER not defined\n");
+        return ret;
+    }
+
+    snprintf(buf, sizeof(buf), "/etc/cups/ppd/%s.ppd", printer);
+    if((fp = fopen(buf, "r")) == NULL) {
+        pr_warn(__func__, "Could not open %s: %s\n", printer, strerror(errno));
+        return ret;
+    }
+
+    while(HX_getl(&ln, fp) != NULL) {
+        if(strnacmp(ln, "*DefaultColorMode:") == 0) {
+            HX_chomp(ln);
+            p = strchr(ln, ':') + 1;
+            while(isspace(*p)) ++p;
+            if(strcasecmp(p, "CMYK") == 0 || strcasecmp(p, "Color") == 0 ||
+             strcasecmp(p, "Colour") == 0 || strcasecmp(p, "RGB") == 0 ||
+             strcasecmp(p, "Contone") == 0)
+                ret = COLORSPACE_CMYK;
+            else if(strcasecmp(p, "CMY+K") == 0)
+                ret = COLORSPACE_CMYPK;
+            else if(strcasecmp(p, "CMY") == 0)
+                ret = COLORSPACE_CMY;
+            else // "Gray" "Grayscale"
+                ret = COLORSPACE_GRAY;
+            // What is "NormalColor"? gray or color?
+        }
+    }
+
+    hmc_free(ln);
+    return ret;
 }
 
 //=============================================================================
