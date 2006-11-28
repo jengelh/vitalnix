@@ -21,3 +21,7 @@ grant insert, select
     on vxlpacct.printlog
     to 'lp'@'localhost'
     identified by 'FUNkyaCCounting';
+
+# For later
+#
+#grant delete on vxlpacct.printlog to 'lp'@'localhost';
