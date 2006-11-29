@@ -114,6 +114,46 @@ void smc_size_minimum(wxWindow *w, const wxSize &ps) {
 }
 
 //-----------------------------------------------------------------------------
+BEGIN_EVENT_TABLE(GW_FTC, wxPanel)
+    EVT_BUTTON(wxID_OPEN, GW_FTC::Browse)
+END_EVENT_TABLE()
+
+GW_FTC::GW_FTC(wxWindow *parent, const wxString &string, unsigned int border,
+ unsigned int flags) :
+    wxPanel(parent)
+{
+    wxBoxSizer *vp = new wxBoxSizer(wxHORIZONTAL);
+    textfield      = new wxTextCtrl(this, wxID_ANY, string);
+
+    vp->Add(textfield, 1, wxACV | wxALL, border);
+    vp->Add(new wxButton(this, wxID_OPEN, wxT("Browse...")), 0, wxACV | wxALL, border);
+    SetSizer(vp);
+    vp->SetSizeHints(this);
+    this->flags = flags;
+    return;
+}
+
+wxString GW_FTC::GetValue(void) const {
+    return textfield->GetValue();
+}
+
+void GW_FTC::Browse(wxCommandEvent &event) {
+    if(flags & FTC_DIRECTORY) {
+        wxDirDialog dlg(this, wxT("Browse"), wxEmptyString, wxDD_NEW_DIR_BUTTON);
+        if(dlg.ShowModal() != wxID_OK)
+            return;
+        textfield->SetValue(dlg.GetPath());
+    } else {
+        wxFileDialog dlg(this, wxT("Browse"), wxEmptyString, wxEmptyString,
+            wxT("All Files (*.*)|*"), wxOPEN | wxFILE_MUST_EXIST);
+        if(dlg.ShowModal() != wxID_OK)
+            return;
+        textfield->SetValue(dlg.GetPath());
+    }
+    return;
+}
+
+//-----------------------------------------------------------------------------
 GW_GroupCombo::GW_GroupCombo(wxWindow *parent, wxWindowID id,
  const char *db) :
     wxComboBox(parent, id, wxEmptyString)
@@ -234,46 +274,6 @@ void GW_Message::No(wxCommandEvent &event) {
 
 void GW_Message::Cancel(wxCommandEvent &event) {
     EndModal(wxID_CANCEL);
-    return;
-}
-
-//-----------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(GW_FTC, wxPanel)
-    EVT_BUTTON(wxID_OPEN, GW_FTC::Browse)
-END_EVENT_TABLE()
-
-GW_FTC::GW_FTC(wxWindow *parent, const wxString &string, unsigned int border,
- unsigned int flags) :
-    wxPanel(parent)
-{
-    wxBoxSizer *vp = new wxBoxSizer(wxHORIZONTAL);
-    textfield      = new wxTextCtrl(this, wxID_ANY, string);
-
-    vp->Add(textfield, 1, wxACV | wxALL, border);
-    vp->Add(new wxButton(this, wxID_OPEN, wxT("Browse...")), 0, wxACV | wxALL, border);
-    SetSizer(vp);
-    vp->SetSizeHints(this);
-    this->flags = flags;
-    return;
-}
-
-wxString GW_FTC::GetValue(void) const {
-    return textfield->GetValue();
-}
-
-void GW_FTC::Browse(wxCommandEvent &event) {
-    if(flags & FTC_DIRECTORY) {
-        wxDirDialog dlg(this, wxT("Browse"), wxEmptyString, wxDD_NEW_DIR_BUTTON);
-        if(dlg.ShowModal() != wxID_OK)
-            return;
-        textfield->SetValue(dlg.GetPath());
-    } else {
-        wxFileDialog dlg(this, wxT("Browse"), wxEmptyString, wxEmptyString,
-            wxT("All Files (*.*)|*"), wxOPEN | wxFILE_MUST_EXIST);
-        if(dlg.ShowModal() != wxID_OK)
-            return;
-        textfield->SetValue(dlg.GetPath());
-    }
     return;
 }
 

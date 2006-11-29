@@ -53,6 +53,23 @@ extern void smc_size_aspect(wxWindow *, double = 1.5);
 extern void smc_size_minimum(wxWindow *, int, int);
 extern void smc_size_minimum(wxWindow *, const wxSize &);
 
+class GW_FTC : public wxPanel {
+  public: // functions
+    GW_FTC(wxWindow *, const wxString & = wxEmptyString, unsigned int = 0,
+        unsigned int = 0);
+    wxString GetValue(void) const;
+
+  protected: // functions
+    void Browse(wxCommandEvent &);
+
+  protected: // variables
+    wxTextCtrl *textfield;
+    unsigned int flags;
+
+  private: // variables
+    DECLARE_EVENT_TABLE();
+};
+
 class GW_GroupCombo : public wxComboBox {
   public: // functions
     GW_GroupCombo(wxWindow *, wxWindowID = wxID_ANY, const char * = "*");
@@ -81,23 +98,6 @@ class GW_Message : public wxDialog {
     void Yes(wxCommandEvent &);
     void No(wxCommandEvent &);
     void Cancel(wxCommandEvent &);
-
-  private: // variables
-    DECLARE_EVENT_TABLE();
-};
-
-class GW_FTC : public wxPanel {
-  public: // functions
-    GW_FTC(wxWindow *, const wxString & = wxEmptyString, unsigned int = 0,
-        unsigned int = 0);
-    wxString GetValue(void) const;
-
-  protected: // functions
-    void Browse(wxCommandEvent &);
-
-  protected: // variables
-    wxTextCtrl *textfield;
-    unsigned int flags;
 
   private: // variables
     DECLARE_EVENT_TABLE();
