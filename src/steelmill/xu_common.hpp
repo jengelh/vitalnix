@@ -103,6 +103,24 @@ class GW_Message : public wxDialog {
     DECLARE_EVENT_TABLE();
 };
 
+class GW_Table : public wxListCtrl {
+  public: // functions
+    GW_Table(wxWindow *, wxWindowID, const wxString *, int, int *, long = 0);
+    ~GW_Table(void);
+    void Insert(const wxString *);
+
+  protected: // functions
+    void Resize_Column(wxListEvent &);
+    void Resize_Table(wxSizeEvent &);
+
+  protected: // variables
+    int *column_layout, column_layout_sum;
+    int num_columns;
+
+  private: // variables
+    DECLARE_EVENT_TABLE();
+};
+
 class GW_UserCombo : public wxComboBox {
   public: // functions
     GW_UserCombo(wxWindow *, wxWindowID = wxID_ANY, const char * = "*");

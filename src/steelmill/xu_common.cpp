@@ -278,6 +278,86 @@ void GW_Message::Cancel(wxCommandEvent &event) {
 }
 
 //-----------------------------------------------------------------------------
+BEGIN_EVENT_TABLE(GW_Table, wxListCtrl)
+    EVT_SIZE(GW_Table::Resize_Table)
+    EVT_LIST_COL_END_DRAG(wxID_ANY, GW_Table::Resize_Column)
+END_EVENT_TABLE()
+
+/*  GW_Table
+    @parent:    widget parent
+    @id:        identifier
+    @names:     column names
+    @columns:   number of elements in @col_names
+    @layout:    array of column proportions
+    @flags:     bitmask of %wxLC_SINGLE_SEL and %wxLC_SORT_ASCENDING
+
+    A simple table with automatic column resizing.
+*/
+GW_Table::GW_Table(wxWindow *parent, wxWindowID id, const wxString *names,
+ int columns, int *layout, long flags) :
+    wxListCtrl(parent, id, wxDPOS, wxDSIZE, wxLC_REPORT |
+     wxLC_HRULES | wxLC_VRULES | flags)
+{
+    wxListItem item;
+    int i = 0;
+
+    column_layout     = new int[columns];
+    column_layout_sum = 0;
+    num_columns       = columns;
+    memcpy(column_layout, layout, sizeof(int) * columns);
+
+    while(columns--) {
+        column_layout_sum += *layout++;
+        item.SetText(*names++);
+        InsertColumn(i++, item);
+    }
+    return;
+}
+
+GW_Table::~GW_Table(void)
+{
+    delete[] column_layout;
+    return;
+}
+
+/*  GW_Table::insert
+    @c: array of strings to insert as a new row
+
+    Insert a row into the table.
+*/
+void GW_Table::Insert(const wxString *c)
+{
+    int i = 0, n = num_columns;
+    wxListItem item;
+
+    while(i--) {
+        item.SetText(*c++);
+        InsertColumn(n++, item);
+    }
+    return;
+}
+
+void GW_Table::Resize_Column(wxListEvent &event)
+{
+    return;
+}
+
+void GW_Table::Resize_Table(wxSizeEvent &event)
+{
+    wxSize size = event.GetSize();
+    int i = 0, n = num_columns;
+
+    while(n--) {
+        SetColumnWidth(i, size.GetWidth() * column_layout[i] /
+                       column_layout_sum);
+        ++i;
+    }
+
+    event.Skip();
+    return;
+}
+
+//-----------------------------------------------------------------------------
 GW_UserCombo::GW_UserCombo(wxWindow *parent, wxWindowID id, const char *db) :
     wxComboBox(parent, id, wxEmptyString, wxDPOS, wxDSIZE, 0, NULL, wxCB_SORT)
 {
