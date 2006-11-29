@@ -45,7 +45,6 @@ enum {
     ID_FIXUUID,
     ID_VIEWUSERS,
     ID_VIEWGROUPS,
-    ID_CONFIGURE,
 };
 
 //-----------------------------------------------------------------------------
@@ -161,8 +160,6 @@ wxFlexGridSizer *WD_MainMenu::generate_menu(void) {
             "modify account options."},
         {ID_VIEWGROUPS, "List groups >>",
             "\n"},
-        {ID_CONFIGURE, "Configure >>",
-            "Change the behavior of Vitalnix\n"},
         {wxID_ABOUT, "About >>",
             ""},
         {0},
