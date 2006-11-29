@@ -105,7 +105,8 @@ class GW_Message : public wxDialog {
 
 class GW_Table : public wxListCtrl {
   public: // functions
-    GW_Table(wxWindow *, wxWindowID, const wxString *, int, int *, long = 0);
+    GW_Table(wxWindow *, wxWindowID, const wxString *, int,
+        const int *, long = 0);
     ~GW_Table(void);
     void Insert(const wxString *);
 

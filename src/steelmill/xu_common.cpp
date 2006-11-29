@@ -294,7 +294,7 @@ END_EVENT_TABLE()
     A simple table with automatic column resizing.
 */
 GW_Table::GW_Table(wxWindow *parent, wxWindowID id, const wxString *names,
- int columns, int *layout, long flags) :
+ int columns, const int *layout, long flags) :
     wxListCtrl(parent, id, wxDPOS, wxDSIZE, wxLC_REPORT |
      wxLC_HRULES | wxLC_VRULES | flags)
 {
