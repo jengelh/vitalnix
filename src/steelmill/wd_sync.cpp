@@ -147,8 +147,7 @@ WD_SyncParam::WD_SyncParam(wxWindow *parent) :
 {
     wxBoxSizer *vp = new wxBoxSizer(wxVERTICAL);
 
-    wxStaticBox *sb_src      = new wxStaticBox(this, wxID_ANY, wxT("Source"));
-    wxStaticBoxSizer *sp_src = new wxStaticBoxSizer(sb_src, wxVERTICAL);
+    wxStaticBoxSizer *sp_src = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Source"));
     wxFlexGridSizer *sf_src  = new wxFlexGridSizer(2);
     sf_src->AddGrowableCol(1);
     sf_src->Add(new wxStaticText(this, wxID_ANY, wxT("Resource Identifier:")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
@@ -157,8 +156,7 @@ WD_SyncParam::WD_SyncParam(wxWindow *parent) :
     sf_src->Add(ct_srctype = new GW_EdsformatChoice(this), 0, wxACV | wxALL, 3);
     sp_src->Add(sf_src, 1, wxGROW);
 
-    wxStaticBox *sb_dst      = new wxStaticBox(this, wxID_ANY, wxT("Destination"));
-    wxStaticBoxSizer *sp_dst = new wxStaticBoxSizer(sb_dst, wxVERTICAL);
+    wxStaticBoxSizer *sp_dst = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Destination"));
     wxFlexGridSizer *sf_dst  = new wxFlexGridSizer(2);
     sf_dst->AddGrowableCol(1);
     sf_dst->Add(new wxStaticText(this, wxID_ANY, wxT("Database")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
@@ -167,8 +165,7 @@ WD_SyncParam::WD_SyncParam(wxWindow *parent) :
     sf_dst->Add(ct_group = new GW_GroupCombo(this), 0, wxACV | wxALL, 3);
     sp_dst->Add(sf_dst, 1, wxGROW);
 
-    wxStaticBox *sb_out      = new wxStaticBox(this, wxID_ANY, wxT("Output"));
-    wxStaticBoxSizer *sp_out = new wxStaticBoxSizer(sb_out, wxVERTICAL);
+    wxStaticBoxSizer *sp_out = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Output"));
     wxFlexGridSizer *sf_out  = new wxFlexGridSizer(2);
     sf_out->AddGrowableCol(1);
     sf_out->Add(new wxStaticText(this, wxID_ANY, wxT("Logfile:")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
