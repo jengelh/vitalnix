@@ -93,7 +93,7 @@ WD_Single::WD_Single(wxWindow *parent) :
     sg->Add(new wxTextCtrl(this, wxID_ANY, wxEmptyString), wxGBPosition(11, 1), wxDefaultSpan, wxGROW | wxACV | wxALL, 3);
 
     vp->Add(sg);
-    vp->Add(smc_navgen(this, "c-n"), 0, wxACV | wxGROW);
+    vp->Add(smc_navgen(this, "c-n"), 0, wxGROW);
     SetSizer(vp);
     vp->SetSizeHints(this);
     Center();

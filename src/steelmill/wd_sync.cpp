@@ -152,7 +152,7 @@ WD_SyncParam::WD_SyncParam(wxWindow *parent) :
     wxFlexGridSizer *sf_src  = new wxFlexGridSizer(2);
     sf_src->AddGrowableCol(1);
     sf_src->Add(new wxStaticText(this, wxID_ANY, wxT("Resource Identifier:")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
-    sf_src->Add(ct_source = new GW_FTC(this, wxT("../../../Vitalnix_SEC/daten3.sdf"), 3), 0, wxACV | wxGROW);
+    sf_src->Add(ct_source = new GW_FTC(this, wxT("../../../Vitalnix_SEC/daten3.sdf"), 3), 0, wxGROW | wxACV);
     sf_src->Add(new wxStaticText(this, wxID_ANY, wxT("Type:")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
     sf_src->Add(ct_srctype = new GW_EdsformatChoice(this), 0, wxACV | wxALL, 3);
     sp_src->Add(sf_src, 1, wxGROW);
@@ -172,7 +172,7 @@ WD_SyncParam::WD_SyncParam(wxWindow *parent) :
     wxFlexGridSizer *sf_out  = new wxFlexGridSizer(2);
     sf_out->AddGrowableCol(1);
     sf_out->Add(new wxStaticText(this, wxID_ANY, wxT("Logfile:")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
-    sf_out->Add(ct_output = new GW_FTC(this, wxT("../../Vitalnix-PRV/daten3.log"), 3), 0, wxACV | wxGROW);
+    sf_out->Add(ct_output = new GW_FTC(this, wxT("../../Vitalnix-PRV/daten3.log"), 3), 0, wxGROW | wxACV);
     sp_out->Add(sf_out, 1, wxGROW);
 
     sp_out->Add(ct_prompt = new wxCheckBox(this, wxID_ANY, wxT("Prompt before operations")), 0, wxALIGN_LEFT | wxALL, 3);
@@ -184,7 +184,7 @@ WD_SyncParam::WD_SyncParam(wxWindow *parent) :
     vp->Add(sp_dst, 0, wxGROW | wxALL, 5);
     vp->Add(sp_out, 0, wxGROW | wxALL, 5);
     vp->Add(-1, 30, 1);
-    vp->Add(smc_navgen(this, "c-n"), 0, wxACV | wxGROW);
+    vp->Add(smc_navgen(this, "c-n"), 0, wxGROW);
 
     SetSizer(vp);
     vp->SetSizeHints(this);
