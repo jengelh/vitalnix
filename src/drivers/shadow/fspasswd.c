@@ -1,7 +1,7 @@
 /*=============================================================================
 Vitalnix User Management Suite
 drivers/shadow/fspasswd.c - Shadow driver
-  Copyright © Jan Engelhardt <jengelh [at] gmx de>, 2002 - 2006
+  Copyright © Jan Engelhardt <jengelh [at] gmx de>, 2002 - 2007
   -- License restrictions apply (LGPL v2.1)
 
   This file is part of Vitalnix.

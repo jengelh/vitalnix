@@ -1,5 +1,9 @@
-#ifndef LPACCT_COST_H
-#define LPACCT_COST_H 1
+/*
+    Copyright © Jan Engelhardt <jengelh@gmx.de>, 2006 - 2007
+    This code is released under version 2.1 of the GNU LGPL.
+*/
+#ifndef LPACCT_DROP_H
+#define LPACCT_DROP_H 1
 
 struct image;
 
@@ -26,4 +30,4 @@ extern void drop2sqin(struct costf *, const struct cost *, int);
  */
 extern int (*const mpxm_analyzer[])(int, struct image *, struct cost *);
 
-#endif // LPACCT_PIXELCOST_H
+#endif // LPACCT_DROP_H

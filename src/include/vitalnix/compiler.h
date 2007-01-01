@@ -19,5 +19,3 @@
 #define reinterpret_cast(type, expr)    ((type)(expr))
 
 #endif // _VITALNIX_GENERIC_COMPILER_H
-
-//=============================================================================

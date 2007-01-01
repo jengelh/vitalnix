@@ -1,5 +1,5 @@
 /*
-    Copyright © Jan Engelhardt <jengelh@gmx.de>, 2006
+    Copyright © Jan Engelhardt <jengelh@gmx.de>, 2006 - 2007
     This code is released under version 2.1 of the GNU LGPL.
 */
 #ifndef LPACCT_LPACCT_H
@@ -56,5 +56,3 @@ extern int lpacct_readconfig(struct options *);
 extern MYSQL *lpacct_sql_start(const struct options *);
 
 #endif // LPACCT_LPACCT_H
-
-//=============================================================================

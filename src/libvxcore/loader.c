@@ -1,7 +1,7 @@
 /*=============================================================================
 Vitalnix User Management Suite
 libvxcore/loader.c
-  Copyright © Jan Engelhardt <jengelh [at] gmx de>, 2006
+  Copyright © Jan Engelhardt <jengelh [at] gmx de>, 2006 - 2007
 
   This file is part of Vitalnix.
   Vitalnix is free software; you can redistribute it and/or modify it

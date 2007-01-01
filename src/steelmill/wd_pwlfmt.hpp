@@ -1,7 +1,7 @@
 /*=============================================================================
 Vitalnix User Management Suite
 steelmill/wd_pwlfmt.hpp
-  Copyright © Jan Engelhardt <jengelh [at] gmx de>, 2006
+  Copyright © Jan Engelhardt <jengelh [at] gmx de>, 2006 - 2007
   -- License restrictions apply (LGPL v2.1)
 
   This file is part of Vitalnix.

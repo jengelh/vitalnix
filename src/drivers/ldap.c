@@ -1,16 +1,9 @@
-/*=============================================================================
-Vitalnix User Management Suite
-drivers/ldap.c - LDAP back-end module
-  Copyright © Jan Engelhardt <jengelh [at] gmx de>, 2005 - 2006
+/*
+    Copyright © Jan Engelhardt <jengelh@gmx.de>, 2006 - 2007
+    This code is released under version 2.1 of the GNU LGPL.
 
-  This file is part of Vitalnix 2006 ENTERPRISE EDITION.
-  You may not redistribute this file in any form without obtaining
-  written permission (includes email) from Alphagate Systems Indp.
-
-  This PDB back-end module comes WITHOUT ANY WARRANTY; without even the
-  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-  By using it, you agree to this.
-=============================================================================*/
+    LDAP back-end module for libvxpdb
+*/
 #include <sys/types.h>
 #include <errno.h>
 #include <stdio.h>

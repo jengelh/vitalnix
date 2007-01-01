@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # HXtools :: png2wx
-# by Jan Engelhardt <jengelh [at] gmx de>, 2004 - 2006
+# by Jan Engelhardt <jengelh [at] gmx de>, 2004 - 2007
 # http://jengelh.hopto.org/
 # released in the Public Domain
 #

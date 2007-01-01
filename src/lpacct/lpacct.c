@@ -1,5 +1,5 @@
 /*
-    Copyright © Jan Engelhardt <jengelh@gmx.de>, 2006
+    Copyright © Jan Engelhardt <jengelh@gmx.de>, 2006 - 2007
     This code is released under version 2.1 of the GNU LGPL.
 
     vxlpacct - Entrypoint functions

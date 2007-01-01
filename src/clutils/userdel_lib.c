@@ -1,7 +1,7 @@
 /*=============================================================================
 Vitalnix User Management Suite
 clutils/userdel_lib.c
-  Copyright © Jan Engelhardt <jengelh [at] gmx de>, 2003 - 2006
+  Copyright © Jan Engelhardt <jengelh [at] gmx de>, 2003 - 2007
   -- License restrictions apply (LGPL v2.1)
 
   This file is part of Vitalnix.
