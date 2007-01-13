@@ -331,6 +331,7 @@ static void vxutil_quote_base64(const char *s, char *d)
             d[2] = '=';
             d[3] = '=';
         }
+        s += 3;
         d += 4;
     }
     *d = '\0';
