@@ -107,6 +107,7 @@ static void test_6(void)
         "foob",   "Zm9vYg==",
         "fooba",  "Zm9vYmE=",
         "foobar", "Zm9vYmFy",
+        "Turpakäräjiin", "VHVycGFrw6Ryw6RqaWlu",
     };
     char *s = NULL;
     int i;
@@ -116,6 +117,7 @@ static void test_6(void)
     for(i = 0; i < ARRAY_SIZE(table); i += 2)
         printf("> %-6s\t%-12s\t%s\n", table[i],
             vxutil_quote(table[i], VXQUOTE_BASE64, &s), table[i+1]);
+
     free(s);
     return;
 }
