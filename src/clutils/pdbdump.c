@@ -28,11 +28,15 @@ clutils/pdbdump.c - Dump PDB contents
 #include <stdlib.h>
 #include <libHX.h>
 #include <vitalnix/config.h>
+#include <vitalnix/compiler.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxpdb/xafunc.h>
+#include <vitalnix/libvxutil/libvxutil.h>
 
 // Functions
 static void d_ldif(struct vxpdb_state *);
+static void d_ldif_users(struct vxpdb_state *);
+static void d_ldif_groups(struct vxpdb_state *);
 static void d_mysql(struct vxpdb_state *);
 static void d_mysql_users(struct vxpdb_state *);
 static void d_mysql_groups(struct vxpdb_state *);
@@ -42,6 +46,7 @@ static int get_options(int *, const char ***);
 static void getopt_t(const struct HXoptcb *);
 static void getopt_u(const struct HXoptcb *);
 static void getopt_w(const struct HXoptcb *);
+static int ldif_safe(const char *);
 static void show_version(const struct HXoptcb *);
 
 // Variables
@@ -91,6 +96,106 @@ int main(int argc, const char **argv) {
 
 //-----------------------------------------------------------------------------
 static void d_ldif(struct vxpdb_state *db) {
+    if(Dump_what[DUMP_PASSWD])
+        d_ldif_users(db);
+    if(Dump_what[DUMP_GROUP])
+        d_ldif_groups(db);
+    return;
+}
+
+static void d_ldif_groups(struct vxpdb_state *db)
+{
+    struct vxpdb_group group = {};
+    void *trav;
+
+    if((trav = vxpdb_grouptrav_init(db)) == NULL) {
+        fprintf(stderr, "# vxpdb_grouptrav_init: %s\n", strerror(errno));
+        return;
+    }
+
+    while(vxpdb_grouptrav_walk(db, trav, &group) > 0) {
+        printf(
+            "dn: cn=%s,ou=groups,dc=site\n"
+            "objectClass: top\n"
+            "objectClass: posixGroup\n"
+            "cn: %s\n"
+            "gidNumber: %ld\n\n",
+            group.gr_name, group.gr_name, group.gr_gid);
+    }
+
+    vxpdb_grouptrav_free(db, trav);
+    vxpdb_group_free(&group, 0);
+    return;
+}
+
+static void d_ldif_users(struct vxpdb_state *db) 
+{
+    struct vxpdb_user user = {};
+    char *freeme = NULL;
+    void *trav;
+
+    if((trav = vxpdb_usertrav_init(db)) == NULL) {
+        fprintf(stderr, "# vxpdb_usertrav_init: %s\n", strerror(errno));
+        return;
+    }
+
+    while(vxpdb_usertrav_walk(db, trav, &user) > 0) {
+        if(!(user.pw_uid >= Uid_range[0] && user.pw_uid <= Uid_range[1]))
+            continue;
+        printf(
+            "dn: uid=%s,ou=users,dc=site\n"
+            "objectClass: top\n"
+            "objectClass: account\n"
+            "objectClass: posixAccount\n"
+            "uid: %s\n"
+            "uidNumber: %ld\n"
+            "gidNumber: %ld\n",
+            user.pw_name, user.pw_name, user.pw_uid, user.pw_gid);
+
+        if(ldif_safe(user.pw_real)) {
+            printf("cn: %s\n" "gecos: %s\n", user.pw_real, user.pw_real);
+        } else {
+            char *text = vxutil_quote(user.pw_real, VXQUOTE_BASE64, &freeme);
+            printf("cn:: %s\n" "gecos:: %s\n", text, text);
+        }
+
+        if(ldif_safe(user.pw_home))
+            printf("homeDirectory: %s\n", user.pw_home);
+        else
+            printf("homeDirectory:: %s\n",
+                vxutil_quote(user.pw_home, VXQUOTE_BASE64, &freeme));
+
+        if(ldif_safe(user.pw_shell))
+            printf("loginShell: %s\n", user.pw_shell);
+        else
+            printf("loginShell:: %s\n",
+                vxutil_quote(user.pw_shell, VXQUOTE_BASE64, &freeme));
+
+        if(!Dump_what[DUMP_SHADOW]) {
+            printf("userPassword: {crypt}x\n");
+        } else {
+            printf("objectClass: shadowAccount\n");
+            if(user.sp_passwd != NULL && *user.sp_passwd != '\0')
+                printf("userPassword: {crypt}%s\n", user.sp_passwd);
+            if(user.sp_lastchg > 0)
+                printf("shadowLastChange: %ld\n", user.sp_lastchg);
+            if(user.sp_min > 0)
+                printf("shadowMin: %ld\n", user.sp_min);
+            if(user.sp_max > 0)
+                printf("shadowMax: %ld\n", user.sp_max);
+            if(user.sp_warn > 0)
+                printf("shadowWarning: %ld\n", user.sp_warn);
+            if(user.sp_expire > 0)
+                printf("shadowExpire: %ld\n", user.sp_expire);
+            if(user.sp_inact > 0)
+                printf("shadowInactive: %ld\n", user.sp_inact);
+        }
+        printf("\n");
+    }
+
+    vxpdb_usertrav_free(db, trav);
+    vxpdb_user_free(&user, 0);
+    free(freeme);
     return;
 }
 
@@ -344,6 +449,24 @@ static void getopt_w(const struct HXoptcb *cbi) {
 
     free(orig_wk);
     return;
+}
+
+/*  ldif_safe
+    @s: string to analyze
+
+    Returns false if the string @s needs to be BASE-64 encoded to correspond
+    to the LDIF standard. Returns true if it can be used as-is.
+*/
+static int ldif_safe(const char *s)
+{
+    if(*const_cast(const unsigned char *, s) >= 128 ||
+      *s == '\n' || *s == '\r' || *s == ' ' || *s == ':' || *s == '<')
+            return 0;
+    while(*++s != '\0')
+        if(*const_cast(const unsigned char *, s) >= 128 ||
+          *s == '\n' || *s == '\r')
+                return 0;
+    return 1;
 }
 
 static void show_version(const struct HXoptcb *cbi) {
