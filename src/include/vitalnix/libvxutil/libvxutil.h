@@ -72,6 +72,7 @@ enum {
     VXQUOTE_SINGLE,
     VXQUOTE_DOUBLE,
     VXQUOTE_XML,
+    VXQUOTE_BASE64,
     _VXQUOTE_MAX,
 };
 

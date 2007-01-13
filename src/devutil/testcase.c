@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <vitalnix/libvxeds/libvxeds.h>
+#include <vitalnix/libvxutil/defines.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
 //-----------------------------------------------------------------------------
@@ -96,6 +97,29 @@ static void test_5(void) {
 #undef CHK
 }
 
+static void test_6(void)
+{
+    const char *table[] = {
+        "",       "",
+        "f",      "Zg==",
+        "fo",     "Zm8=",
+        "foo",    "Zm9v",
+        "foob",   "Zm9vYg==",
+        "fooba",  "Zm9vYmE=",
+        "foobar", "Zm9vYmFy",
+    };
+    char *s = NULL;
+    int i;
+
+    printf("--- TEST 6: BASE-64 encoding ---\n");
+    printf("  Input \tOutput      \tExpected\n");
+    for(i = 0; i < ARRAY_SIZE(table); i += 2)
+        printf("> %-6s\t%-12s\t%s\n", table[i],
+            vxutil_quote(table[i], VXQUOTE_BASE64, &s), table[i+1]);
+    free(s);
+    return;
+}
+
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv) {
     setvbuf(stdout, NULL, _IONBF, 0);
@@ -105,6 +129,7 @@ int main(int argc, const char **argv) {
     test_3("daten.xml");
     test_4();
     test_5();
+    test_6();
     return 0;
 }
 

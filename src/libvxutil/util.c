@@ -35,6 +35,7 @@ libvxutil/util.c
 
 // Functions
 static int vxutil_parse_date(const char *, int *, int *, int *);
+static void vxutil_quote_base64(const char *, char *);
 static size_t quoted_size(const char *, unsigned int);
 static const char *surname_pointer(const char *);
 static char *transform7(const char *, char *, size_t);
@@ -111,7 +112,8 @@ EXPORT_SYMBOL char *vxutil_quote(const char *src, unsigned int type,
 {
     char *ret, *ret_wp;
 
-    if(type >= _VXQUOTE_MAX || strpbrk(src, quote_match[type]) == NULL)
+    if(type >= _VXQUOTE_MAX ||
+     (type <= VXQUOTE_XML && strpbrk(src, quote_match[type]) == NULL))
         return const_cast(char *, src);
 
     // Allocation and deallocation saving
@@ -119,6 +121,11 @@ EXPORT_SYMBOL char *vxutil_quote(const char *src, unsigned int type,
     if(ret == NULL)
         return NULL;
     *free_me = ret_wp = ret;
+
+    if(type == VXQUOTE_BASE64) {
+        vxutil_quote_base64(src, ret);
+        return ret;
+    }
 
     if(type == VXQUOTE_XML)
         while(*src != '\0') {
@@ -291,6 +298,45 @@ static int vxutil_parse_date(const char *s, int *day, int *month, int *year) {
     return 1;
 }
 
+/*  vxutil_quote_base64
+    @s: string to encode
+    @d: destination buffer
+
+    Encode @src into BASE-64 according to RFC 4648 and write result to @dest,
+    which must be of appropriate size, plus one for a trailing NUL.
+*/
+static void vxutil_quote_base64(const char *s, char *d)
+{
+    static const char *a =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+    size_t len = strlen(s);
+
+    while(len > 0) {
+        if(len >= 3) {
+            len -= 3;
+            d[0] = a[(s[0] & 0xFC) >> 2];
+            d[1] = a[((s[0] & 0x03) << 4) | ((s[1] & 0xF0) >> 4)];
+            d[2] = a[((s[1] & 0x0F) << 2) | ((s[2] & 0xC0) >> 6)];
+            d[3] = a[s[2] & 0x3F];
+        } else if(len == 2) {
+            len = 0;
+            d[0] = a[(s[0] & 0xFC) >> 2];
+            d[1] = a[((s[0] & 0x03) << 4) | ((s[1] & 0xF0) >> 4)];
+            d[2] = a[(s[1] & 0x0F) << 2];
+            d[3] = '=';
+        } else if(len == 1) {
+            len = 0;
+            d[0] = a[(s[0] & 0xFC) >> 2];
+            d[1] = a[(s[0] & 0x03) << 4];
+            d[2] = '=';
+            d[3] = '=';
+        }
+        d += 4;
+    }
+    *d = '\0';
+    return;
+}
+
 /*  quoted_size
     @s:         string to analyze
     @type:      non-zero if double quoted
@@ -300,6 +346,10 @@ static int vxutil_parse_date(const char *s, int *day, int *month, int *year) {
 static size_t quoted_size(const char *s, unsigned int type) {
     const char *p = s;
     size_t n = strlen(s);
+
+    /* The order of division and multiplication is _important_ here. */
+    if(type == VXQUOTE_BASE64)
+        return (strlen(s) + 2) / 3 * 4;
 
     if(type == VXQUOTE_XML) {
         while((p = strpbrk(p, quote_match[type])) != NULL) {
