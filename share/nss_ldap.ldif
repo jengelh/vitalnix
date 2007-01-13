@@ -1,0 +1,24 @@
+# extended LDIF
+#
+# LDAPv3
+#
+
+dn: dc=site
+objectClass: dcObject
+objectClass: organization
+o: site
+dc: site
+
+dn: cn=root,dc=site
+objectClass: organizationalRole
+cn: root
+
+dn: ou=users,dc=site
+objectClass: organizationalUnit
+objectClass: top
+ou: users
+
+dn: ou=groups,dc=site
+objectClass: organizationalUnit
+objectClass: top
+ou: groups
