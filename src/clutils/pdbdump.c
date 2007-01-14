@@ -152,24 +152,30 @@ static void d_ldif_users(struct vxpdb_state *db)
             "gidNumber: %ld\n",
             user.pw_name, user.pw_name, user.pw_uid, user.pw_gid);
 
-        if(ldif_safe(user.pw_real)) {
+        if(user.pw_real == NULL || *user.pw_real == '\0') {
+            printf("cn: %s\n", user.pw_name);
+        } else if(ldif_safe(user.pw_real)) {
             printf("cn: %s\n" "gecos: %s\n", user.pw_real, user.pw_real);
         } else {
             char *text = vxutil_quote(user.pw_real, VXQUOTE_BASE64, &freeme);
             printf("cn:: %s\n" "gecos:: %s\n", text, text);
         }
 
-        if(ldif_safe(user.pw_home))
+        if(user.pw_home == NULL || *user.pw_home == '\0')
+            printf("homeDirectory:\n");
+        else if(ldif_safe(user.pw_home))
             printf("homeDirectory: %s\n", user.pw_home);
         else
             printf("homeDirectory:: %s\n",
                 vxutil_quote(user.pw_home, VXQUOTE_BASE64, &freeme));
 
-        if(ldif_safe(user.pw_shell))
-            printf("loginShell: %s\n", user.pw_shell);
-        else
-            printf("loginShell:: %s\n",
-                vxutil_quote(user.pw_shell, VXQUOTE_BASE64, &freeme));
+        if(user.pw_shell != NULL && *user.pw_shell != '\0') {
+            if(ldif_safe(user.pw_shell))
+                printf("loginShell: %s\n", user.pw_shell);
+            else
+                printf("loginShell:: %s\n",
+                    vxutil_quote(user.pw_shell, VXQUOTE_BASE64, &freeme));
+        }
 
         if(!Dump_what[DUMP_SHADOW]) {
             printf("userPassword: {crypt}x\n");
