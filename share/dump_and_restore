@@ -1,0 +1,47 @@
+#!/bin/bash
+#
+# Script for intermediate solutions.
+#
+
+BINDDN="cn=root,dc=site";
+BASEDN="ou=users,dc=site";
+PASSWORD="wa";
+UIDRANGE="900:60000";
+
+type="$1";
+shift;
+if [ "$type" == "ldap" ]; then
+    ldapsearch -D "$BINDDN" -ZZx -w "$PASSWORD" -b "$BASEDN" \
+        '(objectClass=posixAccount)' | \
+    perl -ne 'print if s/^dn: //' | \
+    ldapdelete -ZZx -D "$BINDDN" -w "$PASSWORD";
+    if [ "$?" -ne 0 ]; then
+        echo "Error with ldapsearch/ldapdelete" >&2;
+        exit 1;
+    fi;
+    pdbdump -t ldif -w passwd,shadow -u "$UIDRANGE" | tee /dev/tty | \
+    ldapadd -D "$BINDDN" -ZZx -w "$PASSWORD";
+    if [ "$?" -ne 0 ]; then
+        echo "Error with pdbdump/ldapadd" >&2;
+        exit 1;
+    fi;
+elif [ "$type" == "mysql" ]; then
+    pdbdump -t mysql -u "$UIDRANGE" -w passwd,shadow | \
+    mysql -p"$PASSWORD" nss_mysql;
+    if [ "$?" -ne 0 ]; then
+        echo "Error updating MYSQL tables" >&2;
+        exit 1;
+    fi;
+elif [ "$type" == "rmysql" ]; then
+    for host in "$@"; do
+        pdbdump -t mysql -u "$UIDRANGE" -w passwd,shadow | \
+        ssh -T "$host" "mysql -p'$PASSWORD' nss_mysql";
+        if [ "$?" -ne 0 ]; then
+            echo "Error updating MYSQL tables on $host" >&2;
+            bad=1;
+        fi;
+    done;
+    if [ -n "$bad" ]; then
+        exit 1;
+    fi;
+fi;
