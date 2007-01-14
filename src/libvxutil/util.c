@@ -308,7 +308,7 @@ static int vxutil_parse_date(const char *s, int *day, int *month, int *year) {
 static void vxutil_quote_base64(const char *s, char *d)
 {
     static const char *a =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     size_t len = strlen(s);
 
     while(len > 0) {
