@@ -19,7 +19,7 @@ in CGI environments.</p>
 
 <p class="block">Authenticate the user. Returns an AEE code, carrying the PAM
 error code as a negative return value. (E.g. <tt>-7</tt> for
-<tt>PAM_AUTH_ERR</tt> and <tt>10</tt> for <tt>PAM_USER_UNKNOWN</tt>.)</p>
+<tt>PAM_AUTH_ERR</tt> and <tt>-10</tt> for <tt>PAM_USER_UNKNOWN</tt>.)</p>
 
 <h2>vxcgi_read_data</h2>
 
