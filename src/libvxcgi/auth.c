@@ -36,14 +36,14 @@ libvxcgi/auth.c - Authentication
 #include <vitalnix/libvxcgi/libvxcgi.h>
 
 // Functions
-static int my_conv(int, const struct pam_message **,
+static int vxcgi_conv(int, const struct pam_message **,
     struct pam_response **, void *);
 
 //-----------------------------------------------------------------------------
 EXPORT_SYMBOL int vxcgi_authenticate(const char *user, const char *password)
 {
     const struct pam_conv conv = {
-        .conv        = my_conv,
+        .conv        = vxcgi_conv,
         .appdata_ptr = static_cast(void *, password),
     };
     pam_handle_t *ph;
@@ -92,7 +92,7 @@ EXPORT_SYMBOL int vxcgi_authenticate_ext(const char *user,
 #endif
 
 //-----------------------------------------------------------------------------
-static int my_conv(int num_msg, const struct pam_message **msg_ap,
+static int vxcgi_conv(int num_msg, const struct pam_message **msg_ap,
   struct pam_response **res_ap, void *ptr)
 {
     int j;
