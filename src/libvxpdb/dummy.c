@@ -98,7 +98,8 @@ static int vdummy_userinfo(struct vxpdb_state *vp,
 }
 
 static int vdummy_groupadd(struct vxpdb_state *vp,
-  const struct vxpdb_group *u) {
+  const struct vxpdb_group *u)
+{
     return -EPERM;
 }
 
@@ -154,10 +155,10 @@ EXPORT_SYMBOL void vxpdb_fix_vtable(struct vxpdb_mvtable *m)
     SET(usermod);
     SET(userdel);
     if(m->usertrav_init == NULL && m->usertrav_walk == NULL &&
-     m->usertrav_free == NULL) {
-        m->usertrav_init = vdummy_usertrav_init;
-        m->usertrav_walk = vdummy_usertrav_walk;
-        m->usertrav_free = vdummy_usertrav_free;
+      m->usertrav_free == NULL) {
+            m->usertrav_init = vdummy_usertrav_init;
+            m->usertrav_walk = vdummy_usertrav_walk;
+            m->usertrav_free = vdummy_usertrav_free;
     }
     SET(userinfo);
 
@@ -165,10 +166,10 @@ EXPORT_SYMBOL void vxpdb_fix_vtable(struct vxpdb_mvtable *m)
     SET(groupmod);
     SET(groupdel);
     if(m->grouptrav_init == NULL && m->grouptrav_walk == NULL &&
-     m->grouptrav_free == NULL) {
-        m->grouptrav_init = vdummy_grouptrav_init;
-        m->grouptrav_walk = vdummy_grouptrav_walk;
-        m->grouptrav_free = vdummy_grouptrav_free;
+      m->grouptrav_free == NULL) {
+            m->grouptrav_init = vdummy_grouptrav_init;
+            m->grouptrav_walk = vdummy_grouptrav_walk;
+            m->grouptrav_free = vdummy_grouptrav_free;
     }
     SET(groupinfo);
     return;
