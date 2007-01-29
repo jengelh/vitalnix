@@ -3,60 +3,42 @@
 <h1>Module definition</h1>
 
 <p class="block">Each module must define a structure <tt>struct
-vxpdb_mvtable</tt> called <tt>THIS_MODULE</tt> in which they set the function
-pointers to the respective functions. The module structure also includes space
-for name, author and description of the module for display with the
-<i>pdbinfo</i> utility. A reduced example definition could look like this:</p>
+vxpdb_mvtable</tt> in which they set the function pointers to the respective
+functions. The module structure also includes space for name, author and
+description of the module for display with the <i>pdbinfo</i> utility. A
+reduced example definition could look like this:</p>
 
 <p class="code"><tt><b>#</b>include "drivers/static-build.h"<br />
 <b>#</b>include &lt;vitalnix/libvxpdb/libvxpdb.h&gt;<br />
 <br />
-COND_STATIC <b>struct</b> vxpdb_mvtable THIS_MODULE <b>=</b> {<br />
+<b>static struct</b> vxpdb_mvtable THIS_MODULE <b>=</b> {<br />
 &nbsp; &nbsp; .name &nbsp; &nbsp; &nbsp;<b>=</b> "Our sample module",<br />
 &nbsp; &nbsp; .userinfo &nbsp;<b>=</b> our_userinfo,<br />
 &nbsp; &nbsp; .groupinfo <b>=</b> our_groupinfo,<br />
 };<br />
 <br />
-STATIC_REGISTER(our, <b>&amp;</b>THIS_MODULE);</tt></p>
+REGISTER_MODULE(our, <b>&amp;</b>THIS_MODULE);</tt></p>
 
 <p class="block">The <tt>drivers/static-build.h</tt> include, the
-<tt>COND_STATIC</tt> and <tt>STATIC_REGISTER</tt> macros expand to extra code
-and/or initializers that are needed if the module should be built into
-<i>libvxpdb</i> (or not). (The struct must be non-static if the module shall be
-a shared library, and must be static if the module is compiled into
-<i>libvxpdb</i>&nbsp;-- to make <tt>THIS_MODULE</tt> available and to avoid
-multiple global <tt>THIS_MODULE</tt> symbols, respectively.)</p>
+<tt>REGISTER_MODULE</tt> macro expands to extra code required for
+initializion.</p>
 
 <p class="block">Then of course, the module needs to provide the functions we
-have just named in <tt>THIS_MODULE</tt>. They can then be called from user
+have just specified in the sturct. They can then be called from user
 applications using the <tt>vxpdb_*()</tt> functions and the respective instance
-as obtained from <tt>vxpdb_load()</tt>. Note that the <tt>THIS_MODULE</tt>
-struct <i>must</i> be writable, because <tt>vxpdb_load()</tt> will exchange all
-<tt>NULL</tt> pointers to a respective dummy function (as defined in
-<tt>libvxpdb/loader.c</tt> in the source tree).</p>
+as obtained from <tt>vxpdb_load()</tt>. Note that the struct must be writable
+since it will be modified.</p>
 
 <!--
-<p class="block">In the following sections, the prototype for the module
-function is shown, and it is explained what the function should do. Actually,
-our module does not need to provide ANY functions whatsoever, in which case the
-resulting module does nothing, like <i>libvxdb_dummy</i>.</p>
-
-<p class="block">All functions that return an integer follow the following
-return code strategy: Return values less than or equal zero are considered
-error values that are the negative of <tt>errno</tt>. (Yes, that leaves room
-for the exact interpretation of zero, but it is an error.) For success, a
-positive non-zero value should be returned, usually <tt>1</tt> for
-simplicity.</p> Functions that do return a count of something, e.g. number of
-users, can legitimately return any positive number or zero. These are modeled
-after the return values of the <tt>open()</tt> library call.</p>
+<h1>Implementable functions</h1>
 
 <h2>-&gt;init</h2>
 
-<p class="code"><tt><b>int (*</b>init<b>)</b>(<b>struct</b> vxpdb_state <b>*</b>mip, <b>void *</b>private_data);</tt></p>
+<p class="code"><tt><b>int (*</b>init<b>)</b>(<b>struct</b> vxpdb_state <b>*</b>mip, const char <b>*</b>config_file);</tt></p>
 
 <p class="block"><tt>our_init()</tt> function gets called after the shared
-library has been opened through <tt>pdb_load()</tt> from the caller program. It
-gets passed the <tt>priv</tt> argument from <tt>pdb_load()</tt>, which may
+library has been opened through <tt>vxpdb_load()</tt> from the caller program.
+It gets passed the <tt>priv</tt> argument from <tt>vxpdb_load()</tt>, which may
 contain module-specific initialization data. Most of the times however, the
 caller will just put <tt>NULL</tt> for <tt>private_data</tt>.</p>
 

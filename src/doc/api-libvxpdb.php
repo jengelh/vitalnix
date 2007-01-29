@@ -13,15 +13,15 @@
 
 <p class="code"><tt><b>#</b>include &lt;vitalnix/libvxpdb/libvxpdb.h&gt;<br />
 <br />
-<b>struct</b> vxpdb_state <b>*</b>vxpdb_load(<b>const char *</b>module, <b>void *</b>private_data);<br />
+<b>struct</b> vxpdb_state <b>*</b>vxpdb_load(<b>const char *</b>module);<br />
 <b>void</b> vxpdb_unload(<b>struct</b> vxpdb_state <b>*</b>state);
 </tt></p>
 
 <h2>vxpdb_load</h2>
 
 <p class="block">The <tt>vxpdb_load()</tt> function loads a PDB (user account
-database, also known as password database) back-end module, acquires and fixes
-up all symbols and returns a struct describing the open module. The
+database, also known as password database) back-end driver, acquires and fixes
+up all symbols and returns a struct describing the loaded module. The
 <tt>module</tt> parameter can be one of:</p>
 
 <ul>

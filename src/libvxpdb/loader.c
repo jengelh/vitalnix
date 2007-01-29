@@ -41,7 +41,6 @@ enum {
 };
 
 struct opt {
-    int no_indirect;
     char *driver_name, *driver_lib;
     char driver_file[MAXFNLEN];
 };
@@ -60,15 +59,13 @@ EXPORT_SYMBOL struct vxpdb_state *vxpdb_load(const char *name)
     int ret;
 
     if(!vxpdb_config(&cf, CONFIG_READ, name) || cf.driver_name == NULL ||
-     *cf.driver_name == '\0') {
-        errno = vxpdb_cleanup(new, EINVAL, &cf);
-        return NULL;
+      *cf.driver_name == '\0') {
+            errno = EINVAL;
+            goto out;
     }
 
-    if((new = malloc(sizeof(struct vxpdb_state))) == NULL) {
-        errno = vxpdb_cleanup(new, errno, &cf);
-        return NULL;
-    }
+    if((new = malloc(sizeof(struct vxpdb_state))) == NULL)
+        goto out;
 
     if(!(
         // Try to load the .SO and look for THIS_MODULE
@@ -82,19 +79,24 @@ EXPORT_SYMBOL struct vxpdb_state *vxpdb_load(const char *name)
         /* Invert the whole sense because this is the
         error path, not the success path. */
     )) {
-        errno = vxpdb_cleanup(new, (errno != 0) ? errno : EINVAL, &cf);
-        return NULL;
+        if(errno == 0)
+            errno = EINVAL;
+        goto out;
     }
 
     new->vtable = vtable;
     vxpdb_fix_vtable(vtable);
     if(vtable->init != NULL && (ret = vtable->init(new, cf.driver_file)) <= 0) {
-        errno = vxpdb_cleanup(new, -ret, &cf);
-        return NULL;
+        errno = -ret;
+        goto out;
     }
 
     vxpdb_cleanup(NULL, 0, &cf);
     return new;
+
+ out:
+    errno = vxpdb_cleanup(new, errno, &cf);
+    return NULL;
 }
 
 EXPORT_SYMBOL void vxpdb_unload(struct vxpdb_state *thx)
@@ -123,7 +125,7 @@ static int vxpdb_cleanup(struct vxpdb_state *thx, int err, struct opt *cf) {
     @L1_name:   level-1 name
 
     %CONFIG_READ: Resolve the standard database ("*") into a real database,
-    and resolve     into its configuration file.
+    and resolve into its configuration file.
 */
 static int vxpdb_config(struct opt *cf, unsigned int action,
   const char *L1_name)
@@ -174,8 +176,8 @@ static int vxpdb_config(struct opt *cf, unsigned int action,
 /*  vxpdb_get_handle
     @filename:  Shared library to open
 
-    Opens @filename or a construction of "drv_" @filename and an extension
-    and returns the handle.
+    Opens @filename or a construction of "drv_", @filename and an extension
+    and returns the handle on success, or %NULL on failure.
 */
 static void *vxpdb_get_handle(const struct opt *cf) {
     static const char *const ext[] = {".so", ".dll", "", NULL};
