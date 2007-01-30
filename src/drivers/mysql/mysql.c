@@ -971,7 +971,6 @@ static hmc_t *sql_usermask(hmc_t **s, const struct mysql_state *state,
 //-----------------------------------------------------------------------------
 static struct vxpdb_driver THIS_MODULE = {
     .name   = "MYSQL back-end module",
-    .author = "Jan Engelhardt <jengelh [at] gmx de>, 2005 - 2007",
 
     DRIVER_CB_BASE1(vmysql),
     .modctl = vmysql_modctl,

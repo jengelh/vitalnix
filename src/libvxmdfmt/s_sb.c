@@ -1,6 +1,7 @@
 /*=============================================================================
 Vitalnix User Management Suite
 libvxmdfmt/s_sb.c
+  by Christoph Thiel <cthiel1 [at] linux01 gwdg de>, 2002
   Copyright © Jan Engelhardt <jengelh [at] gmx de>, 2002 - 2007
   -- License restrictions apply (LGPL v2.1)
 
@@ -91,7 +92,6 @@ static void sb_file_footer(struct pwlfmt_workspace *state,
 static const struct pwlstyle_vtable THIS_STYLE = {
     .name             = "sb",
     .desc             = "per-user application/x-latex",
-    .author           = "Christoph Thiel <cthiel1 [at] linux01 gwdg de>, 2002",
     .require_template = 1,
 
     .init             = sb_construct,

@@ -33,7 +33,7 @@ struct pwlfmt_workspace;
 typedef void (printfunc_t)(struct pwlfmt_workspace *, const struct pwl_data *);
 
 struct pwlstyle_vtable {
-    const char *name, *desc, *author;
+    const char *name, *desc;
     int require_template;
     int (*init)(struct pwlfmt_workspace *);
     void (*exit)(struct pwlfmt_workspace *);

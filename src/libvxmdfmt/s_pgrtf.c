@@ -189,7 +189,6 @@ static hmc_t *utf8_to_rtfuni(const char *ip) {
 static const struct pwlstyle_vtable THIS_STYLE = {
     .name             = "pg_rtf",
     .desc             = "pvgrp-sorted text/rtf",
-    .author           = "Jan Engelhardt <jengelh [at] gmx de>, 2005 - 2006",
     .require_template = 1,
 
     .init             = pgrtf_construct,

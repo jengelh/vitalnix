@@ -110,9 +110,8 @@ static void backend_info(char *fn) {
 
     printf(
         "    Name       : %s\n"
-        "    Description: %s\n"
-        "    Author     : %s\n",
-        md->vtable->name, md->vtable->desc, md->vtable->author
+        "    Description: %s\n",
+        md->vtable->name, md->vtable->desc
     );
 
     if(OP_open) {

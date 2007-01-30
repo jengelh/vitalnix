@@ -102,7 +102,7 @@ struct vxpdb_state {
 };
 
 struct vxpdb_driver {
-    const char *name, *desc, *author;
+    const char *name, *desc;
 
     int (*init)(struct vxpdb_state *, const char *);
     int (*open)(struct vxpdb_state *, long);

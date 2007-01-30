@@ -147,7 +147,6 @@ static char *convert(iconv_t cd, char *in) {
 //-----------------------------------------------------------------------------
 static const struct edsformat_vtable THIS_FORMAT = {
     .desc   = "Kolleg SDF",
-    .author = "Jan Engelhardt <jengelh [at] gmx de>, 1999 - 2006",
     .ext    = "sdf",
     .open   = sdf_open,
     .read   = sdf_read,

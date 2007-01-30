@@ -66,7 +66,6 @@ static void pgtxt_tbl_footer(struct pwlfmt_workspace *state,
 static const struct pwlstyle_vtable THIS_STYLE = {
     .name       = "pg_txt",
     .desc       = "pvgrp-sorted text/plain",
-    .author     = "Jan Engelhardt <jengelh [at] gmx de>, 2000 - 2006",
 
     .tbl_header = pgtxt_tbl_header,
     .tbl_entry  = pgtxt_tbl_entry,

@@ -122,7 +122,6 @@ static inline char *xmlGetProp_2s(xmlNode *p, const char *v) {
 //-----------------------------------------------------------------------------
 static const struct edsformat_vtable THIS_FORMAT = {
     .desc   = "Vitalnix XML Input Format",
-    .author = "Jan Engelhardt <jengelh [at] gmx de>, 2003 - 2006",
     .ext    = "xml",
     .open   = xml_open,
     .read   = xml_read,

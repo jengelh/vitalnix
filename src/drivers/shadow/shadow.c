@@ -466,7 +466,6 @@ static void vshadow_grouptrav_free(struct vxpdb_state *vp, void *ptr) {
 static struct vxpdb_driver THIS_MODULE = {
     .name   = "vxShadow back-end module",
     .desc   = "for shadow suite (and vxshadow extension)",
-    .author = "Jan Engelhardt <jengelh [at] gmx de>, 2002 - 2007",
     DRIVER_CB_ALL(vshadow),
 };
 

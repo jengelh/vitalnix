@@ -58,7 +58,6 @@ static void a1_tbl_entry(struct pwlfmt_workspace *state,
 static const struct pwlstyle_vtable THIS_STYLE = {
     .name        = "a1",
     .desc        = "user-sorted text/plain",
-    .author      = "Jan Engelhardt <jengelh [at] gmx de>, 2000 - 2006",
 
     .file_header = a1_file_header,
     .tbl_entry   = a1_tbl_entry,

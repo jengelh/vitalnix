@@ -100,7 +100,6 @@ static void pghtml_file_footer(struct pwlfmt_workspace *state,
 static const struct pwlstyle_vtable THIS_STYLE = {
     .name        = "pg_html",
     .desc        = "pvgrp-sorted text/html",
-    .author      = "Jan Engelhardt <jengelh [at] gmx de>, 2005 - 2006",
 
     .file_header = pghtml_file_header,
     .tbl_header  = pghtml_tbl_header,
