@@ -26,9 +26,11 @@ clutils/groupdel.c - Delete a group
 #include <stdlib.h>
 #include <string.h>
 #include <libHX.h>
+#include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxpdb/xafunc.h>
+#include <vitalnix/libvxpdb/xwfunc.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
 enum {
@@ -41,84 +43,85 @@ enum {
     E_PRIMARY,    // will not delete a user's primary group, unless -F is given
 };
 
-static struct {
-    char *gname;
-    // groupdel internal
-    char *ac_after, *ac_before;
-    int force;
-} Opt = {};
-
 // Functions
+static int groupdel_main2(struct vxpdb_state *);
+static int groupdel_main3(struct vxpdb_state *);
 static int groupdel_check_pri_group(struct vxpdb_state *, struct vxpdb_group *);
 static int groupdel_get_options(int *, const char ***);
 static int groupdel_read_config(void);
 
 // Variables
-static char *Module_path = "*";
+static int force_deletion = 0;
+static const char *action_before = NULL, *action_after = NULL,
+    *driver_name = "*", *group_name;
 
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv) {
     struct vxpdb_state *db;
-    struct vxpdb_group mmask = {};
-    int ret, rv = E_SUCCESS;
-    struct HXoption ext_catalog[] = {
-        {.sh = 'G', .type = HXTYPE_STRING, .ptr = &mmask.gr_name},
-        HXOPT_TABLEEND,
-    };
+    int ret;
 
     if(groupdel_read_config() <= 0 || groupdel_get_options(&argc, &argv) <= 0)
         return E_OTHER;
 
-    // ----------------------------------------
-    if((db = vxpdb_load(Module_path)) == NULL) {
-        fprintf(stderr, "Could not load PDB back-end module \"%s\": %s\n",
-                Module_path, strerror(errno));
+    if((db = vxpdb_load(driver_name)) == NULL) {
+        fprintf(stderr, "Could not load PDB driver module \"%s\": %s\n",
+                driver_name, strerror(errno));
         return E_OPEN;
     }
 
+    ret = groupdel_main2(db);
+    vxpdb_unload(db);
+    return ret;
+}
+
+static int groupdel_main2(struct vxpdb_state *db)
+{
+    int ret;
     if((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0) {
         fprintf(stderr, "Could not open PDB back-end: %s\n", strerror(-ret));
-        rv = E_OPEN;
-        goto __main__close_pdb;
+        return E_OPEN;
     }
 
-    mmask.gr_gid  = PDB_NOGID;
-    mmask.gr_name = Opt.gname = argv[1];
-
-    // ----------------------------------------
-    if((ret = vxpdb_groupinfo(db, &mmask, NULL, 0)) < 0) {
-        fprintf(stderr, "Error querying the PDB: %s\n", strerror(-ret));
-        rv = E_OTHER;
-        goto __main__close_backend;
-    } else if(ret == 0) {
-        fprintf(stderr, "Group \"%s\" does not exist\n", mmask.gr_name);
-        rv = E_NOEXIST;
-        goto __main__close_backend;
-    }
-
-    if(!Opt.force && groupdel_check_pri_group(db, &mmask)) {
-        fprintf(stderr, "Will not remove a user's primary group\n");
-        rv = E_PRIMARY;
-        goto __main__close_backend;
-    }
-
-    // ----------------------------------------
-    if(Opt.ac_before != NULL)
-        vxutil_replace_run(Opt.ac_before, ext_catalog);
-
-    if((ret = vxpdb_groupdel(db, &mmask)) <= 0) {
-        fprintf(stderr, "Error: Deleting group failed: %s\n", strerror(-ret));
-        rv = E_UPDATE;
-    } else if(Opt.ac_after != NULL) {
-        vxutil_replace_run(Opt.ac_after, ext_catalog);
-    }
-
-    // ----------------------------------------
- __main__close_backend:
+    ret = groupdel_main3(db);
     vxpdb_close(db);
- __main__close_pdb:
-    vxpdb_unload(db);
-    return rv;
+    return ret;
+}
+
+static int groupdel_main3(struct vxpdb_state *db)
+{
+    struct vxpdb_group group_info;
+    struct HXoption ext_catalog[] = {
+        {.sh = 'G', .type = HXTYPE_STRING, .ptr = &group_name},
+        HXOPT_TABLEEND,
+    };
+    int ret;
+
+    if((ret = vxpdb_getgrnam(db, group_name, &group_info)) < 0) {
+        fprintf(stderr, "Error querying the PDB: %s\n", strerror(-ret));
+        return E_OTHER;
+    } else if(ret == 0) {
+        fprintf(stderr, "Group \"%s\" does not exist\n", group_name);
+        return E_NOEXIST;
+    }
+
+    if(!force_deletion && groupdel_check_pri_group(db, &group_info)) {
+        fprintf(stderr, "Will not remove a user's primary group\n");
+        return E_PRIMARY;
+    }
+
+    if(action_before != NULL)
+        vxutil_replace_run(action_before, ext_catalog);
+
+    group_info.gr_name = static_cast(char *, group_name);
+    group_info.gr_gid  = PDB_NOGID;
+    if((ret = vxpdb_groupdel(db, &group_info)) <= 0) {
+        fprintf(stderr, "Error: Deleting group failed: %s\n", strerror(-ret));
+        return E_UPDATE;
+    } else if(action_after != NULL) {
+        vxutil_replace_run(action_after, ext_catalog);
+    }
+
+    return E_SUCCESS;
 }
 
 //-----------------------------------------------------------------------------
@@ -147,13 +150,13 @@ static int groupdel_check_pri_group(struct vxpdb_state *db,
 static int groupdel_get_options(int *argc, const char ***argv) {
     static const struct HXoption options_table[] = {
         // New, Vitalnix-userdel options
-        {.sh = 'A', .type = HXTYPE_STRING | HXOPT_OPTIONAL, .ptr = &Opt.ac_after,
+        {.sh = 'A', .type = HXTYPE_STRING | HXOPT_OPTIONAL, .ptr = &action_after,
          .help = "Program to run after group deletion", .htyp = "cmd"},
-        {.sh = 'B', .type = HXTYPE_STRING | HXOPT_OPTIONAL, .ptr = &Opt.ac_before,
+        {.sh = 'B', .type = HXTYPE_STRING | HXOPT_OPTIONAL, .ptr = &action_before,
          .help = "Program to run before group deletion", .htyp = "cmd"},
-        {.sh = 'F', .type = HXTYPE_NONE, .ptr = &Opt.force,
+        {.sh = 'F', .type = HXTYPE_NONE, .ptr = &force_deletion,
          .help = "Force deletion of group even if users have it as primary group"},
-        {.sh = 'M', .type = HXTYPE_STRING, .ptr = &Module_path,
+        {.sh = 'M', .type = HXTYPE_STRING, .ptr = &driver_name,
          .help = "Use a different module than \"*\" (the default)", .htyp = "name"},
         HXOPT_AUTOHELP,
         HXOPT_TABLEEND,
@@ -161,9 +164,7 @@ static int groupdel_get_options(int *argc, const char ***argv) {
 
     if(HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) <= 0)
         return 0;
-
-    if(argv[1] == NULL) {
-        // Group name is mandatory
+    if(argv[1] == NULL) { /* Group name is mandatory */
         fprintf(stderr, "You need to specify a group name.\n");
         return 0;
     }
@@ -173,8 +174,8 @@ static int groupdel_get_options(int *argc, const char ***argv) {
 
 static int groupdel_read_config(void) {
     static const struct HXoption config_table[] = {
-        {.ln = "GROUP_PREDEL", .type = HXTYPE_STRING, .ptr = &Opt.ac_before},
-        {.ln = "GROUP_PREDEL", .type = HXTYPE_STRING, .ptr = &Opt.ac_after},
+        {.ln = "GROUP_PREDEL", .type = HXTYPE_STRING, .ptr = &action_before},
+        {.ln = "GROUP_PREDEL", .type = HXTYPE_STRING, .ptr = &action_after},
         HXOPT_TABLEEND,
     };
     return HX_shconfig(CONFIG_SYSCONFDIR "/groupdel.conf", config_table);

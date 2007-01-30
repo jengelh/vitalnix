@@ -26,9 +26,11 @@ clutils/groupmod.c - Modify a group
 #include <stdlib.h>
 #include <string.h>
 #include <libHX.h>
+#include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxpdb/xafunc.h>
+#include <vitalnix/libvxpdb/xwfunc.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
 enum {
@@ -42,133 +44,125 @@ enum {
     E_CLOSE,       // db->close() did not return ok
 };
 
-static struct {
-    char *gname, *new_gname;
-    long new_gid;
-
-    // groupmod internal
-    char *ac_after, *ac_before;
-    int dup, inter;
-} Opt = {
-    .new_gid   = PDB_NOGID,
-};
-
 // Functions
+static int groupmod_main2(struct vxpdb_state *);
+static int groupmod_main3(struct vxpdb_state *);
 static int groupmod_get_options(int *, const char ***);
 static int groupmod_read_config(void);
 
 // Variables
-static char *Module_path = "*";
+static int allow_dup              = 0;
+static const char *new_group_name = NULL;
+static long new_group_id          = PDB_NOGID;
+static const char *action_before  = NULL,
+                  *action_after   = NULL,
+                  *driver_name    = "*",
+                  *group_name;
 
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv) {
     struct vxpdb_state *db;
-    struct vxpdb_group mmask = {}, smask = {}, result = {};
-    int ret, rv = E_SUCCESS;
-    struct HXoption ext_catalog[] = {
-        {.sh = 'G', .type = HXTYPE_STRING, .ptr = &mmask.gr_name},
-        {.sh = 'g', .type = HXTYPE_LONG,   .ptr = &mmask.gr_gid},
-        HXOPT_TABLEEND,
-    };
+    int ret;
 
     if(groupmod_read_config() <= 0 || groupmod_get_options(&argc, &argv) <= 0)
         return E_OTHER;
 
-    // ----------------------------------------
-    if((db = vxpdb_load(Module_path)) == NULL) {
+    if((db = vxpdb_load(driver_name)) == NULL) {
         fprintf(stderr, "Could not load PDB back-end module \"%s\": %s\n",
-                Module_path, strerror(errno));
+                driver_name, strerror(errno));
         return E_OPEN;
     }
 
+    ret = groupmod_main2(db);
+    vxpdb_unload(db);
+    return ret;
+}
+
+static int groupmod_main2(struct vxpdb_state *db)
+{
+    int ret;
     if((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0) {
         fprintf(stderr, "Could not open PDB back-end: %s\n", strerror(-ret));
-        rv = E_OPEN;
-        goto __main__close_pdb;
+        return E_OPEN;
     }
 
-    // ----------------------------------------
-    smask.gr_name = Opt.gname = argv[1];
-    smask.gr_gid  = PDB_NOGID;
-    mmask.gr_gid  = PDB_NOGID;
-
-    if((ret = vxpdb_groupinfo(db, &smask, &result, 1)) < 0) {
-        fprintf(stderr, "Error querying the PDB: %s\n", strerror(-ret));
-        rv = E_OTHER;
-        goto __main__close_backend;
-    } else if(ret == 0) {
-        fprintf(stderr, "Group \"%s\" does not exist\n", smask.gr_name);
-        rv = E_NOEXIST;
-        goto __main__close_backend;
-    }
-
-    // ----------------------------------------
-    if(mmask.gr_gid != PDB_NOGID && mmask.gr_gid != result.gr_gid && !Opt.dup) {
-        // If GID has changed...
-        struct vxpdb_group qgrp = {.gr_gid = mmask.gr_gid, .gr_name = NULL};
-        if(vxpdb_groupinfo(db, &qgrp, NULL, 0) > 0) {
-            fprintf(stderr, "A group with GID %ld already exists."
-             " Use -o to override.\n", mmask.gr_gid);
-            rv = E_GID_USED;
-            goto __main__close_backend;
-        }
-    }
-
-    if(mmask.gr_name != NULL && result.gr_name != NULL &&
-     strcmp(mmask.gr_name, result.gr_name) != 0) {
-        // ... if name changed
-        struct vxpdb_group qgrp = {
-            .gr_gid  = PDB_NOGID,
-            .gr_name = mmask.gr_name,
-        };
-        if(vxpdb_groupinfo(db, &qgrp, NULL, 0) > 0) {
-            fprintf(stderr, "A group with that name (\"%s\") already "
-                    "exists.\n", mmask.gr_name);
-            rv = E_NAME_USED;
-            goto __main__close_backend;
-        }
-    }
-
-    // ----------------------------------------
-    if(Opt.ac_before != NULL)
-        vxutil_replace_run(Opt.ac_before, ext_catalog);
-
-    if((ret = vxpdb_groupmod(db, &smask, &mmask)) <= 0) {
-        fprintf(stderr, "Error: Group updating failed: %s\n", strerror(-ret));
-        rv = E_UPDATE;
-    } else if(Opt.ac_after != NULL) {
-        vxutil_replace_run(Opt.ac_after, ext_catalog);
-    }
-
-    // ----------------------------------------
- __main__close_backend:
+    ret = groupmod_main3(db);
     vxpdb_close(db);
- __main__close_pdb:
-    vxpdb_unload(db);
-    return rv;
+    return ret;
+}
+
+static int groupmod_main3(struct vxpdb_state *db)
+{
+    struct vxpdb_group current = {}, mod_request;
+    struct HXoption ext_catalog[] = {
+        {.sh = 'G', .type = HXTYPE_STRING, .ptr = &new_group_name},
+        {.sh = 'N', .type = HXTYPE_STRING, .ptr = &group_name},
+        {.sh = 'g', .type = HXTYPE_LONG,   .ptr = &new_group_id},
+        HXOPT_TABLEEND,
+    };
+    int ret;
+
+    if((ret = vxpdb_getgrnam(db, group_name, &current)) < 0) {
+        fprintf(stderr, "Error querying the PDB: %s\n", strerror(-ret));
+        return E_OTHER;
+    } else if(ret == 0) {
+        fprintf(stderr, "Group \"%s\" does not exist\n", group_name);
+        return E_NOEXIST;
+    }
+
+    if(new_group_id != PDB_NOGID && new_group_id != current.gr_gid &&
+      !allow_dup && vxpdb_getgrgid(db, new_group_id, NULL) > 0)
+    {
+        /* If GID has changed */
+        fprintf(stderr, "A group with GID %ld already exists."
+                " Use -o to override.\n", new_group_id);
+        return E_GID_USED;
+    }
+
+    if(new_group_name != NULL && strcmp(current.gr_name,
+      current.gr_name) != 0 && vxpdb_getgrnam(db, new_group_name, NULL) > 0)
+    {
+        /* If name has changed */
+        fprintf(stderr, "A group with that name (\"%s\") already "
+                "exists.\n", new_group_name);
+        return E_NAME_USED;
+    }
+
+    if(action_before != NULL)
+        vxutil_replace_run(action_before, ext_catalog);
+
+    mod_request.gr_name = static_cast(char *, new_group_name);
+    mod_request.gr_gid  = new_group_id;
+
+    if((ret = vxpdb_groupmod(db, &current, &mod_request)) <= 0) {
+        fprintf(stderr, "Error: Group updating failed: %s\n", strerror(-ret));
+        return E_UPDATE;
+    } else if(action_after != NULL) {
+        vxutil_replace_run(action_after, ext_catalog);
+    }
+
+    return E_SUCCESS;
 }
 
 //-----------------------------------------------------------------------------
 static int groupmod_get_options(int *argc, const char ***argv) {
     static const struct HXoption options_table[] = {
         // New, Vitalnix-groupmod options
-        {.sh = 'A', .type = HXTYPE_STRING | HXOPT_OPTIONAL, .ptr = &Opt.ac_after,
+        {.sh = 'A', .type = HXTYPE_STRING | HXOPT_OPTIONAL, .ptr = &action_after,
          .help = "Program to run after group modification", .htyp = "cmd"},
-        {.sh = 'B', .type = HXTYPE_STRING | HXOPT_OPTIONAL, .ptr = &Opt.ac_before,
+        {.sh = 'B', .type = HXTYPE_STRING | HXOPT_OPTIONAL, .ptr = &action_before,
          .help = "Program to run before group modification", .htyp = "cmd"},
-        {.sh = 'I', .type = HXTYPE_NONE, .ptr = &Opt.inter,
-         .help = "Interactively prompt for parameters"},
-        {.sh = 'M', .type = HXTYPE_STRING, .ptr = &Module_path,
+        {.sh = 'M', .type = HXTYPE_STRING, .ptr = &driver_name,
          .help = "Use a different module than \"*\" (the default)",
          .htyp = "name"},
 
         // Default options
-        {.sh = 'g', .type = HXTYPE_LONG, .ptr = &Opt.new_gid,
+        {.sh = 'g', .type = HXTYPE_LONG, .ptr = &new_group_id,
          .help = "Numerical value of the group's ID (UDB module might ignore this)",
          .htyp = "gid"},
-        {.sh = 'n', .type = HXTYPE_STRING, .ptr = &Opt.new_gname,
+        {.sh = 'n', .type = HXTYPE_STRING, .ptr = &new_group_name,
          .help = "New name of the group"},
-        {.sh = 'o', .type = HXTYPE_NONE, .ptr = &Opt.dup,
+        {.sh = 'o', .type = HXTYPE_NONE, .ptr = &allow_dup,
          .help = "Allow creating a group with non-unique GID"
          " (might be disabled by back-end module)"},
 
@@ -178,9 +172,7 @@ static int groupmod_get_options(int *argc, const char ***argv) {
 
     if(HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) <= 0)
         return 0;
-
-    if(argv[1] == NULL) {
-        // Group name is mandatory
+    if(argv[1] == NULL) { /* Group name is mandatory */
         fprintf(stderr, "You need to specify a group name\n");
         return 0;
     }
@@ -190,8 +182,8 @@ static int groupmod_get_options(int *argc, const char ***argv) {
 
 static int groupmod_read_config(void) {
     static const struct HXoption config_table[] = {
-        {.ln = "AC_BEFORE", .type = HXTYPE_STRING, .ptr = &Opt.ac_before},
-        {.ln = "AC_AFTER",  .type = HXTYPE_STRING, .ptr = &Opt.ac_after},
+        {.ln = "AC_BEFORE", .type = HXTYPE_STRING, .ptr = &action_before},
+        {.ln = "AC_AFTER",  .type = HXTYPE_STRING, .ptr = &action_after},
         HXOPT_TABLEEND,
     };
     return HX_shconfig(CONFIG_SYSCONFDIR "/groupmod.conf", config_table);
