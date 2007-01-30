@@ -36,7 +36,7 @@ clutils/groupdel.c - Delete a group
 enum {
     E_SUCCESS = 0,
     E_OTHER,      // other error, see errno
-    E_OPEN,       // unable to open back-end module or DB
+    E_OPEN,       // unable to open database or driver
     E_NOEXIST,    // group does not exist
     E_UPDATE,     // db->groupdel() did not return ok
     E_CLOSE,      // db->close() did not return ok
@@ -53,7 +53,7 @@ static int groupdel_read_config(void);
 // Variables
 static int force_deletion = 0;
 static const char *action_before = NULL, *action_after = NULL,
-    *driver_name = "*", *group_name;
+    *database_name = "*", *group_name;
 
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv) {
@@ -63,9 +63,9 @@ int main(int argc, const char **argv) {
     if(groupdel_read_config() <= 0 || groupdel_get_options(&argc, &argv) <= 0)
         return E_OTHER;
 
-    if((db = vxpdb_load(driver_name)) == NULL) {
-        fprintf(stderr, "Could not load PDB driver module \"%s\": %s\n",
-                driver_name, strerror(errno));
+    if((db = vxpdb_load(database_name)) == NULL) {
+        fprintf(stderr, "Could not load database \"%s\": %s\n",
+                database_name, strerror(errno));
         return E_OPEN;
     }
 
@@ -78,7 +78,7 @@ static int groupdel_main2(struct vxpdb_state *db)
 {
     int ret;
     if((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0) {
-        fprintf(stderr, "Could not open PDB back-end: %s\n", strerror(-ret));
+        fprintf(stderr, "Could not open PDB: %s\n", strerror(-ret));
         return E_OPEN;
     }
 
@@ -156,8 +156,8 @@ static int groupdel_get_options(int *argc, const char ***argv) {
          .help = "Program to run before group deletion", .htyp = "cmd"},
         {.sh = 'F', .type = HXTYPE_NONE, .ptr = &force_deletion,
          .help = "Force deletion of group even if users have it as primary group"},
-        {.sh = 'M', .type = HXTYPE_STRING, .ptr = &driver_name,
-         .help = "Use a different module than \"*\" (the default)", .htyp = "name"},
+        {.sh = 'M', .type = HXTYPE_STRING, .ptr = &database_name,
+         .help = "Use specified database", .htyp = "name"},
         HXOPT_AUTOHELP,
         HXOPT_TABLEEND,
     };

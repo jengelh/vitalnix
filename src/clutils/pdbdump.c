@@ -395,7 +395,7 @@ static void d_shadow(struct vxpdb_state *db) {
 static int get_options(int *argc, const char ***argv) {
     struct HXoption options_table[] = {
         {.sh = 'M', .type = HXTYPE_STRING, .ptr = &Module,
-         .help = "Use specified PDB back-end", .htyp = "MODULE"},
+         .help = "Use specified database", .htyp = "name"},
         {.sh = 'V', .type = HXTYPE_NONE, .cb = show_version,
          .help = "Show version information"},
         {.sh = 't', .type = HXTYPE_STRING, .cb = getopt_t,

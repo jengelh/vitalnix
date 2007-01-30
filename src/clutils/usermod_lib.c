@@ -61,8 +61,7 @@ EXPORT_SYMBOL int usermod_get_options(int *argc, const char ***argv,
         {.sh = 'B', .type = HXTYPE_STRING | HXOPT_OPTIONAL, .ptr = &sp->ac_before,
          .help = "Program to run before user modification", .htyp = "cmd"},
         {.sh = 'M', .type = HXTYPE_STRING, .ptr = &sp->db_module,
-         .help = "Use a different module than \"*\" (the default)",
-         .htyp = "name"},
+         .help = "Use specified database", .htyp = "name"},
 
         // Default options
         {.sh = 'G', .type = HXTYPE_STRING, .ptr = &nu->pw_sgrp,

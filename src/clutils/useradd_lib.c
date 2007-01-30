@@ -99,7 +99,7 @@ EXPORT_SYMBOL int useradd_get_options(int *argc, const char ***argv,
         {.sh = 'F', .type = HXTYPE_NONE, .ptr = &state->force,
          .help = "Force usage of dangerous umask"},
         {.sh = 'M', .type = HXTYPE_STRING, .ptr = &state->db_module,
-         .help = "Use a different module than \"*\" (the default)", .htyp = "name"},
+         .help = "Use specified database", .htyp = "name"},
         {.sh = 'S', .type = HXTYPE_INT, .ptr = &state->split_lvl,
          .help = "Use split home feature (specify split level)"},
 

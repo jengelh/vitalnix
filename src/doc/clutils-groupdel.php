@@ -8,7 +8,7 @@
 
 <p class="code"><tt><b>vxgroupdel</b> <b>[</b>-A
 <b>[</b><i>command</i><b>]]</b> <b>[</b>-B <b>[</b><i>command</i><b>]]</b>
-<b>[</b>-F<b>]</b> <b>[</b>-M <i>backend</i><b>]</b> <i>group</i></tt></p>
+<b>[</b>-F<b>]</b> <b>[</b>-M <i>database</i><b>]</b> <i>group</i></tt></p>
 
 <h1>Options</h1>
 
@@ -33,13 +33,9 @@
       group.</td>
   </tr>
   <tr>
-    <td class="t2">-I</td>
-    <td class="t2">Interactively prompt for the new group's parameters</td>
-  </tr>
-  <tr>
-    <td class="t1">-M <i>backend</i></td>
-    <td class="t1">Uses the specified backend rather than the default one
-      listed in the ACCDB configuration file</td>
+    <td class="t2">-M <i>database</i></td>
+    <td class="t2">Uses the specified database rather than the default one
+      listed in the VXPDB configuration file</td>
   </tr>
 </table>
 </div>

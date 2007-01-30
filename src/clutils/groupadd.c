@@ -36,7 +36,7 @@ clutils/groupadd.c - Create a new group
 enum {
     E_SUCCESS = 0,
     E_OTHER,       // other error, see errno
-    E_OPEN,        // unable to open back-end driver module or DB
+    E_OPEN,        // unable to open module database or driver
     E_GID_USED,    // GID already used and -o was not specified
     E_NAME_USED,   // group already exists
     E_UPDATE,      // db->groupadd() did not return ok
@@ -54,7 +54,7 @@ static long group_id   = PDB_NOGID;
 static int allow_dup   = 0;
 static int request_sys = 0;
 static const char *action_before = NULL, *action_after = NULL,
-    *driver_name = "*", *group_name;
+    *database_name = "*", *group_name;
 
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv) {
@@ -64,9 +64,9 @@ int main(int argc, const char **argv) {
     if(groupadd_read_config() <= 0 || groupadd_get_options(&argc, &argv) <= 0)
         return E_OTHER;
 
-    if((db = vxpdb_load(driver_name)) == NULL) {
-        fprintf(stderr, "Could not load PDB driver module \"%s\": %s\n",
-                driver_name, strerror(errno));
+    if((db = vxpdb_load(database_name)) == NULL) {
+        fprintf(stderr, "Could not load database \"%s\": %s\n",
+                database_name, strerror(errno));
         return E_OPEN;
     }
 
@@ -80,7 +80,7 @@ static int groupadd_main2(struct vxpdb_state *db)
 {
     int ret;
     if((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0) {
-        fprintf(stderr, "Could not open PDB back-end: %s\n", strerror(-ret));
+        fprintf(stderr, "Could not open PDB: %s\n", strerror(-ret));
         return E_OPEN;
     }
 
@@ -144,9 +144,8 @@ static int groupadd_get_options(int *argc, const char ***argv) {
          .help = "Program to run after group addition", .htyp = "cmd"},
         {.sh = 'B', .type = HXTYPE_STRING | HXOPT_OPTIONAL, .ptr = &action_before,
          .help = "Program to run before group addition", .htyp = "cmd"},
-        {.sh = 'M', .type = HXTYPE_STRING, .ptr = &driver_name,
-         .help = "Use a different driver module than \"*\" (the default)",
-         .htyp = "name"},
+        {.sh = 'M', .type = HXTYPE_STRING, .ptr = &database_name,
+         .help = "Use specified database", .htyp = "name"},
 
         // Default options
         {.sh = 'g', .type = HXTYPE_LONG, .ptr = &group_id,

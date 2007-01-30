@@ -65,7 +65,7 @@ h2 {
     margin-bottom: 0px;
 }
 p, td, li {
-    font-family: "Tahoma", "Verdana", sans-serif, "Helvetica", "Arial";
+    font-family: "Times New Roman", "Times", sans-serif;
 }
 p {
     margin-top: 4pt;

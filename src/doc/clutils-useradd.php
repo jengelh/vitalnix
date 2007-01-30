@@ -7,10 +7,10 @@
 <h1>Usage</h1>
 
 <p class="code"><tt><b>vxuseradd</b> <b>[</b>-A <b>[</b><i>command</i><b>]]</b>
-<b>[</b>-B <b>[</b><i>command</i><b>]]</b> <b>[</b>-I<b>]</b> <b>[</b>-M
-<i>backend</i><b>]</b> <b>[</b>-S<b>]</b> <b>[</b>-G
-<i>group</i><b>[</b>,<b>...]]</b> <b>[</b>-c <i>comment</i><b>]</b> <b>[</b>-d
-<i>home_dir</i><b>]</b> <b>[</b>-e <i>date</i><b>]</b> <b>[</b>-f
+<b>[</b>-B <b>[</b><i>command</i><b>]]</b> <b>[</b>-G
+<i>group</i><b>[</b>,<b>...]]</b> <b>[</b>-I<b>]</b> <b>[</b>-M
+<i>database</i><b>]</b> <b>[</b>-S<b>]</b> <b>[</b>-c <i>comment</i><b>]</b>
+<b>[</b>-d <i>home_dir</i><b>]</b> <b>[</b>-e <i>date</i><b>]</b> <b>[</b>-f
 <i>days</i><b>]</b> <b>[</b>-g <i>group</i><b>]</b> <b>[</b>-m <b>[</b>-k
 <i>skel_dir</i><b>]]</b> <b>[</b>-p <i>passwd</i><b>]</b> <b>[</b>-s
 <i>shell</i><b>]</b> <b>[</b>-u <i>uid</i> <b>[</b>-o<b>]|</b>-r<b>]</b>
@@ -33,28 +33,28 @@
       is not run.</td>
   </tr>
   <tr>
-    <td class="t1">-I</td>
-    <td class="t1">Interactively prompt for the new user's parameters</td>
+    <td class="t1">-G <i>group</i><b>[</b>,<b>...]</b></td>
+    <td class="t1">The supplemental (secondary) groups the user is a member in,
+      separated by comma. <tt>group</tt> can either be the group's name or its
+      GID. <b><i>(UNSUPPORTED)</i></b></td>
   </tr>
   <tr>
-    <td class="t2">-M <i>backend</i></td>
-    <td class="t2">Uses the specified backend rather than the default one
-      listed in the ACCDB configuration file</td>
+    <td class="t2">-I</td>
+    <td class="t2">Interactively prompt for the new user's parameters</td>
   </tr>
   <tr>
-    <td class="t1">-S</td>
-    <td class="t1">Uses the "split home" feature. This will create the home
+    <td class="t1">-M <i>database</i></td>
+    <td class="t1">Uses the specified database rather than the default one
+      listed in the VXPDB configuration file</td>
+  </tr>
+  <tr>
+    <td class="t2">-S</td>
+    <td class="t2">Uses the "split home" feature. This will create the home
       directory as <tt>/home/u/username</tt> rather than the default
       <tt>/home/username</tt>. Specifying <tt>-S</tt> twice (which is the
       maximum) will result in a two-level split, i.e.
       <tt>/home/u/us/username</tt>.  The <tt>-d</tt> option overrides this
       one.</td>
-  </tr>
-  <tr>
-    <td class="t2">-G <i>group</i><b>[</b>,<b>...]</b></td>
-    <td class="t2">The supplemental (secondary) groups the user is a member in,
-      separated by comma. <tt>group</tt> can either be the group's name or its
-      GID. <b><i>(UNSUPPORTED)</i></b></td>
   </tr>
   <tr>
     <td class="t1">-c <i>comment</i></td>
@@ -142,8 +142,8 @@ parameters.</p>
 <p class="block">In interactive mode, each specified option is printed with a
 default value in square brackets. If an empty string is entered, the default
 value is taken. The <tt>-A</tt>, <tt>-B</tt>, <tt>-I</tt>, <tt>-M</tt> and
-<tt>-S</tt> options are unique to Vitalnix. Shadow's <tt>-D</tt> option is not
-provided. The configuration file for <tt>useradd</tt> is
+<tt>-S</tt> options are unique to Vitalnix. Shadow's <tt>-D</tt> option (LDAP
+binddn) is not provided. The configuration file for <tt>useradd</tt> is
 <tt>/etc/vitalnix/useradd.conf</tt>.</p>
 
 <?php include_once("Base-footer.php"); ?>

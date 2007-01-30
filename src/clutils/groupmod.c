@@ -36,7 +36,7 @@ clutils/groupmod.c - Modify a group
 enum {
     E_SUCCESS = 0,
     E_OTHER,       // other error, see errno
-    E_OPEN,        // unable to open back-end module or DB
+    E_OPEN,        // unable to open database or driver
     E_NOEXIST,     // group does not exist
     E_GID_USED,    // GID already used and -o was not specified
     E_NAME_USED,   // new group name (-n) already exists
@@ -56,7 +56,7 @@ static const char *new_group_name = NULL;
 static long new_group_id          = PDB_NOGID;
 static const char *action_before  = NULL,
                   *action_after   = NULL,
-                  *driver_name    = "*",
+                  *database_name  = "*",
                   *group_name;
 
 //-----------------------------------------------------------------------------
@@ -67,9 +67,9 @@ int main(int argc, const char **argv) {
     if(groupmod_read_config() <= 0 || groupmod_get_options(&argc, &argv) <= 0)
         return E_OTHER;
 
-    if((db = vxpdb_load(driver_name)) == NULL) {
-        fprintf(stderr, "Could not load PDB back-end module \"%s\": %s\n",
-                driver_name, strerror(errno));
+    if((db = vxpdb_load(database_name)) == NULL) {
+        fprintf(stderr, "Could not load database \"%s\": %s\n",
+                database_name, strerror(errno));
         return E_OPEN;
     }
 
@@ -82,7 +82,7 @@ static int groupmod_main2(struct vxpdb_state *db)
 {
     int ret;
     if((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0) {
-        fprintf(stderr, "Could not open PDB back-end: %s\n", strerror(-ret));
+        fprintf(stderr, "Could not open PDB: %s\n", strerror(-ret));
         return E_OPEN;
     }
 
@@ -152,9 +152,8 @@ static int groupmod_get_options(int *argc, const char ***argv) {
          .help = "Program to run after group modification", .htyp = "cmd"},
         {.sh = 'B', .type = HXTYPE_STRING | HXOPT_OPTIONAL, .ptr = &action_before,
          .help = "Program to run before group modification", .htyp = "cmd"},
-        {.sh = 'M', .type = HXTYPE_STRING, .ptr = &driver_name,
-         .help = "Use a different module than \"*\" (the default)",
-         .htyp = "name"},
+        {.sh = 'M', .type = HXTYPE_STRING, .ptr = &database_name,
+         .help = "Use specified database", .htyp = "name"},
 
         // Default options
         {.sh = 'g', .type = HXTYPE_LONG, .ptr = &new_group_id,
@@ -164,7 +163,7 @@ static int groupmod_get_options(int *argc, const char ***argv) {
          .help = "New name of the group"},
         {.sh = 'o', .type = HXTYPE_NONE, .ptr = &allow_dup,
          .help = "Allow creating a group with non-unique GID"
-         " (might be disabled by back-end module)"},
+         " (might be disabled by the db driver)"},
 
         HXOPT_AUTOHELP,
         HXOPT_TABLEEND,

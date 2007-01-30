@@ -19,16 +19,16 @@
     padding-bottom: 1cm;
 }
 .titleN {
-    font: italic 32pt "Times New Roman", "Times", "Serif";
+    font: italic 32pt "Times New Roman", "Times", serif;
 }
 .titleS {
     font: 16pt "Arial", "Helvetica", "Tahoma", "Verdana", sans-serif;
 }
 .titleV {
-    font: italic 24pt "Times New Roman", "Times", "Serif";
+    font: bold italic 24pt "Times New Roman", "Times", serif;
 }
 .titleX {
-    font: bold italic 32pt "Times New Roman", "Times", "Serif";
+    font: bold italic 32pt "Times New Roman", "Times", serif;
 }
 a, a:visited {
     color: #0000FF;
@@ -56,7 +56,7 @@ h2 {
     margin-bottom: 0px;
 }
 p, td, li {
-    font-family: "Tahoma", "Verdana", sans-serif, "Helvetica", "Arial";
+    font-family: "Times New Roman", "Times", sans-serif;
 }
 p {
     margin-top: 4pt;

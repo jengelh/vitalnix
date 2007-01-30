@@ -7,13 +7,13 @@
 <h1>Usage</h1>
 
 <p class="code"><tt><b>vxusermod</b> <b>[</b>-A <b>[</b><i>command</i><b>]]</b>
-<b>[</b>-B <b>[</b><i>command</i><b>]]</b> <b>[</b>-M <i>backend</i><b>]</b>
-<b>[</b>-G <i>group</i>,<b>[...]]</b> <b>[</b>-L<b>]</b> <b>[</b>-U<b>]</b>
-<b>[</b>-c <i>comment</i><b>]</b> <b>[</b>-d <i>home_dir</i>
-<b>[</b>-m<b>]]</b> <b>[</b>-e <i>date</i><b>]</b> <b>[</b>-f
-<i>inactive_days</i><b>]</b> <b>[</b>-g <i>primary_group</i><b>]</b> <b>[</b>-l
-<i>login_name</i><b>]</b> <b>[</b>-p <i>passwd</i><b>]</b> <b>[</b>-s
-<i>shell</i><b>]</b> <b>[</b>-u <i>uid</i> <b>[</b>-o<b>]]</b>
+<b>[</b>-B <b>[</b><i>command</i><b>]]</b> <b>[</b>-G
+<i>group</i>,<b>[...]]</b> <b>[</b>-L<b>]</b> <b>[</b>-M
+<i>database</i><b>]</b> <b>[</b>-U<b>]</b> <b>[</b>-c <i>comment</i><b>]</b>
+<b>[</b>-d <i>home_dir</i> <b>[</b>-m<b>]]</b> <b>[</b>-e <i>date</i><b>]</b>
+<b>[</b>-f <i>inactive_days</i><b>]</b> <b>[</b>-g <i>primary_group</i><b>]</b>
+<b>[</b>-l <i>login_name</i><b>]</b> <b>[</b>-p <i>passwd</i><b>]</b>
+<b>[</b>-s <i>shell</i><b>]</b> <b>[</b>-u <i>uid</i> <b>[</b>-o<b>]]</b>
 <i>login</i></tt></p>
 
 <h1>Options</h1>
@@ -33,15 +33,6 @@
       is not run.</td>
   </tr>
   <tr>
-    <td class="t1">-I</td>
-    <td class="t1">Interactively prompt for the new parameters</td>
-  </tr>
-  <tr>
-    <td class="t2">-M <i>backend</i></td>
-    <td class="t2">Uses the specified backend rather than the default one
-      listed in the ACCDB configuration file</td>
-  </tr>
-  <tr>
     <td class="t1">-G <i>group</i><b>[</b>,<b>...]</b></td>
     <td class="t1">Changes the user's info about which supplemental (secondary)
       groups he belongs to. Note that this will cancel his membership in any of
@@ -50,9 +41,18 @@
       <tt>-G first,second</tt>. <b><i>(UNSUPPORTED)</i></b></td>
   </tr>
   <tr>
-    <td class="t2">-L</td>
-    <td class="t2">Lock the user's account (prohibit logins)
+    <td class="t2">-I</td>
+    <td class="t2">Interactively prompt for the new parameters</td>
+  </tr>
+  <tr>
+    <td class="t1">-L</td>
+    <td class="t1">Lock the user's account (prohibit logins)
       <b><i>(UNSUPPORTED)</i></b></td>
+  </tr>
+  <tr>
+    <td class="t2">-M <i>database</i></td>
+    <td class="t2">Uses the specified database rather than the default one
+      listed in the VXPDB configuration file</td>
   </tr>
   <tr>
     <td class="t1">-U</td>

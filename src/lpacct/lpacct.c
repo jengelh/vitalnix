@@ -108,10 +108,8 @@ static int lpacct_analyze_main(int argc, const char **argv)
 
     if(p->rasterize)
         fd = ghostscript_init(input_file, &pid, p);
-    else
-        if((fd = open(input_file, O_RDONLY)) < 0)
-            pr_exit(NULL, "Could not open %s: %s\n",
-                    input_file, strerror(errno));
+    else if((fd = open(input_file, O_RDONLY)) < 0)
+        pr_exit(NULL, "Could not open %s: %s\n", input_file, strerror(errno));
 
     ret = (mpxm_process(fd, p) > 0) ? EXIT_SUCCESS : EXIT_FAILURE;
     if(p->rasterize)
@@ -209,7 +207,7 @@ static int ghostscript_init(const char *input_file, pid_t *pid,
         close(output_pipe[0]);
         close(output_pipe[1]);
         // keep STDERR_FILENO -- user or cups pick it up
-        execvp(*argv, (char * const *)argv);
+        execvp(*argv, reinterpret_cast(char * const *, argv));
         pr_exit(__func__, "execvp() failed: %s\n", strerror(errno));
         exit(127);
     }

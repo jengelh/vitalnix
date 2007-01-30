@@ -32,7 +32,7 @@ clutils/pdbinfo.c
 #include <vitalnix/libvxutil/defines.h>
 
 // Functions
-static void backend_info(char *);
+static void driver_info(const char *);
 static void read_ldso_conf(void);
 static void read_ldso_conf1(const char *);
 static void read_environment(void);
@@ -60,7 +60,7 @@ int main(int argc, const char **argv) {
     if(!get_options(&argc, &argv))
         return EXIT_FAILURE;
 
-    backend_info("*");
+    driver_info("*");
 
     for(cd = Dirs->first; cd != NULL; cd = cd->Next) {
         struct HXdir *cdp;
@@ -75,7 +75,7 @@ int main(int argc, const char **argv) {
                 continue;
             snprintf(buf, sizeof(buf), "%s/%s",
                      static_cast(const char *, cd->ptr), dentry);
-            backend_info(buf);
+            driver_info(buf);
         }
 
         HXdir_close(cdp);
@@ -87,11 +87,16 @@ int main(int argc, const char **argv) {
     return EXIT_SUCCESS;
 }
 
-static void backend_info(char *fn) {
+/*  driver_info
+    @fn:        filename of the driver
+
+    Prints out info about the specified driver.
+*/
+static void driver_info(const char *fn) {
     struct vxpdb_state *md;
     char sepl = '<', sepr = '>';
 
-    if((md = vxpdb_load(fn)) == NULL && fn[0] == '*' && fn[1] == '\0')
+    if((md = vxpdb_load(fn)) == NULL && strcmp(fn, "*") == 0)
         return;
 
     printf(
@@ -124,6 +129,10 @@ static void backend_info(char *fn) {
     return;
 }
 
+/*  read_ldso_conf
+
+    Looks into /etc/ld.so.conf and /etc/ld.so.conf.d.
+*/
 static void read_ldso_conf(void) {
     char buf[MAXFNLEN], *dentry;
     void *dirp;
@@ -140,6 +149,11 @@ static void read_ldso_conf(void) {
     return;
 }
 
+/*  read_ldso_conf1
+    @file:      file to analyze
+
+    Reads @file and adds the search paths listed therein.
+*/
 static void read_ldso_conf1(const char *file) {
     hmc_t *ln = NULL;
     FILE *fp;
@@ -162,6 +176,10 @@ static void read_ldso_conf1(const char *file) {
     return;
 }
 
+/*  read_environment
+
+    Adds the search paths listed in LD_LIBRARY_PATH.
+*/
 static void read_environment(void) {
     char *entry, *our, *travp;
     if((entry = getenv("LD_LIBRARY_PATH")) == NULL)
@@ -181,7 +199,7 @@ static int get_options(int *argc, const char ***argv) {
         {.sh = 'L', .type = HXTYPE_STRDQ, .ptr = Dirs,
          .help = "Additional search directory", .htyp = "dir"},
         {.sh = 'O', .type = HXTYPE_NONE, .ptr = &OP_open,
-         .help = "Open the PDB back-end (pdb_open function)"},
+         .help = "Open the PDB database driver (vxpdb_open function)"},
         {.sh = 'V', .type = HXTYPE_NONE, .cb = show_version,
          .help = "Show version information"},
         HXOPT_AUTOHELP,

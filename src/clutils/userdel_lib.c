@@ -64,7 +64,7 @@ EXPORT_SYMBOL int userdel_get_options(int *argc, const char ***argv,
         {.sh = 'F', .type = HXTYPE_NONE, .ptr = &state->force,
          .help = "Force deletion even if UID is 0 or name is 'root'"},
         {.sh = 'M', .type = HXTYPE_STRING, .ptr = &state->db_module,
-         .help = "Use a different module than \"*\" (the default)", .htyp = "name"},
+         .help = "Use specified database", .htyp = "name"},
 
         // Default options
         {.sh = 'r', .type = HXTYPE_NONE, .ptr = &state->rm_home,
