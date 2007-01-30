@@ -262,11 +262,13 @@ static int modules_construct(struct multi_state *state) {
     wr->mh_name      = state->wrmod_str;
     wr->mh_state     = STATE_OUT;
     state->wrmod_str = NULL;
-    if((wr->mh_instance = vxpdb_load(wr->mh_name)) == NULL)
-        return 0;
-    wr->mh_state = STATE_LOADED;
+    if((wr->mh_instance = vxpdb_load(wr->mh_name)) == NULL) {
+        ret = 0;
+    } else {
+        wr->mh_state = STATE_LOADED;
+        ret = 1;
+    }
 
-    ret = 1;
  out:
     HX_zvecfree(rdmod_list);
     free(state->rdmod_str);
