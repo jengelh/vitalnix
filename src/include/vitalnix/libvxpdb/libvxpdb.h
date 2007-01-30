@@ -51,13 +51,11 @@ enum {
     PDB_DFL_KEEPMAX = 10000,
     PDB_DFL_WARNAGE = 21,
 
-    // Flags for pdb_open() and pdb_modctl(command=PDB_ADDFLAGS/PDB_DELFLAGS)
+    // Flags for pdb_open()
     PDB_SYNC   = 1 << 0,
     PDB_WRLOCK = 1 << 1,
 
     // pdb_modctl commands
-    PDB_ADDFLAGS = 0x1,
-    PDB_DELFLAGS,
     PDB_FLUSH,
     PDB_COUNT_USERS,
     PDB_COUNT_GROUPS,

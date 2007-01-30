@@ -326,8 +326,6 @@ some requests defined in <tt>libvxpdb.h</tt>.</p>
 <table>
   <tr>
     <td class="code"><tt>
-pdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_ADDFLAGS, <b>unsigned long</b> flagmask);<br />
-pdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_DELFLAGS, <b>unsigned long</b> flagmask);<br />
 pdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_FLUSH);<br />
 pdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_NEXTUID_SYS);<br />
 pdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_NEXTUID);<br />
@@ -339,15 +337,6 @@ pdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_NEXTGID);</tt></td>
 
 <div class="pleft">
 <table border="1" class="bordered">
-  <tr>
-    <td class="t1"><tt>ACCDB_ADDFLAGS</tt></td>
-    <td class="t1">The provided flags are added (binary OR) to the state's
-      flags.</td>
-  </tr>
-  <tr>
-    <td class="t2"><tt>ACCDB_DELFLAGS</tt></td>
-    <td class="t2">The provided flags are removed from the state's flags.</td>
-  </tr>
   <tr>
     <td class="t1"><tt>ACCDB_FLUSHDB</tt></td>
     <td class="t1">Causes any changes to be committed to the underlying
