@@ -432,6 +432,7 @@ static int vshadow_groupinfo(struct vxpdb_state *vp,
         } else {
             if(size == 0)
                 return 1;
+            ++found;
         }
     }
 
