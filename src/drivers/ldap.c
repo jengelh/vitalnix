@@ -137,7 +137,7 @@ static void vldap_grouptrav_free(struct vxpdb_state *vp, void *ptr) {
 }
 
 //-----------------------------------------------------------------------------
-static struct vxpdb_mvtable THIS_MODULE = {
+static struct vxpdb_driver THIS_MODULE = {
     .name   = "LDAP back-end module",
     .author = "Jan Engelhardt <jengelh [at] gmx de>, 2005 - 2006",
     DRIVER_CB_BASE1(vldap),

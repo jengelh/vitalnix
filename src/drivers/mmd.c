@@ -342,7 +342,7 @@ static void read_config(struct multi_state *state) {
 }
 
 //-----------------------------------------------------------------------------
-static struct vxpdb_mvtable THIS_MODULE = {
+static struct vxpdb_driver THIS_MODULE = {
     .name   = "Multiple Module driver",
     .author = "Jan Engelhardt <jengelh [at] gmx de>, 2006",
     DRIVER_CB_ALL(vmmd),

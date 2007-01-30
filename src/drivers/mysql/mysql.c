@@ -969,7 +969,7 @@ static hmc_t *sql_usermask(hmc_t **s, const struct mysql_state *state,
 #undef PUT_S
 
 //-----------------------------------------------------------------------------
-static struct vxpdb_mvtable THIS_MODULE = {
+static struct vxpdb_driver THIS_MODULE = {
     .name   = "MYSQL back-end module",
     .author = "Jan Engelhardt <jengelh [at] gmx de>, 2005 - 2006",
 

@@ -3,7 +3,7 @@
 <h1>Module definition</h1>
 
 <p class="block">Each module must define a structure <tt>struct
-vxpdb_mvtable</tt> in which they set the function pointers to the respective
+vxpdb_driver</tt> in which they set the function pointers to the respective
 functions. The module structure also includes space for name, author and
 description of the module for display with the <i>pdbinfo</i> utility. A
 reduced example definition could look like this:</p>
@@ -11,7 +11,7 @@ reduced example definition could look like this:</p>
 <p class="code"><tt><b>#</b>include "drivers/static-build.h"<br />
 <b>#</b>include &lt;vitalnix/libvxpdb/libvxpdb.h&gt;<br />
 <br />
-<b>static struct</b> vxpdb_mvtable THIS_MODULE <b>=</b> {<br />
+<b>static struct</b> vxpdb_driver THIS_MODULE <b>=</b> {<br />
 &nbsp; &nbsp; .name &nbsp; &nbsp; &nbsp;<b>=</b> "Our sample module",<br />
 &nbsp; &nbsp; .userinfo &nbsp;<b>=</b> our_userinfo,<br />
 &nbsp; &nbsp; .groupinfo <b>=</b> our_groupinfo,<br />

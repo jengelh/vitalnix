@@ -54,7 +54,7 @@ static void *vxpdb_get_handle(const struct opt *);
 EXPORT_SYMBOL struct vxpdb_state *vxpdb_load(const char *name)
 {
     struct vxpdb_state *new = NULL;
-    struct vxpdb_mvtable *vtable;
+    struct vxpdb_driver *vtable;
     struct opt cf = {};
     int ret;
 

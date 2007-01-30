@@ -382,7 +382,7 @@ static inline struct vxpdb_group *get_group(struct HXdeque *dq,
 }
 
 //-----------------------------------------------------------------------------
-static struct vxpdb_mvtable THIS_MODULE = {
+static struct vxpdb_driver THIS_MODULE = {
     .name           = "NSS back-end module (not MU/MT-safe)",
     .desc           = "API demonstration",
     .author         = "Jan Engelhardt <jengelh [at] gmx de>, 2005 - 2006",

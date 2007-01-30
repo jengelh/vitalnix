@@ -97,13 +97,13 @@ struct vxpdb_group {
     void *be_priv;
 };
 
-struct vxpdb_mvtable;
+struct vxpdb_driver;
 struct vxpdb_state {
     void *handle, *state;
-    const struct vxpdb_mvtable *vtable;
+    const struct vxpdb_driver *vtable;
 };
 
-struct vxpdb_mvtable {
+struct vxpdb_driver {
     const char *name, *desc, *author;
 
     int (*init)(struct vxpdb_state *, const char *);
@@ -154,7 +154,7 @@ extern void vxpdb_group_nomodify(struct vxpdb_group *);
 /*
  *      DUMMY.C
  */
-extern void vxpdb_fix_vtable(struct vxpdb_mvtable *);
+extern void vxpdb_fix_vtable(struct vxpdb_driver *);
 
 /*
  *      PDB.C

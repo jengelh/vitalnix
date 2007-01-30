@@ -6,8 +6,7 @@
 <br />
 <b>struct</b> vxpdb_user;<br />
 <b>struct</b> vxpdb_group;<br />
-<b>struct</b> vxpdb_state;<br />
-<b>struct</b> vxpdb_mvtable;</tt></p>
+<b>struct</b> vxpdb_state;</p>
 
 <h1>Function overview</h1>
 
