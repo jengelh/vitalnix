@@ -77,9 +77,9 @@ actions. The <tt>flags</tt> parameter is explained in
 
 <p class="code"><tt><b>void (*</b>close<b>)</b>(<b>struct</b> vxpdb_state <b>*</b>mip);</tt></p>
 
-<h2>-&gt;deinit</h2>
+<h2>-&gt;exit</h2>
 
-<p class="code"><tt><b>void (*</b>deinit<b>)</b>(<b>struct</b> vxpdb_state <b>*</b>mip);</tt></p>
+<p class="code"><tt><b>void (*</b>exit<b>)</b>(<b>struct</b> vxpdb_state <b>*</b>mip);</tt></p>
 
 <h2>-&gt;modctl</h2>
 
@@ -146,7 +146,7 @@ and set <tt>errno</tt> to signalize a hard error (i.e. <tt>ENOMEM</tt> due to
 session for the user database. Flush any data to disk if needed and free up all
 memory used for the session.</p>
 
-<p class="block"><tt>b_deinit()</tt> is the counterpart of <tt>b_init()</tt>
+<p class="block"><tt>exit()</tt> is the counterpart of <tt>b_init()</tt>
 and is called through <tt>accdb_unload()</tt>. This function also does not
 necessarily need to exist either.</p>
 

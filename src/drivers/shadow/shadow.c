@@ -98,7 +98,7 @@ static void vshadow_close(struct vxpdb_state *vp) {
     return;
 }
 
-static void vshadow_deinit(struct vxpdb_state *vp) {
+static void vshadow_exit(struct vxpdb_state *vp) {
     struct shadow_state *state = vp->state;
     read_config(state, CONFIG_FREE, NULL);
     free(state);

@@ -14,7 +14,7 @@ failure. The exact table is:</p>
   </tr>
   <tr>
     <td class="t2">-&gt;close()<br />
-      -&gt;deinit()</td>
+      -&gt;exit()</td>
     <td class="t2">void</td>
   </tr>
   <tr>

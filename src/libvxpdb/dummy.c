@@ -42,7 +42,7 @@ static void vdummy_vT(struct vxpdb_state *vp) {
     return;
 }
 ALIAS(vdummy_vT, vdummy_close);
-ALIAS(vdummy_vT, vdummy_deinit);
+ALIAS(vdummy_vT, vdummy_exit);
 
 static int vdummy_iT(struct vxpdb_state *vp) {
     return 1;
@@ -147,7 +147,7 @@ EXPORT_SYMBOL void vxpdb_fix_vtable(struct vxpdb_driver *m)
     SET(open);
     SET(close);
     SET(modctl);
-    SET(deinit);
+    SET(exit);
     SET(lock);
     SET(unlock);
 

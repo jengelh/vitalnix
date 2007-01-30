@@ -54,7 +54,7 @@ static void vldap_close(struct vxpdb_state *vp) {
     return;
 }
 
-static void vldap_deinit(struct vxpdb_state *vp) {
+static void vldap_exit(struct vxpdb_state *vp) {
     struct ldap_state *state = vp->state;
     free(state);
     return;

@@ -94,7 +94,7 @@ static void vmmd_close(struct vxpdb_state *vp) {
     return;
 }
 
-static void vmmd_deinit(struct vxpdb_state *vp) {
+static void vmmd_exit(struct vxpdb_state *vp) {
     struct multi_state *state = vp->state;
     modules_destruct(state);
     free(state);

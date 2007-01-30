@@ -101,8 +101,8 @@ EXPORT_SYMBOL struct vxpdb_state *vxpdb_load(const char *name)
 
 EXPORT_SYMBOL void vxpdb_unload(struct vxpdb_state *thx)
 {
-    if(thx->vtable->deinit != NULL)
-        thx->vtable->deinit(thx);
+    if(thx->vtable->exit != NULL)
+        thx->vtable->exit(thx);
     vxpdb_cleanup(thx, 0, NULL);
     return;
 }

@@ -160,7 +160,7 @@ static int vmysql_init(struct vxpdb_state *vp, const char *config_file) {
     return 1;
 }
 
-static void vmysql_deinit(struct vxpdb_state *vp) {
+static void vmysql_exit(struct vxpdb_state *vp) {
     struct mysql_state *state = vp->state;
     read_config(state, CONFIG_FREE, NULL);
     free(state);

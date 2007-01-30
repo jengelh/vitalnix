@@ -91,7 +91,7 @@ static void vnss_close(struct vxpdb_state *vp) {
     return;
 }
 
-static void vnss_deinit(struct vxpdb_state *vp) {
+static void vnss_exit(struct vxpdb_state *vp) {
     free(vp->state);
     return;
 }

@@ -38,7 +38,7 @@ extern "C" {
         .init           = name##_init, \
         .open           = name##_open, \
         .close          = name##_close, \
-        .deinit         = name##_deinit
+        .exit           = name##_exit
 #    define DRIVER_CB_BASE(name) \
         DRIVER_CB_BASE1(name), \
         .modctl         = name##_modctl, \
