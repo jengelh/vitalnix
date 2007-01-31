@@ -1,0 +1,13 @@
+Index: samba-3.0.23d/source/printing/printing.c
+===================================================================
+--- samba-3.0.23d.orig/source/printing/printing.c
++++ samba-3.0.23d/source/printing/printing.c
+@@ -2385,7 +2385,7 @@ uint32 print_job_start(struct current_us
+ 	fstrcpy(pjob.jobname, jobname);
+ 
+ 	if ((vuser = get_valid_user_struct(user->vuid)) != NULL) {
+-		fstrcpy(pjob.user, vuser->user.smb_name);
++		fstrcpy(pjob.user, vuser->user.unix_name);
+ 	} else {
+ 		fstrcpy(pjob.user, uidtoname(user->ut.uid));
+ 	}
