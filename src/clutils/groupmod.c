@@ -67,6 +67,11 @@ int main(int argc, const char **argv) {
     if(groupmod_read_config() <= 0 || groupmod_get_options(&argc, &argv) <= 0)
         return E_OTHER;
 
+    if(new_group_name != NULL && !vxutil_valid_username(new_group_name)) {
+        fprintf(stderr, "\"%s\" is not a valid group name\n", new_group_name);
+        return E_OTHER;
+    }
+
     if((db = vxpdb_load(database_name)) == NULL) {
         fprintf(stderr, "Could not load database \"%s\": %s\n",
                 database_name, strerror(errno));

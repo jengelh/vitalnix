@@ -40,7 +40,6 @@ enum {
     E_GID_USED,    // GID already used and -o was not specified
     E_NAME_USED,   // group already exists
     E_UPDATE,      // db->groupadd() did not return ok
-    E_CLOSE,       // db->close() did not return ok
 };
 
 // Functions
@@ -64,13 +63,18 @@ int main(int argc, const char **argv) {
     if(groupadd_read_config() <= 0 || groupadd_get_options(&argc, &argv) <= 0)
         return E_OTHER;
 
+    group_name = argv[1];
+    if(!vxutil_valid_username(group_name)) {
+        fprintf(stderr, "\"%s\" is not a valid group name\n", group_name);
+        return E_OTHER;
+    }
+
     if((db = vxpdb_load(database_name)) == NULL) {
         fprintf(stderr, "Could not load database \"%s\": %s\n",
                 database_name, strerror(errno));
         return E_OPEN;
     }
 
-    group_name = argv[1];
     ret = groupadd_main2(db);
     vxpdb_unload(db);
     return ret;
