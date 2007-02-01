@@ -25,69 +25,23 @@ clutils/usermod.c - Modify a user account
 #include <unistd.h>
 #include <libHX.h>
 #include "clutils/usermod_lib.h"
-#include <vitalnix/libvxcli/libvxcli.h>
-#include <vitalnix/libvxplex/libvxplex.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxutil/libvxutil.h>
-
-// Functions
-static int usermod_nio(int, const char **, struct usermod_state *);
-static int usermod_cli(int, const char **, struct usermod_state *);
 
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv) {
     struct usermod_state state;
-    int ui = vxplex_select_ui(&argc, &argv);
 
     usermod_fill_defaults(&state);
     if(usermod_get_options(&argc, &argv, &state) <= 0)
         return UM_EOTHER << UM_SHIFT;
 
-    if(ui == PLEXUI_AUTO && argc > 1)
-            return usermod_nio(argc, argv, &state);
-    else if(ui == PLEXUI_CLI || (ui == PLEXUI_AUTO &&
-     isatty(STDIN_FILENO) && argc == 1))
-            return usermod_cli(argc, argv, &state);
-    else
-            return usermod_nio(argc, argv, &state);
-}
-
-static int usermod_nio(int argc, const char **argv,
-  struct usermod_state *state)
-{
     if(argc < 2) {
         fprintf(stderr, "You need to specify a username!\n");
         return UM_EOTHER << UM_SHIFT;
     }
-    return usermod_run(state);
-}
 
-static int usermod_cli(int argc, const char **argv,
-  struct usermod_state *state)
-{
-    struct vxpdb_user *user = &state->newstuff;
-    struct vxcq_entry table_1[] = {
-        {.prompt = "Login name", .type = HXTYPE_STRING,
-         .defl = state->username, .ptr = &state->username},
-        VXCQ_TABLE_END,
-    };
-    struct vxcq_entry table_2[] = {
-        {.prompt = "User ID (-1 for next free)", .defl = "-1",
-         .type = HXTYPE_LONG, .ptr = &user->pw_uid},
-        {.prompt = "Initial group (or GID)",
-         .type = HXTYPE_STRING, .ptr = &user->pw_igrp},
-        {.prompt = "Supplemental groups (and/or GIDs), seperated by comma",
-         .type = HXTYPE_STRING, .ptr = &user->pw_sgrp},
-        {.prompt = "Real name",
-         .type = HXTYPE_STRING, .ptr = &user->pw_real},
-        {.prompt = "Home directory",
-         .type = HXTYPE_STRING, .ptr = &user->pw_home},
-        {.prompt = "Default shell",
-         .type = HXTYPE_STRING, .ptr = &user->pw_shell},
-        VXCQ_TABLE_END,
-    };
-
-    return usermod_run(state);
+    return usermod_run(&state);
 }
 
 /*
@@ -134,29 +88,6 @@ int usermod_main(int argc, const char **argv) {
     }
 
     // ----------------------------------------
-    if(Opt.inter) {
-        struct itab t[] = {
-            {"Login name\n[%s] > ", 's', &mmask.lname, usermod_pconfig_lname},
-            {"User ID (-1 for next free)\n[%d] > ", 'l', &mmask.uid, NULL},
-            {"Initial group (or GID)\n[%s] > ", 's', &Opt.new_igrp, NULL},
-            {"Supplemental groups (and/or GIDs), seperated by comma\n[%s] > ",
-             's', &Opt.new_sgrp, NULL},
-            {"Comment field (real name, etc.)\n[%s] > ",
-             's', &mmask.gecos, NULL},
-            {"Home directory\n[%s] > ", 's', &mmask.home, NULL},
-            {"Shell\n[%s] > ", 's', &mmask.shell, NULL},
-            {NULL},
-        };
-        memcpy(&mmask, &result, sizeof(struct vxp_user));
-        if(Opt.new_igrp == NULL) {
-            char buf[16];
-            snprintf(buf, 16, "%ld", result.gid);
-            Opt.new_igrp = (result.igrp != NULL) ?
-             result.igrp : HX_strdup(buf);
-        }
-        SH_interactive(t);
-    }
-
     if(Opt.new_igrp != NULL) {
         if(SH_only_digits(Opt.new_igrp)) {
             mmask.gid  = strtoul(Opt.new_igrp, NULL, 0);
@@ -224,15 +155,6 @@ int usermod_main(int argc, const char **argv) {
  __main__close_pdb:
     adb_unload(db);
     return rv;
-}
-
-//-----------------------------------------------------------------------------
-static int usermod_check_login(const char *ln) {
-    if(*ln == '\0') {
-        fprintf(stderr, "You need to provide a username\n");
-        return 0;
-    }
-    return 1;
 }
 
 static void usermod_getopt_expire(const struct HXoptcb *cbi) {

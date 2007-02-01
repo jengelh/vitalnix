@@ -26,45 +26,22 @@ clutils/userdel.c
 #include <libHX.h>
 #include "clutils/userdel_lib.h"
 #include <vitalnix/libvxpdb/libvxpdb.h>
-#include <vitalnix/libvxplex/libvxplex.h>
 #include <vitalnix/libvxutil/libvxutil.h>
-
-// Functions
-static int userdel_nio(int, const char **, struct userdel_state *);
-static int userdel_cli(int, const char **, struct userdel_state *);
 
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv) {
     struct userdel_state state;
-    int ui = vxplex_select_ui(&argc, &argv);
 
     userdel_fill_defaults(&state);
     if(userdel_get_options(&argc, &argv, &state) <= 0)
         return UD_EOTHER << UD_SHIFT;
 
-    if(ui == PLEXUI_AUTO && argc > 1)
-            return userdel_nio(argc, argv, &state);
-    else if(ui == PLEXUI_CLI || (ui == PLEXUI_AUTO &&
-     isatty(STDIN_FILENO) && argc == 1))
-            return userdel_cli(argc, argv, &state);
-    else
-            return userdel_nio(argc, argv, &state);
-}
-
-static int userdel_nio(int argc, const char **argv,
-  struct userdel_state *state)
-{
     if(argc < 2) {
         fprintf(stderr, "You have to specify a username!\n");
         return UD_EOTHER << UD_SHIFT;
     }
-    return userdel_run(state);
-}
 
-static int userdel_cli(int argc, const char **argv,
-  struct userdel_state *state)
-{
-    return 0;
+    return userdel_run(&state);
 }
 
 //=============================================================================
