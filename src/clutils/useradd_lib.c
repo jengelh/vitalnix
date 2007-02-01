@@ -39,6 +39,8 @@ clutils/useradd_lib.c
 
 // Functions
 static void useradd_getopt_expire(const struct HXoptcb *);
+static void useradd_getopt_preadd(const struct HXoptcb *);
+static void useradd_getopt_postadd(const struct HXoptcb *);
 static int useradd_read_config(struct useradd_state *);
 
 //-----------------------------------------------------------------------------
@@ -88,22 +90,6 @@ EXPORT_SYMBOL char *useradd_genhome(struct useradd_state *state)
                      user->pw_name, conf->split_level));
 }
 
-static void useradd_override_preadd(const struct HXoptcb *cbi)
-{
-    struct vxconfig_useradd *conf = cbi->current->uptr;
-    conf->master_preadd = NULL;
-    conf->user_preadd   = HX_strdup(cbi->s);
-    return;
-}
-
-static void useradd_override_postadd(const struct HXoptcb *cbi)
-{
-    struct vxconfig_useradd *conf = cbi->current->uptr;
-    conf->master_postadd = NULL;
-    conf->user_postadd   = HX_strdup(cbi->s);
-    return;
-}
-
 EXPORT_SYMBOL int useradd_get_options(int *argc, const char ***argv,
   struct useradd_state *state)
 {
@@ -112,10 +98,10 @@ EXPORT_SYMBOL int useradd_get_options(int *argc, const char ***argv,
     struct HXoption options_table[] = {
         // New, Vitalnix-useradd options
         {.sh = 'A', .type = HXTYPE_STRING | HXOPT_OPTIONAL,
-         .cb = useradd_override_postadd, .uptr = conf,
+         .cb = useradd_getopt_postadd, .uptr = conf,
          .help = "Program to run after user addition", .htyp = "cmd"},
         {.sh = 'B', .type = HXTYPE_STRING | HXOPT_OPTIONAL,
-         .cb = useradd_override_preadd, .uptr = conf,
+         .cb = useradd_getopt_preadd, .uptr = conf,
          .help = "Program to run before user addition", .htyp = "cmd"},
         {.sh = 'F', .type = HXTYPE_NONE, .ptr = &state->force,
          .help = "Force usage of dangerous umask"},
@@ -298,6 +284,22 @@ EXPORT_SYMBOL const char *useradd_strerror(int e)
 static void useradd_getopt_expire(const struct HXoptcb *cbi) {
     struct vxpdb_user *user = cbi->current->ptr;
     user->sp_expire = vxutil_string_iday(cbi->s);
+    return;
+}
+
+static void useradd_getopt_preadd(const struct HXoptcb *cbi)
+{
+    struct vxconfig_useradd *conf = cbi->current->uptr;
+    conf->master_preadd = NULL;
+    conf->user_preadd   = HX_strdup(cbi->s);
+    return;
+}
+
+static void useradd_getopt_postadd(const struct HXoptcb *cbi)
+{
+    struct vxconfig_useradd *conf = cbi->current->uptr;
+    conf->master_postadd = NULL;
+    conf->user_postadd   = HX_strdup(cbi->s);
     return;
 }
 

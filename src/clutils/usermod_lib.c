@@ -35,8 +35,8 @@ clutils/usermod_lib.c
 
 // Functions
 static void usermod_getopt_expire(const struct HXoptcb *);
-static void usermod_override_premod(const struct HXoptcb *);
-static void usermod_override_postmod(const struct HXoptcb *);
+static void usermod_getopt_premod(const struct HXoptcb *);
+static void usermod_getopt_postmod(const struct HXoptcb *);
 static int usermod_read_config(struct usermod_state *);
 
 //-----------------------------------------------------------------------------
@@ -61,10 +61,10 @@ EXPORT_SYMBOL int usermod_get_options(int *argc, const char ***argv,
     struct HXoption options_table[] = {
         // New, Vitalnix-usermod options
         {.sh = 'A', .type = HXTYPE_STRING | HXOPT_OPTIONAL,
-         .cb = usermod_override_premod, .uptr = conf,
+         .cb = usermod_getopt_premod, .uptr = conf,
          .help = "Program to run after user modification", .htyp = "cmd"},
         {.sh = 'B', .type = HXTYPE_STRING | HXOPT_OPTIONAL,
-         .cb = usermod_override_postmod, .uptr = conf,
+         .cb = usermod_getopt_postmod, .uptr = conf,
          .help = "Program to run before user modification", .htyp = "cmd"},
         {.sh = 'M', .type = HXTYPE_STRING, .ptr = &sp->database,
          .help = "Use specified database", .htyp = "name"},
@@ -186,7 +186,7 @@ static void usermod_getopt_expire(const struct HXoptcb *cbi) {
     return;
 }
 
-static void usermod_override_premod(const struct HXoptcb *cbi)
+static void usermod_getopt_premod(const struct HXoptcb *cbi)
 {
     struct vxconfig_usermod *conf = cbi->current->uptr;
     conf->master_premod = NULL;
@@ -194,7 +194,7 @@ static void usermod_override_premod(const struct HXoptcb *cbi)
     return;
 }
 
-static void usermod_override_postmod(const struct HXoptcb *cbi)
+static void usermod_getopt_postmod(const struct HXoptcb *cbi)
 {
     struct vxconfig_usermod *conf = cbi->current->uptr;
     conf->master_postmod = NULL;

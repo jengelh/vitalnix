@@ -36,8 +36,8 @@ clutils/userdel_lib.c
 #include <vitalnix/libvxutil/defines.h>
 
 // Functions
-static void userdel_override_predel(const struct HXoptcb *);
-static void userdel_override_postdel(const struct HXoptcb *);
+static void userdel_getopt_predel(const struct HXoptcb *);
+static void userdel_getopt_postdel(const struct HXoptcb *);
 static int userdel_read_config(struct userdel_state *);
 static int userdel_slash_count(const char *);
 
@@ -62,10 +62,10 @@ EXPORT_SYMBOL int userdel_get_options(int *argc, const char ***argv,
     struct HXoption options_table[] = {
         // New (vxuserdel) options
         {.sh = 'A', .type = HXTYPE_STRING | HXOPT_OPTIONAL,
-         .cb = userdel_override_postdel, .uptr = conf,
+         .cb = userdel_getopt_postdel, .uptr = conf,
          .help = "Program to run after user modification", .htyp = "cmd"},
         {.sh = 'B', .type = HXTYPE_STRING | HXOPT_OPTIONAL,
-         .cb = userdel_override_predel, .uptr = conf,
+         .cb = userdel_getopt_predel, .uptr = conf,
          .help = "Program to run before user modification", .htyp = "cmd"},
         {.sh = 'F', .type = HXTYPE_NONE, .ptr = &state->force,
          .help = "Force deletion even if UID is 0 or name is 'root'"},
@@ -191,7 +191,7 @@ EXPORT_SYMBOL const char *userdel_strerror(int e)
 }
 
 //-----------------------------------------------------------------------------
-static void userdel_override_predel(const struct HXoptcb *cbi)
+static void userdel_getopt_predel(const struct HXoptcb *cbi)
 {
     struct vxconfig_userdel *conf = cbi->current->uptr;
     conf->master_predel = NULL;
@@ -199,7 +199,7 @@ static void userdel_override_predel(const struct HXoptcb *cbi)
     return;
 }
 
-static void userdel_override_postdel(const struct HXoptcb *cbi)
+static void userdel_getopt_postdel(const struct HXoptcb *cbi)
 {
     struct vxconfig_userdel *conf = cbi->current->uptr;
     conf->master_postdel = NULL;
