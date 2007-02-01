@@ -23,8 +23,8 @@
 #   -- For details, see the file named "LICENSE.LGPL2"
 #==============================================================================
 unset XCFLAGS1;
-cf_pkgver="2.99_beta8";
-cf_nicver="3.0-beta8";
+cf_pkgver="3.1.0";
+cf_nicver="$cf_pkgver";
 cf_basedir="${0%/*}";
 cf_prefix="/opt/vitalnix-$cf_pkgver";
 cf_eprefix="$cf_prefix";

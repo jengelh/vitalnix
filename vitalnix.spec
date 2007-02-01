@@ -1,6 +1,6 @@
 
 Name:           vitalnix
-Version:        2.99_beta8
+Version:        3.1.0
 Release:        0
 Group:          System/Base
 Summary:        Vitalnix User Management Suite and Essential Tools
