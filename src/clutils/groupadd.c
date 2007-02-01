@@ -121,7 +121,8 @@ static int groupadd_main3(struct vxpdb_state *db)
             return E_GID_USED;
         }
     } else if(request_sys) { /* -r flag passed */
-        group_id = vxpdb_modctl(db, PDB_NEXTGID_SYS, db);
+        if((group_id = vxpdb_modctl(db, PDB_NEXTGID_SYS, db)) == -ENOSYS)
+            return E_OTHER;
     }
 
     if(action_before != NULL)
