@@ -30,11 +30,14 @@ clutils/userdel_lib.c
 #include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
 #include "clutils/userdel_lib.h"
+#include <vitalnix/libvxpdb/config.h>
 #include <vitalnix/libvxpdb/xafunc.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxutil/defines.h>
 
 // Functions
+static void userdel_override_predel(const struct HXoptcb *);
+static void userdel_override_postdel(const struct HXoptcb *);
 static int userdel_read_config(struct userdel_state *);
 static int userdel_slash_count(const char *);
 
@@ -44,7 +47,7 @@ EXPORT_SYMBOL int userdel_fill_defaults(struct userdel_state *sp)
     int ret;
 
     memset(sp, 0, sizeof(struct userdel_state));
-    sp->db_module = "*";
+    sp->database = "*";
 
     if((ret = userdel_read_config(sp)) <= 0)
         return ret;
@@ -55,15 +58,18 @@ EXPORT_SYMBOL int userdel_fill_defaults(struct userdel_state *sp)
 EXPORT_SYMBOL int userdel_get_options(int *argc, const char ***argv,
   struct userdel_state *state)
 {
+    struct vxconfig_userdel *conf = &state->config;
     struct HXoption options_table[] = {
         // New (vxuserdel) options
-        {.sh = 'A', .type = HXTYPE_STRING | HXOPT_OPTIONAL, .ptr = &state->ac_after,
+        {.sh = 'A', .type = HXTYPE_STRING | HXOPT_OPTIONAL,
+         .cb = userdel_override_postdel, .uptr = conf,
          .help = "Program to run after user modification", .htyp = "cmd"},
-        {.sh = 'B', .type = HXTYPE_STRING | HXOPT_OPTIONAL, .ptr = &state->ac_before,
+        {.sh = 'B', .type = HXTYPE_STRING | HXOPT_OPTIONAL,
+         .cb = userdel_override_predel, .uptr = conf,
          .help = "Program to run before user modification", .htyp = "cmd"},
         {.sh = 'F', .type = HXTYPE_NONE, .ptr = &state->force,
          .help = "Force deletion even if UID is 0 or name is 'root'"},
-        {.sh = 'M', .type = HXTYPE_STRING, .ptr = &state->db_module,
+        {.sh = 'M', .type = HXTYPE_STRING, .ptr = &state->database,
          .help = "Use specified database", .htyp = "name"},
 
         // Default options
@@ -87,7 +93,7 @@ EXPORT_SYMBOL int userdel_run(struct userdel_state *state)
     struct vxpdb_state *db;
     char *username, *home;
 
-    if((db = vxpdb_load(state->db_module)) == NULL)
+    if((db = vxpdb_load(state->database)) == NULL)
         return errno | (UD_ELOAD << UD_SHIFT);
 
     if((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0) {
@@ -185,16 +191,38 @@ EXPORT_SYMBOL const char *userdel_strerror(int e)
 }
 
 //-----------------------------------------------------------------------------
+static void userdel_override_predel(const struct HXoptcb *cbi)
+{
+    struct vxconfig_userdel *conf = cbi->current->uptr;
+    conf->master_predel = NULL;
+    conf->user_predel   = HX_strdup(cbi->s);
+    return;
+}
+
+static void userdel_override_postdel(const struct HXoptcb *cbi)
+{
+    struct vxconfig_userdel *conf = cbi->current->uptr;
+    conf->master_postdel = NULL;
+    conf->user_postdel   = HX_strdup(cbi->s);
+    return;
+}
+
 static int userdel_read_config(struct userdel_state *state) {
+    int err, ret = 0;
     struct HXoption config_table[] = {
-        {.ln = "AC_AFTER",    .type = HXTYPE_STRING, .ptr = &state->ac_after},
-        {.ln = "AC_BEFORE",   .type = HXTYPE_STRING, .ptr = &state->ac_before},
         {.ln = "REMOVE_CRON", .type = HXTYPE_BOOL,   .ptr = &state->rm_cron},
         {.ln = "REMOVE_HOME", .type = HXTYPE_BOOL,   .ptr = &state->rm_home},
         {.ln = "REMOVE_MAIL", .type = HXTYPE_BOOL,   .ptr = &state->rm_mail},
         HXOPT_TABLEEND,
     };
-    return HX_shconfig(CONFIG_SYSCONFDIR "/userdel.conf", config_table);
+    err = vxconfig_read_userdel(CONFIG_SYSCONFDIR "/userdel.conf",
+          &state->config);
+    if(err < 0) 
+        ret = err;
+    err = HX_shconfig(CONFIG_SYSCONFDIR "/userdel.conf", config_table);
+    if(err < 0 && ret == 0)
+        ret = err;
+    return ret;
 }
 
 static int userdel_slash_count(const char *fn) {

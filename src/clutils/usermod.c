@@ -84,8 +84,6 @@ static int usermod_cli(int argc, const char **argv,
          .type = HXTYPE_STRING, .ptr = &user->pw_home},
         {.prompt = "Default shell",
          .type = HXTYPE_STRING, .ptr = &user->pw_shell},
-        {.prompt = "Skeleton directory",
-         .type = HXTYPE_STRING, .ptr = &state->skeldir},
         VXCQ_TABLE_END,
     };
 

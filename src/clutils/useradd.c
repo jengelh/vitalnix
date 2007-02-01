@@ -39,7 +39,7 @@ static int valid_user(const struct vxcq_entry *);
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv) {
     struct useradd_state state;
-    struct vxpdb_user *user = &state.user;
+    struct vxpdb_user *user = &state.config.defaults;
     int ui = vxplex_select_ui(&argc, &argv);
 
     useradd_fill_defaults(&state);
@@ -64,7 +64,7 @@ int main(int argc, const char **argv) {
 static int useradd_nio(int argc, const char **argv,
   struct useradd_state *state)
 {
-    if(state->user.pw_name == NULL) {
+    if(state->config.defaults.pw_name == NULL) {
         fprintf(stderr, "You have to specify a username!\n");
         return UA_EOTHER << UA_SHIFT;
     }
@@ -74,7 +74,7 @@ static int useradd_nio(int argc, const char **argv,
 static int useradd_cli(int argc, const char **argv,
   struct useradd_state *state)
 {
-    struct vxpdb_user *user = &state->user;
+    struct vxpdb_user *user = &state->config.defaults;
     struct vxcq_entry table1[] = {
         {.prompt = "Real name", .type = HXTYPE_STRING, .ptr = &user->pw_real},
         VXCQ_TABLE_END,
@@ -93,7 +93,7 @@ static int useradd_cli(int argc, const char **argv,
         {.prompt = "Default shell",
          .type = HXTYPE_STRING, .ptr = &user->pw_shell},
         {.prompt = "Skeleton directory",
-         .type = HXTYPE_STRING, .ptr = &state->skeldir},
+         .type = HXTYPE_STRING, .ptr = &state->config.skel_dir},
         VXCQ_TABLE_END,
     };
 

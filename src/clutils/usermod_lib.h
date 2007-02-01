@@ -24,6 +24,7 @@ clutils/usermod_lib.h
 #ifndef VITALNIX_CLUTILS_USERMOD_LIB_H
 #define VITALNIX_CLUTILS_USERMOD_LIB_H 1
 
+#include <vitalnix/libvxpdb/config.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
 
 #ifdef __cplusplus
@@ -50,9 +51,8 @@ enum {
 struct usermod_state {
     char *username;
     struct vxpdb_user newstuff;
-
-    // usermod internal
-    const char *ac_after, *ac_before, *db_module, *skeldir;
+    struct vxconfig_usermod config;
+    const char *database;
     int allow_dup, lock_account, move_home;
 };
 

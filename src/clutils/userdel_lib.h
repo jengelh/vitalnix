@@ -24,6 +24,8 @@ clutils/userdel.h
 #ifndef VITALNIX_CLUTILS_USERDEL_LIB_H
 #define VITALNIX_CLUTILS_USERDEL_LIB_H 1
 
+#include <vitalnix/libvxpdb/config.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -46,7 +48,8 @@ enum {
 
 struct userdel_state {
     char *username;
-    const char *ac_after, *ac_before, *db_module;
+    struct vxconfig_userdel config;
+    const char *database;
     int force, rm_cron, rm_home, rm_mail;
 };
 

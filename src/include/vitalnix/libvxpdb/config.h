@@ -34,12 +34,10 @@ struct vxconfig_useradd {
     char *master_preadd, *master_postadd, *user_preadd, *user_postadd,
          *default_group, *home_base, *skel_dir;
     unsigned int create_home, split_level, umask;
-
-    // pw_igrp, pw_shell and sp_*
     struct vxpdb_user defaults;
 };
 
-struct vxconfig_usermod { // currently unused
+struct vxconfig_usermod {
     char *master_premod, *master_postmod, *user_premod, *user_postmod;
 };
 

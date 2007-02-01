@@ -24,6 +24,7 @@ clutils/useradd_lib.h
 #ifndef VITALNIX_CLUTILS_USERADD_LIB_H
 #define VITALNIX_CLUTILS_USERADD_LIB_H 1
 
+#include <vitalnix/libvxpdb/config.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
 
 #ifdef __cplusplus
@@ -48,12 +49,9 @@ enum {
 };
 
 struct useradd_state {
-    struct vxpdb_user user;
-
-    // internal
-    const char *ac_after, *ac_before, *db_module, *homebase, *skeldir;
-    unsigned long umask;
-    int allow_dup, create_home, force, split_lvl, sys_uid;
+    struct vxconfig_useradd config;
+    const char *database;
+    int allow_dup, force, sys_uid;
 };
 
 extern int useradd_fill_defaults(struct useradd_state *);

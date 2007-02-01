@@ -28,12 +28,15 @@ clutils/usermod_lib.c
 #include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
 #include "clutils/usermod_lib.h"
+#include <vitalnix/libvxpdb/config.h>
 #include <vitalnix/libvxpdb/xafunc.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
 // Functions
 static void usermod_getopt_expire(const struct HXoptcb *);
+static void usermod_override_premod(const struct HXoptcb *);
+static void usermod_override_postmod(const struct HXoptcb *);
 static int usermod_read_config(struct usermod_state *);
 
 //-----------------------------------------------------------------------------
@@ -43,7 +46,7 @@ EXPORT_SYMBOL int usermod_fill_defaults(struct usermod_state *sp)
     int ret;
 
     vxpdb_user_nomodify(u);
-    sp->db_module = "*";
+    sp->database = "*";
     if((ret = usermod_read_config(sp)) <= 0)
         return ret;
 
@@ -53,14 +56,17 @@ EXPORT_SYMBOL int usermod_fill_defaults(struct usermod_state *sp)
 EXPORT_SYMBOL int usermod_get_options(int *argc, const char ***argv,
   struct usermod_state *sp)
 {
+    struct vxconfig_usermod *conf = &sp->config;
     struct vxpdb_user *nu = &sp->newstuff;
     struct HXoption options_table[] = {
         // New, Vitalnix-usermod options
-        {.sh = 'A', .type = HXTYPE_STRING | HXOPT_OPTIONAL, .ptr = &sp->ac_after,
+        {.sh = 'A', .type = HXTYPE_STRING | HXOPT_OPTIONAL,
+         .cb = usermod_override_premod, .uptr = conf,
          .help = "Program to run after user modification", .htyp = "cmd"},
-        {.sh = 'B', .type = HXTYPE_STRING | HXOPT_OPTIONAL, .ptr = &sp->ac_before,
+        {.sh = 'B', .type = HXTYPE_STRING | HXOPT_OPTIONAL,
+         .cb = usermod_override_postmod, .uptr = conf,
          .help = "Program to run before user modification", .htyp = "cmd"},
-        {.sh = 'M', .type = HXTYPE_STRING, .ptr = &sp->db_module,
+        {.sh = 'M', .type = HXTYPE_STRING, .ptr = &sp->database,
          .help = "Use specified database", .htyp = "name"},
 
         // Default options
@@ -114,7 +120,7 @@ EXPORT_SYMBOL int usermod_run(struct usermod_state *state)
     struct vxpdb_state *db;
     int ierr = 0, ret;
 
-    if((db = vxpdb_load(state->db_module)) == NULL)
+    if((db = vxpdb_load(state->database)) == NULL)
         return errno | (UM_ELOAD << UM_SHIFT);
 
     if((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0) {
@@ -180,14 +186,35 @@ static void usermod_getopt_expire(const struct HXoptcb *cbi) {
     return;
 }
 
+static void usermod_override_premod(const struct HXoptcb *cbi)
+{
+    struct vxconfig_usermod *conf = cbi->current->uptr;
+    conf->master_premod = NULL;
+    conf->user_premod   = HX_strdup(cbi->s);
+    return;
+}
+
+static void usermod_override_postmod(const struct HXoptcb *cbi)
+{
+    struct vxconfig_usermod *conf = cbi->current->uptr;
+    conf->master_postmod = NULL;
+    conf->user_postmod   = HX_strdup(cbi->s);
+    return;
+}
+
 static int usermod_read_config(struct usermod_state *sp) {
+    int err, ret = 0;
     struct HXoption config_table[] = {
-        {.ln = "AC_BEFORE", .type = HXTYPE_STRING, .ptr = &sp->ac_before},
-        {.ln = "AC_AFTER",  .type = HXTYPE_STRING, .ptr = &sp->ac_after},
         {.ln = "MOVE_HOME", .type = HXTYPE_BOOL,   .ptr = &sp->move_home},
         HXOPT_TABLEEND,
     };
-    return HX_shconfig(CONFIG_SYSCONFDIR "/usermod.conf", config_table);
+    err = vxconfig_read_usermod(CONFIG_SYSCONFDIR "/usermod.conf", &sp->config);
+    if(err < 0)
+        ret = err;
+    err = HX_shconfig(CONFIG_SYSCONFDIR "/usermod.conf", config_table);
+    if(err < 0 && ret == 0)
+        ret = err;
+    return ret;
 }
 
 //=============================================================================
