@@ -39,7 +39,7 @@ int main(int argc, const char **argv) {
 
     useradd_fill_defaults(&state);
     if(useradd_get_options(&argc, &argv, &state) <= 0)
-        return UA_EOTHER << UA_SHIFT;
+        return E_OTHER;
 
     if(argc > 1) {
         HX_strclone(&user->pw_name, argv[1]);
@@ -49,10 +49,10 @@ int main(int argc, const char **argv) {
 
     if(state.config.defaults.pw_name == NULL) {
         fprintf(stderr, "You have to specify a username!\n");
-        return UA_EOTHER << UA_SHIFT;
+        return E_OTHER;
     }
 
-    if(((ret = useradd_run(&state)) >> UA_SHIFT) != UA_SUCCESS)
+    if((ret = useradd_run(&state)) != E_SUCCESS)
         fprintf(stderr, "%s: %s\n", useradd_strerror(ret), strerror(errno));
     return ret;
 }

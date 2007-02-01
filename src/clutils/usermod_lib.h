@@ -32,20 +32,14 @@ extern "C" {
 #endif
 
 enum {
-    UM_SUCCESS = 0,
-    UM_EOTHER,       // other error, see errno
-    UM_ELOAD,
-    UM_EOPEN,        // unable to open back-end module or DB
-    UM_EQUERY,       // querying PDB
-    UM_ENOEXIST,     // user does not exist
-    UM_EUIDUSED,     // UID already used and -o was not specified
-    UM_ENAMEUSED,    // new user name (-n) already exists
-    UM_EUPDATE,      // db->usermod() did not return ok
-    UM_EPOST,        // moving home/etc.
-    UM_ECLOSE,       // db->close() did not return ok
-
-    UM_SHIFT = 16,
-    UM_MASK  = 0xF0000,
+    E_SUCCESS = 0,
+    E_OTHER,
+    E_OPEN,
+    E_NO_EXIST,
+    E_UID_USED,
+    E_NAME_USED,
+    E_UPDATE,
+    E_POST,
 };
 
 struct usermod_state {

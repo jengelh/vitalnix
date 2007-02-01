@@ -32,13 +32,17 @@ clutils/userdel_lib.c
 #include "clutils/userdel_lib.h"
 #include <vitalnix/libvxpdb/config.h>
 #include <vitalnix/libvxpdb/xafunc.h>
+#include <vitalnix/libvxpdb/xwfunc.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxutil/defines.h>
+#include <vitalnix/libvxutil/libvxutil.h>
 
 // Functions
 static void userdel_getopt_predel(const struct HXoptcb *);
 static void userdel_getopt_postdel(const struct HXoptcb *);
 static int userdel_read_config(struct userdel_state *);
+static int userdel_run2(struct vxpdb_state *, struct userdel_state *);
+static int userdel_run3(struct vxpdb_state *, struct userdel_state *);
 static int userdel_slash_count(const char *);
 
 //-----------------------------------------------------------------------------
@@ -88,106 +92,32 @@ EXPORT_SYMBOL int userdel_get_options(int *argc, const char ***argv,
 
 EXPORT_SYMBOL int userdel_run(struct userdel_state *state)
 {
-    struct vxpdb_user search, result;
-    int ret, ierr = UD_SUCCESS;
     struct vxpdb_state *db;
-    char *username, *home;
-
+    int ret;
     if((db = vxpdb_load(state->database)) == NULL)
-        return errno | (UD_ELOAD << UD_SHIFT);
-
-    if((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0) {
-        ierr = UD_EOPEN;
-        goto close_adb;
-    }
-
-    vxpdb_user_clean(&search);
-    search.pw_name = state->username;
-    if((ret = vxpdb_userinfo(db, &search, &result, 1)) < 0) {
-        ierr = UD_EQUERY;
-        goto close_backend;
-    } else if(ret == 0) {
-        ierr = UD_ENOEXIST;
-        goto close_backend;
-    }
-
-    if(!state->force && (strcmp(result.pw_name, "root") == 0 ||
-     result.pw_uid == 0)) {
-        ierr = UD_EDENY;
-        goto close_backend;
-    }
-/*
-    if(state->ac_before != NULL)
-        replace_and_runcmd(state->ac_before, sr_map);
-*/
-    username = HX_strdup(result.pw_name);
-    home     = HX_strdup(result.pw_home);
-
-    if((ret = vxpdb_userdel(db, &search)) <= 0) {
-        ierr = UD_EUPDATE;
-        goto close_backend2;
-    }
-
-    if(state->rm_home) {
-        if(home == NULL || *home == '\0')
-            fprintf(stderr, "Warning: User had no home directory. "
-             "Not removing anything.\n");
-        else if(strcmp(home, "/") == 0)
-            fprintf(stderr, "Warning: Will refuse to delete "
-             "home directory \"/\"\n");
-        else if(userdel_slash_count(home) <= 1 && !state->force)
-            fprintf(stderr, "Warning: Will not remove home directory \"%s\""
-             " which has less than two slashes and thus looks like a system"
-             " or a malformed directory. (Remove it manually.)\n", home);
-        else
-            HX_rrmdir(home);
-    }
-    if(state->rm_cron) {
-        char buf[MAXFNLEN];
-        snprintf(buf, sizeof(buf), "crontab -r \"%s\"", username);
-        system(buf);
-    }
-    if(state->rm_mail) {
-        char buf[MAXFNLEN];
-        snprintf(buf, sizeof(buf), "/var/spool/mail/%s", username);
-        unlink(buf);
-    }
-/*
-    if(state->ac_after != NULL)
-        replace_and_runcmd(state->ac_after, sr_map);
-*/
- close_backend2:
-    free(home);
-
- close_backend:
-    vxpdb_close(db);
-
- close_adb:
+        return E_OPEN;
+    ret = userdel_run2(db, state);
     vxpdb_unload(db);
-    return ret | (ierr << UD_SHIFT);
+    return ret;
 }
 
 EXPORT_SYMBOL const char *userdel_strerror(int e)
 {
-    switch(e >> UD_SHIFT) {
-        case UD_ELOAD:
-            return "Could not load PDB back-end";
-        case UD_EOPEN:
-            return "Could not open PDB back-end";
-        case UD_EQUERY:
-            return "Error querying PDB";
-        case UD_ENOEXIST:
+    switch(e) {
+        case E_OTHER:
+            return "Error";
+        case E_OPEN:
+            return "Could not load/open database";
+        case E_NO_EXIST:
             return "User does not exist";
-        case UD_EDENY:
+        case E_DENY:
             return "Refusing to remove \"root\" or UID 0 accounts when not using the force option";
-        case UD_EUPDATE:
+        case E_UPDATE:
             return "Error deleting user";
-        case UD_EPOST:
+        case E_POST:
             return "Error during post setup";
-        case UD_ECLOSE:
-            return "Warning during PDB close";
     }
-    return "(unknown userdel error)";
+    return NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -223,6 +153,83 @@ static int userdel_read_config(struct userdel_state *state) {
     if(err < 0 && ret == 0)
         ret = err;
     return ret;
+}
+
+static int userdel_run2(struct vxpdb_state *db, struct userdel_state *state)
+{
+    int ret;
+    if((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0)
+        return E_OPEN;
+    ret = userdel_run3(db, state);
+    vxpdb_close(db);
+    return ret;
+}
+
+static int userdel_run3(struct vxpdb_state *db, struct userdel_state *state)
+{
+    struct vxconfig_userdel *conf = &state->config;
+    struct vxpdb_user search = {}, result = {};
+    struct HXoption sr_map[] = {};
+    char *home, *username;
+    int ret;
+
+    if((ret = vxpdb_getpwnam(db, state->username, &result)) < 0)
+        return E_OTHER;
+    else if(ret == 0)
+        return E_OTHER;
+
+    if(!state->force && (strcmp(result.pw_name, "root") == 0 ||
+     result.pw_uid == 0))
+        return E_DENY;
+
+    if(conf->master_predel != NULL)
+        vxutil_replace_run(conf->master_predel, sr_map);
+    if(conf->user_predel != NULL)
+        vxutil_replace_run(conf->user_predel, sr_map);
+
+    username = HX_strdup(result.pw_name);
+    home     = HX_strdup(result.pw_home);
+
+    search.pw_name = username;
+    if((ret = vxpdb_userdel(db, &search)) <= 0) {
+        free(username);
+        free(home);
+        return E_UPDATE;
+    }
+
+    if(state->rm_home) {
+        if(home == NULL || *home == '\0')
+            fprintf(stderr, "Warning: User had no home directory. "
+             "Not removing anything.\n");
+        else if(strcmp(home, "/") == 0)
+            fprintf(stderr, "Warning: Will refuse to delete "
+             "home directory \"/\"\n");
+        else if(userdel_slash_count(home) <= 1 && !state->force)
+            fprintf(stderr, "Warning: Will not remove home directory \"%s\""
+             " which has less than two slashes and thus looks like a system"
+             " or a malformed directory. (Remove it manually.)\n", home);
+        else
+            HX_rrmdir(home);
+    }
+    if(state->rm_cron) {
+        char buf[MAXFNLEN];
+        snprintf(buf, sizeof(buf), "crontab -r \"%s\"", username);
+        system(buf);
+    }
+    if(state->rm_mail) {
+        char buf[MAXFNLEN];
+        snprintf(buf, sizeof(buf), "/var/spool/mail/%s", username);
+        unlink(buf);
+    }
+
+    if(conf->user_postdel != NULL)
+        vxutil_replace_run(conf->user_postdel, sr_map);
+    if(conf->master_postdel != NULL)
+        vxutil_replace_run(conf->master_postdel, sr_map);
+
+    free(home);
+    free(username);
+    return E_SUCCESS;
 }
 
 static int userdel_slash_count(const char *fn) {

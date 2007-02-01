@@ -42,6 +42,9 @@ static void useradd_getopt_expire(const struct HXoptcb *);
 static void useradd_getopt_preadd(const struct HXoptcb *);
 static void useradd_getopt_postadd(const struct HXoptcb *);
 static int useradd_read_config(struct useradd_state *);
+static int useradd_run2(struct vxpdb_state *, struct useradd_state *);
+static int useradd_run3(struct vxpdb_state *, struct useradd_state *,
+    struct vxpdb_user *);
 
 //-----------------------------------------------------------------------------
 /*  useradd_fill_defautls
@@ -153,131 +156,34 @@ EXPORT_SYMBOL int useradd_get_options(int *argc, const char ***argv,
 
 EXPORT_SYMBOL int useradd_run(struct useradd_state *state)
 {
-    struct vxconfig_useradd *conf = &state->config;
-    struct vxpdb_user *user;
     struct vxpdb_state *db;
-    int ret, ierr = 0;
+    int ret;
 
     if((db = vxpdb_load(state->database)) == NULL)
-        return errno | (UA_ELOAD << UA_SHIFT);
+        return E_OPEN;
 
-    if((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0) {
-        ierr = UA_EOPEN;
-        goto close_pdb;
-    }
-
-    user = HX_memdup(&conf->defaults, sizeof(conf->defaults));
-
-    if((ret = vxpdb_getpwnam(db, user->pw_name, NULL)) < 0) {
-        ierr = UA_EQUERY;
-        goto close_backend;
-    } else if(ret > 0) {
-        errno = 0;
-        ierr = UA_ENAMEUSED;
-        goto close_backend;
-    }
-
-    if(user->pw_uid != PDB_NOUID) { // -u is provided
-        if(!state->allow_dup && vxpdb_getpwuid(db, user->pw_uid, NULL) > 0) {
-            /* The -o flag (allow creating user with duplicate UID)
-            was not passed. */
-            ierr = UA_EUIDUSED;
-            goto close_backend;
-        }
-    } else if(state->sys_uid) { // -r flag passed
-        if((user->pw_uid = vxpdb_modctl(db, PDB_NEXTUID_SYS, db)) == -ENOSYS) {
-            ierr = UA_ENOSYS;
-            goto close_backend;
-        }
-    }
-
-    user->sp_lastchg = vxutil_now_iday();
-
-    if(vxutil_only_digits(user->pw_igrp)) {
-        user->pw_gid  = strtoul(user->pw_igrp, NULL, 0);
-        user->pw_igrp = NULL;
-    } else {
-        user->pw_gid  = PDB_NOGID;
-    }
-
-    struct HXoption sr_map[] = {
-        {.sh = 'l', .type = HXTYPE_STRING, .ptr = &user->pw_name},
-        {.sh = 'u', .type = HXTYPE_LONG,   .ptr = &user->pw_uid},
-        HXOPT_TABLEEND,
-    };
-
-    if(conf->master_preadd != NULL)
-        vxutil_replace_run(conf->master_preadd, sr_map);
-
-    if((ret = vxpdb_useradd(db, user)) <= 0) {
-        ierr = UA_EUPDATE;
-        goto close_backend;
-    }
-
-    if(conf->create_home) {
-        if(HX_mkdir(user->pw_home) <= 0) {
-            ierr = UA_EPOST;
-            goto close_backend;
-/*          fprintf(stderr, "Warning: Could not create home directory %s\n",
-             strerror(errno));*/
-        }
-
-        lchown(user->pw_home, user->pw_uid, user->pw_gid);
-        chmod(user->pw_home, 0755 & ~conf->umask);
-
-        if(conf->skel_dir != NULL && *conf->skel_dir != '\0')
-            HX_copy_dir(conf->skel_dir, user->pw_home, HXF_UID | HXF_GID | HXF_KEEP,
-             user->pw_uid, user->pw_gid);
-    }
-
-    if(conf->master_postadd != NULL)
-        vxutil_replace_run(conf->master_postadd, sr_map);
-
- close_backend:
-    free(user);
-    vxpdb_close(db);
-
- close_pdb:
+    ret = useradd_run2(db, state);
     vxpdb_unload(db);
-    return ret | (ierr << UA_SHIFT);
+    return ret;
 }
 
-/*
-UA_UPDATE:
-        fprintf(stderr, "Warning: User addition failed: %s"
-         " (ret=%d, errno=%d)\n", strerror(errno), ret, errno);
-
-UA_HOME:
-            fprintf(stderr, "Warning: Could not create home directory %s\n",
-             strerror(errno));
-
-UA_CLOSE:
-        fprintf(stderr, "Warning: DB was not cleanly closed: %s"
-         " (ret=%d, errno=%d)\n", strerror(errno), ret, errno);
-*/
 EXPORT_SYMBOL const char *useradd_strerror(int e)
 {
-    switch(e >> UA_SHIFT) {
-        case UA_ELOAD:
-            return "Could not load PDB back-end";
-        case UA_EOPEN:
-            return "Could not open PDB back-end";
-        case UA_EQUERY:
-            return "Error querying the PDB";
-        case UA_EUIDUSED:
+    switch(e) {
+        case E_OTHER:
+            return "Error";
+        case E_OPEN:
+            return "Could not load/open database";
+        case E_UID_USED:
             return "UID already exists";
-        case UA_ENOSYS:
-            return "Backend does not support PDB_NEXTUID_SYS modctl";
-        case UA_ENAMEUSED:
+        case E_NAME_USED:
             return "User already exists";
-        case UA_EUPDATE:
+        case E_UPDATE:
             return "Error adding user";
-        case UA_EPOST:
+        case E_POST:
             return "Error during post setup";
-        case UA_ECLOSE:
-            return "Warning during close";
     }
-    return "(unknown useradd error)";
+    return NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -312,7 +218,7 @@ static int useradd_read_config(struct useradd_state *state) {
         // complain if not all write permission bits are cleared
         fprintf(stderr, "Error: will refuse to allow foreign write-access for"
          " user directory,\n" "use -F to override.\n");
-        exit(UA_EOTHER);
+        exit(E_OTHER);
     } else if((mask & (S_IRGRP | S_IROTH)) != (S_IRGRP | S_IROTH) &&
      !state->force) {
         // warn if not all read permission bits are cleared
@@ -321,6 +227,88 @@ static int useradd_read_config(struct useradd_state *state) {
     }
 
     return ret;
+}
+
+static int useradd_run2(struct vxpdb_state *db, struct useradd_state *state)
+{
+    struct vxconfig_useradd *conf = &state->config;
+    struct vxpdb_user *user;
+    int ret;
+
+    if((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0)
+        return E_OPEN;
+
+    user = HX_memdup(&conf->defaults, sizeof(conf->defaults));
+    if(user == NULL)
+        return -ENOMEM;
+
+    ret = useradd_run3(db, state, user);
+    free(user);
+    vxpdb_close(db);
+    return ret;
+}
+
+static int useradd_run3(struct vxpdb_state *db, struct useradd_state *state,
+  struct vxpdb_user *user)
+{
+    struct vxconfig_useradd *conf = &state->config;
+    int ret;
+
+    if((ret = vxpdb_getpwnam(db, user->pw_name, NULL)) < 0)
+        return E_OTHER;
+    else if(ret > 0)
+        return E_NAME_USED;
+
+    if(user->pw_uid != PDB_NOUID) { // -u is provided
+        if(!state->allow_dup && vxpdb_getpwuid(db, user->pw_uid, NULL) > 0)
+            /* The -o flag (allow creating user with duplicate UID)
+            was not passed. */
+            return E_UID_USED;
+    } else if(state->sys_uid) { // -r flag passed
+        if((user->pw_uid = vxpdb_modctl(db, PDB_NEXTUID_SYS, db)) == -ENOSYS)
+            return E_OTHER;
+    }
+
+    user->sp_lastchg = vxutil_now_iday();
+
+    if(vxutil_only_digits(user->pw_igrp)) {
+        user->pw_gid  = strtoul(user->pw_igrp, NULL, 0);
+        user->pw_igrp = NULL;
+    } else {
+        user->pw_gid  = PDB_NOGID;
+    }
+
+    struct HXoption sr_map[] = {
+        {.sh = 'l', .type = HXTYPE_STRING, .ptr = &user->pw_name},
+        {.sh = 'u', .type = HXTYPE_LONG,   .ptr = &user->pw_uid},
+        HXOPT_TABLEEND,
+    };
+
+    if(conf->master_preadd != NULL)
+        vxutil_replace_run(conf->master_preadd, sr_map);
+
+    if((ret = vxpdb_useradd(db, user)) <= 0)
+        return E_UPDATE;
+
+    if(conf->create_home) {
+        if(HX_mkdir(user->pw_home) <= 0) {
+            return E_POST;
+/*          fprintf(stderr, "Warning: Could not create home directory %s\n",
+             strerror(errno));*/
+        }
+
+        lchown(user->pw_home, user->pw_uid, user->pw_gid);
+        chmod(user->pw_home, 0755 & ~conf->umask);
+
+        if(conf->skel_dir != NULL && *conf->skel_dir != '\0')
+            HX_copy_dir(conf->skel_dir, user->pw_home, HXF_UID | HXF_GID | HXF_KEEP,
+             user->pw_uid, user->pw_gid);
+    }
+
+    if(conf->master_postadd != NULL)
+        vxutil_replace_run(conf->master_postadd, sr_map);
+
+    return E_SUCCESS;
 }
 
 //=============================================================================

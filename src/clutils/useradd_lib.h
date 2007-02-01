@@ -32,20 +32,13 @@ extern "C" {
 #endif
 
 enum {
-    UA_SUCCESS = 0,
-    UA_EOTHER,
-    UA_ELOAD,
-    UA_EOPEN,     // unable to open back-end module or DB
-    UA_EQUERY,
-    UA_EUIDUSED,  // UID already used and -o was not specified
-    UA_ENOSYS,
-    UA_ENAMEUSED, // user already exists
-    UA_EUPDATE,   // db->useradd() did not return ok
-    UA_EPOST,     // post-stuff failed (home directory, skeleton copying)
-    UA_ECLOSE,
-
-    UA_SHIFT = 16,
-    UA_MASK  = 0xF0000,
+    E_SUCCESS = 0,
+    E_OTHER,
+    E_OPEN,
+    E_UID_USED,
+    E_NAME_USED,
+    E_UPDATE,
+    E_POST,
 };
 
 struct useradd_state {

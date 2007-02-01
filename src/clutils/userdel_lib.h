@@ -31,19 +31,13 @@ extern "C" {
 #endif
 
 enum {
-    UD_SUCCESS = 0,
-    UD_EOTHER,
-    UD_ELOAD,
-    UD_EOPEN,        // unable to open back-end module or DB
-    UD_EQUERY,
-    UD_ENOEXIST,     // user does not exist
-    UD_EDENY,        // will not remove 'root' or UID 0 without -F (force)
-    UD_EUPDATE,      // db->userdel() did not return ok
-    UD_EPOST,
-    UD_ECLOSE,
-
-    UD_SHIFT = 16,
-    UD_MASK  = 0xF0000,
+    E_SUCCESS = 0,
+    E_OTHER,
+    E_OPEN,
+    E_NO_EXIST,
+    E_DENY,
+    E_UPDATE,
+    E_POST,
 };
 
 struct userdel_state {

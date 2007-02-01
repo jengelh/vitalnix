@@ -30,6 +30,7 @@ clutils/usermod_lib.c
 #include "clutils/usermod_lib.h"
 #include <vitalnix/libvxpdb/config.h>
 #include <vitalnix/libvxpdb/xafunc.h>
+#include <vitalnix/libvxpdb/xwfunc.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
@@ -38,6 +39,8 @@ static void usermod_getopt_expire(const struct HXoptcb *);
 static void usermod_getopt_premod(const struct HXoptcb *);
 static void usermod_getopt_postmod(const struct HXoptcb *);
 static int usermod_read_config(struct usermod_state *);
+static int usermod_run2(struct vxpdb_state *, struct usermod_state *);
+static int usermod_run3(struct vxpdb_state *, struct usermod_state *);
 
 //-----------------------------------------------------------------------------
 EXPORT_SYMBOL int usermod_fill_defaults(struct usermod_state *sp)
@@ -116,67 +119,32 @@ EXPORT_SYMBOL int usermod_get_options(int *argc, const char ***argv,
 
 EXPORT_SYMBOL int usermod_run(struct usermod_state *state)
 {
-    struct vxpdb_user search;
     struct vxpdb_state *db;
-    int ierr = 0, ret;
+    int ret;
 
     if((db = vxpdb_load(state->database)) == NULL)
-        return errno | (UM_ELOAD << UM_SHIFT);
+        return E_OPEN;
 
-    if((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0) {
-        ierr = UM_EOPEN;
-        goto close_adb;
-    }
-
-    search.pw_name = state->username;
-    search.pw_uid  = PDB_NOUID;
-    search.pw_gid  = PDB_NOGID;
-
-    if((ret = vxpdb_userinfo(db, &search, NULL, 0)) < 0) {
-        ierr = UM_EQUERY;
-        goto close_backend;
-    } else if(ret == 0) {
-        errno = 0;
-        ierr = UM_ENOEXIST;
-        goto close_backend;
-    }
-/*
-    if(state->ac_before != NULL)
-        replace_and_runcmd(state->ac_before, sr_map);
-
-    if((ret = db->usermod(db, &search, &modify)) <= 0) {
-        ierr = UM_EUPDATE;
-        goto close_backend;
-    }
-
-    if(state->ac_after != NULL)
-        replace_and_runcmd(state->ac_after, sr_map);
-*/
- close_backend:
-    vxpdb_close(db);
-
- close_adb:
+    ret = usermod_run2(db, state);
     vxpdb_unload(db);
-    return ret | (ierr << UM_SHIFT);
+    return ret;
 }
 
 EXPORT_SYMBOL const char *usermod_strerror(int e)
 {
-    switch(e >> UM_SHIFT) {
-        case UM_ELOAD:
-            return "Could not load PDB back-end";
-        case UM_EOPEN:
-            return "Could not open PDB back-end";
-        case UM_EQUERY:
-            return "Error querying the PDB";
-        case UM_ENAMEUSED:
+    switch(e) {
+        case E_OTHER:
+            return "Error";
+        case E_OPEN:
+            return "Could not load/open database";
+        case E_NAME_USED:
             return "User already exists";
-        case UM_EUIDUSED:
-            return "GID already exists";
-        case UM_EUPDATE:
+        case E_UID_USED:
+            return "UID already exists";
+        case E_UPDATE:
             return "Error adding user";
     }
-    return "(unknown usermod error)";
+    return NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -215,6 +183,45 @@ static int usermod_read_config(struct usermod_state *sp) {
     if(err < 0 && ret == 0)
         ret = err;
     return ret;
+}
+
+static int usermod_run2(struct vxpdb_state *db, struct usermod_state *state)
+{
+    int ret;
+    if((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0)
+        return E_OPEN;
+
+    ret = usermod_run3(db, state);
+    vxpdb_close(db);
+    return ret;
+}
+
+static int usermod_run3(struct vxpdb_state *db, struct usermod_state *state)
+{
+    struct vxconfig_usermod *conf = &state->config;
+    struct HXoption sr_map[] = {};
+    struct vxpdb_user search_mask = {}, modify_mask = {};
+    int ret;
+
+    if((ret = vxpdb_getpwnam(db, state->username, NULL)) < 0)
+        return E_OTHER;
+    else if(ret == 0)
+        return E_NO_EXIST;
+
+    if(conf->master_premod != NULL)
+        vxutil_replace_run(conf->master_premod, sr_map);
+    if(conf->user_premod != NULL)
+        vxutil_replace_run(conf->user_premod, sr_map);
+
+    if((ret = vxpdb_usermod(db, &search_mask, &modify_mask)) <= 0)
+        return E_UPDATE;
+
+    if(conf->user_postmod != NULL)
+        vxutil_replace_run(conf->user_postmod, sr_map);
+    if(conf->master_postmod != NULL)
+        vxutil_replace_run(conf->master_postmod, sr_map);
+
+    return E_SUCCESS;
 }
 
 //=============================================================================

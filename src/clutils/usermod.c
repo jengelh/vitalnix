@@ -37,14 +37,14 @@ int main(int argc, const char **argv) {
 
     usermod_fill_defaults(&state);
     if(usermod_get_options(&argc, &argv, &state) <= 0)
-        return UM_EOTHER << UM_SHIFT;
+        return E_OTHER;
 
     if(argc < 2) {
         fprintf(stderr, "You need to specify a username!\n");
-        return UM_EOTHER << UM_SHIFT;
+        return E_OTHER;
     }
 
-    if(((ret = usermod_run(&state)) >> UM_SHIFT) != UM_SUCCESS)
+    if((ret = usermod_run(&state)) != E_SUCCESS)
         fprintf(stderr, "%s: %s\n", usermod_strerror(ret), strerror(errno));
     return ret;
 }

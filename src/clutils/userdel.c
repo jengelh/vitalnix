@@ -37,14 +37,14 @@ int main(int argc, const char **argv) {
 
     userdel_fill_defaults(&state);
     if(userdel_get_options(&argc, &argv, &state) <= 0)
-        return UD_EOTHER << UD_SHIFT;
+        return E_OTHER;
 
     if(argc < 2) {
         fprintf(stderr, "You have to specify a username!\n");
-        return UD_EOTHER << UD_SHIFT;
+        return E_OTHER;
     }
 
-    if(((ret = userdel_run(&state)) >> UD_SHIFT) != UD_SUCCESS)
+    if((ret = userdel_run(&state)) != E_SUCCESS)
         fprintf(stderr, "%s: %s\n", userdel_strerror(ret), strerror(errno));
     return ret;
 }
