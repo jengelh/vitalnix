@@ -192,7 +192,6 @@ static void kill_pwd(const struct HXbtree_node *node) {
 static int mdsync_read_config(struct mdsync_config *c) {
     struct HXoption mdsync_options_table[] = {
         {.ln = "POSTADD_FLUSH",     .type = HXTYPE_NONE,   .ptr = &c->postadd_flush},
-//        {.ln = "DEFAULT_BACKEND",   .type = HXTYPE_STRING, .ptr = &Opt.module_path},
         {.ln = "DEFERRED_DELETION", .type = HXTYPE_LONG,   .ptr = &c->add_opts.defaults.vs_defer},
         {.ln = "PSWD_LEN",          .type = HXTYPE_INT,    .ptr = &c->new_pw_length},
         {.ln = "PSWD_METH",         .type = HXTYPE_NONE,   .cb  = pconfig_crymeth, .uptr = &c->crypw_type},
