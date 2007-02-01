@@ -21,7 +21,9 @@ clutils/userdel.c
 
   -- For details, see the file named "LICENSE.LGPL2"
 =============================================================================*/
+#include <errno.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <libHX.h>
 #include "clutils/userdel_lib.h"
@@ -31,6 +33,7 @@ clutils/userdel.c
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv) {
     struct userdel_state state;
+    int ret;
 
     userdel_fill_defaults(&state);
     if(userdel_get_options(&argc, &argv, &state) <= 0)
@@ -41,7 +44,9 @@ int main(int argc, const char **argv) {
         return UD_EOTHER << UD_SHIFT;
     }
 
-    return userdel_run(&state);
+    if(((ret = userdel_run(&state)) >> UD_SHIFT) != UD_SUCCESS)
+        fprintf(stderr, "%s: %s\n", userdel_strerror(ret), strerror(errno));
+    return ret;
 }
 
 //=============================================================================

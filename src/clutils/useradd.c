@@ -21,7 +21,9 @@ clutils/useradd.c
 
   -- For details, see the file named "LICENSE.LGPL2"
 =============================================================================*/
+#include <errno.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <libHX.h>
 #include <vitalnix/compiler.h>
@@ -33,6 +35,7 @@ clutils/useradd.c
 int main(int argc, const char **argv) {
     struct useradd_state state;
     struct vxpdb_user *user = &state.config.defaults;
+    int ret;
 
     useradd_fill_defaults(&state);
     if(useradd_get_options(&argc, &argv, &state) <= 0)
@@ -49,7 +52,9 @@ int main(int argc, const char **argv) {
         return UA_EOTHER << UA_SHIFT;
     }
 
-    return useradd_run(&state);
+    if(((ret = useradd_run(&state)) >> UA_SHIFT) != UA_SUCCESS)
+        fprintf(stderr, "%s: %s\n", useradd_strerror(ret), strerror(errno));
+    return ret;
 }
 
 //=============================================================================

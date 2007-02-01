@@ -21,7 +21,9 @@ clutils/usermod.c - Modify a user account
 
   -- For details, see the file named "LICENSE.LGPL2"
 =============================================================================*/
+#include <errno.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <libHX.h>
 #include "clutils/usermod_lib.h"
@@ -31,6 +33,7 @@ clutils/usermod.c - Modify a user account
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv) {
     struct usermod_state state;
+    int ret;
 
     usermod_fill_defaults(&state);
     if(usermod_get_options(&argc, &argv, &state) <= 0)
@@ -41,7 +44,9 @@ int main(int argc, const char **argv) {
         return UM_EOTHER << UM_SHIFT;
     }
 
-    return usermod_run(&state);
+    if(((ret = usermod_run(&state)) >> UM_SHIFT) != UM_SUCCESS)
+        fprintf(stderr, "%s: %s\n", usermod_strerror(ret), strerror(errno));
+    return ret;
 }
 
 //=============================================================================
