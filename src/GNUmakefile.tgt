@@ -29,7 +29,7 @@ EXEC_TARGETS := \
 all: \
     ${EXEC_TARGETS} doc \
     libvxcgi.so libvxcli.so libvxcore.so libvxeds.so libvxmdfmt.so \
-    libvxmdsync.so libvxpdb.so libvxplex.so libvxutil.so \
+    libvxmdsync.so libvxpdb.so libvxutil.so \
     drv_mmd.so drv_ldap.so drv_mysql.so drv_shadow.so drv_nss.so \
     drv_nss1.so drv_dummy.so \
     useradd_lib.so \
@@ -71,9 +71,6 @@ libvxmdsync.so: $(call srcobj,libvxmdsync) | libvxeds.so libvxpdb.so libvxutil.s
 
 XLDFLAGS_libvxpdb_so            := -lHX -lvxcore -lvxutil
 libvxpdb.so: $(call srcobj,libvxpdb) | libvxcore.so libvxutil.so
-
-XLDFLAGS_libvxplex_so           := -lHX
-libvxplex.so: $(call srcobj,libvxplex)
 
 ifeq (${MCPU_IS_X86},1)
     XOBJS_libvxutil             += libvxutil/blowfish_x86.o
@@ -153,14 +150,14 @@ tryauth: clutils/tryauth.o | libvxcgi.so
 XLDFLAGS_testcase       := -lvxeds -lvxpdb -lvxutil
 testcase: devutil/testcase.o | libvxeds.so libvxpdb.so libvxutil.so
 
-XLDFLAGS_vxuseradd      := -lvxcli -lvxutil -lvxplex
-vxuseradd: clutils/useradd.o useradd_lib.so | libvxcli.so libvxplex.so
+XLDFLAGS_vxuseradd      := -lvxutil
+vxuseradd: clutils/useradd.o useradd_lib.so
 
-XLDFLAGS_vxusermod      := -lvxcli -lvxutil -lvxplex
-vxusermod: clutils/usermod.o usermod_lib.so | libvxcli.so libvxplex.so libvxutil.so
+XLDFLAGS_vxusermod      := -lvxutil
+vxusermod: clutils/usermod.o usermod_lib.so | libvxutil.so
 
-XLDFLAGS_vxuserdel      := -lvxcli -lvxutil -lvxplex
-vxuserdel: clutils/userdel.o userdel_lib.so | libvxcli.so libvxplex.so libvxutil.so
+XLDFLAGS_vxuserdel      := -lvxutil
+vxuserdel: clutils/userdel.o userdel_lib.so | libvxutil.so
 
 XLDFLAGS_vxgroupadd     := -lHX -lvxpdb -lvxutil
 vxgroupadd: clutils/groupadd.o | libvxpdb.so libvxutil.so

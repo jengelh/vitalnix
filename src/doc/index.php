@@ -67,7 +67,6 @@
   <li><a href="api-libvxmdfmt.php">libvxmdfmt</a></li>
   <li><a href="api-libvxmdsync.php">libvxmdsync</a></li>
   <li><a href="api-libvxpdb.php">libvxpdb</a></li>
-  <li><a href="api-libvxplex.php">libvxplex</a></li>
   <li><a href="api-libvxutil.php">libvxutil</a></li>
 </ul>
 
