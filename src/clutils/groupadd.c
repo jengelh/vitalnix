@@ -70,8 +70,7 @@ int main(int argc, const char **argv) {
     }
 
     if((db = vxpdb_load(database_name)) == NULL) {
-        fprintf(stderr, "Could not load database \"%s\": %s\n",
-                database_name, strerror(errno));
+        perror("Error loading database");
         return E_OPEN;
     }
 
@@ -84,7 +83,7 @@ static int groupadd_main2(struct vxpdb_state *db)
 {
     int ret;
     if((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0) {
-        fprintf(stderr, "Could not open PDB: %s\n", strerror(-ret));
+        fprintf(stderr, "Error opening database: %s\n", strerror(-ret));
         return E_OPEN;
     }
 
@@ -104,7 +103,7 @@ static int groupadd_main3(struct vxpdb_state *db)
     int ret;
 
     if((ret = vxpdb_getgrnam(db, group_name, NULL)) < 0) {
-        fprintf(stderr, "Error querying the PDB: %s\n", strerror(-ret));
+        fprintf(stderr, "Error querying database: %s\n", strerror(-ret));
         return E_OTHER;
     } else if(ret > 0) {
         fprintf(stderr, "Group \"%s\" already exists\n", group_name);

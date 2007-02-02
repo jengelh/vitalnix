@@ -41,12 +41,12 @@ clutils/mdsingle.c
 
 // Definitions
 struct private_info {
-    char *backend_module, *bday, *first_name, *group_name, *pref_username,
+    char *db_name, *bday, *first_name, *group_name, *pref_username,
          *pvgrp, *surname, *uuid;
     int interactive, run_master;
 
     int open_status;
-    struct vxpdb_state *module_handle;
+    struct vxpdb_state *db_handle;
     struct mdsync_workspace *mdsw;
 };
 
@@ -66,8 +66,8 @@ int main(int argc, const char **argv) {
     int ret = EXIT_SUCCESS;
 
     memset(&priv, 0, sizeof(priv));
-    priv.backend_module = HX_strdup("*");
-    priv.run_master     = 1;                    // on by default
+    priv.db_name    = HX_strdup("*");
+    priv.run_master = 1; /* enabled by default */
 
     if(!get_options(&argc, &argv, &priv))
         return EXIT_FAILURE;
@@ -95,24 +95,24 @@ static int single_init(struct private_info *priv) {
         return 0;
     }
 
-    if((priv->module_handle = vxpdb_load(priv->backend_module)) == NULL) {
-        fprintf(stderr, "Could not load PDB back-end: %s\n", strerror(errno));
+    if((priv->db_handle = vxpdb_load(priv->db_name)) == NULL) {
+        perror("Error loading database");
         return 0;
     }
 
-    if((ret = vxpdb_open(priv->module_handle, PDB_WRLOCK)) <= 0) {
-        fprintf(stderr, "Could not open PDB back-end: %s\n", strerror(-ret));
+    if((ret = vxpdb_open(priv->db_handle, PDB_WRLOCK)) <= 0) {
+        fprintf(stderr, "Error opening database: %s\n", strerror(-ret));
         return 0;
     }
 
     priv->open_status = 1;
 
     if((priv->mdsw = mdsw = mdsync_init()) == NULL) {
-        perror("mdsync_init()");
+        perror("Init procedure failed");
         return 0;
     }
 
-    mdsw->database     = priv->module_handle;
+    mdsw->database     = priv->db_handle;
     mdsw->user_private = priv;
     return 1;
 }
@@ -124,7 +124,7 @@ static int single_run(struct private_info *priv) {
     int ret;
 
     if((ret = mdsync_prepare_group(mdsw, priv->group_name)) < 0) {
-        fprintf(stderr, "Error querying the PDB: %s\n", strerror(-ret));
+        fprintf(stderr, "Error querying database: %s\n", strerror(-ret));
         return 0;
     } else if(ret == 0) {
         fprintf(stderr, "Group \"%s\" does not exist\n", priv->group_name);
@@ -158,7 +158,7 @@ static int single_run(struct private_info *priv) {
         HX_strclone(&c->master_postadd, NULL);
     }
     if((ret = mdsync_add(mdsw)) <= 0) {
-        printf("mdsync_add(): %s\n", strerror(-ret));
+        printf("Add procedure failed: %s\n", strerror(-ret));
         return 0;
     }
 
@@ -174,12 +174,12 @@ static int single_run(struct private_info *priv) {
 static void single_cleanup(struct private_info *priv) {
     if(priv->mdsw != NULL)
         mdsync_free(priv->mdsw);
-    if(priv->module_handle != NULL) {
+    if(priv->db_handle != NULL) {
         if(priv->open_status)
-            vxpdb_close(priv->module_handle);
-        vxpdb_unload(priv->module_handle);
+            vxpdb_close(priv->db_handle);
+        vxpdb_unload(priv->db_handle);
     }
-    free(priv->backend_module);
+    free(priv->db_name);
     free(priv->bday);
     free(priv->first_name);
     free(priv->group_name);
@@ -230,7 +230,7 @@ static void single_interactive(struct private_info *priv) {
             .defl     = priv->group_name,
             .type     = HXTYPE_STRING,
             .ptr      = &priv->group_name,
-            .uptr     = priv->backend_module,
+            .uptr     = priv->db_name,
             .flags    = VXCQ_ZNULL,
             .validate = validate_group,
         },
@@ -272,7 +272,7 @@ static void single_interactive(struct private_info *priv) {
     vxcli_query_v(table_1);
     if(!isupper(*priv->first_name))
         printf("WARNING: The first char of the name is not uppercase, which "
-               "is incorrect in most cases.\n");
+               "is incorrect in most cases. (Hit Ctrl+C to exit.)\n");
 
     vxutil_propose_lname(tmp, sizeof(tmp), priv->surname, priv->first_name);
     vxcli_query_v(table_2);
@@ -289,11 +289,13 @@ static int validate_group(const struct vxcq_entry *e) {
     int ret;
 
     if((mh = vxpdb_load(e->uptr)) == NULL) {
-        fprintf(stderr, "vxpdb_load(): %s\n", strerror(errno));
+        fprintf(stderr, "Could not load database for group validation: %s\n",
+                strerror(errno));
         return 0;
     }
     if((ret = vxpdb_open(mh, 0)) <= 0) {
-        fprintf(stderr, "vxpdb_open(): %s\n", strerror(-ret));
+        fprintf(stderr, "Could not open database for group validation: %s\n",
+                strerror(-ret));
         goto out_open;
     }
 
@@ -303,7 +305,8 @@ static int validate_group(const struct vxcq_entry *e) {
         ret = vxpdb_getgrnam(mh, group_name, &group);
 
     if(ret < 0)
-        fprintf(stderr, "vxpdb_getgr*(): %s\n", strerror(-ret));
+        fprintf(stderr, "Error querying database for group validation: %s\n",
+                strerror(-ret));
     else if(ret == 0)
         fprintf(stderr, "Group \"%s\" does not exist\n", group_name);
 
@@ -321,22 +324,22 @@ static int get_options(int *argc, const char ***argv, struct private_info *p) {
          .help = "Do run MASTER_* scripts"},
         {.sh = 'I', .type = HXTYPE_NONE, .ptr = &p->interactive,
          .help = "Run in interactive mode"},
-        {.sh = 'M', .type = HXTYPE_STRING, .ptr = &p->backend_module,
-         .help = "Backend module", .htyp = "NAME"},
+        {.sh = 'M', .type = HXTYPE_STRING, .ptr = &p->db_name,
+         .help = "Use specified database", .htyp = "name"},
         {.sh = 'V', .type = HXTYPE_NONE, .cb = show_version,
          .help = "Show version information"},
-        {.sh = 'b', .type = HXTYPE_STRING, .ptr = &p->bday, .htyp = "DATE",
+        {.sh = 'b', .type = HXTYPE_STRING, .ptr = &p->bday, .htyp = "date",
          .help = "Generate a UUID from name and birthdate (overridden by -x)"},
         {.sh = 'f', .type = HXTYPE_STRING, .ptr = &p->first_name,
          .help = "First name of the user"},
         {.sh = 'g', .type = HXTYPE_STRING, .ptr = &p->group_name,
-         .help = "System group to put this user in", .htyp = "GROUP"},
+         .help = "System group to put this user in", .htyp = "group"},
         {.sh = 'p', .type = HXTYPE_STRING, .ptr = &p->pvgrp,
          .help = "User-defined private group id"},
         {.sh = 's', .type = HXTYPE_STRING, .ptr = &p->surname,
          .help = "Last name of the user"},
         {.sh = 'x', .type = HXTYPE_STRING, .ptr = &p->uuid,
-         .help = "Unique identifier for user", .htyp = "UUID"},
+         .help = "Unique identifier for user", .htyp = "uuid"},
         HXOPT_AUTOHELP,
         HXOPT_TABLEEND,
     };

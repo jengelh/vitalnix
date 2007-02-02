@@ -61,7 +61,7 @@ enum dump_what_e {
     DUMP_VXSHADOW,
     DUMP_GROUP,
 };
-static char *Module = "*";
+static char *Database = "*";
 static long Uid_range[2] = {0, LONG_MAX};
 static int Dump_what[4] = {1, 1, 1, 1};
 static void (*Dump_functions[])(struct vxpdb_state *) = {
@@ -73,17 +73,18 @@ static void (*Dump_functions[])(struct vxpdb_state *) = {
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv) {
     struct vxpdb_state *db;
+    int ret;
 
     if(!get_options(&argc, &argv))
         return EXIT_FAILURE;
 
-    if((db = vxpdb_load(Module)) == NULL) {
-        fprintf(stderr, "vxpdb_load(\"%s\"): %s\n", Module, strerror(errno));
+    if((db = vxpdb_load(Database)) == NULL) {
+        perror("Error loading database");
         return EXIT_FAILURE;
     }
-    if(vxpdb_open(db, 0) <= 0) {
+    if((ret = vxpdb_open(db, 0)) <= 0) {
         vxpdb_unload(db);
-        perror("vxpdb_open()");
+        fprintf(stderr, "Error opening database: %s\n", strerror(-ret));
         return EXIT_FAILURE;
     }
 
@@ -394,15 +395,15 @@ static void d_shadow(struct vxpdb_state *db) {
 //-----------------------------------------------------------------------------
 static int get_options(int *argc, const char ***argv) {
     struct HXoption options_table[] = {
-        {.sh = 'M', .type = HXTYPE_STRING, .ptr = &Module,
+        {.sh = 'M', .type = HXTYPE_STRING, .ptr = &Database,
          .help = "Use specified database", .htyp = "name"},
         {.sh = 'V', .type = HXTYPE_NONE, .cb = show_version,
          .help = "Show version information"},
         {.sh = 't', .type = HXTYPE_STRING, .cb = getopt_t,
-         .help = "Output format (shadow, mysql, ldif)", .htyp = "STRING"},
+         .help = "Output format (shadow, mysql, ldif)", .htyp = "string"},
 	{.sh = 'u', .type = HXTYPE_STRING, .cb = getopt_u,
-	 .help = "Specify UID range to include (from:to)", .htyp = "RANGE"},
-        {.sh = 'w', .type = HXTYPE_STRING, .cb = getopt_w, .htyp = "STRING",
+	 .help = "Specify UID range to include (from:to)", .htyp = "range"},
+        {.sh = 'w', .type = HXTYPE_STRING, .cb = getopt_w, .htyp = "string",
          .help = "Export what (default: passwd,shadow,vxshadow,group)"},
         HXOPT_AUTOHELP,
         HXOPT_TABLEEND,

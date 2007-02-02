@@ -78,7 +78,7 @@ static int groupdel_main2(struct vxpdb_state *db)
 {
     int ret;
     if((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0) {
-        fprintf(stderr, "Could not open PDB: %s\n", strerror(-ret));
+        fprintf(stderr, "Could not open database: %s\n", strerror(-ret));
         return E_OPEN;
     }
 
@@ -97,7 +97,7 @@ static int groupdel_main3(struct vxpdb_state *db)
     int ret;
 
     if((ret = vxpdb_getgrnam(db, group_name, &group_info)) < 0) {
-        fprintf(stderr, "Error querying the PDB: %s\n", strerror(-ret));
+        fprintf(stderr, "Error querying database: %s\n", strerror(-ret));
         return E_OTHER;
     } else if(ret == 0) {
         fprintf(stderr, "Group \"%s\" does not exist\n", group_name);

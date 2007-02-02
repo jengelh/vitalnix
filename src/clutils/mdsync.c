@@ -41,11 +41,11 @@ clutils/mdsync.c
                         "the Synchronization process\n" \
                         "to complete all jobs.\n"
 struct private_info {
-    char *backend_module, *group_name, *input_file, *input_fmt, *output_file;
+    char *db_name, *group_name, *input_file, *input_fmt, *output_file;
     int debug, no_add, no_update, no_delete, yestoall;
 
     int open_status;
-    struct vxpdb_state *module_handle;
+    struct vxpdb_state *db_handle;
     struct mdsync_workspace *mdsw;
     time_t last_print;
 };
@@ -75,7 +75,7 @@ int main(int argc, const char **argv) {
     int ret = EXIT_SUCCESS;
 
     memset(&priv, 0, sizeof(priv));
-    priv.backend_module = HX_strdup("*");
+    priv.db_name = HX_strdup("*");
 
     if(!get_options(&argc, &argv, &priv))
         return EXIT_FAILURE;
@@ -99,24 +99,24 @@ static int sync_init(struct private_info *priv) {
     if(strcmp(priv->output_file, "-") == 0)
         HX_strclone(&priv->output_file, "/dev/stdout");
 
-    if((priv->module_handle = vxpdb_load(priv->backend_module)) == NULL) {
-        fprintf(stderr, "Could not load PDB back-end: %s\n", strerror(errno));
+    if((priv->db_handle = vxpdb_load(priv->db_name)) == NULL) {
+        perror("Could not load database");
         return 0;
     }
 
-    if((ret = vxpdb_open(priv->module_handle, PDB_WRLOCK)) <= 0) {
-        fprintf(stderr, "Could not open PDB back-end: %s\n", strerror(-ret));
+    if((ret = vxpdb_open(priv->db_handle, PDB_WRLOCK)) <= 0) {
+        fprintf(stderr, "Could not open database: %s\n", strerror(-ret));
         return 0;
     }
 
     priv->open_status = 1;
 
     if((priv->mdsw = mdsw = mdsync_init()) == NULL) {
-        perror("mdsync_init()");
+        perror("Init procedure failed");
         return 0;
     }
 
-    mdsw->database     = priv->module_handle;
+    mdsw->database     = priv->db_handle;
     mdsw->report       = cb_report;
     mdsw->user_private = priv;
     return 1;
@@ -128,7 +128,7 @@ static int sync_run(struct private_info *priv) {
     int ret;
 
     if((ret = mdsync_prepare_group(mdsw, priv->group_name)) < 0) {
-        fprintf(stderr, "Error querying the PDB: %s\n", strerror(-ret));
+        fprintf(stderr, "Error querying database: %s\n", strerror(-ret));
         return 0;
     } else if(ret == 0) {
         fprintf(stderr, "Group \"%s\" does not exist\n", priv->group_name);
@@ -185,7 +185,7 @@ static int sync_add(struct private_info *priv) {
     if(!ask_continue(priv, "Continue with adding users?\n"))
         return 1;
     if((ret = mdsync_add(priv->mdsw)) <= 0) {
-        printf("mdsync_add(): %s\n" NOTICE_REDO, strerror(-ret));
+        printf("Add procedure failed: %s\n" NOTICE_REDO, strerror(-ret));
         return 0;
     }
     printf("Successfully added %ld users\n", priv->mdsw->add_req->itemcount);
@@ -209,7 +209,7 @@ static int sync_mod(struct private_info *priv) {
     if(!ask_continue(priv, "Continue with modifying users?\n"))
         return 1;
     if((ret = mdsync_mod(priv->mdsw)) <= 0) {
-        printf("mdsync_mod(): %s\n" NOTICE_REDO, strerror(-ret));
+        printf("Modify procedure failred: %s\n" NOTICE_REDO, strerror(-ret));
         return 0;
     }
     printf("Successfully modified %ld timers\n", total);
@@ -230,7 +230,7 @@ static int sync_del(struct private_info *priv) {
     if(!ask_continue(priv, "Continue with deleting users?\n"))
         return 1;
     if((ret = mdsync_del(priv->mdsw)) <= 0) {
-        printf("mdsync_del(): %s\n" NOTICE_REDO, strerror(-ret));
+        printf("Deletion procedure failed: %s\n" NOTICE_REDO, strerror(-ret));
         return 0;
     }
     printf("Successfully deleted %ld users\n",
@@ -241,12 +241,12 @@ static int sync_del(struct private_info *priv) {
 static void sync_cleanup(struct private_info *priv) {
     if(priv->mdsw != NULL)
         mdsync_free(priv->mdsw);
-    if(priv->module_handle != NULL) {
+    if(priv->db_handle != NULL) {
         if(priv->open_status)
-            vxpdb_close(priv->module_handle);
-        vxpdb_unload(priv->module_handle);
+            vxpdb_close(priv->db_handle);
+        vxpdb_unload(priv->db_handle);
     }
-    free(priv->backend_module);
+    free(priv->db_name);
     free(priv->group_name);
     free(priv->input_file);
     free(priv->input_fmt);
@@ -348,20 +348,20 @@ static int get_options(int *argc, const char ***argv, struct private_info *p) {
     struct HXoption options_table[] = {
         {.sh = 'D', .type = HXTYPE_NONE, .ptr = &p->debug,
          .help = "Enable some more debugging output"},
-        {.sh = 'M', .type = HXTYPE_STRING, .ptr = &p->backend_module,
-         .help = "Backend module", .htyp = "NAME"},
+        {.sh = 'M', .type = HXTYPE_STRING, .ptr = &p->db_name,
+         .help = "Use sepcified database", .htyp = "name"},
         {.sh = 'V', .type = HXTYPE_NONE, .cb = show_version,
          .help = "Show version information"},
         {.sh = 'Y', .type = HXTYPE_NONE, .ptr = &p->yestoall,
          .help = "Assume yes on all questions"},
         {.sh = 'g', .type = HXTYPE_STRING, .ptr = &p->group_name,
-         .help = "System group to synchronize against", .htyp = "NAME"},
+         .help = "System group to synchronize against", .htyp = "name"},
         {.sh = 'i', .type = HXTYPE_STRING, .ptr = &p->input_file,
-         .help = "External Data Source", .htyp = "FILE"},
+         .help = "External Data Source", .htyp = "file"},
         {.sh = 't', .type = HXTYPE_STRING, .ptr = &p->input_fmt,
          .help = "EDS type", .htyp = "TYPE"},
         {.sh = 'o', .type = HXTYPE_STRING, .ptr = &p->output_file,
-         .help = "Output log file (for -S)", .htyp = "FILE"},
+         .help = "Output log file (for -S)", .htyp = "file"},
         {.ln = "no-add", .type = HXTYPE_NONE, .ptr = &p->no_add,
          .help = "Do not add any users"},
         {.ln = "no-del", .type = HXTYPE_NONE, .ptr = &p->no_delete,

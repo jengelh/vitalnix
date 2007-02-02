@@ -49,9 +49,8 @@ int main(int argc, const char **argv) {
 
     if(List_styles)
         list_styles();
-    else
-        if(pwlfmt(&i) <= 0)
-            ret = EXIT_FAILURE;
+    else if(pwlfmt(&i) <= 0)
+        ret = EXIT_FAILURE;
 
     free(i.style_name);
     free(i.input_file);
@@ -119,13 +118,13 @@ static int get_options(int *argc, const char ***argv,
         {.sh = 'V', .type = HXTYPE_NONE, .cb = show_version,
          .help = "Show version information"},
         {.sh = 'i', .type = HXTYPE_STRING, .ptr = &i->input_file,
-         .help = "Input file", .htyp = "FILE"},
+         .help = "Input file", .htyp = "file"},
         {.sh = 'o', .type = HXTYPE_STRING, .ptr = &i->output_file,
-         .help = "Output file", .htyp = "FILE"},
+         .help = "Output file", .htyp = "file"},
         {.sh = 's', .type = HXTYPE_STRING, .ptr = &i->style_name,
          .help = "Style to use"},
         {.sh = 't', .type = HXTYPE_STRING, .ptr = &i->template_file,
-         .help = "Template for style (if applies)", .htyp = "FILE"},
+         .help = "Template for style (if applies)", .htyp = "file"},
         {.sh = 'w', .type = HXTYPE_NONE, .ptr = &List_styles,
          .help = "Show available styles"},
         HXOPT_AUTOHELP,

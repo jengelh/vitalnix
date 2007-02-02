@@ -87,7 +87,7 @@ static int groupmod_main2(struct vxpdb_state *db)
 {
     int ret;
     if((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0) {
-        fprintf(stderr, "Could not open PDB: %s\n", strerror(-ret));
+        fprintf(stderr, "Could not open database: %s\n", strerror(-ret));
         return E_OPEN;
     }
 
@@ -108,7 +108,7 @@ static int groupmod_main3(struct vxpdb_state *db)
     int ret;
 
     if((ret = vxpdb_getgrnam(db, group_name, &current)) < 0) {
-        fprintf(stderr, "Error querying the PDB: %s\n", strerror(-ret));
+        fprintf(stderr, "Error querying database: %s\n", strerror(-ret));
         return E_OTHER;
     } else if(ret == 0) {
         fprintf(stderr, "Group \"%s\" does not exist\n", group_name);
@@ -161,9 +161,8 @@ static int groupmod_get_options(int *argc, const char ***argv) {
          .help = "Use specified database", .htyp = "name"},
 
         // Default options
-        {.sh = 'g', .type = HXTYPE_LONG, .ptr = &new_group_id,
-         .help = "Numerical value of the group's ID (UDB module might ignore this)",
-         .htyp = "gid"},
+        {.sh = 'g', .type = HXTYPE_LONG, .ptr = &new_group_id, .htyp = "gid",
+         .help = "Numerical value of the group's ID (UDB module might ignore this)"},
         {.sh = 'n', .type = HXTYPE_STRING, .ptr = &new_group_name,
          .help = "New name of the group"},
         {.sh = 'o', .type = HXTYPE_NONE, .ptr = &allow_dup,

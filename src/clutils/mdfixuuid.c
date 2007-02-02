@@ -33,7 +33,7 @@ clutils/mdfixuuid.c
 
 // Definitions
 struct mdf_priv {
-    char *backend_module, *bday, *realname, *username;
+    char *database, *bday, *realname, *username;
 };
 
 // Functions
@@ -47,16 +47,15 @@ int main(int argc, const char **argv) {
     struct mdf_priv p = {};
     int ret;
 
-    p.backend_module = "*";
+    p.database = "*";
     if(!get_options(&argc, &argv, &p))
         return EXIT_FAILURE;
-    if((db = vxpdb_load(p.backend_module)) == NULL) {
-        fprintf(stderr, "vxpdb_load(\"%s\"): %s\n", p.backend_module,
-                strerror(errno));
+    if((db = vxpdb_load(p.database)) == NULL) {
+        fprintf(stderr, "Error loading database: %s\n", strerror(errno));
         return EXIT_FAILURE;
     }
     if((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0) {
-        fprintf(stderr, "vxpdb_open(): %s\n", strerror(-ret));
+        fprintf(stderr, "Error opening database: %s\n", strerror(-ret));
         return EXIT_FAILURE;
     }
 
@@ -69,7 +68,7 @@ int main(int argc, const char **argv) {
         return EXIT_FAILURE;
 
     if((ret = vxpdb_usermod(db, &sr_mask, &mod_mask)) <= 0) {
-        fprintf(stderr, "vxpdb_usermod(): %s\n", strerror(-ret));
+        fprintf(stderr, "User update unsuccessful: %s\n", strerror(-ret));
         return EXIT_FAILURE;
     }
 
@@ -84,14 +83,17 @@ static char *rebuild_uuid(const struct mdf_priv *p, struct vxpdb_state *db) {
     long xday = 0;
     int ret;
 
-    if((ret = vxpdb_getpwnam(db, p->username, &info)) <= 0) {
-        fprintf(stderr, "vxpdb_getpwnam(): %s\n", strerror(-ret));
+    if((ret = vxpdb_getpwnam(db, p->username, &info)) < 0) {
+        fprintf(stderr, "Error querying database: %s\n", strerror(-ret));
+        return NULL;
+    } else if(ret == 0) {
+        fprintf(stderr, "User \"%s\" not found\n", p->username);
         return NULL;
     }
 
     if(p->bday != NULL) {
         if((xday = vxutil_string_xday(p->bday)) == -1) {
-            fprintf(stderr, "Invalid date\n");
+            fprintf(stderr, "Invalid date \"%s\"\n", p->bday);
             goto out;
         }
     } else if(info.vs_uuid != NULL) {
@@ -113,10 +115,10 @@ static char *rebuild_uuid(const struct mdf_priv *p, struct vxpdb_state *db) {
 //-----------------------------------------------------------------------------
 static int get_options(int *argc, const char ***argv, struct mdf_priv *p) {
     struct HXoption options_table[] = {
-        {.sh = 'M', .type = HXTYPE_STRING, .ptr = &p->backend_module,
-         .help = "Backend module", .htyp = "NAME"},
+        {.sh = 'M', .type = HXTYPE_STRING, .ptr = &p->database,
+         .help = "Use specified database", .htyp = "name"},
         {.sh = 'b', .type = HXTYPE_STRING, .ptr = &p->bday,
-         .help = "New birthdate", .htyp = "DATE"},
+         .help = "New birthdate", .htyp = "date"},
         {.sh = 'r', .type = HXTYPE_STRING, .ptr = &p->realname,
          .help = "New realname"},
         {.sh = 'u', .type = HXTYPE_STRING, .ptr = &p->username,

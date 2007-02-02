@@ -199,7 +199,7 @@ static int get_options(int *argc, const char ***argv) {
         {.sh = 'L', .type = HXTYPE_STRDQ, .ptr = Dirs,
          .help = "Additional search directory", .htyp = "dir"},
         {.sh = 'O', .type = HXTYPE_NONE, .ptr = &OP_open,
-         .help = "Open the PDB database driver (vxpdb_open function)"},
+         .help = "Open the database driver (vxpdb_open function)"},
         {.sh = 'V', .type = HXTYPE_NONE, .cb = show_version,
          .help = "Show version information"},
         HXOPT_AUTOHELP,

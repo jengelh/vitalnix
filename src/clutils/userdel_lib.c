@@ -140,9 +140,9 @@ static void userdel_getopt_postdel(const struct HXoptcb *cbi)
 static int userdel_read_config(struct userdel_state *state) {
     int err, ret = 0;
     struct HXoption config_table[] = {
-        {.ln = "REMOVE_CRON", .type = HXTYPE_BOOL,   .ptr = &state->rm_cron},
-        {.ln = "REMOVE_HOME", .type = HXTYPE_BOOL,   .ptr = &state->rm_home},
-        {.ln = "REMOVE_MAIL", .type = HXTYPE_BOOL,   .ptr = &state->rm_mail},
+        {.ln = "REMOVE_CRON", .type = HXTYPE_BOOL, .ptr = &state->rm_cron},
+        {.ln = "REMOVE_HOME", .type = HXTYPE_BOOL, .ptr = &state->rm_home},
+        {.ln = "REMOVE_MAIL", .type = HXTYPE_BOOL, .ptr = &state->rm_mail},
         HXOPT_TABLEEND,
     };
     err = vxconfig_read_userdel(CONFIG_SYSCONFDIR "/userdel.conf",
