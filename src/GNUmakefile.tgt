@@ -31,10 +31,7 @@ all: \
     libvxcgi.so libvxcli.so libvxcore.so libvxeds.so libvxmdfmt.so \
     libvxmdsync.so libvxpdb.so libvxutil.so \
     drv_mmd.so drv_ldap.so drv_mysql.so drv_shadow.so drv_nss.so \
-    drv_nss1.so drv_dummy.so \
-    useradd_lib.so \
-    usermod_lib.so \
-    userdel_lib.so
+    drv_nss1.so drv_dummy.so
 
 doc: $(patsubst ${S}/%.php,%.html,$(wildcard ${S}/doc/[a-z]*.php)) \
      $(patsubst ${S}/%.php,%.txt,$(wildcard ${S}/doc/[a-z]*.php)) \
@@ -150,14 +147,14 @@ tryauth: clutils/tryauth.o | libvxcgi.so
 XLDFLAGS_testcase       := -lvxeds -lvxpdb -lvxutil
 testcase: devutil/testcase.o | libvxeds.so libvxpdb.so libvxutil.so
 
-XLDFLAGS_vxuseradd      := -lvxutil
-vxuseradd: clutils/useradd.o useradd_lib.so
+XLDFLAGS_vxuseradd      := -lHX -lvxpdb -lvxutil
+vxuseradd: clutils/useradd.o | libvxpdb.so libvxutil.so
 
-XLDFLAGS_vxusermod      := -lvxutil
-vxusermod: clutils/usermod.o usermod_lib.so | libvxutil.so
+XLDFLAGS_vxusermod      := -lHX -lvxpdb -lvxutil
+vxusermod: clutils/usermod.o | libvxpdb.so libvxutil.so
 
-XLDFLAGS_vxuserdel      := -lvxutil
-vxuserdel: clutils/userdel.o userdel_lib.so | libvxutil.so
+XLDFLAGS_vxuserdel      := -lHX -lvxpdb -lvxutil
+vxuserdel: clutils/userdel.o | libvxpdb.so libvxutil.so
 
 XLDFLAGS_vxgroupadd     := -lHX -lvxpdb -lvxutil
 vxgroupadd: clutils/groupadd.o | libvxpdb.so libvxutil.so
@@ -167,15 +164,6 @@ vxgroupmod: clutils/groupmod.o | libvxpdb.so libvxutil.so
 
 XLDFLAGS_vxgroupdel     := -lHX -lvxpdb -lvxutil
 vxgroupdel: clutils/groupdel.o | libvxpdb.so libvxutil.so
-
-XLDFLAGS_useradd_lib_so := -lHX -lvxpdb -lvxutil
-useradd_lib.so: clutils/useradd_lib.o | libvxpdb.so libvxutil.so
-
-XLDFLAGS_usermod_lib_so := -lHX -lvxpdb -lvxutil
-usermod_lib.so: clutils/usermod_lib.o | libvxpdb.so libvxutil.so
-
-XLDFLAGS_userdel_lib_so := -lHX -lvxpdb -lvxutil
-userdel_lib.so: clutils/userdel_lib.o | libvxpdb.so libvxutil.so
 
 ### VITALNIX STEELMILL --------------------------------------------------------
 #
