@@ -31,6 +31,7 @@ cf_eprefix="$cf_prefix";
 cf_cpux86="0";
 cf_debug="1";
 cf_profile="0";
+cf_svnmark=1;
 cf_strip="true";
 
 function show_usage() {
@@ -125,6 +126,8 @@ function parse_args() {
                 cf_includedir="$ac_val";;
             (--libdir)
                 cf_libdir="$ac_val";;
+            (--no-svnmark)
+                cf_svnmark=0;;
             (--prefix)
                 cf_prefix="$ac_val";;
             (--sysconfdir)
@@ -153,7 +156,7 @@ function set_defaults() {
     [ -z "$cf_libdir"     ] && cf_libdir="$cf_eprefix/lib";
     [ -z "$cf_sysconfdir" ] && cf_sysconfdir="$cf_prefix/etc";
 
-    if [ -x `which svnversion` ]; then
+    if [ "$cf_svnmark" -eq 1 -a -x `which svnversion` ]; then
         rev=`svnversion "$cf_basedir"`;
         if [ "$?" -eq 0 -a "$rev" != "exported" ]; then
             cf_nicver="${cf_nicver}_SVN$rev";
@@ -195,6 +198,7 @@ function xecho() {
 }
 
 function output_vars() {
+    xecho "Configuring version" "$cf_nicver";
     xecho "C compiler" "$CC";
     xecho "C++ compiler" "$CXX";
     xecho "Extra compiler flags" "$XCFLAGS1";
