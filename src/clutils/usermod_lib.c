@@ -27,24 +27,65 @@ clutils/usermod_lib.c
 #include <libHX.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
-#include "clutils/usermod_lib.h"
 #include <vitalnix/libvxpdb/config.h>
 #include <vitalnix/libvxpdb/xafunc.h>
 #include <vitalnix/libvxpdb/xwfunc.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
+/* Definitions */
+enum {
+    E_SUCCESS = 0,
+    E_OTHER,
+    E_OPEN,
+    E_NO_EXIST,
+    E_UID_USED,
+    E_NAME_USED,
+    E_UPDATE,
+    E_POST,
+};
+
+struct usermod_state {
+    char *username;
+    struct vxpdb_user newstuff;
+    struct vxconfig_usermod config;
+    const char *database;
+    int allow_dup, lock_account, move_home;
+};
+
 // Functions
+static int usermod_fill_defaults(struct usermod_state *);
+static int usermod_get_options(int *, const char ***, struct usermod_state *);
 static void usermod_getopt_expire(const struct HXoptcb *);
 static void usermod_getopt_premod(const struct HXoptcb *);
 static void usermod_getopt_postmod(const struct HXoptcb *);
 static int usermod_read_config(struct usermod_state *);
+static int usermod_run(struct usermod_state *);
 static int usermod_run2(struct vxpdb_state *, struct usermod_state *);
 static int usermod_run3(struct vxpdb_state *, struct usermod_state *);
 static void usermod_show_version(const struct HXoptcb *);
+static const char *usermod_strerror(int);
 
 //-----------------------------------------------------------------------------
-EXPORT_SYMBOL int usermod_fill_defaults(struct usermod_state *sp)
+int main(int argc, const char **argv) {
+    struct usermod_state state;
+    int ret;
+
+    usermod_fill_defaults(&state);
+    if(usermod_get_options(&argc, &argv, &state) <= 0)
+        return E_OTHER;
+
+    if(argc < 2) {
+        fprintf(stderr, "You need to specify a username!\n");
+        return E_OTHER;
+    }
+
+    if((ret = usermod_run(&state)) != E_SUCCESS)
+        fprintf(stderr, "%s: %s\n", usermod_strerror(ret), strerror(errno));
+    return ret;
+}
+
+static int usermod_fill_defaults(struct usermod_state *sp)
 {
     struct vxpdb_user *u = &sp->newstuff;
     int ret;
@@ -57,7 +98,7 @@ EXPORT_SYMBOL int usermod_fill_defaults(struct usermod_state *sp)
     return 1;
 }
 
-EXPORT_SYMBOL int usermod_get_options(int *argc, const char ***argv,
+static int usermod_get_options(int *argc, const char ***argv,
   struct usermod_state *sp)
 {
     struct vxconfig_usermod *conf = &sp->config;
@@ -120,7 +161,7 @@ EXPORT_SYMBOL int usermod_get_options(int *argc, const char ***argv,
     return 1;
 }
 
-EXPORT_SYMBOL int usermod_run(struct usermod_state *state)
+static int usermod_run(struct usermod_state *state)
 {
     struct vxpdb_state *db;
     int ret;
@@ -133,7 +174,7 @@ EXPORT_SYMBOL int usermod_run(struct usermod_state *state)
     return ret;
 }
 
-EXPORT_SYMBOL const char *usermod_strerror(int e)
+static const char *usermod_strerror(int e)
 {
     switch(e) {
         case E_OTHER:
@@ -150,7 +191,6 @@ EXPORT_SYMBOL const char *usermod_strerror(int e)
     return NULL;
 }
 
-//-----------------------------------------------------------------------------
 static void usermod_getopt_expire(const struct HXoptcb *cbi) {
     struct vxpdb_user *user = cbi->current->ptr;
     user->sp_expire = vxutil_string_iday(cbi->s);

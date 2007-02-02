@@ -29,7 +29,6 @@ clutils/useradd_lib.c
 #include <libHX.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
-#include "clutils/useradd_lib.h"
 #include <vitalnix/libvxpdb/config.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxpdb/xafunc.h>
@@ -37,24 +36,71 @@ clutils/useradd_lib.c
 #include <vitalnix/libvxutil/defines.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
+/* Definitions */
+enum {
+    E_SUCCESS = 0,
+    E_OTHER,
+    E_OPEN,
+    E_UID_USED,
+    E_NAME_USED,
+    E_UPDATE,
+    E_POST,
+};
+
+struct useradd_state {
+    struct vxconfig_useradd config;
+    const char *database;
+    int allow_dup, force, sys_uid;
+};
+
 // Functions
+static int useradd_fill_defaults(struct useradd_state *);
+static char *useradd_genhome(struct useradd_state *);
+static int useradd_get_options(int *, const char ***, struct useradd_state *);
 static void useradd_getopt_expire(const struct HXoptcb *);
 static void useradd_getopt_preadd(const struct HXoptcb *);
 static void useradd_getopt_postadd(const struct HXoptcb *);
 static int useradd_read_config(struct useradd_state *);
+static int useradd_run(struct useradd_state *);
 static int useradd_run2(struct vxpdb_state *, struct useradd_state *);
 static int useradd_run3(struct vxpdb_state *, struct useradd_state *,
     struct vxpdb_user *);
 static void useradd_show_version(const struct HXoptcb *);
+static const char *useradd_strerror(int);
 
 //-----------------------------------------------------------------------------
+int main(int argc, const char **argv) {
+    struct useradd_state state;
+    struct vxpdb_user *user = &state.config.defaults;
+    int ret;
+
+    useradd_fill_defaults(&state);
+    if(useradd_get_options(&argc, &argv, &state) <= 0)
+        return E_OTHER;
+
+    if(argc > 1) {
+        HX_strclone(&user->pw_name, argv[1]);
+        if(user->pw_home == NULL)
+            user->pw_home = useradd_genhome(&state);
+    }
+
+    if(state.config.defaults.pw_name == NULL) {
+        fprintf(stderr, "You have to specify a username!\n");
+        return E_OTHER;
+    }
+
+    if((ret = useradd_run(&state)) != E_SUCCESS)
+        fprintf(stderr, "%s: %s\n", useradd_strerror(ret), strerror(errno));
+    return ret;
+}
+
 /*  useradd_fill_defautls
     @state:     pointer to useradd state
 
     Fills @state with the hardcoded defaults and with the defaults from
     configuration file.
 */
-EXPORT_SYMBOL int useradd_fill_defaults(struct useradd_state *state)
+static int useradd_fill_defaults(struct useradd_state *state)
 {
     struct vxconfig_useradd *conf = &state->config;
     struct vxpdb_user *user       = &conf->defaults;
@@ -81,7 +127,7 @@ EXPORT_SYMBOL int useradd_fill_defaults(struct useradd_state *state)
     Generate a home directory path based upon the split level that was set in
     the configuration file.
 */
-EXPORT_SYMBOL char *useradd_genhome(struct useradd_state *state)
+static char *useradd_genhome(struct useradd_state *state)
 {
     struct vxconfig_useradd *conf = &state->config;
     struct vxpdb_user *user       = &conf->defaults;
@@ -94,7 +140,7 @@ EXPORT_SYMBOL char *useradd_genhome(struct useradd_state *state)
                      user->pw_name, conf->split_level));
 }
 
-EXPORT_SYMBOL int useradd_get_options(int *argc, const char ***argv,
+static int useradd_get_options(int *argc, const char ***argv,
   struct useradd_state *state)
 {
     struct vxconfig_useradd *conf = &state->config;
@@ -157,7 +203,7 @@ EXPORT_SYMBOL int useradd_get_options(int *argc, const char ***argv,
     return 1;
 }
 
-EXPORT_SYMBOL int useradd_run(struct useradd_state *state)
+static int useradd_run(struct useradd_state *state)
 {
     struct vxpdb_state *db;
     int ret;
@@ -170,7 +216,7 @@ EXPORT_SYMBOL int useradd_run(struct useradd_state *state)
     return ret;
 }
 
-EXPORT_SYMBOL const char *useradd_strerror(int e)
+static const char *useradd_strerror(int e)
 {
     switch(e) {
         case E_OTHER:
@@ -189,7 +235,6 @@ EXPORT_SYMBOL const char *useradd_strerror(int e)
     return NULL;
 }
 
-//-----------------------------------------------------------------------------
 static void useradd_getopt_expire(const struct HXoptcb *cbi) {
     struct vxpdb_user *user = cbi->current->ptr;
     user->sp_expire = vxutil_string_iday(cbi->s);

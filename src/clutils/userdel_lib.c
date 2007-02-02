@@ -29,7 +29,6 @@ clutils/userdel_lib.c
 #include <libHX.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
-#include "clutils/userdel_lib.h"
 #include <vitalnix/libvxpdb/config.h>
 #include <vitalnix/libvxpdb/xafunc.h>
 #include <vitalnix/libvxpdb/xwfunc.h>
@@ -37,17 +36,57 @@ clutils/userdel_lib.c
 #include <vitalnix/libvxutil/defines.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
+/* Definitions */
+enum {
+    E_SUCCESS = 0,
+    E_OTHER,
+    E_OPEN,
+    E_NO_EXIST,
+    E_DENY,
+    E_UPDATE,
+    E_POST,
+};
+
+struct userdel_state {
+    char *username;
+    struct vxconfig_userdel config;
+    const char *database;
+    int force, rm_cron, rm_home, rm_mail;
+};
+
 // Functions
+static int userdel_fill_defaults(struct userdel_state *);
+static int userdel_get_options(int *, const char ***, struct userdel_state *);
 static void userdel_getopt_predel(const struct HXoptcb *);
 static void userdel_getopt_postdel(const struct HXoptcb *);
 static int userdel_read_config(struct userdel_state *);
+static int userdel_run(struct userdel_state *);
 static int userdel_run2(struct vxpdb_state *, struct userdel_state *);
 static int userdel_run3(struct vxpdb_state *, struct userdel_state *);
 static void userdel_show_version(const struct HXoptcb *);
 static int userdel_slash_count(const char *);
+static const char *userdel_strerror(int);
 
 //-----------------------------------------------------------------------------
-EXPORT_SYMBOL int userdel_fill_defaults(struct userdel_state *sp)
+int main(int argc, const char **argv) {
+    struct userdel_state state;
+    int ret;
+
+    userdel_fill_defaults(&state);
+    if(userdel_get_options(&argc, &argv, &state) <= 0)
+        return E_OTHER;
+
+    if(argc < 2) {
+        fprintf(stderr, "You have to specify a username!\n");
+        return E_OTHER;
+    }
+
+    if((ret = userdel_run(&state)) != E_SUCCESS)
+        fprintf(stderr, "%s: %s\n", userdel_strerror(ret), strerror(errno));
+    return ret;
+}
+
+static int userdel_fill_defaults(struct userdel_state *sp)
 {
     int ret;
 
@@ -60,7 +99,7 @@ EXPORT_SYMBOL int userdel_fill_defaults(struct userdel_state *sp)
     return 1;
 }
 
-EXPORT_SYMBOL int userdel_get_options(int *argc, const char ***argv,
+static int userdel_get_options(int *argc, const char ***argv,
   struct userdel_state *state)
 {
     struct vxconfig_userdel *conf = &state->config;
@@ -93,7 +132,7 @@ EXPORT_SYMBOL int userdel_get_options(int *argc, const char ***argv,
     return 1;
 }
 
-EXPORT_SYMBOL int userdel_run(struct userdel_state *state)
+static int userdel_run(struct userdel_state *state)
 {
     struct vxpdb_state *db;
     int ret;
@@ -104,7 +143,7 @@ EXPORT_SYMBOL int userdel_run(struct userdel_state *state)
     return ret;
 }
 
-EXPORT_SYMBOL const char *userdel_strerror(int e)
+static const char *userdel_strerror(int e)
 {
     switch(e) {
         case E_OTHER:
@@ -123,7 +162,6 @@ EXPORT_SYMBOL const char *userdel_strerror(int e)
     return NULL;
 }
 
-//-----------------------------------------------------------------------------
 static void userdel_getopt_predel(const struct HXoptcb *cbi)
 {
     struct vxconfig_userdel *conf = cbi->current->uptr;
