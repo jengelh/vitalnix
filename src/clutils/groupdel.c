@@ -49,6 +49,7 @@ static int groupdel_main3(struct vxpdb_state *);
 static int groupdel_check_pri_group(struct vxpdb_state *, struct vxpdb_group *);
 static int groupdel_get_options(int *, const char ***);
 static int groupdel_read_config(void);
+static void groupdel_show_version(const struct HXoptcb *);
 
 // Variables
 static int force_deletion = 0;
@@ -158,6 +159,10 @@ static int groupdel_get_options(int *argc, const char ***argv) {
          .help = "Force deletion of group even if users have it as primary group"},
         {.sh = 'M', .type = HXTYPE_STRING, .ptr = &database_name,
          .help = "Use specified database", .htyp = "name"},
+
+        // Default options
+        {.sh = 'v', .ln = "version", .type = HXTYPE_NONE,
+         .cb = groupdel_show_version, .help = "Show version information"},
         HXOPT_AUTOHELP,
         HXOPT_TABLEEND,
     };
@@ -179,6 +184,12 @@ static int groupdel_read_config(void) {
         HXOPT_TABLEEND,
     };
     return HX_shconfig(CONFIG_SYSCONFDIR "/groupdel.conf", config_table);
+}
+
+static void groupdel_show_version(const struct HXoptcb *cbi)
+{
+    printf("Vitalnix " VITALNIX_VERSION " groupdel\n");
+    return;
 }
 
 //=============================================================================

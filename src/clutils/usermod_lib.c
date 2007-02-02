@@ -41,6 +41,7 @@ static void usermod_getopt_postmod(const struct HXoptcb *);
 static int usermod_read_config(struct usermod_state *);
 static int usermod_run2(struct vxpdb_state *, struct usermod_state *);
 static int usermod_run3(struct vxpdb_state *, struct usermod_state *);
+static void usermod_show_version(const struct HXoptcb *);
 
 //-----------------------------------------------------------------------------
 EXPORT_SYMBOL int usermod_fill_defaults(struct usermod_state *sp)
@@ -101,6 +102,8 @@ EXPORT_SYMBOL int usermod_get_options(int *argc, const char ***argv,
          .help = "New default shell for user", .htyp = "file"},
         {.sh = 'u', .type = HXTYPE_LONG, .ptr = &nu->pw_uid,
          .help = "New numerical value of the user's ID", .htyp = "uid"},
+        {.sh = 'v', .ln = "version", .type = HXTYPE_NONE,
+         .cb = usermod_show_version, .help = "Show version information"},
         HXOPT_AUTOHELP,
         HXOPT_TABLEEND,
     };
@@ -222,6 +225,12 @@ static int usermod_run3(struct vxpdb_state *db, struct usermod_state *state)
         vxutil_replace_run(conf->master_postmod, sr_map);
 
     return E_SUCCESS;
+}
+
+static void usermod_show_version(const struct HXoptcb *cbi)
+{
+    printf("Vitalnix " VITALNIX_VERSION " usermod\n");
+    return;
 }
 
 //=============================================================================

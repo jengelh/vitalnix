@@ -49,6 +49,7 @@ static int groupmod_main2(struct vxpdb_state *);
 static int groupmod_main3(struct vxpdb_state *);
 static int groupmod_get_options(int *, const char ***);
 static int groupmod_read_config(void);
+static void groupmod_show_version(const struct HXoptcb *);
 
 // Variables
 static int allow_dup              = 0;
@@ -168,6 +169,8 @@ static int groupmod_get_options(int *argc, const char ***argv) {
         {.sh = 'o', .type = HXTYPE_NONE, .ptr = &allow_dup,
          .help = "Allow creating a group with non-unique GID"
          " (might be disabled by the db driver)"},
+        {.sh = 'v', .ln = "version", .type = HXTYPE_NONE,
+         .cb = groupmod_show_version, .help = "Show version information"},
 
         HXOPT_AUTOHELP,
         HXOPT_TABLEEND,
@@ -190,6 +193,12 @@ static int groupmod_read_config(void) {
         HXOPT_TABLEEND,
     };
     return HX_shconfig(CONFIG_SYSCONFDIR "/groupmod.conf", config_table);
+}
+
+static void groupmod_show_version(const struct HXoptcb *cbi)
+{
+    printf("Vitalnix " VITALNIX_VERSION " groupmod\n");
+    return;
 }
 
 //=============================================================================

@@ -43,6 +43,7 @@ static void userdel_getopt_postdel(const struct HXoptcb *);
 static int userdel_read_config(struct userdel_state *);
 static int userdel_run2(struct vxpdb_state *, struct userdel_state *);
 static int userdel_run3(struct vxpdb_state *, struct userdel_state *);
+static void userdel_show_version(const struct HXoptcb *);
 static int userdel_slash_count(const char *);
 
 //-----------------------------------------------------------------------------
@@ -79,6 +80,8 @@ EXPORT_SYMBOL int userdel_get_options(int *argc, const char ***argv,
         // Default options
         {.sh = 'r', .type = HXTYPE_NONE, .ptr = &state->rm_home,
          .help = "Remove home directory, cron tables and mail spool"},
+        {.sh = 'v', .ln = "version", .type = HXTYPE_NONE,
+         .cb = userdel_show_version, .help = "Show version information"},
 
         HXOPT_AUTOHELP,
         HXOPT_TABLEEND,
@@ -230,6 +233,12 @@ static int userdel_run3(struct vxpdb_state *db, struct userdel_state *state)
     free(home);
     free(username);
     return E_SUCCESS;
+}
+
+static void userdel_show_version(const struct HXoptcb *cbi)
+{
+    printf("Vitalnix " VITALNIX_VERSION " userdel\n");
+    return;
 }
 
 static int userdel_slash_count(const char *fn) {

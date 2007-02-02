@@ -47,6 +47,7 @@ static int groupadd_main2(struct vxpdb_state *);
 static int groupadd_main3(struct vxpdb_state *);
 static int groupadd_get_options(int *, const char ***);
 static int groupadd_read_config(void);
+static void groupadd_show_version(const struct HXoptcb *);
 
 // Variables
 static long group_id   = PDB_NOGID;
@@ -158,6 +159,8 @@ static int groupadd_get_options(int *argc, const char ***argv) {
          .help = "Allow creating a group with non-unique GID"},
         {.sh = 'r', .type = HXTYPE_NONE, .ptr = &request_sys,
          .help = "System group (use groupid < GID_MIN)"},
+        {.sh = 'v', .ln = "version", .type = HXTYPE_NONE,
+         .cb = groupadd_show_version, .help = "Show version information"},
 
         HXOPT_AUTOHELP,
         HXOPT_TABLEEND,
@@ -180,6 +183,12 @@ static int groupadd_read_config(void) {
         HXOPT_TABLEEND,
     };
     return HX_shconfig(CONFIG_SYSCONFDIR "/groupadd.conf", config_table);
+}
+
+static void groupadd_show_version(const struct HXoptcb *cbi)
+{
+    printf("Vitalnix " VITALNIX_VERSION " groupadd\n");
+    return;
 }
 
 //=============================================================================

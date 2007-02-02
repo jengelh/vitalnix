@@ -45,6 +45,7 @@ static int useradd_read_config(struct useradd_state *);
 static int useradd_run2(struct vxpdb_state *, struct useradd_state *);
 static int useradd_run3(struct vxpdb_state *, struct useradd_state *,
     struct vxpdb_user *);
+static void useradd_show_version(const struct HXoptcb *);
 
 //-----------------------------------------------------------------------------
 /*  useradd_fill_defautls
@@ -140,6 +141,8 @@ EXPORT_SYMBOL int useradd_get_options(int *argc, const char ***argv,
          .help = "The user's default shell", .htyp = "prog"},
         {.sh = 'u', .type = HXTYPE_LONG, .ptr = &user->pw_uid,
          .help = "Numerical value of the user's ID", .htyp = "uid"},
+        {.sh = 'v', .ln = "version", .type = HXTYPE_NONE,
+         .cb = useradd_show_version, .help = "Show version information"},
 
         HXOPT_AUTOHELP,
         HXOPT_TABLEEND,
@@ -309,6 +312,12 @@ static int useradd_run3(struct vxpdb_state *db, struct useradd_state *state,
         vxutil_replace_run(conf->master_postadd, sr_map);
 
     return E_SUCCESS;
+}
+
+static void useradd_show_version(const struct HXoptcb *cbi)
+{
+    printf("Vitalnix " VITALNIX_VERSION " useradd\n");
+    return;
 }
 
 //=============================================================================
