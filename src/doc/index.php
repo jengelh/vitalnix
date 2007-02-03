@@ -4,11 +4,16 @@
 <tr>
 <td valign="top">
 
-<h1>Manpages</h1>
+<h1>Administrator's Reference</h1>
 
 <ul>
   <li><a href="gen-intro.php">Introduction</a></li>
   <li><a href="gen-tech.php">Technical aspects</a></li>
+</ul>
+
+<h2>Manpages</h2>
+
+<ul>
   <li>Shell utilities (clutils)<br />
     <ul>
       <li><a href="clutils-mdfixuuid.php">mdfixuuid</a></li>
@@ -74,8 +79,6 @@
 
 <ul>
   <li><a href="api-mod_backend.php">backend module API</a></li>
-  <li><a href="api-mod_edsformat.php">edsformat module API</a></li>
-  <li><a href="api-mod_pwlstyle.php">pwlstyle module API</a></li>
   <li><a href="extra-aee.php">Alternate Error Encoding</a></li>
 </ul>
 
