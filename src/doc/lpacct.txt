@@ -20,7 +20,7 @@ continue even after pre-filters are supported in CUPS. However, all of this has
 a number of advantages over backend-based accounting solutions:
 
 1. Backend accounting receives printer-specific language data. Data needs to
-translated back into a simple raster format, or is at least is interpreted
+translated back into a simple raster format, or is at least interpreted
 right away, i.e. directly count ink coverage. Either way, you need a decoder
 for this. In the worst case, there is no decoder written yet, and in the other
 case, the decoder must be kept updated/in sync with the encoder.
