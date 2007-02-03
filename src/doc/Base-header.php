@@ -1,3 +1,17 @@
+<?php
+$section_index = array(0, 0);
+function h1($title) {
+    global $section_index;
+    $section_index[1] = 0;
+    echo "<h1>", ++$section_index[0], " &nbsp; ",
+         htmlspecialchars($title, ENT_NOQUOTES), "</h1>";
+}
+function h2($title) {
+    global $section_index;
+    echo "<h2>", $section_index[0], ".", ++$section_index[1], " &nbsp; ",
+         htmlspecialchars($title, ENT_NOQUOTES), "</h2>";
+}
+?>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
