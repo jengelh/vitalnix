@@ -11,6 +11,12 @@
   <li><a href="gen-tech.php">Technical aspects</a></li>
 </ul>
 
+<h2>Print accounting</h2>
+
+<ul>
+  <li><a href="lpacct.php">Print accounting</a></li>
+</ul>
+
 <h2>Manpages</h2>
 
 <ul>
