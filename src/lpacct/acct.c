@@ -1,11 +1,12 @@
 /*
-    Copyright © Jan Engelhardt <jengelh@gmx.de>, 2006 - 2007
-    This code is released under version 2.1 of the GNU LGPL.
+    lpacct/acct.c - Accounting
+    Copyright © Jan Engelhardt <jengelh [at] gmx de>, 2006 - 2007
 
-    vxlpacct - accounting boilerplate for lpacct, to a simple syslog
-    or a more advanced mysql target
+    This file is part of Vitalnix. Vitalnix is free software; you can
+    redistribute it and/or modify it under the terms of the GNU Lesser General
+    Public License as published by the Free Software Foundation; however ONLY
+    version 2 of the License. For details, see the file named "LICENSE.LGPL2".
 */
-
 #define _GNU_SOURCE 1 // for asprintf
 #include <errno.h>
 #include <stdio.h>

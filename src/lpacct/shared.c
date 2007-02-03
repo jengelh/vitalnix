@@ -1,8 +1,11 @@
 /*
-    Copyright © Jan Engelhardt <jengelh@gmx.de>, 2006 - 2007
-    This code is released under version 2.1 of the GNU LGPL.
+    lpacct/shared.c - Shared functions between lpacct_filter and lpaview
+    Copyright © Jan Engelhardt <jengelh [at] gmx de>, 2006 - 2007
 
-    vxlpacct - Shared functions between lpacct_filter and lpaview
+    This file is part of Vitalnix. Vitalnix is free software; you can
+    redistribute it and/or modify it under the terms of the GNU Lesser General
+    Public License as published by the Free Software Foundation; however ONLY
+    version 2 of the License. For details, see the file named "LICENSE.LGPL2".
 */
 #include <errno.h>
 #include <stdio.h>

@@ -1,26 +1,13 @@
-/*=============================================================================
-Vitalnix User Management Suite
-libvxmdfmt/s_pghtml.c
-  Copyright © Jan Engelhardt <jengelh [at] gmx de>, 2002 - 2007
-  -- License restrictions apply (LGPL v2.1)
+/*
+    libvxmdfmt/s_pghtml.c - text/html formatter
+    Copyright © Jan Engelhardt <jengelh [at] gmx de>, 2002 - 2007
 
-  This file is part of Vitalnix.
-  Vitalnix is free software; you can redistribute it and/or modify it
-  under the terms of the GNU Lesser General Public License as published
-  by the Free Software Foundation; however ONLY version 2 of the License.
+    This file is part of Vitalnix. Vitalnix is free software; you can
+    redistribute it and/or modify it under the terms of the GNU Lesser General
+    Public License as published by the Free Software Foundation; however ONLY
+    version 2 of the License. For details, see the file named "LICENSE.LGPL2".
+*/
 
-  Vitalnix is distributed in the hope that it will be useful, but
-  WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General Public
-  License along with this program kit; if not, write to:
-  Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
-  Boston, MA  02110-1301  USA
-
-  -- For details, see the file named "LICENSE.LGPL2"
-=============================================================================*/
 /* Please do not remove the "Formatted by" messages as they are the only
 external advertisements for this software. */
 

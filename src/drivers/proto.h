@@ -1,3 +1,12 @@
+/*
+    proto.h
+    Copyright © Jan Engelhardt <jengelh [at] gmx de>, 2005 - 2007
+
+    This file is part of Vitalnix. Vitalnix is free software; you can
+    redistribute it and/or modify it under the terms of the GNU Lesser General
+    Public License as published by the Free Software Foundation; however ONLY
+    version 2 of the License. For details, see the file named "LICENSE.LGPL2".
+*/
 #ifndef _VITALNIX_DRIVERS_PROTO_H
 #define _VITALNIX_DRIVERS_PROTO_H 1
 
@@ -44,5 +53,3 @@ extern "C" {
 #endif
 
 #endif // _VITALNIX_DRIVERS_PROTO_H
-
-//=============================================================================
