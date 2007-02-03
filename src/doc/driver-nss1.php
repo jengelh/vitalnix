@@ -2,10 +2,11 @@
 
 <h1>Description</h1>
 
-<p class="block">The "nss1" driver solely exists for demonstration purposes and
-as a code example. Because it uses libc's <tt>getpwent()</tt> and related
-functions to lookup users and groups, this module is neither multi-thread-safe
-nor multi-use-safe (multiple instances in at least one thread).</p>
+<p class="block">The <i>nss</i> and <i>nss1</i> drivers solely exists for
+demonstration purposes and as a code example. Because it uses libc's
+<code>getpwent()</code> and related functions to lookup users and groups, this
+module is neither multi-thread-safe nor multi-use-safe (multiple instances in
+at least one thread).</p>
 
 <h1>Limitations</h1>
 

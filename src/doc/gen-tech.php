@@ -2,7 +2,7 @@
 
 <h1>Technical aspects</h1>
 
-<table border="1" class="bordered">
+<table border="1">
   <tr>
     <td class="t1">Development Status:</td>
     <td class="t1">4 - Beta</td>

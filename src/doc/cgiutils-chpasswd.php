@@ -2,8 +2,8 @@
 
 <h1>Description</h1>
 
-<p class="block"><tt>cgi_chpasswd</tt> is a CGI program to allow users to
-change their password via a web interface.</p>
+<p class="block"><i>cgi_chpasswd</i> is a CGI program to allow users to change
+their password via a web interface.</p>
 
 <h1>Security</h1>
 

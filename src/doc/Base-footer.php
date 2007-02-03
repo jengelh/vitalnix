@@ -1,14 +1,14 @@
-    </td>
-  </tr>
-  <tr>
-  </tr>
-</table>
 </div>
 
 <hr style="display: none" />
 
-<p class="ctop" align="right"><i><a href="http://vitalnix.sourceforge.net/"
+<div id="footer">
+
+<p align="right" style="padding: 0 1em;"><i><a
+href="http://vitalnix.sourceforge.net/"
 target="_blank">http://vitalnix.sf.net/</a></i></p>
+
+</div>
 
 </body>
 </html>

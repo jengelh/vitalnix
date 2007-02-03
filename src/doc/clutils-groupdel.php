@@ -6,31 +6,31 @@
 
 <h1>Usage</h1>
 
-<p class="code"><tt><b>vxgroupdel</b> <b>[</b>-A
+<p class="code"><code><b>vxgroupdel</b> <b>[</b>-A
 <b>[</b><i>command</i><b>]]</b> <b>[</b>-B <b>[</b><i>command</i><b>]]</b>
-<b>[</b>-F<b>]</b> <b>[</b>-M <i>database</i><b>]</b> <i>group</i></tt></p>
+<b>[</b>-F<b>]</b> <b>[</b>-M <i>database</i><b>]</b> <i>group</i></code></p>
 
 <h1>Options</h1>
 
-<table border="1" class="bordered">
+<table border="1">
   <tr>
     <td class="t1">-A <b>[</b><i>command</i><b>]</b></td>
     <td class="t1">Runs the specified command after the user was successfully
-      added. If <tt>-A</tt> is given, but with a zero-length command string,
-      the default command in the configuration file is not run.</td>
+      added. If <code>-A</code> is given, but with a zero-length command
+      string, the default command in the configuration file is not run.</td>
   </tr>
   <tr>
     <td class="t2">-B <b>[</b><i>command</i><b>]</b></td>
     <td class="t2">Runs the specified command before the user is added. It is
-      run always, even if adding fails. If <tt>-B</tt> is given, but with a
+      run always, even if adding fails. If <code>-B</code> is given, but with a
       zero-length command string, the default command in the configuration file
       is not run.</td>
   </tr>
   <tr>
     <td class="t1">-F</td>
-    <td class="t1"><tt>userdel</tt> will, by default, not delete any groups, of
-      which a user is a primary member of. <tt>-F</tt> forces to delete the
-      group.</td>
+    <td class="t1"><code>userdel</code> will, by default, not delete any
+      groups, of which a user is a primary member of. <code>-F</code> forces to
+      delete the group.</td>
   </tr>
   <tr>
     <td class="t2">-M <i>database</i></td>
@@ -38,13 +38,12 @@
       listed in the VXPDB configuration file</td>
   </tr>
 </table>
-</div>
 
 <h1>Description</h1>
 
-<p class="block"><tt>groupdel</tt> deletes the specified group, but will take
+<p class="block"><i>groupdel</i> deletes the specified group, but will take
 care for whether any use has that group as a primary group set. All options
-provided are unique to Vitalnix. The configuration file for <tt>groupdel</tt>
-is <tt>/etc/vitalnix/groupdel.conf</tt>.</p>
+provided are unique to Vitalnix. The configuration file for
+<code>groupdel</code> is <code>/etc/vitalnix/groupdel.conf</code>.</p>
 
 <?php include_once("Base-footer.php"); ?>

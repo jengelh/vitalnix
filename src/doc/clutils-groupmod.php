@@ -6,24 +6,24 @@
 
 <h1>Usage</h1>
 
-<p class="code"><tt><b>vxgroupmod</b> <b>[</b>-A
+<p class="code"><code><b>vxgroupmod</b> <b>[</b>-A
 <b>[</b><i>command</i><b>]]</b> <b>[</b>-B <b>[</b><i>command</i><b>]]</b>
 <b>[</b>-M <i>database</i><b>]</b> <b>[</b>-g <i>gid</i> <b>[</b>-o<b>]]</b>
-<b>[</b>-n <i>group_name<b>]</b> <i>group</i></tt></p>
+<b>[</b>-n <i>group_name</i><b>]</b> <i>group</i></code></p>
 
 <h1>Options</h1>
 
-<table border="1" class="bordered">
+<table border="1">
   <tr>
     <td class="t1">-A [<i>command</i>]</td>
     <td class="t1">Runs the specified command after the user was successfully
-      added. If <tt>-A</tt> is given, but with a zero-length command string,
-      the default command in the configuration file is not run.</td>
+      added. If <code>-A</code> is given, but with a zero-length command
+      string, the default command in the configuration file is not run.</td>
   </tr>
   <tr>
     <td class="t2">-B [<i>command</i>]</td>
     <td class="t2">Runs the specified command before the user is added. It is
-      run always, even if adding fails. If <tt>-B</tt> is given, but with a
+      run always, even if adding fails. If <code>-B</code> is given, but with a
       zero-length command string, the default command in the configuration file
       is not run.</td>
   </tr>
@@ -35,11 +35,11 @@
   <tr>
     <td class="t2">-g <i>gid</i></td>
     <td class="t2">Changes the user's identification number. It must be unique,
-      unless <tt>-o</tt> is given.</td>
+      unless <code>-o</code> is given.</td>
   </tr>
   <tr>
     <td class="t1">-o</td>
-    <td class="t1">If a group with the explicit GID given by <tt>-g</tt>
+    <td class="t1">If a group with the explicit GID given by <code>-g</code>
       already exists, you can override the error message with this option, to
       create non-unique GIDs.</td>
   </tr>
@@ -48,13 +48,12 @@
     <td class="t2">Changes the group's name, which must be unique.</td>
   </tr>
 </table>
-</div>
 
 <h1>Description</h1>
 
-<p class="block"><tt>groupmod</tt> updates the group's info with the data given
+<p class="block"><i>groupmod</i> updates the group's info with the data given
 on the command line. Not specified options will not change the corresponding
-fields in the database. The configuration file for <tt>groupmod</tt> is
-<tt>/etc/vitalnix/groupmod.conf</tt>.</p>
+fields in the database. The configuration file for <code>groupmod</code> is
+<code>/etc/vitalnix/groupmod.conf</code>.</p>
 
 <?php include_once("Base-footer.php"); ?>

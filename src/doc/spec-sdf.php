@@ -7,11 +7,11 @@ line. Empty lines are ignored. The structure of a User Object is similar to a
 CSV file; in SDF, the values are separated by a semicolon. Below is the
 schematic description is a real-world example.</p>
 
-<p class="code">[<tt>enum;</tt>]<tt>surname;firstname;bday;pvgrp<br />
+<p class="code">[<code>enum;</code>]<code>surname;firstname;bday;pvgrp<br />
 (* one-line comment *)<br />
-# new-style comment</tt></p>
+# new-style comment</code></p>
 
-<p class="code"><tt>1;Engelhardt;Jan;12.3.45;Grade 13;</tt></p>
+<p class="code"><code>1;Engelhardt;Jan;12.3.45;Grade 13;</code></p>
 
 <p class="block">The different fields are:</p>
 
@@ -35,9 +35,9 @@ schematic description is a real-world example.</p>
 
 <p class="block">Comments are Pascal-style or similar to shell and C, as shown
 in the syntax above, they either begin with a hash mark in the first column, or
-start with <tt>(*</tt> <i>and</i> end with <tt>*)</tt>. Both comment types only
-last for the particular line. The hash-mark style comment may be unsupported
-within Kolleg. Comments can only begin in the first column.</p>
+start with <code>(*</code> <i>and</i> end with <code>*)</code>. Both comment
+types only last for the particular line. The hash-mark style comment may be
+unsupported within Kolleg. Comments can only begin in the first column.</p>
 
 <h1>Portability issues</h1>
 
@@ -49,7 +49,7 @@ Kolleg program varies from the spec above, you need to change the parser to
 properly recognize it, or contact the Vitalnix Project.</p>
 
 <p class="block">StarOffice also seems to export something with the
-<tt>.sdf</tt> extension, but it is not related!</p>
+<code>.sdf</code> extension, but it is not related!</p>
 
 <h1>Naming</h1>
 

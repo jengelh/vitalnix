@@ -24,46 +24,47 @@ values.</p>
 <h1>Class A&nbsp;-- returning boolean</h2>
 
 <p class="block">This class of functions returns non-zero for success and zero
-for failure. An <tt>if()</tt> construct can therefore be short:</p>
+for failure. An <code>if()</code> construct can therefore be short:</p>
 
-<p class="code"><tt>
+<p class="code"><code>
 if(<b>!</b>bool_function())<br />
 &nbsp; &nbsp; printf("Total failure\n");
-</tt></p>
+</code></p>
 
-<p class="block">This AEE draft does not specify if and how <tt>errno</tt> is
-set in case of a false&nbsp;-- this is specific to a function.</p>
+<p class="block">This AEE draft does not specify if and how <code>errno</code>
+is set in case of a false&nbsp;-- this is specific to a function.</p>
 
 <h1>Class B&nbsp;-- success or error code</h2>
 
 <h2>negative, non-zero</h3>
 
-<p class="block">In case of an error, the <tt>errno</tt>-style error code is
-returned as a negative number, e.g. <tt>-ENOMEM</tt>. This differs from the
-usual libc approach to set <tt>errno</tt> and return <tt>-1</tt> instead, but
-goes with how the Linux kernel does it.</p>
+<p class="block">In case of an error, the <code>errno</code>-style error code
+is returned as a negative number, e.g. <code>-ENOMEM</code>. This differs from
+the usual libc approach to set <code>errno</code> and return <code>-1</code>
+instead, but goes with how the Linux kernel does it.</p>
 
 <p class="block">Additional error codes may be returned as long as they are
 negative. <i>libvxmdfmt</i> is an example, which has extra error codes in the
-<tt>-1500</tt> range (<tt>PWLFMT_E*</tt>), outside the usual errno code
+<code>-1500</code> range (<code>PWLFMT_E*</code>), outside the usual errno code
 range.</p>
 
-<p class="block">Applications must not assume that <tt>errno</tt> is set if an
-error occurs. Library functions may diverge from this behavior to provide
+<p class="block">Applications must not assume that <code>errno</code> is set if
+an error occurs. Library functions may diverge from this behavior to provide
 additional error info, as e.g. <i>libvxmdfmt</i> which, if returning an error
-code from its <tt>PWLFMT_E*</tt> range, has the underlying system error code
-(e.g. <tt>ENOENT</tt>) in <tt>errno</tt> (which can/should be used).</p>
+code from its <code>PWLFMT_E*</code> range, has the underlying system error
+code (e.g. <code>ENOENT</code>) in <code>errno</code> (which can/should be
+used).</p>
 
 <h2>zero</h3>
 
 <p class="block">In case of Class B functions, this value is generally unused,
 but counts as an error. A precise test for error therefore looks like:</p>
 
-<p class="code"><tt>
+<p class="code"><code>
 <b>int</b> ret;<br />
 if((ret <b>=</b> function()) <b>&lt;=</b> 0)<br />
 &nbsp; &nbsp; fprintf(stderr, "function() returned %s (%d)\n", strerror(-ret), ret);
-</tt></p>
+</code></p>
 
 <h2>positive non-zero</h3>
 
@@ -82,18 +83,19 @@ Class B apply.</p>
 function. For example, asking <i>libvxpdb</i> how many groups there are can
 legitimately return zero:</p>
 
-<p class="code"><tt>
+<p class="code"><code>
 <b>long</b> ret;<br />
 if((ret <b>=</b> pdb_modctl(my_db, PDB_COUNT_GROUPS)) <b>&gt;=</b> 0)<br />
 &nbsp; &nbsp; printf("Number of groups: %ld\n", ret);<br />
 else<br />
 &nbsp; &nbsp; printf("pdb_modctl() returned error %d: %s\n", ret, strerror(-ret));
-</tt></p>
+</code></p>
 
 <h1>Class D&nbsp;-- pointer or error code</h2>
 
 <p class="block">Since any return value is used for the pointer, the only way
-to notify of errors it to set <tt>errno</tt>. Therefore, if a functions returns
-an invalid pointer (most likely <tt>NULL</tt>), <tt>errno</tt> will be set.</p>
+to notify of errors it to set <code>errno</code>. Therefore, if a functions
+returns an invalid pointer (most likely <code>NULL</code>), <code>errno</code>
+will be set.</p>
 
 <?php include_once("Base-footer.php"); ?>

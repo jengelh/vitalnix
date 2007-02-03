@@ -9,30 +9,11 @@
 
 <body>
 
-<p class="ctop" style="font-size: 24pt;"><span
+<p class="ident"><span
 class="titleN">vitalni</span><span class="titleX">x</span> <span
 class="titleS">user management suite</span> <span
 class="titleV">3.1.0</span></p>
 
 <hr style="display: none" />
 
-<div class="cmain">
-
-<table cellpadding="2" cellspacing="0" class="printLimit">
-  <tr>
-    <td valign="bottom"></td>
-  </tr>
-<?php /*
-  <tr>
-    <td style="padding-top: 0px; padding-bottom: 0px;">
-      <a href="index.php">Table of Contents</a>
-    </td>
-  </tr>
-  <tr>
-    <td style="padding-top: 0px;">
-      <hr style="padding-top: 0px;" />
-    </td>
-  </tr>
-*/ ?>
-  <tr>
-    <td>
+<div id="content">

@@ -2,8 +2,8 @@
 
 <h1>Usage</h1>
 
-<p class="code"><tt>randpw <b>[</b>-01BCDJMZcr<b>]</b> <b>[</b>-l
-<i>length</i><b>]</b></tt></p>
+<p class="code"><code>randpw <b>[</b>-01BCDJMZcr<b>]</b> <b>[</b>-l
+<i>length</i><b>]</b></code></p>
 
 <h1>Description</h1>
 
@@ -15,7 +15,7 @@ Various flags control the generation and encryption behavior.</p>
 
 <h2>Generation</h2>
 
-<table border="1" class="bordered">
+<table border="1">
   <tr>
     <td class="t1">-0</td>
     <td class="t1">Possibly have a digit in the password</td>
@@ -52,7 +52,7 @@ Various flags control the generation and encryption behavior.</p>
 
 <h2>Encryption</h2>
 
-<table border="1" class="bordered">
+<table border="1">
   <tr>
     <td class="t1">-B</td>
     <td class="t1">Use Blowfish encryption</td>

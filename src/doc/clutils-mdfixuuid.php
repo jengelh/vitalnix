@@ -2,12 +2,12 @@
 
 <h1>Usage</h1>
 
-<p class="code"><tt>mdfixuuid -u <i>username</i> <b>[</b>-b <i>date</i><b>]</b>
-<b>[</b>-r <i>name</i><b>]</b></tt></p>
+<p class="code"><code>mdfixuuid -u <i>username</i> <b>[</b>-b <i>date</i><b>]</b>
+<b>[</b>-r <i>name</i><b>]</b></code></p>
 
 <h1>Options</h1>
 
-<table border="1" class="bordered">
+<table border="1">
   <tr>
     <td class="t1">-b <i>date</i></td>
     <td class="t1">The new birthdate of the user</td>

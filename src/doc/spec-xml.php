@@ -24,10 +24,10 @@ to <i>libvxeds</i>.
   <li><b>uuid</b>&nbsp;-- an arbitrary string that uniquely identifies this
     user within the Data Source<br />
     It is preferred that it consists only of characters in
-    [<tt>0-9A-Za-z_</tt>], because this uuid might be copied to a passwd(5)
+    [<code>0-9A-Za-z_</code>], because this uuid might be copied to a passwd(5)
     style file.</li>
   <li><b>bday</b>&nbsp;-- birth date<br />
-    if no <tt>uuid</tt> is given, create one based on name and this date
+    if no <code>uuid</code> is given, create one based on name and this date
     (commonly birth date). Formats accepted are DD.MM.YYYY, MM/DD/YYYY and
     YYYY-MM-DD.</li>
 </ul>
@@ -38,11 +38,11 @@ ignored.</p>
 
 <h1>Sample</h1>
 
-<p class="code"><tt>
+<p class="code"><code>
 &lt;?xml version="1.0" encoding="UTF-8" ?&gt;<br />
 &lt;VX3_xmlds&gt;<br />
 &nbsp; &nbsp; &lt;user surname="Engelhardt" firstname="Jan" pvgrp="13" uuid="12345678" /&gt;<br />
 &lt;/VX3_xmlds&gt;
-</tt></p>
+</code></p>
 
 <?php include_once("Base-footer.php"); ?>
