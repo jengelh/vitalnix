@@ -87,15 +87,20 @@ awaits input from stdin. <code>flags</code> is a bitmask that can contain:</p>
 
 <table border="1">
   <tr>
-    <td class="t1"><code>CQ_ABORT</code></td>
+    <td class="t1"><code>VXCQ_ABORT</code></td>
     <td class="t1">If the input consists of a single <code>^A</code> control
       character, the dialog is aborted.</td>
   </tr>
   <tr>
-    <td class="t2"><code>CQ_EMPTY</code></td>
+    <td class="t2"><code>VXCQ_EMPTY</code></td>
     <td class="t2">If the input consists of a single <code>^E</code> control
       character, the answer is seen as empty. This is so that a truly empty
       answer (string length = 0) can be used for the default answer.</td>
+  </tr>
+  <tr>
+    <td class="t1"><code>VXCQ_ZNULL</code></td>
+    <td class="t1">If the answer is empty, <code>*ptr</code> will be assigned
+      <code>NULL</code>.</td>
   </tr>
 </table>
 
