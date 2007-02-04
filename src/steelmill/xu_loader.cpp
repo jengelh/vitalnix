@@ -49,19 +49,23 @@ bool Loader::OnInit(void) {
     spl   = new WD_Splash();
     spl->Show(true);
     Yield(); // increases "instantaneousness", better than Update()
-//    timer->Start(1000, true);
+    timer->Start(1000, true);
 
     mm = new WD_MainMenu(PROD_NAME);
     console = new WD_Console();
     printf("Vitalnix Console initialized\n");
 
-/*    while(this->splash_done < 1)
-        Yield(); */
+#ifndef INSTANT
+    while(this->splash_done < 1)
+        Yield();
+#endif
 
     mm->Show(true);
-/*    timer->Start(1000, true);
+    timer->Start(1000, true);
+#ifndef INSTANT
     while(this->splash_done < 2)
-        Yield(); */
+        Yield();
+#endif
 
     spl->Destroy();
     delete timer;

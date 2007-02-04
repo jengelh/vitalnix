@@ -27,7 +27,7 @@
 #define wxDPOS          wxDefaultPosition
 #define wxDSIZE         wxDefaultSize
 
-#define PROD_NAME       "Vitalnix 2006"
+#define PROD_NAME       "Vitalnix 2007"
 
 enum {
     FTC_DIRECTORY = 1 << 0,
