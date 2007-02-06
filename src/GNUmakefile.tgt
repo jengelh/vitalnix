@@ -181,7 +181,7 @@ steelmill/images.cpp: steelmill/images.hpp
 
 steelmill/images.hpp: $(wildcard ${S}/steelmill/*.png)
 	${PREREQ}
-	${VECHO_GEN}
+	${VECHO_GEN} steelmill/images.cpp
 	${Q}${S}/png2wx.pl -C steelmill/images.cpp -H steelmill/images.hpp -M STEELMILL_IMAGES_HPP $^ || \
 	    ${S}/png2wx.py -C steelmill/images.cpp -H steelmill/images.hpp -M STEELMILL_IMAGES_HPP $^;
 
