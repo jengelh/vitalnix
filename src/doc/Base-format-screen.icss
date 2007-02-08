@@ -57,6 +57,7 @@ a:active, a:hover {
 }
 body {
     background-color: #F9F9F9;
+    font-family: serif;
     margin: 0;
     padding: 0;
 }

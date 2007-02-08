@@ -49,6 +49,7 @@ a:active, a:hover {
     color: #B80000;
 }
 body {
+    font-family: serif;
     margin: 0;
     padding: 0;
 }
