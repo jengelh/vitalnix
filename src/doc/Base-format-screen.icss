@@ -64,9 +64,6 @@ body {
 code {
     background-color: #F9F9F9;
 }
-tt {
-    background-color: #FF8080;
-}
 h1, h2 {
     margin: 0;
     padding-top: .5em;
