@@ -9,15 +9,15 @@
 
 <table border="1">
   <tr>
-    <td class="t1">-b <i>date</i></td>
+    <td class="t1n"><code>-b <i>date</i></code></td>
     <td class="t1">The new birthdate of the user</td>
   </tr>
   <tr>
-    <td class="t2">-r <i>name</i></td>
+    <td class="t2n"><code>-r <i>name</i></code></td>
     <td class="t2">The new realname of the user</td>
   </tr>
   <tr>
-    <td class="t1">-u <i>user</i></td>
+    <td class="t1n"><code>-u <i>user</i></code></td>
     <td class="t1">The user to modify</td>
   </tr>
 </table>

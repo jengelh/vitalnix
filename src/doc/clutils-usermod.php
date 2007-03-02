@@ -20,20 +20,20 @@
 
 <table border="1">
   <tr>
-    <td class="t1">-A <b>[</b><i>command</i><b>]</b></td>
+    <td class="t1n"><code>-A <b>[</b><i>command</i><b>]</b></code></td>
     <td class="t1">Runs the specified command after the user was successfully
       added. If <code>-A</code> is given, but with a zero-length command
       string, the default command in the configuration file is not run.</td>
   </tr>
   <tr>
-    <td class="t2">-B <b>[</b><i>command</i><b>]</b></td>
+    <td class="t2n"><code>-B <b>[</b><i>command</i><b>]</b></code></td>
     <td class="t2">Runs the specified command before the user is added. It is
       run always, even if adding fails. If <code>-B</code> is given, but with a
       zero-length command string, the default command in the configuration file
       is not run.</td>
   </tr>
   <tr>
-    <td class="t1">-G <i>group</i><b>[</b>,<b>...]</b></td>
+    <td class="t1n"><code>-G <i>group</i><b>[</b>,<b>...]</b></code></td>
     <td class="t1">Changes the user's info about which supplemental (secondary)
       groups he belongs to. Note that this will cancel his membership in any of
       the groups not specified, so you to add a user to another group, you need
@@ -41,76 +41,76 @@
       time with <code>-G first,second</code>. <b><i>(UNSUPPORTED)</i></b></td>
   </tr>
   <tr>
-    <td class="t2">-I</td>
+    <td class="t2n"><code>-I</code></td>
     <td class="t2">Interactively prompt for the new parameters</td>
   </tr>
   <tr>
-    <td class="t1">-L</td>
+    <td class="t1n"><code>-L</code></td>
     <td class="t1">Lock the user's account (prohibit logins)
       <b><i>(UNSUPPORTED)</i></b></td>
   </tr>
   <tr>
-    <td class="t2">-M <i>database</i></td>
+    <td class="t2n"><code>-M <i>database</i></code></td>
     <td class="t2">Uses the specified database rather than the default one
       listed in the VXPDB configuration file</td>
   </tr>
   <tr>
-    <td class="t1">-U</td>
+    <td class="t1n"><code>-U</code></td>
     <td class="t1">Unlock the user's account <b><i>(UNSUPPORTED)</i></b></td>
   </tr>
   <tr>
-    <td class="t2">-c <i>comment</i></td>
+    <td class="t2n"><code>-c <i>comment</i></code></td>
     <td class="t2">Changes the comment (GECOS) field</td>
   </tr>
   <tr>
-    <td class="t1">-d <i>home</i></td>
+    <td class="t1n"><code>-d <i>home</i></code></td>
     <td class="t1">Changes the home directory as found in the user database. 
       Also see <code>-m</code>.</td>
   </tr>
   <tr>
-    <td class="t2">-e <i>date</i></td>
+    <td class="t2n"><code>-e <i>date</i></code></td>
     <td class="t2">The new date on which the user account will expire. (Valid
       format is YYYY-MM-DD.)</td>
   </tr>
   <tr>
-    <td class="t1">-f <i>days</i></td>
+    <td class="t1n"><code>-f <i>days</i></code></td>
     <td class="t1">The number of days which need to pass after a password
       expiration (which is not <code>-e</code>!) until the account is locked
       down.</td>
   </tr>
   <tr>
-    <td class="t2">-g <i>group</i></td>
+    <td class="t2n"><code>-g <i>group</i></code></td>
     <td class="t2">Changes the users initial (primary) group</td>
   </tr>
   <tr>
-    <td class="t1">-l <i>login</i></td>
+    <td class="t1n"><code>-l <i>login</i></code></td>
     <td class="t1">Changes the login name for the user, which must be
       unique.</td>
   </tr>
   <tr>
-    <td class="t2">-m</td>
+    <td class="t2n"><code>-m</code></td>
     <td class="t2">When <code>-d</code> is given, specifying <code>-m</code>
       will move data from the old home directory into the new one, necessarily
       creating the new directory if it does not exist yet. 
       <b><i>(UNSUPPORTED)</i></b></td>
   </tr>
   <tr>
-    <td class="t1">-o</td>
+    <td class="t1n"><code>-o</code></td>
     <td class="t1">If a user with the explicit UID given by <code>-u</code>
       already exists, you can override the error message with this option, to
       create non-unique UIDs.</td>
   </tr>
   <tr>
-    <td class="t2">-p <i>password</i></td>
+    <td class="t2n"><code>-p <i>password</i></code></td>
     <td class="t2">Change the users password to the one specified.
       <code>password</code> needs to be in encrypted form.</td>
   </tr>
   <tr>
-    <td class="t1">-s <i>shell</i></td>
+    <td class="t1n"><code>-s <i>shell</i></code></td>
     <td class="t1">Changes the user's default shell</td>
   </tr>
   <tr>
-    <td class="t2">-u <i>uid</i></td>
+    <td class="t2n"><code>-u <i>uid</i></code></td>
     <td class="t2">Changes the user's identification number. It must be unique,
       unless <code>-o</code> is given.</td>
   </tr>

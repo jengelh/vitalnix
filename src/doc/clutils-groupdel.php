@@ -14,26 +14,26 @@
 
 <table border="1">
   <tr>
-    <td class="t1">-A <b>[</b><i>command</i><b>]</b></td>
+    <td class="t1n"><code>-A <b>[</b><i>command</i><b>]</b></code></td>
     <td class="t1">Runs the specified command after the user was successfully
       added. If <code>-A</code> is given, but with a zero-length command
       string, the default command in the configuration file is not run.</td>
   </tr>
   <tr>
-    <td class="t2">-B <b>[</b><i>command</i><b>]</b></td>
+    <td class="t2n"><code>-B <b>[</b><i>command</i><b>]</b></code></td>
     <td class="t2">Runs the specified command before the user is added. It is
       run always, even if adding fails. If <code>-B</code> is given, but with a
       zero-length command string, the default command in the configuration file
       is not run.</td>
   </tr>
   <tr>
-    <td class="t1">-F</td>
+    <td class="t1n"><code>-F</code></td>
     <td class="t1"><code>userdel</code> will, by default, not delete any
       groups, of which a user is a primary member of. <code>-F</code> forces to
       delete the group.</td>
   </tr>
   <tr>
-    <td class="t2">-M <i>database</i></td>
+    <td class="t2n"><code>-M <i>database</i></code></td>
     <td class="t2">Uses the specified database rather than the default one
       listed in the VXPDB configuration file</td>
   </tr>
