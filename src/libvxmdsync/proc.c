@@ -147,45 +147,49 @@ EXPORT_SYMBOL void mdsync_compare_simple(struct mdsync_workspace *w)
 
 EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
 {
+    struct HXbtree *master_catalog = NULL, *user_catalog = NULL;
     struct mdsync_config *c = &w->config;
     char home_path[MAXFNLEN], plain_pw[64];
     unsigned long users_proc, users_max;
     const struct HXbtree_node *node;
     struct vxpdb_user chk = {};
+    struct vxpdb_user out;
     void *travp;
     int ret = 1;
-    struct HXoption master_catalog[] = {
-        {.sh = 'n', .type = HXTYPE_ULONG, .ptr = &users_max},
-        HXOPT_TABLEEND,
-    };
 
     users_proc = 0;
     users_max  = w->add_req->itemcount;
-
     if(users_max == 0) // Nothing to do
         return 1;
+
+    if(c->add_opts.master_preadd != NULL ||
+     c->add_opts.master_postadd != NULL) {
+        master_catalog = HXformat_init();
+        HXformat_add(master_catalog, "USERS", &users_max, HXTYPE_ULONG);
+    }
+    if(c->add_opts.user_preadd != NULL || c->add_opts.user_postadd != NULL) {
+        user_catalog = HXformat_init();
+        HXformat_add(user_catalog, "USERNAME", out.pw_name,  HXTYPE_STRING);
+        HXformat_add(user_catalog, "REALNAME", out.pw_real,  HXTYPE_STRING);
+        HXformat_add(user_catalog, "UID",     &out.pw_uid,   HXTYPE_LONG);
+        HXformat_add(user_catalog, "GID",     &out.pw_gid,   HXTYPE_LONG);
+        /* igrp, sgrp unimplemented in Vitalnix */
+        HXformat_add(user_catalog, "GROUP",    "",           HXTYPE_STRING);
+        HXformat_add(user_catalog, "SGRP",     "",           HXTYPE_STRING);
+        HXformat_add(user_catalog, "HOME",     out.pw_home,  HXTYPE_STRING);
+        HXformat_add(user_catalog, "SHELL",    out.pw_shell, HXTYPE_STRING);
+    }
 
     if(c->add_opts.master_preadd != NULL)
         vxutil_replace_run(c->add_opts.master_preadd, master_catalog);
     if(c->new_pw_length >= sizeof(plain_pw))
         c->new_pw_length = sizeof(plain_pw) - 1;
 
-    travp = HXbtrav_init(w->add_req, NULL);
+    travp = HXbtrav_init(w->add_req);
     while((node = HXbtraverse(travp)) != NULL) {
         struct vxeds_entry *in = node->data;
-        struct vxpdb_user out  = {};
-        struct HXoption user_catalog[] = {
-            {.sh = 'l', .type = HXTYPE_STRP, .ptr = &out.pw_name},
-            {.sh = 'n', .type = HXTYPE_STRP, .ptr = &out.pw_real},
-            {.sh = 'u', .type = HXTYPE_LONG, .ptr = &out.pw_uid},
-            {.sh = 'g', .type = HXTYPE_LONG, .ptr = &out.pw_gid},
-            {.sh = 'G', .type = HXTYPE_STRP, .ptr = &out.pw_igrp},
-            {.sh = 'S', .type = HXTYPE_STRP, .ptr = &out.pw_sgrp},
-            {.sh = 'h', .type = HXTYPE_STRP, .ptr = &out.pw_home},
-            {.sh = 's', .type = HXTYPE_STRP, .ptr = &out.pw_shell},
-            HXOPT_TABLEEND,
-        };
 
+        memset(&out, 0, sizeof(out));
         out.pw_name  = in->username;
         out.pw_uid   = PDB_AUTOUID;
         out.pw_gid   = w->dest_group.gr_gid;
@@ -265,6 +269,11 @@ EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
         if(c->add_opts.master_postadd != NULL)
             vxutil_replace_run(c->add_opts.master_postadd, master_catalog);
 
+    if(master_catalog != NULL)
+        HXformat_free(master_catalog);
+    if(user_catalog != NULL)
+        HXformat_free(user_catalog);
+
     return ret;
 }
 
@@ -288,17 +297,13 @@ EXPORT_SYMBOL int mdsync_mod(struct mdsync_workspace *w)
 EXPORT_SYMBOL int mdsync_del(struct mdsync_workspace *w)
 {
     // Deleting the old users
+    struct HXbtree *master_catalog = NULL, *user_catalog = NULL;
     const struct mdsync_config *c = &w->config;
     unsigned long users_proc, users_max;
     char current_date[MAXSNLEN];
     struct HXdeque_node *travp;
     struct vxpdb_user res = {};
     int ret;
-    struct HXoption master_catalog[] = {
-        {.sh = 'd', .type = HXTYPE_STRING, .ptr = current_date},
-        {.sh = 'n', .type = HXTYPE_ULONG,  .ptr = &users_max},
-        HXOPT_TABLEEND,
-    };
 
     users_proc = 0;
     users_max  = w->delete_now->itemcount;
@@ -310,20 +315,27 @@ EXPORT_SYMBOL int mdsync_del(struct mdsync_workspace *w)
     write into the same directory for all users to be deleted. */
     now_in_ymdhms(current_date, sizeof(current_date));
 
+    if(c->del_opts.master_predel != NULL ||
+     c->del_opts.master_postdel != NULL) {
+        master_catalog = HXformat_init();
+        HXformat_add(master_catalog, "DATE",  current_date, HXTYPE_STRING);
+        HXformat_add(master_catalog, "USERS", &users_max,   HXTYPE_ULONG);
+    }
+
+    if(c->del_opts.user_predel != NULL || c->del_opts.user_postdel != NULL) {
+        user_catalog = HXformat_init();
+        HXformat_add(user_catalog, "USERNAME", &res.pw_name, HXTYPE_STRP);
+        HXformat_add(user_catalog, "UID",      &res.pw_uid,  HXTYPE_LONG);
+        HXformat_add(user_catalog, "GID",      &res.pw_gid,  HXTYPE_LONG);
+        HXformat_add(user_catalog, "GROUP",    &res.pw_igrp, HXTYPE_STRP);
+        HXformat_add(user_catalog, "HOME",     &res.pw_home, HXTYPE_STRP);
+        HXformat_add(user_catalog, "DATE",     current_date, HXTYPE_STRING);
+    }
+
     if(c->del_opts.master_predel != NULL)
         vxutil_replace_run(c->del_opts.master_predel, master_catalog);
 
-    for(travp = w->delete_now->first; travp != NULL; travp = travp->Next) {
-        struct HXoption user_catalog[] = {
-            {.sh = 'l', .type = HXTYPE_STRING, .ptr = res.pw_name},
-            {.sh = 'u', .type = HXTYPE_LONG,   .ptr = &res.pw_uid},
-            {.sh = 'g', .type = HXTYPE_LONG,   .ptr = &res.pw_gid},
-            {.sh = 'G', .type = HXTYPE_STRING, .ptr = res.pw_igrp},
-            {.sh = 'h', .type = HXTYPE_STRING, .ptr = res.pw_home},
-            {.sh = 'd', .type = HXTYPE_STRING, .ptr = current_date},
-            HXOPT_TABLEEND,
-        };
-
+    for(travp = w->delete_now->first; travp != NULL; travp = travp->next) {
         if((ret = vxpdb_getpwnam(w->database, travp->ptr, &res)) < 0) {
             fprintf(stderr, "%s()+pdb_getpwnam(): %s\n", __FUNCTION__,
                     strerror(errno));
@@ -356,6 +368,11 @@ EXPORT_SYMBOL int mdsync_del(struct mdsync_workspace *w)
     if(c->del_opts.master_postdel != NULL)
         vxutil_replace_run(c->del_opts.master_postdel, master_catalog);
 
+    if(master_catalog != NULL)
+        HXformat_free(master_catalog);
+    if(user_catalog != NULL)
+        HXformat_free(user_catalog);
+
     vxpdb_user_free(&res, 0);
     return 1;
 }
@@ -363,7 +380,7 @@ EXPORT_SYMBOL int mdsync_del(struct mdsync_workspace *w)
 //-----------------------------------------------------------------------------
 static int mdsync_update(struct mdsync_workspace *w) {
     long users_proc = 0, users_max      = w->update_req->itemcount;
-    void *travp = HXbtrav_init(w->update_req, NULL);
+    void *travp = HXbtrav_init(w->update_req);
     struct vxpdb_user search_rq, mod_rq;
     const struct HXbtree_node *node;
     const struct vxpdb_user *act;
@@ -392,7 +409,7 @@ static int mdsync_defer_start(struct mdsync_workspace *w) {
     long today                          = vxutil_now_iday();
     int ret;
 
-    for(node = w->defer_start->first; node != NULL; node = node->Next) {
+    for(node = w->defer_start->first; node != NULL; node = node->next) {
         vxpdb_user_clean(&search_rq);
         vxpdb_user_nomodify(&mod_rq);
         search_rq.pw_name = node->ptr;
@@ -413,7 +430,7 @@ static int mdsync_defer_stop(struct mdsync_workspace *w) {
     const struct HXdeque_node *node;
     int ret;
 
-    for(node = w->defer_stop->first; node != NULL; node = node->Next) {
+    for(node = w->defer_stop->first; node != NULL; node = node->next) {
         vxpdb_user_clean(&search_rq);
         vxpdb_user_nomodify(&mod_rq);
         search_rq.pw_name = node->ptr;

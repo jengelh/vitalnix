@@ -32,7 +32,7 @@ EXPORT_SYMBOL void mdsync_fixup(struct mdsync_workspace *w)
     users_proc = 0;
     users_max  = w->add_req->itemcount;
 
-    travp = HXbtrav_init(w->add_req, NULL);
+    travp = HXbtrav_init(w->add_req);
     while((node = HXbtraverse(travp)) != NULL) {
         struct vxeds_entry *entry = node->data;
         unsigned int i = 0;

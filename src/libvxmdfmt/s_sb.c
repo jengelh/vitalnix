@@ -18,10 +18,6 @@
 #include <vitalnix/libvxmdfmt/vtable.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
-// Functions
-static int sb_construct(struct pwlfmt_workspace *);
-static void sb_destruct(struct pwlfmt_workspace *);
-
 //-----------------------------------------------------------------------------
 static int sb_construct(struct pwlfmt_workspace *state) {
     /* Unlike SG_rtf, this template should only contain the
@@ -45,8 +41,7 @@ static void sb_destruct(struct pwlfmt_workspace *state) {
     return;
 }
 
-static void sb_file_header(struct pwlfmt_workspace *state,
-  const struct pwl_data *data)
+static void sb_file_header(const struct pwlfmt_workspace *state)
 {
     fprintf(state->output_fh,
         "\\documentclass[12pt]{article}\n\n"
@@ -58,17 +53,16 @@ static void sb_file_header(struct pwlfmt_workspace *state,
     return;
 }
 
-static void sb_tbl_entry(struct pwlfmt_workspace *state,
-  const struct pwl_data *data)
+static void sb_tbl_entry(const struct pwlfmt_workspace *state,
+    const struct pwl_data *data)
 {
-    DEFCAT_TBL_ENTRY(state, data);
-    HX_fstrrep(state->output_fh, state->template_data, catalog);
-    fprintf(state->output_fh, "\\newpage\n");
-    return;
+	struct HXbtree *catalog = defcat_tbl_entry(state, data);
+	HXformat_fprintf(catalog, state->output_fh, state->template_data);
+	fprintf(state->output_fh, "\\newpage\n");
+	return;
 }
 
-static void sb_file_footer(struct pwlfmt_workspace *state,
-  const struct pwl_data *data)
+static void sb_file_footer(const struct pwlfmt_workspace *state)
 {
     fprintf(state->output_fh, "\\end{document}\n");
     return;

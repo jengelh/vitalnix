@@ -7,15 +7,18 @@ extern "C" {
 
 struct pwl_data;
 struct pwlfmt_workspace;
-typedef void (printfunc_t)(struct pwlfmt_workspace *, const struct pwl_data *);
 
 struct pwlstyle_vtable {
     const char *name, *desc;
     int require_template;
     int (*init)(struct pwlfmt_workspace *);
     void (*exit)(struct pwlfmt_workspace *);
-    printfunc_t *file_header, *tbl_header, *tbl_entry,
-                *tbl_footer, *file_footer;
+
+	void (*file_header)(const struct pwlfmt_workspace *);
+	void (*tbl_header)(const struct pwlfmt_workspace *, const struct pwl_data *);
+	void (*tbl_entry)(const struct pwlfmt_workspace *, const struct pwl_data *);
+	void (*tbl_footer)(const struct pwlfmt_workspace *, const struct pwl_data *);
+	void (*file_footer)(const struct pwlfmt_workspace *);
 };
 
 #ifdef __cplusplus

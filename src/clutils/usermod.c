@@ -37,6 +37,7 @@ struct usermod_state {
     struct vxconfig_usermod config;
     const char *database;
     int allow_dup, lock_account, move_home;
+    struct HXbtree *sr_map;
 };
 
 // Functions
@@ -220,7 +221,9 @@ static int usermod_run2(struct vxpdb_state *db, struct usermod_state *state)
     if((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0)
         return E_OPEN;
 
+    state->sr_map = HXformat_init();
     ret = usermod_run3(db, state);
+    HXformat_free(state->sr_map);
     vxpdb_close(db);
     return ret;
 }
@@ -228,7 +231,6 @@ static int usermod_run2(struct vxpdb_state *db, struct usermod_state *state)
 static int usermod_run3(struct vxpdb_state *db, struct usermod_state *state)
 {
     struct vxconfig_usermod *conf = &state->config;
-    struct HXoption sr_map[] = {};
     struct vxpdb_user search_mask = {}, modify_mask = {};
     int ret;
 
@@ -238,17 +240,17 @@ static int usermod_run3(struct vxpdb_state *db, struct usermod_state *state)
         return E_NO_EXIST;
 
     if(conf->master_premod != NULL)
-        vxutil_replace_run(conf->master_premod, sr_map);
+        vxutil_replace_run(conf->master_premod, state->sr_map);
     if(conf->user_premod != NULL)
-        vxutil_replace_run(conf->user_premod, sr_map);
+        vxutil_replace_run(conf->user_premod, state->sr_map);
 
     if((ret = vxpdb_usermod(db, &search_mask, &modify_mask)) <= 0)
         return E_UPDATE;
 
     if(conf->user_postmod != NULL)
-        vxutil_replace_run(conf->user_postmod, sr_map);
+        vxutil_replace_run(conf->user_postmod, state->sr_map);
     if(conf->master_postmod != NULL)
-        vxutil_replace_run(conf->master_postmod, sr_map);
+        vxutil_replace_run(conf->master_postmod, state->sr_map);
 
     return E_SUCCESS;
 }

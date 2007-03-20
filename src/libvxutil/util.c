@@ -163,11 +163,14 @@ EXPORT_SYMBOL char *vxutil_quote(const char *src, unsigned int type,
 }
 
 EXPORT_SYMBOL int vxutil_replace_run(const char *fmt,
-  const struct HXoption *map)
+    const struct HXbtree *catalog)
 {
-    char cmd[4 * MAXLNLEN];
-    HX_strrep5(fmt, map, cmd, sizeof(cmd));
-    return system(cmd);
+	hmc_t *cmd = NULL;
+	int ret;
+	HXformat_aprintf(catalog, &cmd, fmt);
+	ret = system(cmd);
+	hmc_free(cmd);
+	return ret;
 }
 
 EXPORT_SYMBOL char *vxutil_slurp_file(const char *fn)

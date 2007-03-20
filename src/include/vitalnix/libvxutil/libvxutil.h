@@ -9,6 +9,7 @@
 #    include <cstdio>
 #    include <cstdlib>
 #endif
+#include <libHX.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -59,7 +60,7 @@ extern char *vxutil_propose_home(char *, size_t, const char *, const char *,
     unsigned int);
 extern char *vxutil_propose_lname(char *, size_t, const char *, const char *);
 extern char *vxutil_quote(const char *, unsigned int, char **);
-extern int vxutil_replace_run(const char *, const struct HXoption *);
+extern int vxutil_replace_run(const char *, const struct HXbtree *);
 extern char *vxutil_slurp_file(const char *);
 extern long vxutil_string_iday(const char *);
 extern long vxutil_string_xday(const char *);

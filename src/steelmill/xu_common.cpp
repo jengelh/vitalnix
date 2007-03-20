@@ -211,7 +211,7 @@ GW_Listbox::GW_Listbox(wxWindow *parent, const wxString &title,
 
     if(dq != NULL)
         for(const struct HXdeque_node *node = dq->first;
-         node != NULL; node = node->Next)
+         node != NULL; node = node->next)
                 ct_listbox->Append(fU8(static_cast<const char *>(node->ptr)));
 
     SetSizer(vp);

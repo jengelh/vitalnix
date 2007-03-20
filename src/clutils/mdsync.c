@@ -302,7 +302,7 @@ static void print_compare_output2(const struct mdsync_workspace *mdsw) {
     const struct HXdeque_node *d;
     void *travp;
 
-    if((travp = HXbtrav_init(mdsw->add_req, NULL)) != NULL) {
+    if((travp = HXbtrav_init(mdsw->add_req)) != NULL) {
         while((b = HXbtraverse(travp)) != NULL) {
             const struct vxeds_entry *entry = b->data;
             printf("A   %s (%s)\n", entry->username, entry->full_name);
@@ -310,7 +310,7 @@ static void print_compare_output2(const struct mdsync_workspace *mdsw) {
         HXbtrav_free(travp);
     }
 
-    if((travp = HXbtrav_init(mdsw->update_req, NULL)) != NULL) {
+    if((travp = HXbtrav_init(mdsw->update_req)) != NULL) {
         while((b = HXbtraverse(travp)) != NULL) {
             const struct vxpdb_user *user = b->data;
             printf("U   %s (%s)\n", user->pw_name, user->pw_real);
@@ -318,13 +318,13 @@ static void print_compare_output2(const struct mdsync_workspace *mdsw) {
         HXbtrav_free(travp);
     }
 
-    for(d = mdsw->defer_start->first; d != NULL; d = d->Next)
+    for(d = mdsw->defer_start->first; d != NULL; d = d->next)
         printf("XA  %s\n", static_cast(const char *, d->ptr));
-    for(d = mdsw->defer_wait->first; d != NULL; d = d->Next)
+    for(d = mdsw->defer_wait->first; d != NULL; d = d->next)
         printf("XW  %s\n", static_cast(const char *, d->ptr));
-    for(d = mdsw->defer_stop->first; d != NULL; d = d->Next)
+    for(d = mdsw->defer_stop->first; d != NULL; d = d->next)
         printf("XR  %s\n", static_cast(const char *, d->ptr));
-    for(d = mdsw->delete_now->first; d != NULL; d = d->Next)
+    for(d = mdsw->delete_now->first; d != NULL; d = d->next)
         printf("D   %s\n", static_cast(const char *, d->ptr));
     return;
 }

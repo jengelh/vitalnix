@@ -109,7 +109,7 @@ static int vnss_userinfo(struct vxpdb_state *vp,
     }
 
     for(travp = state->dq_user->first;
-     travp != NULL && (dest == NULL || size > 0); travp = travp->Next)
+     travp != NULL && (dest == NULL || size > 0); travp = travp->next)
     {
         const struct vxpdb_user *src = travp->ptr;
         if(!vxpdb_user_match(src, sr_mask))
@@ -144,7 +144,7 @@ static int vnss_usertrav_walk(struct vxpdb_state *vp, void *priv_data,
     if(trav->wp == NULL)
         return 0;
     vxpdb_user_copy(dest, trav->wp->ptr);
-    trav->wp = trav->wp->Next;
+    trav->wp = trav->wp->next;
     return 1;
 }
 
@@ -168,7 +168,7 @@ static int vnss_groupinfo(struct vxpdb_state *vp,
     }
 
     for(travp = state->dq_group->first;
-     travp != NULL && (dest == NULL || size > 0); travp = travp->Next)
+     travp != NULL && (dest == NULL || size > 0); travp = travp->next)
     {
         const struct vxpdb_group *src = travp->ptr;
         if(!vxpdb_group_match(src, sr_mask))
@@ -203,7 +203,7 @@ static int vnss_grouptrav_walk(struct vxpdb_state *vp, void *priv_data,
     if(trav->wp == NULL)
         return 0;
     vxpdb_group_copy(dest, trav->wp->ptr);
-    trav->wp = trav->wp->Next;
+    trav->wp = trav->wp->next;
     return 1;
 }
 
@@ -312,14 +312,14 @@ static void free_data(struct nss_state *state) {
     struct HXdeque_node *travp;
 
     if(state->dq_user != NULL) {
-        for(travp = state->dq_user->first; travp != NULL; travp = travp->Next)
+        for(travp = state->dq_user->first; travp != NULL; travp = travp->next)
             free_single_user(travp->ptr);
         HXdeque_free(state->dq_user);
         state->dq_user = NULL;
     }
 
     if(state->dq_group != NULL) {
-        for(travp = state->dq_group->first; travp != NULL; travp = travp->Next)
+        for(travp = state->dq_group->first; travp != NULL; travp = travp->next)
             free_single_group(travp->ptr);
         HXdeque_free(state->dq_group);
         state->dq_group = NULL;
@@ -347,7 +347,7 @@ static inline struct vxpdb_user *get_user(struct HXdeque *dq,
   const char *lname)
 {
     const struct HXdeque_node *travp;
-    for(travp = dq->first; travp != NULL; travp = travp->Next) {
+    for(travp = dq->first; travp != NULL; travp = travp->next) {
         struct vxpdb_user *u = travp->ptr;
         if(strcmp(u->pw_name, lname) == 0)
             return u;
@@ -359,7 +359,7 @@ static inline struct vxpdb_group *get_group(struct HXdeque *dq,
   const char *name)
 {
     const struct HXdeque_node *travp;
-    for(travp = dq->first; travp != NULL; travp = travp->Next) {
+    for(travp = dq->first; travp != NULL; travp = travp->next) {
         struct vxpdb_group *g = travp->ptr;
         if(strcmp(g->gr_name, name) == 0)
             return g;

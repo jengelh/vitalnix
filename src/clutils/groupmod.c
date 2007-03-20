@@ -32,7 +32,7 @@ enum {
 
 // Functions
 static int groupmod_main2(struct vxpdb_state *);
-static int groupmod_main3(struct vxpdb_state *);
+static int groupmod_main3(struct vxpdb_state *, struct HXbtree *);
 static int groupmod_get_options(int *, const char ***);
 static int groupmod_read_config(void);
 static void groupmod_show_version(const struct HXoptcb *);
@@ -72,26 +72,24 @@ int main(int argc, const char **argv) {
 
 static int groupmod_main2(struct vxpdb_state *db)
 {
+    struct HXbtree *ext_catalog;
     int ret;
+
     if((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0) {
         fprintf(stderr, "Could not open database: %s\n", strerror(-ret));
         return E_OPEN;
     }
 
-    ret = groupmod_main3(db);
+    ext_catalog = HXformat_init();
+    ret = groupmod_main3(db, ext_catalog);
+    HXformat_free(ext_catalog);
     vxpdb_close(db);
     return ret;
 }
 
-static int groupmod_main3(struct vxpdb_state *db)
+static int groupmod_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
 {
     struct vxpdb_group current = {}, mod_request;
-    struct HXoption ext_catalog[] = {
-        {.sh = 'G', .type = HXTYPE_STRING, .ptr = &new_group_name},
-        {.sh = 'N', .type = HXTYPE_STRING, .ptr = &group_name},
-        {.sh = 'g', .type = HXTYPE_LONG,   .ptr = &new_group_id},
-        HXOPT_TABLEEND,
-    };
     int ret;
 
     if((ret = vxpdb_getgrnam(db, group_name, &current)) < 0) {
@@ -119,6 +117,10 @@ static int groupmod_main3(struct vxpdb_state *db)
                 "exists.\n", new_group_name);
         return E_NAME_USED;
     }
+
+    HXformat_add(ext_catalog, "GROUP", new_group_name, HXTYPE_STRING);
+    HXformat_add(ext_catalog, "OLD_GROUP", group_name, HXTYPE_STRING);
+    HXformat_add(ext_catalog, "GID",    &new_group_id, HXTYPE_LONG);
 
     if(action_before != NULL)
         vxutil_replace_run(action_before, ext_catalog);

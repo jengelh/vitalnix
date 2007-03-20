@@ -202,18 +202,16 @@ static int pwlfmt_process2(struct pwlfmt_workspace *w,
     void *tl_trav;
     int proc = 0;
 
-    if((tl_trav = HXbtrav_init(tl_tree, NULL)) == NULL)
+    if((tl_trav = HXbtrav_init(tl_tree)) == NULL)
         return -errno;
 
-    if(w->vtable->file_header != NULL) {
-        memset(&data, 0, sizeof(data));
-        w->vtable->file_header(w, &data);
-    }
+    if(w->vtable->file_header != NULL)
+        w->vtable->file_header(w);
 
     while((tl_node = HXbtraverse(tl_trav)) != NULL) {
         struct HXbtree *pg_tree = tl_node->data;
         const char *pg_name = tl_node->key;
-        void *pg_trav = HXbtrav_init(pg_tree, NULL);
+        void *pg_trav = HXbtrav_init(pg_tree);
         struct HXbtree_node *pg_node;
 
         if(w->vtable->tbl_header != NULL) {
@@ -253,10 +251,8 @@ static int pwlfmt_process2(struct pwlfmt_workspace *w,
         HXbtree_free(pg_tree);
     }
 
-    if(w->vtable->file_footer != NULL) {
-        memset(&data, 0, sizeof(data));
-        w->vtable->file_footer(w, &data);
-    }
+    if(w->vtable->file_footer != NULL)
+        w->vtable->file_footer(w);
     HXbtrav_free(tl_trav);
     return 1;
 }

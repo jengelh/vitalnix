@@ -539,10 +539,10 @@ static void listbox_fill_eds(wxListBox *lb, const void *user_ptr) {
     s.Printf(wxT("%s (%s)"), fV8(e->username), fV8(e->full_name));
     lb->Append(s);
 
-    if(node->sd[0] != NULL)
-        listbox_fill_eds(lb, node->sd[0]);
-    if(node->sd[1] != NULL)
-        listbox_fill_eds(lb, node->sd[1]);
+    if(node->s[0] != NULL)
+        listbox_fill_eds(lb, node->s[0]);
+    if(node->s[1] != NULL)
+        listbox_fill_eds(lb, node->s[1]);
     return;
 }
 
@@ -559,10 +559,10 @@ static void listbox_fill_user(wxListBox *lb, const void *user_ptr) {
     s.Printf(wxT("%s (%s)"), fV8(u->pw_name), fV8(u->pw_real));
     lb->Append(s);
 
-    if(node->sd[0] != NULL)
-        listbox_fill_user(lb, node->sd[0]);
-    if(node->sd[1] != NULL)
-        listbox_fill_user(lb, node->sd[1]);
+    if(node->s[0] != NULL)
+        listbox_fill_user(lb, node->s[0]);
+    if(node->s[1] != NULL)
+        listbox_fill_user(lb, node->s[1]);
     return;
 }
 

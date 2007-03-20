@@ -1,15 +1,15 @@
-\noindent {Klasse: %g}\\\\
+\noindent {Klasse: %(PVGROUP)}\\\\
 
-\noindent {Hallo %v %n,\\
+\noindent {Hallo %(FIRSTNAME) %(SURNAME),\\
 \\
-Deine neue E-Mail Adresse ist: %u@hostname.domain\\
-Dein Passwort ist: %p\\
+Deine neue E-Mail Adresse ist: %(USERNAME)@hostname.domain\\
+Dein Passwort ist: %(PASSWORD)\\
 \\
-FTP: %u@__HOST__:21\\
-SSH: %u@__HOST__:22\\
+FTP: %(USERNAME)@__HOST__:21\\
+SSH: %(USERNAME)@__HOST__:22\\
 Telnet: Deaktiviert\\
-POP3: %u@__MAILHOST__:110\\
-IMAP: %u@__MAILHOST__:143\\
+POP3: %(USERNAME)@__MAILHOST__:110\\
+IMAP: %(USERNAME)@__MAILHOST__:143\\
 NNTP, interne Newsgroups: __NEWSHOST__:119\\
 bzw. news.gwdg.de:119.\\
 \\

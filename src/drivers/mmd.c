@@ -266,7 +266,7 @@ static int modules_open(struct multi_state *state, long flags) {
     struct HXdeque_node *node = state->rd_mod->first;
     int ret = 1;
 
-    for(node = state->rd_mod->first; node != NULL; node = node->Next) {
+    for(node = state->rd_mod->first; node != NULL; node = node->next) {
         struct module_handle *mh = node->ptr;
         if((ret = vxpdb_open(mh->mh_instance, flags & ~PDB_WRLOCK)) <= 0) {
             modules_close(state);
@@ -281,7 +281,7 @@ static int modules_open(struct multi_state *state, long flags) {
 static void modules_close(struct multi_state *state) {
     struct HXdeque_node *node;
 
-    for(node = state->rd_mod->first; node != NULL; node = node->Next) {
+    for(node = state->rd_mod->first; node != NULL; node = node->next) {
         struct module_handle *mod = node->ptr;
         if(mod->mh_state == STATE_OPEN)
             vxpdb_close(mod->mh_instance);
@@ -299,7 +299,7 @@ static void modules_close(struct multi_state *state) {
 static void modules_destruct(struct multi_state *state) {
     struct HXdeque_node *node;
 
-    for(node = state->rd_mod->first; node != NULL; node = node->Next) {
+    for(node = state->rd_mod->first; node != NULL; node = node->next) {
         struct module_handle *mod = node->ptr;
         if(mod->mh_state == STATE_LOADED) {
             vxpdb_unload(mod->mh_instance);

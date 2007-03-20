@@ -113,7 +113,7 @@ EXPORT_SYMBOL const void *vxcore_section_trav(void **trav_pptr,
     }
 
     if(*trav_pptr == NULL)
-        *trav_pptr = HXbtrav_init(btree, NULL);
+        *trav_pptr = HXbtrav_init(btree);
 
     if((node = HXbtraverse(*trav_pptr)) == NULL) {
         HXbtrav_free(*trav_pptr);

@@ -37,7 +37,7 @@ long automatic_uid(struct shadow_state *state, long wanted) {
         long uid = user->pw_uid;
         if(uid >= min && uid <= max && uid > high)
             high = uid;
-        travp = travp->Next;
+        travp = travp->next;
     }
 
     // If the successor id is free, take it.
@@ -54,7 +54,7 @@ long automatic_uid(struct shadow_state *state, long wanted) {
                 ++used;
                 break;
             }
-            travp = travp->Next;
+            travp = travp->next;
         }
         if(!used) return accept;
         ++accept;
@@ -82,7 +82,7 @@ long automatic_gid(struct shadow_state *state, long wanted) {
         long gid = group->gr_gid;
         if(gid >= min && gid <= max && gid > high)
             high = gid;
-        travp = travp->Next;
+        travp = travp->next;
     }
 
     /* If the highest id is below the max, there must be something free. Take
@@ -100,7 +100,7 @@ long automatic_gid(struct shadow_state *state, long wanted) {
                 ++used;
                 break;
             }
-            travp = travp->Next;
+            travp = travp->next;
         }
         if(!used) return accept;
         ++accept;
@@ -115,7 +115,7 @@ void free_data(struct shadow_state *state) {
         travp = state->dq_user->first;
         while(travp != NULL) {
             free_single_user(travp->ptr);
-            travp = travp->Next;
+            travp = travp->next;
         }
         HXdeque_free(state->dq_user);
         state->dq_user = NULL;
@@ -125,7 +125,7 @@ void free_data(struct shadow_state *state) {
         travp = state->dq_group->first;
         while(travp != NULL) {
             free_single_group(travp->ptr);
-            travp = travp->Next;
+            travp = travp->next;
         }
         HXdeque_free(state->dq_group);
         state->dq_group = NULL;
@@ -186,7 +186,7 @@ struct vxpdb_group *lookup_group(struct HXdeque *dq, const char *gname,
         if((gname == NULL || strcmp(g->gr_name, gname) == 0) &&
          (gid == PDB_NOGID || g->gr_gid == gid))
             return g;
-        travp = travp->Next;
+        travp = travp->next;
     }
 
     return NULL;
@@ -214,7 +214,7 @@ struct vxpdb_user *lookup_user(struct HXdeque *dq, const char *lname,
         if((lname == NULL || strcmp(u->pw_name, lname) == 0) &&
          (uid == PDB_NOUID || uid == u->pw_uid))
             return u;
-        travp = travp->Next;
+        travp = travp->next;
     }
 
     return NULL;
@@ -256,7 +256,7 @@ struct HXdeque_node *skip_nis_users(struct HXdeque_node *node) {
         user = node->ptr;
         if(*user->pw_name != '+' && *user->pw_name != '-')
             return node;
-        node = node->Next;
+        node = node->next;
     }
     return node;
 }
@@ -267,7 +267,7 @@ struct HXdeque_node *skip_nis_groups(struct HXdeque_node *node) {
         group = node->ptr;
         if(*group->gr_name != '+' && *group->gr_name != '-')
             return node;
-        node = node->Next;
+        node = node->next;
     }
     return node;
 }

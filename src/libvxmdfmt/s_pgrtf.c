@@ -32,10 +32,6 @@ struct pgrtf_data {
 };
 
 // Functions
-static int pgrtf_construct(struct pwlfmt_workspace *);
-static void pgrtf_destruct(struct pwlfmt_workspace *);
-static printfunc_t pgrtf_file_header, pgrtf_tbl_header, pgrtf_tbl_entry,
-                   pgrtf_tbl_footer, pgrtf_file_footer;
 static int pgrtf_read_template(const char *, struct pgrtf_data *);
 static hmc_t *utf8_to_rtfuni(const char *);
 
@@ -59,62 +55,56 @@ static void pgrtf_destruct(struct pwlfmt_workspace *w) {
     return;
 }
 
-static void pgrtf_file_header(struct pwlfmt_workspace *w,
-  const struct pwl_data *data)
+static void pgrtf_file_header(const struct pwlfmt_workspace *ws)
 {
-    const struct pgrtf_data *p = w->style_data;
-    DEFCAT_FILE_HEADER(w, data);
+	const struct pgrtf_data *priv = ws->style_data;
+	struct HXbtree *catalog       = defcat_file_header(ws);
 
-    HX_fstrrep(w->output_fh, p->tps_file_header, catalog);
-    return;
+	HXformat_fprintf(catalog, ws->output_fh, priv->tps_file_header);
+	HXformat_free(catalog);
+	return;
 }
 
-static void pgrtf_tbl_header(struct pwlfmt_workspace *w,
-  const struct pwl_data *data)
+static void pgrtf_tbl_header(const struct pwlfmt_workspace *ws,
+    const struct pwl_data *data)
 {
-    const struct pgrtf_data *p = w->style_data;
-    DEFCAT_TBL_HEADER(w, data);
+	const struct pgrtf_data *priv = ws->style_data;
+	struct HXbtree *catalog       = defcat_tbl_header(ws, data);
 
-    HX_fstrrep(w->output_fh, p->tps_tbl_header, catalog);
-    return;
+	HXformat_fprintf(catalog, ws->output_fh, priv->tps_tbl_header);
+	HXformat_free(catalog);
+	return;
 }
 
-static void pgrtf_tbl_entry(struct pwlfmt_workspace *w,
-  const struct pwl_data *data)
+static void pgrtf_tbl_entry(const struct pwlfmt_workspace *ws,
+    const struct pwl_data *data)
 {
-    const struct pgrtf_data *p = w->style_data;
-    hmc_t *uni_firstname       = utf8_to_rtfuni(data->first_name);
-    hmc_t *uni_surname         = utf8_to_rtfuni(data->surname);
+	const struct pgrtf_data *priv = ws->style_data;
+	struct HXbtree *catalog       = defcat_tbl_entry(ws, data);
+	hmc_t *uni_firstname          = utf8_to_rtfuni(data->first_name);
+	hmc_t *uni_surname            = utf8_to_rtfuni(data->surname);
 
-    struct HXoption catalog[] = {
-        {.sh = PH_PVGROUP,   .type = HXTYPE_STRING, .ptr = static_cast(void *, data->pvgrp)},
-        {.sh = PH_SURNAME,   .type = HXTYPE_STRING, .ptr = uni_surname},
-        {.sh = PH_PASSWORD,  .type = HXTYPE_STRING, .ptr = static_cast(void *, data->password)},
-        {.sh = PH_USERNAME,  .type = HXTYPE_STRING, .ptr = static_cast(void *, data->username)},
-        {.sh = PH_FIRSTNAME, .type = HXTYPE_STRING, .ptr = uni_firstname},
-        HXOPT_TABLEEND,
-    };
-
-    HX_fstrrep(w->output_fh, p->tps_tbl_entry, catalog);
-    hmc_free(uni_surname);
-    hmc_free(uni_firstname);
-    return;
+	HXformat_add(catalog, "SURNAME", uni_surname,
+	             HXTYPE_STRING | HXFORMAT_IMMED);
+	HXformat_add(catalog, "FIRSTNAME", uni_firstname,
+	             HXTYPE_STRING | HXFORMAT_IMMED);
+	HXformat_fprintf(catalog, ws->output_fh, priv->tps_tbl_entry);
+	return;
 }
 
-static void pgrtf_tbl_footer(struct pwlfmt_workspace *w,
-  const struct pwl_data *data)
+static void pgrtf_tbl_footer(const struct pwlfmt_workspace *ws,
+    const struct pwl_data *data)
 {
-    const struct pgrtf_data *p = w->style_data;
-    fprintf(w->output_fh, p->tps_tbl_footer);
-    return;
+	const struct pgrtf_data *priv = ws->style_data;
+	fprintf(ws->output_fh, priv->tps_tbl_footer);
+	return;
 }
 
-static void pgrtf_file_footer(struct pwlfmt_workspace *w,
-  const struct pwl_data *data)
+static void pgrtf_file_footer(const struct pwlfmt_workspace *ws)
 {
-    const struct pgrtf_data *p = w->style_data;
-    fprintf(w->output_fh, p->tps_file_footer);
-    return;
+	const struct pgrtf_data *priv = ws->style_data;
+	fprintf(ws->output_fh, priv->tps_file_footer);
+	return;
 }
 
 //-----------------------------------------------------------------------------

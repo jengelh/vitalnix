@@ -31,7 +31,7 @@ enum {
 
 // Functions
 static int groupdel_main2(struct vxpdb_state *);
-static int groupdel_main3(struct vxpdb_state *);
+static int groupdel_main3(struct vxpdb_state *, struct HXbtree *);
 static int groupdel_check_pri_group(struct vxpdb_state *, struct vxpdb_group *);
 static int groupdel_get_options(int *, const char ***);
 static int groupdel_read_config(void);
@@ -63,24 +63,24 @@ int main(int argc, const char **argv) {
 
 static int groupdel_main2(struct vxpdb_state *db)
 {
+    struct HXbtree *ext_catalog;
     int ret;
+
     if((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0) {
         fprintf(stderr, "Could not open database: %s\n", strerror(-ret));
         return E_OPEN;
     }
 
-    ret = groupdel_main3(db);
+    ext_catalog = HXformat_init();
+    ret = groupdel_main3(db, ext_catalog);
+    HXformat_free(ext_catalog);
     vxpdb_close(db);
     return ret;
 }
 
-static int groupdel_main3(struct vxpdb_state *db)
+static int groupdel_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
 {
     struct vxpdb_group group_info;
-    struct HXoption ext_catalog[] = {
-        {.sh = 'G', .type = HXTYPE_STRING, .ptr = &group_name},
-        HXOPT_TABLEEND,
-    };
     int ret;
 
     if((ret = vxpdb_getgrnam(db, group_name, &group_info)) < 0) {
@@ -95,6 +95,8 @@ static int groupdel_main3(struct vxpdb_state *db)
         fprintf(stderr, "Will not remove a user's primary group\n");
         return E_PRIMARY;
     }
+
+    HXformat_add(ext_catalog, "GROUP", group_name, HXTYPE_STRING);
 
     if(action_before != NULL)
         vxutil_replace_run(action_before, ext_catalog);

@@ -16,8 +16,7 @@
 #include <vitalnix/libvxutil/defines.h>
 
 //-----------------------------------------------------------------------------
-static void a1_file_header(struct pwlfmt_workspace *state,
-  const struct pwl_data *data)
+static void a1_file_header(const struct pwlfmt_workspace *state)
 {
     fprintf(state->output_fh,
         "\n\n"
@@ -29,7 +28,7 @@ static void a1_file_header(struct pwlfmt_workspace *state,
     return;
 }
 
-static void a1_tbl_entry(struct pwlfmt_workspace *state,
+static void a1_tbl_entry(const struct pwlfmt_workspace *state,
   const struct pwl_data *data)
 {
     char buf[MAXSNLEN];

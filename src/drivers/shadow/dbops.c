@@ -150,7 +150,7 @@ static void db_flush_users(struct shadow_state *state) {
         db_write_shadow(state->fshadow.fp, u);
         if(has_vx)
             db_write_vxshadow(state->fvxshadow.fp, u);
-        travp = travp->Next;
+        travp = travp->next;
     }
 
     truncate_here(state->fpasswd.fp);

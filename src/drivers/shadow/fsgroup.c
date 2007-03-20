@@ -66,7 +66,7 @@ void db_flush_groups(struct shadow_state *state) {
         if(pr != NULL && pr[0] != NULL)
             fprintf(fp, "%s", pr[0]);
         fprintf(fp, "\n");
-        travp = travp->Next;
+        travp = travp->next;
     }
 
     truncate_here(state->fgroup.fp);

@@ -48,7 +48,7 @@ int main(int argc, const char **argv) {
 
     driver_info("*");
 
-    for(cd = Dirs->first; cd != NULL; cd = cd->Next) {
+    for(cd = Dirs->first; cd != NULL; cd = cd->next) {
         struct HXdir *cdp;
         char *dentry;
 

@@ -22,8 +22,7 @@ external advertisements for this software. */
 #include <vitalnix/libvxutil/defines.h>
 
 //-----------------------------------------------------------------------------
-static void pghtml_file_header(struct pwlfmt_workspace *state,
-  const struct pwl_data *data)
+static void pghtml_file_header(const struct pwlfmt_workspace *state)
 {
     fprintf(state->output_fh,
         "<html><head>"
@@ -40,7 +39,7 @@ static void pghtml_file_header(struct pwlfmt_workspace *state,
     return;
 }
 
-static void pghtml_tbl_header(struct pwlfmt_workspace *state,
+static void pghtml_tbl_header(const struct pwlfmt_workspace *state,
   const struct pwl_data *data)
 {
     fprintf(state->output_fh,
@@ -53,31 +52,27 @@ static void pghtml_tbl_header(struct pwlfmt_workspace *state,
     return;
 }
 
-static void pghtml_tbl_entry(struct pwlfmt_workspace *state,
-  const struct pwl_data *data)
+static void pghtml_tbl_entry(const struct pwlfmt_workspace *state,
+    const struct pwl_data *data)
 {
-    char buf[MAXSNLEN];
-    struct HXoption catalog[] = {
-        {.sh = 'n', .type = HXTYPE_STRING, .ptr = buf},
-        {.sh = 'p', .type = HXTYPE_STRING, .ptr = static_cast(void *, data->password)},
-        {.sh = 'u', .type = HXTYPE_STRING, .ptr = static_cast(void *, data->username)},
-        HXOPT_TABLEEND,
-    };
-    snprintf(buf, MAXSNLEN, "%s, %s", data->surname, data->first_name);
-    HX_fstrrep(state->output_fh, "<tr><td>%n</td><td class=\"sserif\">%u</td>"
-               "<td class=\"sserif\">%p</td></tr>\n", catalog);
-    return;
+	fprintf(state->output_fh,
+		"<tr><td>%s, %s</td>"
+		"<td class=\"sserif\">%s</td>"
+		"<td class=\"sserif\">%s</td></tr>\n",
+	       data->surname, data->first_name,
+	       data->username,
+	       data->password);
+	return;
 }
 
-static void pghtml_tbl_footer(struct pwlfmt_workspace *state,
+static void pghtml_tbl_footer(const struct pwlfmt_workspace *state,
   const struct pwl_data *data)
 {
     fprintf(state->output_fh, "</table>");
     return;
 }
 
-static void pghtml_file_footer(struct pwlfmt_workspace *state,
-  const struct pwl_data *data)
+static void pghtml_file_footer(const struct pwlfmt_workspace *state)
 {
     fprintf(state->output_fh, "</body></html>");
     return;

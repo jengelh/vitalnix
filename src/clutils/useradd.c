@@ -37,6 +37,7 @@ struct useradd_state {
     struct vxconfig_useradd config;
     const char *database;
     int allow_dup, force, sys_uid;
+    struct HXbtree *sr_map;
 };
 
 // Functions
@@ -276,7 +277,9 @@ static int useradd_run2(struct vxpdb_state *db, struct useradd_state *state)
     if(user == NULL)
         return -ENOMEM;
 
+    state->sr_map = HXformat_init();
     ret = useradd_run3(db, state, user);
+    HXformat_free(state->sr_map);
     free(user);
     vxpdb_close(db);
     return ret;
@@ -312,14 +315,11 @@ static int useradd_run3(struct vxpdb_state *db, struct useradd_state *state,
         user->pw_gid  = PDB_NOGID;
     }
 
-    struct HXoption sr_map[] = {
-        {.sh = 'l', .type = HXTYPE_STRING, .ptr = &user->pw_name},
-        {.sh = 'u', .type = HXTYPE_LONG,   .ptr = &user->pw_uid},
-        HXOPT_TABLEEND,
-    };
+    HXformat_add(state->sr_map, "USERNAME", user->pw_name, HXTYPE_STRING);
+    HXformat_add(state->sr_map, "UID",      &user->pw_uid, HXTYPE_LONG);
 
     if(conf->master_preadd != NULL)
-        vxutil_replace_run(conf->master_preadd, sr_map);
+        vxutil_replace_run(conf->master_preadd, state->sr_map);
 
     if((ret = vxpdb_useradd(db, user)) <= 0)
         return E_UPDATE;
@@ -340,7 +340,7 @@ static int useradd_run3(struct vxpdb_state *db, struct useradd_state *state,
     }
 
     if(conf->master_postadd != NULL)
-        vxutil_replace_run(conf->master_postadd, sr_map);
+        vxutil_replace_run(conf->master_postadd, state->sr_map);
 
     return E_SUCCESS;
 }

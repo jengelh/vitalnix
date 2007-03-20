@@ -284,7 +284,7 @@ static int vshadow_userinfo(struct vxpdb_state *vp,
             while(... && (r == NULL || s > 0))
     */
     for(travp = state->dq_user->first; travp != NULL &&
-     (dest == NULL || size > 0); travp = travp->Next)
+     (dest == NULL || size > 0); travp = travp->next)
     {
         const struct vxpdb_user *src = travp->ptr;
         if(!vxpdb_user_match(src, sr_mask))
@@ -319,7 +319,7 @@ static int vshadow_usertrav_walk(struct vxpdb_state *vp, void *ptr,
     if(trav->wp == NULL)
         return 0;
     vxpdb_user_copy(dest, trav->wp->ptr);
-    trav->wp = skip_nis_users(trav->wp->Next);
+    trav->wp = skip_nis_users(trav->wp->next);
     return 1;
 }
 
@@ -405,7 +405,7 @@ static int vshadow_groupinfo(struct vxpdb_state *vp,
     }
 
     for(travp = state->dq_group->first; travp != NULL &&
-     (dest == NULL || size > 0); travp = travp->Next)
+     (dest == NULL || size > 0); travp = travp->next)
     {
         const struct vxpdb_group *src = travp->ptr;
         if(!vxpdb_group_match(src, sr_mask))
@@ -440,7 +440,7 @@ static int vshadow_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
     if(trav->wp == NULL)
         return 0;
     vxpdb_group_copy(dest, trav->wp->ptr);
-    trav->wp = skip_nis_groups(trav->wp->Next);
+    trav->wp = skip_nis_groups(trav->wp->next);
     return 1;
 }
 

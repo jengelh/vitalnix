@@ -20,7 +20,7 @@ external advertisements for this software. */
 #include <vitalnix/libvxutil/defines.h>
 
 //-----------------------------------------------------------------------------
-static void pgtxt_tbl_header(struct pwlfmt_workspace *state,
+static void pgtxt_tbl_header(const struct pwlfmt_workspace *state,
   const struct pwl_data *data)
 {
     fprintf(state->output_fh,
@@ -34,7 +34,7 @@ static void pgtxt_tbl_header(struct pwlfmt_workspace *state,
     return;
 }
 
-static void pgtxt_tbl_entry(struct pwlfmt_workspace *state,
+static void pgtxt_tbl_entry(const struct pwlfmt_workspace *state,
   const struct pwl_data *data)
 {
     char buf[MAXSNLEN];
@@ -45,7 +45,7 @@ static void pgtxt_tbl_entry(struct pwlfmt_workspace *state,
     return;
 }
 
-static void pgtxt_tbl_footer(struct pwlfmt_workspace *state,
+static void pgtxt_tbl_footer(const struct pwlfmt_workspace *state,
   const struct pwl_data *data)
 {
     fputc('\f', state->output_fh);

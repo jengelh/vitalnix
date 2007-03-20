@@ -153,10 +153,10 @@ EXPORT_SYMBOL void mdsync_free(struct mdsync_workspace *w)
 */
 static void kill_eds(const struct HXbtree_node *node) {
     vxeds_free_entry(node->data);
-    if(node->sd[0] != NULL)
-        kill_eds(node->sd[0]);
-    if(node->sd[1] != NULL)
-        kill_eds(node->sd[1]);
+    if(node->s[0] != NULL)
+        kill_eds(node->s[0]);
+    if(node->s[1] != NULL)
+        kill_eds(node->s[1]);
     return;
 }
 
@@ -168,10 +168,10 @@ static void kill_eds(const struct HXbtree_node *node) {
 */
 static void kill_pwd(const struct HXbtree_node *node) {
     vxpdb_user_free(node->data, 1);
-    if(node->sd[0] != NULL)
-        kill_pwd(node->sd[0]);
-    if(node->sd[1] != NULL)
-        kill_pwd(node->sd[1]);
+    if(node->s[0] != NULL)
+        kill_pwd(node->s[0]);
+    if(node->s[1] != NULL)
+        kill_pwd(node->s[1]);
     return;
 }
 

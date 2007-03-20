@@ -38,6 +38,7 @@ struct userdel_state {
     struct vxconfig_userdel config;
     const char *database;
     int force, rm_cron, rm_home, rm_mail;
+    struct HXbtree *sr_map;
 };
 
 // Functions
@@ -187,7 +188,9 @@ static int userdel_run2(struct vxpdb_state *db, struct userdel_state *state)
     int ret;
     if((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0)
         return E_OPEN;
+    state->sr_map = HXformat_init();
     ret = userdel_run3(db, state);
+    HXformat_free(state->sr_map);
     vxpdb_close(db);
     return ret;
 }
@@ -196,7 +199,6 @@ static int userdel_run3(struct vxpdb_state *db, struct userdel_state *state)
 {
     struct vxconfig_userdel *conf = &state->config;
     struct vxpdb_user search = {}, result = {};
-    struct HXoption sr_map[] = {};
     char *home, *username;
     int ret;
 
@@ -210,9 +212,9 @@ static int userdel_run3(struct vxpdb_state *db, struct userdel_state *state)
         return E_DENY;
 
     if(conf->master_predel != NULL)
-        vxutil_replace_run(conf->master_predel, sr_map);
+        vxutil_replace_run(conf->master_predel, state->sr_map);
     if(conf->user_predel != NULL)
-        vxutil_replace_run(conf->user_predel, sr_map);
+        vxutil_replace_run(conf->user_predel, state->sr_map);
 
     username = HX_strdup(result.pw_name);
     home     = HX_strdup(result.pw_home);
@@ -250,9 +252,9 @@ static int userdel_run3(struct vxpdb_state *db, struct userdel_state *state)
     }
 
     if(conf->user_postdel != NULL)
-        vxutil_replace_run(conf->user_postdel, sr_map);
+        vxutil_replace_run(conf->user_postdel, state->sr_map);
     if(conf->master_postdel != NULL)
-        vxutil_replace_run(conf->master_postdel, sr_map);
+        vxutil_replace_run(conf->master_postdel, state->sr_map);
 
     free(home);
     free(username);
