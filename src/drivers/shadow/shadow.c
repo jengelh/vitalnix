@@ -102,9 +102,9 @@ static long vshadow_modctl(struct vxpdb_state *vp, long command, ...) {
             db_flush(state, 1);
             return 1;
         case PDB_COUNT_USERS:
-            return state->dq_user->itemcount;
+            return state->dq_user->items;
         case PDB_COUNT_GROUPS:
-            return state->dq_group->itemcount;
+            return state->dq_group->items;
         case PDB_NEXTUID_SYS:
             return automatic_uid(state, PDB_AUTOUID_SYS);
         case PDB_NEXTUID:

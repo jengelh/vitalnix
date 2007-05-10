@@ -27,7 +27,7 @@ void db_read_shadow(FILE *fp, struct HXdeque *dq) {
     struct vxpdb_user *u = NULL;
     char *ln = NULL;
 
-    if(dq->itemcount == 0) // No uses in @dq, so no need to read shadow.
+    if(dq->items == 0) // No uses in @dq, so no need to read shadow.
         return;
 
     while(HX_getl(&ln, fp) != NULL) {

@@ -39,11 +39,11 @@ struct mdsync_workspace {
     void *user_private;
     struct mdsync_config config;
     void (*report)(unsigned int, const struct mdsync_workspace *,
-        unsigned long, unsigned long);
+        unsigned int, unsigned int);
 
     struct vxpdb_state *database;
     hmc_t *output_data;
-    unsigned long num_grp;
+    unsigned int num_grp;
 
     // private to mdsync
     struct vxpdb_group dest_group;

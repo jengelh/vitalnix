@@ -50,7 +50,7 @@ int main(int argc, const char **argv) {
 
     for(cd = Dirs->first; cd != NULL; cd = cd->next) {
         struct HXdir *cdp;
-        char *dentry;
+        const char *dentry;
 
         if((cdp = HXdir_open(cd->ptr)) == NULL)
             continue;
@@ -120,7 +120,8 @@ static void driver_info(const char *fn) {
     Looks into /etc/ld.so.conf and /etc/ld.so.conf.d.
 */
 static void read_ldso_conf(void) {
-    char buf[MAXFNLEN], *dentry;
+    const char *dentry;
+    char buf[MAXFNLEN];
     void *dirp;
 
     read_ldso_conf1("/etc/ld.so.conf");

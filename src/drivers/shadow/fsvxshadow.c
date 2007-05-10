@@ -29,7 +29,7 @@ void db_read_vxshadow(const char *file, struct HXdeque *dq) {
     xmlNode *ptr;
     xmlDoc *doc;
 
-    if(dq->itemcount == 0)
+    if(dq->items == 0)
         return;
     if((doc = xmlParseFile(file)) == NULL)
         return;

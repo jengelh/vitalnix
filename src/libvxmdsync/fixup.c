@@ -21,16 +21,16 @@ static inline char *format_name(const char *, unsigned int, char *, size_t);
 //-----------------------------------------------------------------------------
 EXPORT_SYMBOL void mdsync_fixup(struct mdsync_workspace *w)
 {
-    unsigned long users_max, users_proc;
+    unsigned int users_max, users_proc;
     struct HXbtree_node *node;
     char tmp[MAX_LNAME+1];
     void *travp;
 
-    if(w->add_req->itemcount == 0)
+    if(w->add_req->items == 0)
         return;
 
     users_proc = 0;
-    users_max  = w->add_req->itemcount;
+    users_max  = w->add_req->items;
 
     travp = HXbtrav_init(w->add_req);
     while((node = HXbtraverse(travp)) != NULL) {

@@ -46,7 +46,7 @@ static void sync_cleanup(struct private_info *);
 
 static int ask_continue(const struct private_info *, const char *);
 static void cb_report(unsigned int, const struct mdsync_workspace *,
-    unsigned long, unsigned long);
+    unsigned int, unsigned int);
 static void print_compare_input(const struct mdsync_workspace *);
 static void print_compare_output(const struct mdsync_workspace *);
 static void print_compare_output2(const struct mdsync_workspace *);
@@ -160,7 +160,7 @@ static int sync_run(struct private_info *priv) {
 
 static int sync_add(struct private_info *priv) {
     int ret;
-    if(priv->mdsw->add_req->itemcount == 0) {
+    if(priv->mdsw->add_req->items == 0) {
         printf("No new users to add.\n");
         return 1;
     }
@@ -174,13 +174,13 @@ static int sync_add(struct private_info *priv) {
         printf("Add procedure failed: %s\n" NOTICE_REDO, strerror(-ret));
         return 0;
     }
-    printf("Successfully added %ld users\n", priv->mdsw->add_req->itemcount);
+    printf("Successfully added %u users\n", priv->mdsw->add_req->items);
     return 1;
 }
 
 static int sync_mod(struct private_info *priv) {
     struct mdsync_workspace *mdsw = priv->mdsw;
-    long total = mdsw->defer_start->itemcount + mdsw->defer_stop->itemcount;
+    unsigned int total = mdsw->defer_start->items + mdsw->defer_stop->items;
     int ret;
 
     if(total == 0) {
@@ -198,14 +198,14 @@ static int sync_mod(struct private_info *priv) {
         printf("Modify procedure failred: %s\n" NOTICE_REDO, strerror(-ret));
         return 0;
     }
-    printf("Successfully modified %ld timers\n", total);
+    printf("Successfully modified %u timers\n", total);
     return 1;
 }
 
 static int sync_del(struct private_info *priv) {
     int ret;
 
-    if(priv->mdsw->delete_now->itemcount == 0) {
+    if(priv->mdsw->delete_now->items == 0) {
         printf("No old users to delete.\n");
         return 1;
     }
@@ -219,8 +219,8 @@ static int sync_del(struct private_info *priv) {
         printf("Deletion procedure failed: %s\n" NOTICE_REDO, strerror(-ret));
         return 0;
     }
-    printf("Successfully deleted %ld users\n",
-           priv->mdsw->delete_now->itemcount);
+    printf("Successfully deleted %u users\n",
+           priv->mdsw->delete_now->items);
     return 1;
 }
 
@@ -252,7 +252,7 @@ static int ask_continue(const struct private_info *priv, const char *msg) {
 }
 
 static void cb_report(unsigned int type, const struct mdsync_workspace *mdsw,
-  unsigned long current, unsigned long max)
+  unsigned int current, unsigned int max)
 {
     static const char *const fmt[] = {
         [MDREP_ADD]     = "Add process",
@@ -276,24 +276,24 @@ static void cb_report(unsigned int type, const struct mdsync_workspace *mdsw,
     if(type == MDREP_COMPARE || type == MDREP_FIXUP)
         printf(": %.2f%%\n", pct);
     else
-        printf(": %ld/%ld users (%.2f%%)\n", current, max, pct);
+        printf(": %u/%u users (%.2f%%)\n", current, max, pct);
     return;
 }
 
 static void print_compare_input(const struct mdsync_workspace *mdsw) {
     printf("Comparing EDS to PDB\n");
-    printf("%ld user(s) in EDS list\n", mdsw->add_req->itemcount);
+    printf("%u user(s) in EDS list\n", mdsw->add_req->items);
     return;
 }
 
 static void print_compare_output(const struct mdsync_workspace *mdsw) {
-    printf("%lu group member(s) found in PDB\n", mdsw->num_grp);
-    printf("    %lu to keep and update group descriptors\n", mdsw->update_req->itemcount);
-    printf("    %lu to start deferred deletion timer\n", mdsw->defer_start->itemcount);
-    printf("    %lu to wait for deletion\n", mdsw->defer_wait->itemcount);
-    printf("    %lu to stop deferred deletion timer\n", mdsw->defer_stop->itemcount);
-    printf("    %lu to delete\n", mdsw->delete_now->itemcount);
-    printf("%lu new users to add\n", mdsw->add_req->itemcount);
+    printf("%u group member(s) found in PDB\n", mdsw->num_grp);
+    printf("    %u to keep and update group descriptors\n", mdsw->update_req->items);
+    printf("    %u to start deferred deletion timer\n", mdsw->defer_start->items);
+    printf("    %u to wait for deletion\n", mdsw->defer_wait->items);
+    printf("    %u to stop deferred deletion timer\n", mdsw->defer_stop->items);
+    printf("    %u to delete\n", mdsw->delete_now->items);
+    printf("%u new users to add\n", mdsw->add_req->items);
     return;
 }
 

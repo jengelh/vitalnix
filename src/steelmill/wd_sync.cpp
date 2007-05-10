@@ -111,7 +111,7 @@ class UserException {};
 
 // Functions
 static void cb_report(unsigned int, const struct mdsync_workspace *,
-    unsigned long, unsigned long);
+    unsigned int, unsigned int);
 template<class Object> static inline Object find_window(long, wxWindow *);
 static void listbox_fill_eds(wxListBox *, const void *);
 static void listbox_fill_user(wxListBox *, const void *);
@@ -120,7 +120,7 @@ static int time_limit(struct timeval *, const struct timeval *);
 static void tv_delta(const struct timeval *, const struct timeval *,
     struct timeval *);
 static void update_max(wxWindow *, long);
-static wxString wxString_int(unsigned long);
+static wxString wxString_int(unsigned int);
 
 //-----------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(WD_SyncParam, wxDialog)
@@ -343,37 +343,37 @@ WD_SyncProg::WD_SyncProg(wxWindow *parent, struct pv_sync *priv) :
     st->Add(-1, -1);
     st->Add(-1, -1);
 
-    st->Add(new wxStaticText(this, ID_CD_ADD, wxString_int(mdsw->add_req->itemcount), wxDPOS, wxSize(8 * GetCharWidth(), -1), wxALIGN_RIGHT), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
+    st->Add(new wxStaticText(this, ID_CD_ADD, wxString_int(mdsw->add_req->items), wxDPOS, wxSize(8 * GetCharWidth(), -1), wxALIGN_RIGHT), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
     st->Add(new wxStaticText(this, wxID_ANY, wxT("new users to add")), 0, wxALIGN_LEFT | wxACV | wxALL, 3);
     st->Add(new wxGauge(this, ID_GG_ADD, 1, wxDPOS, wxDSIZE, wxGA_SMOOTH), 0, wxGROW | wxACV | wxALL, 3);
     st->Add(new wxStaticText(this, ID_PT_ADD, wxT("0%"), wxDPOS, wxSize(6 * GetCharWidth(), -1), wxALIGN_RIGHT), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
     st->Add(new wxButton(this, ID_DT_ADD, wxT("Details")), 0, wxGROW | wxACV | wxALL, 3);
 
-    st->Add(new wxStaticText(this, ID_CD_UPDATE, wxString_int(mdsw->update_req->itemcount), wxDPOS, wxDSIZE, wxALIGN_RIGHT), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
+    st->Add(new wxStaticText(this, ID_CD_UPDATE, wxString_int(mdsw->update_req->items), wxDPOS, wxDSIZE, wxALIGN_RIGHT), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
     st->Add(new wxStaticText(this, wxID_ANY, wxT("to keep and update group descriptors")), 0, wxALIGN_LEFT | wxACV | wxALL, 3);
     st->Add(new wxGauge(this, ID_GG_UPDATE, 1, wxDPOS, wxDSIZE, wxGA_SMOOTH), 0, wxGROW | wxACV | wxALL, 3);
     st->Add(new wxStaticText(this, ID_PT_UPDATE, wxT("0%")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
     st->Add(new wxButton(this, ID_DT_UPDATE, wxT("Details")), 0, wxGROW | wxACV | wxALL, 3);
 
-    st->Add(new wxStaticText(this, ID_CD_DSTART, wxString_int(mdsw->defer_start->itemcount)), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
+    st->Add(new wxStaticText(this, ID_CD_DSTART, wxString_int(mdsw->defer_start->items)), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
     st->Add(new wxStaticText(this, wxID_ANY, wxT("to start deferred deletion timer")), 0, wxALIGN_LEFT | wxACV | wxALL, 3);
     st->Add(new wxGauge(this, ID_GG_DSTART, 1, wxDPOS, wxDSIZE, wxGA_SMOOTH), 0, wxGROW | wxACV | wxALL, 3);
     st->Add(new wxStaticText(this, ID_PT_DSTART, wxT("0%")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
     st->Add(new wxButton(this, ID_DT_DSTART, wxT("Details")), 0, wxGROW | wxACV | wxALL, 3);
 
-    st->Add(new wxStaticText(this, wxID_ANY, wxString_int(mdsw->defer_wait->itemcount)), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
+    st->Add(new wxStaticText(this, wxID_ANY, wxString_int(mdsw->defer_wait->items)), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
     st->Add(new wxStaticText(this, wxID_ANY, wxT("to wait for deletion")), 0, wxALIGN_LEFT | wxACV | wxALL, 3);
     st->Add(-1, -1);
     st->Add(-1, -1);
     st->Add(new wxButton(this, ID_DT_DWAIT, wxT("Details")), 0, wxGROW | wxACV | wxALL, 3);
 
-    st->Add(new wxStaticText(this, ID_CD_DSTOP, wxString_int(mdsw->defer_stop->itemcount)), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
+    st->Add(new wxStaticText(this, ID_CD_DSTOP, wxString_int(mdsw->defer_stop->items)), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
     st->Add(new wxStaticText(this, wxID_ANY, wxT("to stop deferred deletion timer")), 0, wxALIGN_LEFT | wxACV | wxALL, 3);
     st->Add(new wxGauge(this, ID_GG_DSTOP, 1, wxDPOS, wxDSIZE, wxGA_SMOOTH), 0, wxGROW | wxACV | wxALL, 3);
     st->Add(new wxStaticText(this, ID_PT_DSTOP, wxT("0%")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
     st->Add(new wxButton(this, ID_DT_DSTOP, wxT("Details")), 0, wxGROW | wxACV | wxALL, 3);
 
-    st->Add(new wxStaticText(this, ID_CD_DELETE, wxString_int(mdsw->delete_now->itemcount)), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
+    st->Add(new wxStaticText(this, ID_CD_DELETE, wxString_int(mdsw->delete_now->items)), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
     st->Add(new wxStaticText(this, wxID_ANY, wxT("to delete")), 0, wxALIGN_LEFT | wxACV | wxALL, 3);
     st->Add(new wxGauge(this, ID_GG_DELETE, 1, wxDPOS, wxDSIZE, wxGA_SMOOTH), 0, wxGROW | wxACV | wxALL, 3);
     st->Add(new wxStaticText(this, ID_PT_DELETE, wxT("0%")), 0, wxALIGN_RIGHT | wxACV | wxALL, 3);
@@ -402,7 +402,7 @@ void WD_SyncProg::Continue(wxCommandEvent &event) {
 
     GW_Message dlg_add(this, wxT(PROD_NAME " > Synchronize > Adding users"),
         wxT("Continue with adding users?"), "-oc-");
-    if(mdsw->add_req->itemcount > 0 && (!priv->prompt ||
+    if(mdsw->add_req->items > 0 && (!priv->prompt ||
      dlg_add.ShowModal() == wxID_OK))
             mdsync_add(mdsw);
 
@@ -410,7 +410,7 @@ void WD_SyncProg::Continue(wxCommandEvent &event) {
 
     GW_Message dlg_mod(this, wxT(PROD_NAME " > Synchronize > Update timers"),
         wxT("Continue with updating the deferred deletion timers?"), "-oc");
-    if(mdsw->defer_start->itemcount + mdsw->defer_stop->itemcount > 0 &&
+    if(mdsw->defer_start->items + mdsw->defer_stop->items > 0 &&
      (!priv->prompt || dlg_mod.ShowModal() == wxID_OK))
             mdsync_mod(mdsw);
 
@@ -420,7 +420,7 @@ void WD_SyncProg::Continue(wxCommandEvent &event) {
 
     GW_Message dlg_del(this, wxT(PROD_NAME " > Synchronize > Delete users"),
         wxT("Continue with deleting old users?"), "-oc-");
-    if(mdsw->delete_now->itemcount > 0 && (!priv->prompt ||
+    if(mdsw->delete_now->items > 0 && (!priv->prompt ||
      dlg_del.ShowModal() == wxID_OK))
             mdsync_del(mdsw);
 
@@ -491,7 +491,7 @@ GW_EdsformatChoice::GW_EdsformatChoice(wxWindow *parent, wxWindowID id) :
 
 //-----------------------------------------------------------------------------
 static void cb_report(unsigned int type, const struct mdsync_workspace *mdsw,
-  unsigned long current, unsigned long max)
+  unsigned int current, unsigned int max)
 {
     static const struct timeval report_delta = {0, 100000};
     struct pv_sync *priv = static_cast<struct pv_sync *>(mdsw->user_private);
@@ -509,10 +509,10 @@ static void cb_report(unsigned int type, const struct mdsync_workspace *mdsw,
     gg = static_cast<wxGauge *>(priv->window->FindWindowById(type | ID_GG_BASE, priv->window));
 
     if(cd != NULL) {
-        s.Printf(wxT("%ld"), max - current);
+        s.Printf(wxT("%u"), max - current);
         cd->SetLabel(s);
     }
-    s.Printf(wxT("%ld%%"), current * 100 / max);
+    s.Printf(wxT("%u%%"), current * 100 / max);
     pt->SetLabel(s);
     if(current == 1)
         gg->SetRange(max);
@@ -539,10 +539,10 @@ static void listbox_fill_eds(wxListBox *lb, const void *user_ptr) {
     s.Printf(wxT("%s (%s)"), fV8(e->username), fV8(e->full_name));
     lb->Append(s);
 
-    if(node->s[0] != NULL)
-        listbox_fill_eds(lb, node->s[0]);
-    if(node->s[1] != NULL)
-        listbox_fill_eds(lb, node->s[1]);
+    if(node->sub[0] != NULL)
+        listbox_fill_eds(lb, node->sub[0]);
+    if(node->sub[1] != NULL)
+        listbox_fill_eds(lb, node->sub[1]);
     return;
 }
 
@@ -559,10 +559,10 @@ static void listbox_fill_user(wxListBox *lb, const void *user_ptr) {
     s.Printf(wxT("%s (%s)"), fV8(u->pw_name), fV8(u->pw_real));
     lb->Append(s);
 
-    if(node->s[0] != NULL)
-        listbox_fill_user(lb, node->s[0]);
-    if(node->s[1] != NULL)
-        listbox_fill_user(lb, node->s[1]);
+    if(node->sub[0] != NULL)
+        listbox_fill_user(lb, node->sub[0]);
+    if(node->sub[1] != NULL)
+        listbox_fill_user(lb, node->sub[1]);
     return;
 }
 
@@ -625,9 +625,9 @@ static void update_max(wxWindow *w, long id) {
     return;
 }
 
-static wxString wxString_int(unsigned long n) {
+static wxString wxString_int(unsigned int n) {
     wxString s;
-    s.Printf(wxT("%lu"), n);
+    s.Printf(wxT("%u"), n);
     return s;
 }
 

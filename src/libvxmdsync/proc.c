@@ -150,7 +150,7 @@ EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
     struct HXbtree *master_catalog = NULL, *user_catalog = NULL;
     struct mdsync_config *c = &w->config;
     char home_path[MAXFNLEN], plain_pw[64];
-    unsigned long users_proc, users_max;
+    unsigned int users_proc, users_max;
     const struct HXbtree_node *node;
     struct vxpdb_user chk = {};
     struct vxpdb_user out;
@@ -158,14 +158,14 @@ EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
     int ret = 1;
 
     users_proc = 0;
-    users_max  = w->add_req->itemcount;
+    users_max  = w->add_req->items;
     if(users_max == 0) // Nothing to do
         return 1;
 
     if(c->add_opts.master_preadd != NULL ||
      c->add_opts.master_postadd != NULL) {
         master_catalog = HXformat_init();
-        HXformat_add(master_catalog, "USERS", &users_max, HXTYPE_ULONG);
+        HXformat_add(master_catalog, "USERS", &users_max, HXTYPE_UINT);
     }
     if(c->add_opts.user_preadd != NULL || c->add_opts.user_postadd != NULL) {
         user_catalog = HXformat_init();
@@ -284,11 +284,11 @@ EXPORT_SYMBOL int mdsync_mod(struct mdsync_workspace *w)
 
     // FIXME: postmod not implemented
 
-    if(w->update_req->itemcount > 0 && (ret = mdsync_update(w)) <= 0)
+    if(w->update_req->items > 0 && (ret = mdsync_update(w)) <= 0)
         return ret;
-    if(w->defer_start->itemcount > 0 && (ret = mdsync_defer_start(w)) <= 0)
+    if(w->defer_start->items > 0 && (ret = mdsync_defer_start(w)) <= 0)
         return ret;
-    if(w->defer_stop->itemcount > 0 && (ret = mdsync_defer_stop(w)) <= 0)
+    if(w->defer_stop->items > 0 && (ret = mdsync_defer_stop(w)) <= 0)
         return ret;
 
     return 1;
@@ -299,14 +299,14 @@ EXPORT_SYMBOL int mdsync_del(struct mdsync_workspace *w)
     // Deleting the old users
     struct HXbtree *master_catalog = NULL, *user_catalog = NULL;
     const struct mdsync_config *c = &w->config;
-    unsigned long users_proc, users_max;
+    unsigned int users_proc, users_max;
     char current_date[MAXSNLEN];
     struct HXdeque_node *travp;
     struct vxpdb_user res = {};
     int ret;
 
     users_proc = 0;
-    users_max  = w->delete_now->itemcount;
+    users_max  = w->delete_now->items;
 
     if(users_max == 0)
         return 1;
@@ -319,7 +319,7 @@ EXPORT_SYMBOL int mdsync_del(struct mdsync_workspace *w)
      c->del_opts.master_postdel != NULL) {
         master_catalog = HXformat_init();
         HXformat_add(master_catalog, "DATE",  current_date, HXTYPE_STRING);
-        HXformat_add(master_catalog, "USERS", &users_max,   HXTYPE_ULONG);
+        HXformat_add(master_catalog, "USERS", &users_max,   HXTYPE_UINT);
     }
 
     if(c->del_opts.user_predel != NULL || c->del_opts.user_postdel != NULL) {
@@ -379,7 +379,7 @@ EXPORT_SYMBOL int mdsync_del(struct mdsync_workspace *w)
 
 //-----------------------------------------------------------------------------
 static int mdsync_update(struct mdsync_workspace *w) {
-    long users_proc = 0, users_max      = w->update_req->itemcount;
+    unsigned int users_proc = 0, users_max = w->update_req->items;
     void *travp = HXbtrav_init(w->update_req);
     struct vxpdb_user search_rq, mod_rq;
     const struct HXbtree_node *node;
@@ -403,10 +403,10 @@ static int mdsync_update(struct mdsync_workspace *w) {
 }
 
 static int mdsync_defer_start(struct mdsync_workspace *w) {
-    long users_proc = 0, users_max      = w->defer_start->itemcount;
+    unsigned int users_proc = 0, users_max = w->defer_start->items;
     struct vxpdb_user search_rq, mod_rq;
     const struct HXdeque_node *node;
-    long today                          = vxutil_now_iday();
+    long today = vxutil_now_iday();
     int ret;
 
     for(node = w->defer_start->first; node != NULL; node = node->next) {
@@ -425,7 +425,7 @@ static int mdsync_defer_start(struct mdsync_workspace *w) {
 }
 
 static int mdsync_defer_stop(struct mdsync_workspace *w) {
-    long users_proc = 0, users_max      = w->defer_stop->itemcount;
+    unsigned int users_proc = 0, users_max = w->defer_stop->items;
     struct vxpdb_user search_rq, mod_rq;
     const struct HXdeque_node *node;
     int ret;
