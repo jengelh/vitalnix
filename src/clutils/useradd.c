@@ -224,7 +224,7 @@ static const char *useradd_strerror(int e)
 
 static void useradd_getopt_expire(const struct HXoptcb *cbi) {
     struct vxpdb_user *user = cbi->current->ptr;
-    user->sp_expire = vxutil_string_iday(cbi->s);
+    user->sp_expire = vxutil_string_iday(cbi->data);
     return;
 }
 
@@ -232,7 +232,7 @@ static void useradd_getopt_preadd(const struct HXoptcb *cbi)
 {
     struct vxconfig_useradd *conf = cbi->current->uptr;
     conf->master_preadd = NULL;
-    conf->user_preadd   = HX_strdup(cbi->s);
+    conf->user_preadd   = HX_strdup(cbi->data);
     return;
 }
 
@@ -240,7 +240,7 @@ static void useradd_getopt_postadd(const struct HXoptcb *cbi)
 {
     struct vxconfig_useradd *conf = cbi->current->uptr;
     conf->master_postadd = NULL;
-    conf->user_postadd   = HX_strdup(cbi->s);
+    conf->user_postadd   = HX_strdup(cbi->data);
     return;
 }
 

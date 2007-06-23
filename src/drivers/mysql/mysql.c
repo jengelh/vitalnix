@@ -850,7 +850,7 @@ static void read_config(struct mysql_state *state, unsigned int action,
 }
 
 static void read_config_cb(const struct HXoptcb *cbi) {
-    read_config(cbi->current->uptr, CONFIG_READ_NEST, cbi->s);
+    read_config(cbi->current->uptr, CONFIG_READ_NEST, cbi->data);
     return;
 }
 

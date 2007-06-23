@@ -397,17 +397,17 @@ static int get_options(int *argc, const char ***argv) {
 }
 
 static void getopt_t(const struct HXoptcb *cbi) {
-    if(strcmp(cbi->s, "shadow") == 0)
+    if(strcmp(cbi->data, "shadow") == 0)
         Output_type = OUTPUT_SHADOW;
-    else if(strcmp(cbi->s, "mysql") == 0)
+    else if(strcmp(cbi->data, "mysql") == 0)
         Output_type = OUTPUT_MYSQL;
-    else if(strcmp(cbi->s, "ldap") == 0 || strcmp(cbi->s, "ldif") == 0)
+    else if(strcmp(cbi->data, "ldap") == 0 || strcmp(cbi->data, "ldif") == 0)
         Output_type = OUTPUT_LDIF;
     return;
 }
 
 static void getopt_u(const struct HXoptcb *cbi) {
-    char *wk = HX_strdup(cbi->s);
+    char *wk = HX_strdup(cbi->data);
     char *from = wk, *to;
     if((to = strchr(from, ':')) != NULL)
 	*to++ = '\0';
@@ -423,10 +423,10 @@ static void getopt_w(const struct HXoptcb *cbi) {
     char *orig_wk, *wk;
     const char *p;
 
-    if(cbi->s == NULL)
+    if(cbi->data == NULL)
         return;
     memset(Dump_what, 0, sizeof(Dump_what));
-    wk = orig_wk = HX_strdup(cbi->s);
+    wk = orig_wk = HX_strdup(cbi->data);
 
     while((p = HX_strsep(&wk, ",")) != NULL) {
         if(strcmp(p, "passwd") == 0)

@@ -180,7 +180,7 @@ static const char *usermod_strerror(int e)
 
 static void usermod_getopt_expire(const struct HXoptcb *cbi) {
     struct vxpdb_user *user = cbi->current->ptr;
-    user->sp_expire = vxutil_string_iday(cbi->s);
+    user->sp_expire = vxutil_string_iday(cbi->data);
     return;
 }
 
@@ -188,7 +188,7 @@ static void usermod_getopt_premod(const struct HXoptcb *cbi)
 {
     struct vxconfig_usermod *conf = cbi->current->uptr;
     conf->master_premod = NULL;
-    conf->user_premod   = HX_strdup(cbi->s);
+    conf->user_premod   = HX_strdup(cbi->data);
     return;
 }
 
@@ -196,7 +196,7 @@ static void usermod_getopt_postmod(const struct HXoptcb *cbi)
 {
     struct vxconfig_usermod *conf = cbi->current->uptr;
     conf->master_postmod = NULL;
-    conf->user_postmod   = HX_strdup(cbi->s);
+    conf->user_postmod   = HX_strdup(cbi->data);
     return;
 }
 

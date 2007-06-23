@@ -153,7 +153,7 @@ static void userdel_getopt_predel(const struct HXoptcb *cbi)
 {
     struct vxconfig_userdel *conf = cbi->current->uptr;
     conf->master_predel = NULL;
-    conf->user_predel   = HX_strdup(cbi->s);
+    conf->user_predel   = HX_strdup(cbi->data);
     return;
 }
 
@@ -161,7 +161,7 @@ static void userdel_getopt_postdel(const struct HXoptcb *cbi)
 {
     struct vxconfig_userdel *conf = cbi->current->uptr;
     conf->master_postdel = NULL;
-    conf->user_postdel   = HX_strdup(cbi->s);
+    conf->user_postdel   = HX_strdup(cbi->data);
     return;
 }
 

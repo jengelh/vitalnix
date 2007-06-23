@@ -193,13 +193,13 @@ static int mdsync_read_config(struct mdsync_config *c) {
 static void pconfig_crymeth(const struct HXoptcb *cbi) {
     int *ptr = cbi->current->uptr;
 
-    if(stricmp(cbi->s, "md5") == 0) {
+    if(stricmp(cbi->data, "md5") == 0) {
 #ifdef _WIN32
         fprintf(stderr, "Warning: No MD5 support under Win32.\n");
 #else
         *ptr = CRYPW_MD5;
 #endif
-    } else if(stricmp(cbi->s, "des") == 0) {
+    } else if(stricmp(cbi->data, "des") == 0) {
 #ifdef _WIN32
         fprintf(stderr, "Warning: No DES support under Win32.\n");
 #else
@@ -214,9 +214,9 @@ static void pconfig_crymeth(const struct HXoptcb *cbi) {
 static void pconfig_genpw(const struct HXoptcb *cbi) {
     int *ptr = cbi->current->uptr;
 
-    if(stricmp(cbi->s, "jp") == 0)
+    if(stricmp(cbi->data, "jp") == 0)
         *ptr = GENPW_JP;
-    else if(stricmp(cbi->s, "zh") == 0)
+    else if(stricmp(cbi->data, "zh") == 0)
         *ptr = GENPW_ZH;
     else
         *ptr = 0;
