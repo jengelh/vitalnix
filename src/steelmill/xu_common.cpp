@@ -325,6 +325,8 @@ void GW_Table::Insert(const wxString *c)
 
 void GW_Table::Resize_Column(wxListEvent &event)
 {
+    printf("column resized\n");
+    event.Skip();
     return;
 }
 

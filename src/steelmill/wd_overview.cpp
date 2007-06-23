@@ -36,8 +36,12 @@ WD_Overview::WD_Overview(wxWindow *parent, unsigned int display_type) :
 
 //    wxBoxSizer *hp1 = new wxBoxSizer(wxHORIZONTAL);
 
+    const wxString hdrs[] = {wxT("UID"), wxT("Username"), wxT("Full Name")};
+    GW_Table *tbl = new GW_Table(this, wxID_ANY,
+                    hdrs, 3, (int[]){1, 1, 1});
+
     vp->Add(hp0, 0, wxALIGN_LEFT);
-    vp->Add(init_list(display_type));
+    vp->Add(tbl, 1, wxGROW);
 
     SetSizer(vp);
     vp->SetSizeHints(this);

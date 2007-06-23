@@ -15,6 +15,7 @@
 #include <wx/statline.h>
 #include "steelmill/wd_about.hpp"
 #include "steelmill/wd_fixuuid.hpp"
+#include "steelmill/wd_lpcadm.hpp"
 #include "steelmill/wd_main.hpp"
 #include "steelmill/wd_overview.hpp"
 #include "steelmill/wd_pwlfmt.hpp"
@@ -31,6 +32,7 @@ enum {
     ID_FIXUUID,
     ID_VIEWUSERS,
     ID_VIEWGROUPS,
+    ID_LPCADM,
 };
 
 //-----------------------------------------------------------------------------
@@ -41,6 +43,7 @@ BEGIN_EVENT_TABLE(WD_MainMenu, wxFrame)
     EVT_BUTTON(ID_FIXUUID,    WD_MainMenu::FixUUID)
     EVT_BUTTON(ID_VIEWUSERS,  WD_MainMenu::View_Users)
     EVT_BUTTON(ID_VIEWGROUPS, WD_MainMenu::View_Groups)
+    EVT_BUTTON(ID_LPCADM,     WD_MainMenu::lpcadm)
     EVT_BUTTON(wxID_MORE,     WD_MainMenu::Show_Console)
     EVT_BUTTON(wxID_ABOUT,    WD_MainMenu::About)
     EVT_BUTTON(wxID_EXIT,     WD_MainMenu::Exit)
@@ -123,6 +126,12 @@ void WD_MainMenu::View_Users(wxCommandEvent &event) {
     return;
 }
 
+void WD_MainMenu::lpcadm(wxCommandEvent &event)
+{
+    WD_lpcadm(this).ShowModal();
+    return;
+}
+
 wxFlexGridSizer *WD_MainMenu::generate_menu(void) {
     struct map {
         int id;
@@ -145,6 +154,8 @@ wxFlexGridSizer *WD_MainMenu::generate_menu(void) {
             "Show all users, create or delete accounts and\n"
             "modify account options."},
         {ID_VIEWGROUPS, "List groups >>",
+            "\n"},
+        {ID_LPCADM, "lpcadm >>",
             "\n"},
         {wxID_ABOUT, "About >>",
             ""},

@@ -34,6 +34,7 @@ class WD_MainMenu : public wxFrame {
     void Sync(wxCommandEvent &);
     void View_Groups(wxCommandEvent &);
     void View_Users(wxCommandEvent &);
+    void lpcadm(wxCommandEvent &);
 
   private: // variables
     wxFlexGridSizer *generate_menu(void);
