@@ -29,30 +29,27 @@ applications using the <code>vxpdb_*()</code> functions and the respective
 instance as obtained from <code>vxpdb_load()</code>. Note that the struct must
 be writable since it will be modified.</p>
 
-<!--
 <h1>Implementable functions</h1>
 
 <h2>-&gt;init</h2>
 
 <p class="code"><code><b>int (*</b>init<b>)</b>(<b>struct</b> vxpdb_state <b>*</b>mip, const char <b>*</b>config_file);</code></p>
 
-<p class="block"><code>our_init()</code> function gets called after the shared
+<p class="block">The <code>init</code> function gets called after the shared
 library has been opened through <code>vxpdb_load()</code> from the caller
-program. It gets passed the <code>priv</code> argument from
-<code>vxpdb_load()</code>, which may contain module-specific initialization
-data. Most of the times however, the caller will just put <code>NULL</code> for
-<code>private_data</code>.</p>
+program. The driver loader passes the <code>config_file</code> argument which
+indicates the location of the configuration file that is used.</p>
 
 <p class="block">In this function, the module should allocate its state and
 read configuration files. The allocation of a state might look like below, and
-is necessary for reentrancy:</p>
+must be done correctly to support reentrancy:</p>
 
 <p class="code"><code><b>static int</b> our_init(<b>struct</b> vxpdb_state <b>*</b>mip, <b>void *</b>priv) {<br />
-    <b>struct</b> our_state <b>*</b>state;<br />
-    state <b>=</b> mip-&gt;state <b>=</b> malloc(sizeof(struct our_state));<br />
-    state-&gt;config <b>=</b> read_some_config("bla.conf");<br />
-    read_some_extras(priv);<br />
-    return 1;<br />
+&nbsp; &nbsp; <b>struct</b> our_state <b>*</b>state;<br />
+&nbsp; &nbsp; state <b>=</b> mip-&gt;state <b>=</b> malloc(sizeof(struct our_state));<br />
+&nbsp; &nbsp; state-&gt;config <b>=</b> read_some_config("bla.conf");<br />
+&nbsp; &nbsp; read_some_extras(priv);<br />
+&nbsp; &nbsp; return 1;<br />
 }</code></p>
 
 <p class="block">This is a very basic example, and you should look at the
@@ -62,16 +59,16 @@ already existing modules to see what they do, and possibly how they do it.</p>
 
 <p class="code"><code><b>int (*</b>open<b>)</b>(<b>struct</b> vxpdb_state <b>*</b>mip, <b>long</b> flags);</code></p>
 
-<p class="block">The open function should open a connection to the password
-database (if applicable), or do whatever is equivalent to prepare further
-actions. The <code>flags</code> parameter is explained in
-<code>api-libvxpdb</code>. Some sample code:</p>
+<p class="block">The <code>open</code> function should open a connection to the
+password database (if applicable), or do whatever is equivalent to prepare
+further actions. The <code>flags</code> parameter is explained in <a
+href="api-libvxpdb.html">the libvxpdb API</a>. Some sample code:</p>
 
 <p class="code"><code><b>int</b> our_open(<b>struct</b> vxpdb_state <b>*</b>mip, <b>long</b> flags) {<br />
-    <b>struct</b> our_state <b>*</b>state <b>=</b> mip-&gt;state;<br />
-    if((state-&gt;fp <b>=</b> fopen("/etc/passwd", "r")) <b>==</b> NULL)<br />
-        return -errno;<br />
-    return 1;<br />
+&nbsp; &nbsp; <b>struct</b> our_state <b>*</b>state <b>=</b> mip-&gt;state;<br />
+&nbsp; &nbsp; if((state-&gt;fp <b>=</b> fopen("/etc/passwd", "r")) <b>==</b> NULL)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; return -errno;<br />
+&nbsp; &nbsp; return 1;<br />
 }</code></p>
 
 <h2>-&gt;close</h2>
@@ -86,6 +83,52 @@ actions. The <code>flags</code> parameter is explained in
 
 <p class="code"><code><b>long (*</b>modctl<b>)</b>(<b>struct</b> vxpdb_state <b>*</b>mip, <b>long</b> command, <b>...</b>);</code></p>
 
+<p class="block">The driver can be controlled via the
+<code>vxpdb_modctl()</code> function. (The idea is analogous to a device
+driver's <code>ioctl()</code>.) There are some requests defined in
+<code>libvxpdb.h</code>.</p>
+
+<div class="pleft">
+<table>
+  <tr>
+    <td class="code"><code>
+vxpdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_FLUSH);<br />
+vxpdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_NEXTUID_SYS);<br />
+vxpdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_NEXTUID);<br />
+vxpdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_NEXTGID_SYS);<br />
+vxpdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_NEXTGID);</code></td>
+  </tr>
+</table>
+</div>
+
+<div class="pleft">
+<table border="1" class="bordered">
+  <tr>
+    <td class="t1"><code>PDB_FLUSH</code></td>
+    <td class="t1">Causes any changes to be committed to the underlying
+      layer.</td>
+  </tr>
+  <tr>
+    <td class="t2"><code>PDB_NEXTUID_SYS</code></td>
+    <td class="t2">Returns the next free auto-UID below <code>UID_MIN</code></td>
+  </tr>
+  <tr>
+    <td class="t1"><code>PDB_NEXTUID</code></td>
+    <td class="t1">Returns the next free auto-UID within <code>UID_MIN</code> and
+      <code>UID_MAX</code></td>
+  </tr>
+  <tr>
+    <td class="t2"><code>PDB_NEXTGID_SYS</code></td>
+    <td class="t2">Returns the next free auto-GID below <code>GID_MIN</code></td>
+  </tr>
+  <tr>
+    <td class="t1"><code>PDB_NEXTGID</code></td>
+    <td class="t1">Returns the next free auto-GID within <code>GID_MIN</code> and
+      <code>GID_MAX</code></td>
+  </tr>
+</table>
+</div>
+
 <h2>-&gt;lock</h2>
 
 <p class="code"><code><b>int (*</b>lock<b>)</b>(<b>struct</b> vxpdb_state <b>*</b>mip);</code></p>
@@ -98,12 +141,6 @@ actions. The <code>flags</code> parameter is explained in
 
 <h1></h1>
 
-<h1></h1>
-
-<h1></h1>
-
-<h1></h1>
-
 <h1>Description</h1>
 
 <p class="block">libvxpdb Since there is a great variety of user databases, the
@@ -111,8 +148,6 @@ Unified Account Database provides a generic API to any application. Some user
 databases are for example the Shadow Password System (<code>/etc/passwd</code>
 and friends). Another could be the Samba userdb in <code>/var/lib/samba</code>,
 or OpenLDAP (libldap).</p>
-
--->
 
 <h1>Notes</h1>
 
@@ -137,7 +172,7 @@ twice (the module may be opened by different applications). You should handle
 that case then. One, locking files, and two, checking for the lock is the usual
 thing for a module to be opened only once at a time.</p>
 
-<!-- <p class="block">Upon success, return <code>&gt;0</code>, otherwise return
+<p class="block">Upon success, return <code>&gt;0</code>, otherwise return
 <code>0</code> (and possibly set <code>errno</code>), or even return
 <code>-errno</code> and set <code>errno</code> to signalize a hard error (i.e.
 <code>ENOMEM</code> due to <code>malloc()</code>).</p>
@@ -342,31 +377,31 @@ pdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_NEXTGID);</code></td>
 <div class="pleft">
 <table border="1">
   <tr>
-    <td class="t1"><code>ACCDB_FLUSHDB</code></td>
+    <td class="t1"><code>PDB_FLUSH</code></td>
     <td class="t1">Causes any changes to be committed to the underlying
       layer. (That might not be hard disk!)</td>
   </tr>
   <tr>
-    <td class="t2"><code>ACCDB_NEXTUID_SYS</code></td>
+    <td class="t2"><code>PDB_NEXTUID_SYS</code></td>
     <td class="t2">Returns the next free auto-UID below
       <code>UID_MIN</code></td>
   </tr>
   <tr>
-    <td class="t1"><code>ACCDB_NEXTUID</code></td>
+    <td class="t1"><code>PDB_NEXTUID</code></td>
     <td class="t1">Returns the next free auto-UID within <code>UID_MIN</code>
       and <code>UID_MAX</code></td>
   </tr>
   <tr>
-    <td class="t2"><code>ACCDB_NEXTGID_SYS</code></td>
+    <td class="t2"><code>PDB_NEXTGID_SYS</code></td>
     <td class="t2">Returns the next free auto-GID below
       <code>GID_MIN</code></td>
   </tr>
   <tr>
-    <td class="t1"><code>ACCDB_NEXTGID</code></td>
+    <td class="t1"><code>PDB_NEXTGID</code></td>
     <td class="t1">Returns the next free auto-GID within <code>GID_MIN</code>
       and <code>GID_MAX</code></td>
   </tr>
 </table>
 </div>
--->
+
 <?php include_once("Base-footer.php"); ?>

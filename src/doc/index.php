@@ -56,8 +56,7 @@
       <li><a href="driver-mysql.php">MYSQL</a></li>
       <li><a href="driver-ldap.php">LDAP</a></li>
       <li><a href="driver-shadow.php">Shadow</a></li>
-      <li><a href="driver-nss.php">NSS</a></li>
-      <li><a href="driver-nss1.php">NSS-1</a></li>
+      <li><a href="driver-nss.php">NSS and NSS-1</a></li>
       <li><a href="driver-dummy.php">Dummy</a></li>
     </ul></li>
   <li><a href="extra-pwlstyles.php">List of PWLFMT styles</a></li>
@@ -68,7 +67,7 @@
 
 <h1>Developer's Reference</h1>
 
-<h2>Outside Vitalnix</h2>
+<h2>External API</h2>
 
 <ul>
   <li><a href="api-libvxcgi.php">libvxcgi</a></li>
@@ -81,7 +80,7 @@
   <li><a href="api-libvxutil.php">libvxutil</a></li>
 </ul>
 
-<h2>Inside Vitalnix</h2>
+<h2>Internal API</h2>
 
 <ul>
   <li><a href="api-mod_backend.php">backend module API</a></li>

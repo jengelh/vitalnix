@@ -29,7 +29,7 @@ lookup functions described below. Returns an AEE code.</p>
 
 <h2>vxcore_section_lookup</h2>
 
-<p class="block"><code>vxcore_section_lookup()</code> returns the B-tree
+<p class="block"><code>vxcore_section_lookup()</code> returns the tree
 associated with <code>section</code>, which can be used for traversal and
 finding out about registered modules belonging to this section. If the section
 does not exist, <code>NULL</code> is returned.</p>
