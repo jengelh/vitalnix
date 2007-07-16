@@ -146,11 +146,12 @@ EXPORT_SYMBOL void mdsync_free(struct mdsync_workspace *w)
 }
 
 //-----------------------------------------------------------------------------
-/*  kill_eds
-    @node:      node to free data at
-
-    Recursively descent into @node and its subtrees to free the EDS entries.
-*/
+/*
+ * kill_eds
+ * @node:	node to free data at
+ *
+ * Recursively descent into @node and its subtrees to free the EDS entries.
+ */
 static void kill_eds(const struct HXbtree_node *node) {
     vxeds_free_entry(node->data);
     if(node->sub[0] != NULL)
@@ -160,12 +161,13 @@ static void kill_eds(const struct HXbtree_node *node) {
     return;
 }
 
-/*  kill_pwd
-    @node:      node to free data at
-
-    Recursively descend into @node and its subtrees to free the PWD data
-    structures.
-*/
+/*
+ * kill_pwd
+ * @node:	node to free data at
+ *
+ * Recursively descend into @node and its subtrees to free the PWD data
+ * structures.
+ */
 static void kill_pwd(const struct HXbtree_node *node) {
     vxpdb_user_free(node->data, 1);
     if(node->sub[0] != NULL)

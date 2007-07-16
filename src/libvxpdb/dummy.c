@@ -122,10 +122,11 @@ static int vdummy_groupinfo(struct vxpdb_state *vp,
 }
 
 //-----------------------------------------------------------------------------
-/*  vxpdb_fix_vtable
-    @m: vtable
-
-*/
+/*
+ * vxpdb_fix_vtable
+ * @m:	vtable
+ *
+ */
 EXPORT_SYMBOL void vxpdb_fix_vtable(struct vxpdb_driver *m)
 {
 #define SET(x) if((m->x) == NULL) (m->x) = vdummy_##x;

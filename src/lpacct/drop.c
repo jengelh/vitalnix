@@ -85,20 +85,21 @@ void drop2sqin(struct costf *out, const struct cost *in, int dpi)
 }
 
 //-----------------------------------------------------------------------------
-/*  pxcost_cmyk
-    @image:     Image data
-    @cost:      Storage point for image cost
-
-    Count the amount of CMYK color used in an array of RGB24 pixels (PPM). The
-    unit is a "droplet", which is a 1/255 full drop of color. For example, if
-    @res[0] is 1020 (255x4), color for exactly four full-intensity cyan pixels
-    has been used, or for eight half-intensity pixels, etc...
-
-        255 droplets = 1 px^2
-
-    This function and pxcost_cmy() use integer math to gain a little speed
-    over floating point operations.
-*/
+/*
+ * pxcost_cmyk
+ * @image:	Image data
+ * @cost:	Storage point for image cost
+ *
+ * Count the amount of CMYK color used in an array of RGB24 pixels (PPM). The
+ * unit is a "droplet", which is a 1/255 full drop of color. For example, if
+ * @res[0] is 1020 (255x4), color for exactly four full-intensity cyan pixels
+ * has been used, or for eight half-intensity pixels, etc...
+ *
+ *     255 droplets = 1 px^2
+ *
+ * This function and pxcost_cmy() use integer math to gain a little speed
+ * over floating point operations.
+ */
 static int pxcost_cmyk(int fd, struct image *image, struct cost *cost)
 {
     unsigned long long tc = 0, tm = 0, ty = 0, tk = 0;
@@ -131,13 +132,14 @@ static int pxcost_cmyk(int fd, struct image *image, struct cost *cost)
     return ret;
 }
 
-/*  pxcost_cmypk
-    @image:     Image data
-    @cost:      Storage point for image cost
-
-    Cost analyzer for CMY+K. Experimental and probably not conforming quite
-    to actual printer implementations.
-*/
+/*
+ * pxcost_cmypk
+ * @image:	Image data
+ * @cost:	Storage point for image cost
+ *
+ * Cost analyzer for CMY+K. Experimental and probably not conforming quite
+ * to actual printer implementations.
+ */
 static int pxcost_cmypk(int fd, struct image *image, struct cost *cost)
 {
     unsigned long long tc = 0, tm = 0, ty = 0, tk = 0;
@@ -168,13 +170,14 @@ static int pxcost_cmypk(int fd, struct image *image, struct cost *cost)
     return ret;
 }
 
-/*  pxcost_cmy
-    @image:     Image data
-    @cost:      Storage point for image cost
-
-    Like pxcost_cmyk(), but for CMY. Use with printers that do not have a black
-    component, like HP DeskJet 320.
-*/
+/*
+ * pxcost_cmy
+ * @image:	Image data
+ * @cost:	Storage point for image cost
+ *
+ * Like pxcost_cmyk(), but for CMY. Use with printers that do not have a black
+ * component, like HP DeskJet 320.
+ */
 static int pxcost_cmy(int fd, struct image *image, struct cost *cost)
 {
     unsigned long long c = 0, m = 0, y = 0;
@@ -203,12 +206,13 @@ static int pxcost_cmy(int fd, struct image *image, struct cost *cost)
     return ret;
 }
 
-/*  pxcost_gray
-    @image:     Image data
-    @cost:      Storage point for image cost
-
-    Count the amount of black color used in an array of RGB24 or K8 pixels.
-*/
+/*
+ * pxcost_gray
+ * @image:	Image data
+ * @cost:	Storage point for image cost
+ *
+ * Count the amount of black color used in an array of RGB24 or K8 pixels.
+ */
 static int pxcost_gray(int fd, struct image *image, struct cost *cost)
 {
     const unsigned char *current;
@@ -252,15 +256,16 @@ static inline unsigned int abs1(int a)
     return (a < 0) ? -a : a;
 }
 
-/*  kdist
-    @r: red component
-    @g: green component
-    @b: blue component
-
-    Calculates the distance of (@r,@g,@b) to the gray baseline
-    (0,0,0)->(255,255,255). Input range is 0..255, output range is 0..43350.
-    http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
-*/
+/*
+ * kdist
+ * @r:	red component
+ * @g:	green component
+ * @b:	blue component
+ *
+ * Calculates the distance of (@r,@g,@b) to the gray baseline
+ * (0,0,0)->(255,255,255). Input range is 0..255, output range is 0..43350.
+ * http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
+ */
 static inline unsigned int kdist(unsigned int r, unsigned int g,
   unsigned int b)
 {

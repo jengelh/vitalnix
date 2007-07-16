@@ -105,14 +105,15 @@ static int vxpdb_cleanup(struct vxpdb_state *thx, int err, struct opt *cf) {
     return err;
 }
 
-/*  vxpdb_config
-    @cf:        pointer to config structure
-    @action:    %CONFIG_READ or %CONFIG_FREE
-    @L1_name:   level-1 name
-
-    %CONFIG_READ: Resolve the standard database ("*") into a real database,
-    and resolve into its configuration file.
-*/
+/*
+ * vxpdb_config
+ * @cf:		pointer to config structure
+ * @action:	%CONFIG_READ or %CONFIG_FREE
+ * @L1_name:	level-1 name
+ *
+ * %CONFIG_READ: Resolve the standard database ("*") into a real database,
+ * and resolve into its configuration file.
+ */
 static int vxpdb_config(struct opt *cf, unsigned int action,
   const char *L1_name)
 {
@@ -159,12 +160,13 @@ static int vxpdb_config(struct opt *cf, unsigned int action,
     return 1;
 }
 
-/*  vxpdb_get_handle
-    @filename:  Shared library to open
-
-    Opens @filename or a construction of "drv_", @filename and an extension
-    and returns the handle on success, or %NULL on failure.
-*/
+/*
+ * vxpdb_get_handle
+ * @filename:	Shared library to open
+ *
+ * Opens @filename or a construction of "drv_", @filename and an extension
+ * and returns the handle on success, or %NULL on failure.
+ */
 static void *vxpdb_get_handle(const struct opt *cf) {
     static const char *const ext[] = {".so", ".dll", "", NULL};
     const char *const *extp = ext;

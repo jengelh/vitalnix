@@ -52,16 +52,17 @@ EXPORT_SYMBOL void mdsync_fixup(struct mdsync_workspace *w)
 }
 
 //-----------------------------------------------------------------------------
-/*  format_name
-    @name:      Login name
-    @idx:       Index number
-    @dest:      Destination buffer
-    @dsize:     Buffer size
-
-    Constructs a new username from the original one (NAME) and an index number,
-    possibly truncating NAME to make IDX fit into eight characters (the
-    preferred UNIX username length).
-*/
+/*
+ * format_name
+ * @name:	Login name
+ * @idx:	Index number
+ * @dest:	Destination buffer
+ * @dsize:	Buffer size
+ *
+ * Constructs a new username from the original one (NAME) and an index number,
+ * possibly truncating NAME to make IDX fit into eight characters (the
+ * preferred UNIX username length).
+ */
 static inline char *format_name(const char *name, unsigned int idx,
   char *dest, size_t dsize)
 {

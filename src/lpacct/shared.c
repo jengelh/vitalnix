@@ -22,13 +22,14 @@ const char *const lpacct_sql_fields =
     "queue, jid, user, title, cyan, magenta, yellow, black, total, pages";
 
 //-----------------------------------------------------------------------------
-/*  lpacct_readconfig
-    @p: config structure
-
-    Fills @p with default values and then tries to update it with settings from
-    the lpacct configuration file. Returns >0 on success, otherwise the error
-    code.
-*/
+/*
+ * lpacct_readconfig
+ * @p:	config structure
+ *
+ * Fills @p with default values and then tries to update it with settings from
+ * the lpacct configuration file. Returns >0 on success, otherwise the error
+ * code.
+ */
 int lpacct_readconfig(struct options *p)
 {
     struct HXoption options_table[] = {

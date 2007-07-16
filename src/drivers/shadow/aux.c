@@ -164,15 +164,16 @@ void free_single_group(struct vxpdb_group *g) {
     return;
 }
 
-/*  lookup_group
-    @dq:        list to search
-    @gname:     group name to search on, or %NULL if don't-care
-    @gid:       group id to search on, or %PDB_NOGID if don't-care
-
-    Searches the group and returns a pointer to vxdb_shadow's internal data
-    structure if found, or %NULL if not found. If @gname is %NULL and @gid is
-    %PDB_NOGID, which would usually match any user, %NULL is returned too.
-*/
+/*
+ * lookup_group
+ * @dq:		list to search
+ * @gname:	group name to search on, or %NULL if don't-care
+ * @gid:	group id to search on, or %PDB_NOGID if don't-care
+ *
+ * Searches the group and returns a pointer to vxdb_shadow's internal data
+ * structure if found, or %NULL if not found. If @gname is %NULL and @gid is
+ * %PDB_NOGID, which would usually match any user, %NULL is returned too.
+ */
 struct vxpdb_group *lookup_group(struct HXdeque *dq, const char *gname,
   long gid)
 {
@@ -192,15 +193,16 @@ struct vxpdb_group *lookup_group(struct HXdeque *dq, const char *gname,
     return NULL;
 }
 
-/*  lookup_user
-    @dq:        list to search on
-    @lname:     user login name to match on, or %NULL if don't-care
-    @uid:       user uid to match o, or %PDB_NOUID if don't-care
-
-    Searches the user and returns a pointer to vxdb_shadow's internal data
-    structure if found, or %NULL if not found. If @lname is %NULL and @uid is
-    %PDB_NOUID, which would usually match any user, %NULL is returned too.
-*/
+/*
+ * lookup_user
+ * @dq:		list to search on
+ * @lname:	user login name to match on, or %NULL if don't-care
+ * @uid:	user uid to match o, or %PDB_NOUID if don't-care
+ *
+ * Searches the user and returns a pointer to vxdb_shadow's internal data
+ * structure if found, or %NULL if not found. If @lname is %NULL and @uid is
+ * %PDB_NOUID, which would usually match any user, %NULL is returned too.
+ */
 struct vxpdb_user *lookup_user(struct HXdeque *dq, const char *lname,
   long uid)
 {

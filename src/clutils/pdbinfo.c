@@ -73,11 +73,12 @@ int main(int argc, const char **argv) {
     return EXIT_SUCCESS;
 }
 
-/*  driver_info
-    @fn:        filename of the driver
-
-    Prints out info about the specified driver.
-*/
+/*
+ * driver_info
+ * @fn:	filename of the driver
+ *
+ * Prints out info about the specified driver.
+ */
 static void driver_info(const char *fn) {
     struct vxpdb_state *md;
     char sepl = '<', sepr = '>';
@@ -115,10 +116,11 @@ static void driver_info(const char *fn) {
     return;
 }
 
-/*  read_ldso_conf
-
-    Looks into /etc/ld.so.conf and /etc/ld.so.conf.d.
-*/
+/*
+ * read_ldso_conf
+ *
+ * Looks into /etc/ld.so.conf and /etc/ld.so.conf.d.
+ */
 static void read_ldso_conf(void) {
     const char *dentry;
     char buf[MAXFNLEN];
@@ -136,11 +138,12 @@ static void read_ldso_conf(void) {
     return;
 }
 
-/*  read_ldso_conf1
-    @file:      file to analyze
-
-    Reads @file and adds the search paths listed therein.
-*/
+/*
+ * read_ldso_conf1
+ * @file:	file to analyze
+ *
+ * Reads @file and adds the search paths listed therein.
+ */
 static void read_ldso_conf1(const char *file) {
     hmc_t *ln = NULL;
     FILE *fp;
@@ -163,10 +166,11 @@ static void read_ldso_conf1(const char *file) {
     return;
 }
 
-/*  read_environment
-
-    Adds the search paths listed in LD_LIBRARY_PATH.
-*/
+/*
+ * read_environment
+ *
+ * Adds the search paths listed in LD_LIBRARY_PATH.
+ */
 static void read_environment(void) {
     char *entry, *our, *travp;
     if((entry = getenv("LD_LIBRARY_PATH")) == NULL)

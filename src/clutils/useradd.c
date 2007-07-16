@@ -81,12 +81,13 @@ int main(int argc, const char **argv) {
     return ret;
 }
 
-/*  useradd_fill_defautls
-    @state:     pointer to useradd state
-
-    Fills @state with the hardcoded defaults and with the defaults from
-    configuration file.
-*/
+/*
+ * useradd_fill_defautls
+ * @state:	pointer to useradd state
+ *
+ * Fills @state with the hardcoded defaults and with the defaults from
+ * configuration file.
+ */
 static int useradd_fill_defaults(struct useradd_state *state)
 {
     struct vxconfig_useradd *conf = &state->config;
@@ -109,11 +110,12 @@ static int useradd_fill_defaults(struct useradd_state *state)
     return 1;
 }
 
-/*  useradd_genhome
-
-    Generate a home directory path based upon the split level that was set in
-    the configuration file.
-*/
+/*
+ * useradd_genhome
+ *
+ * Generate a home directory path based upon the split level that was set in
+ * the configuration file.
+ */
 static char *useradd_genhome(struct useradd_state *state)
 {
     struct vxconfig_useradd *conf = &state->config;

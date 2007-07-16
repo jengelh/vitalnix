@@ -17,15 +17,16 @@
 #include <vitalnix/libvxutil/defines.h>
 
 //-----------------------------------------------------------------------------
-/*  db_read_passwd
-    @fp:        stdio filehandle to read from
-
-    In this function, we read all users into memory. This speeds processing up,
-    as seeking and scanning in userinfo() / groupinfo() would take long
-    otherwise. We also have it handy in a struct. Doing so also allows us to
-    commit all changes to the user database at once (the usual case with no
-    PDB_SYNC flag set).
-*/
+/*
+ * db_read_passwd
+ * @fp:	stdio filehandle to read from
+ *
+ * In this function, we read all users into memory. This speeds processing up,
+ * as seeking and scanning in userinfo() / groupinfo() would take long
+ * otherwise. We also have it handy in a struct. Doing so also allows us to
+ * commit all changes to the user database at once (the usual case with no
+ * PDB_SYNC flag set).
+ */
 struct HXdeque *db_read_passwd(FILE *fp) {
     struct HXdeque *dq;
     struct vxpdb_user *u;

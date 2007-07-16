@@ -67,10 +67,11 @@ EXPORT_SYMBOL char *vxutil_propose_home(char *dest, size_t size,
     return dest;
 }
 
-/*  vxutil_propose_lname
-    @surname_8:         The surname (family name), UTF-8 encoded
-    @firstname_8:       The first name, UTF-8 encoded
-*/
+/*
+ * vxutil_propose_lname
+ * @surname_8:		The surname (family name), UTF-8 encoded
+ * @firstname_8:	The first name, UTF-8 encoded
+ */
 EXPORT_SYMBOL char *vxutil_propose_lname(char *dest, size_t size,
   const char *surname_8, const char *firstname_8)
 {
@@ -287,13 +288,14 @@ static int vxutil_parse_date(const char *s, int *day, int *month, int *year) {
     return 1;
 }
 
-/*  vxutil_quote_base64
-    @s: string to encode
-    @d: destination buffer
-
-    Encode @src into BASE-64 according to RFC 4648 and write result to @dest,
-    which must be of appropriate size, plus one for a trailing NUL.
-*/
+/*
+ * vxutil_quote_base64
+ * @s:	string to encode
+ * @d:	destination buffer
+ *
+ * Encode @src into BASE-64 according to RFC 4648 and write result to @dest,
+ * which must be of appropriate size, plus one for a trailing NUL.
+ */
 static void vxutil_quote_base64(const char *s, char *d)
 {
     static const char *a =
@@ -327,12 +329,13 @@ static void vxutil_quote_base64(const char *s, char *d)
     return;
 }
 
-/*  quoted_size
-    @s:         string to analyze
-    @type:      non-zero if double quoted
-
-    Returns the size of the string @s when quoted.
-*/
+/*
+ * quoted_size
+ * @s:		string to analyze
+ * @type:	non-zero if double quoted
+ *
+ * Returns the size of the string @s when quoted.
+ */
 static size_t quoted_size(const char *s, unsigned int type) {
     const char *p = s;
     size_t n = strlen(s);
@@ -368,21 +371,22 @@ static size_t quoted_size(const char *s, unsigned int type) {
     return n;
 }
 
-/*  surname_pointer
-    @s: string to analyze
-
-    Return a pointer to the first word that begins with an uppercase character.
-    If there is none that matches this criteria, return a pointer to the second
-    word, if there is any. If that also does not exist, return the original
-    pointer (i.e. to the first word).
-
-    Note that this only works for standard ASCII A-Z, and not umlauts, etc.
-
-    Examples:
-        van der Waals   => Waals
-        van der waals   => der waals
-        waals           => waals
-*/
+/*
+ * surname_pointer
+ * @s:	string to analyze
+ *
+ * Return a pointer to the first word that begins with an uppercase character.
+ * If there is none that matches this criteria, return a pointer to the second
+ * word, if there is any. If that also does not exist, return the original
+ * pointer (i.e. to the first word).
+ *
+ * Note that this only works for standard ASCII A-Z, and not umlauts, etc.
+ *
+ * Examples:
+ *     van der Waals   => Waals
+ *     van der waals   => der waals
+ *     waals           => waals
+ */
 static const char *surname_pointer(const char *s) {
     const char *p;
     while(isspace(*s)) ++s;
@@ -400,16 +404,17 @@ static const char *surname_pointer(const char *s) {
     return s;
 }
 
-/*  transform7
-    @src:       Source string to transform
-    @dest:      Destination buffer
-    @dsize:     Size of destination buffer
-
-    Transform an UTF-8 string @src into a 7-bit clean string according to the
-    substitution table and put the result into @dest, which is of size @dsize.
-    (So it puts in at most @dsize-1 characters.) The result will always be
-    '\0'-terminated.
-*/
+/*
+ * transform7
+ * @src:	Source string to transform
+ * @dest:	Destination buffer
+ * @dsize:	Size of destination buffer
+ *
+ * Transform an UTF-8 string @src into a 7-bit clean string according to the
+ * substitution table and put the result into @dest, which is of size @dsize.
+ * (So it puts in at most @dsize-1 characters.) The result will always be
+ * '\0'-terminated.
+ */
 char *transform7(const char *src, char *dest, size_t dsize) {
     static const struct stab {
         const char *in, *out;

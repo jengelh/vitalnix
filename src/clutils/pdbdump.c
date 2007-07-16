@@ -443,12 +443,13 @@ static void getopt_w(const struct HXoptcb *cbi) {
     return;
 }
 
-/*  ldif_safe
-    @s: string to analyze
-
-    Returns false if the string @s needs to be BASE-64 encoded to correspond
-    to the LDIF standard. Returns true if it can be used as-is.
-*/
+/*
+ * ldif_safe
+ * @s:	string to analyze
+ *
+ * Returns false if the string @s needs to be BASE-64 encoded to correspond
+ * to the LDIF standard. Returns true if it can be used as-is.
+ */
 static int ldif_safe(const char *s)
 {
     if(*const_cast(const unsigned char *, s) >= 128 ||

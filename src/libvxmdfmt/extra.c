@@ -32,22 +32,23 @@ enum {
 static inline int wb_classof(char);
 
 //-----------------------------------------------------------------------------
-/*  compare_wbc - Compare two strings on a per-class basis
-
-    A boundary in compare_wbc() is between two characters which are of
-    different class. Classes are: '\0', [0-9], [a-z], [^0-9a-z]. (Thus, the
-    following would hold true:
-
-        "11C" < "12C",
-        "8EK" < "8F2",
-        "10A" > "9B",
-        "9" < "A2",
-        "B" > "A2",
-        "0" < "-"
-
-    Returns an integer less than, equal to, or greater than zero if A is found,
-    respectively, to be less than, to match, or be greater than B.
-*/
+/*
+ * compare_wbc - Compare two strings on a per-class basis
+ *
+ * A boundary in compare_wbc() is between two characters which are of
+ * different class. Classes are: '\0', [0-9], [a-z], [^0-9a-z]. (Thus, the
+ * following would hold true:
+ *
+ *     "11C" < "12C",
+ *     "8EK" < "8F2",
+ *     "10A" > "9B",
+ *     "9" < "A2",
+ *     "B" > "A2",
+ *     "0" < "-"
+ *
+ * Returns an integer less than, equal to, or greater than zero if A is found,
+ * respectively, to be less than, to match, or be greater than B.
+ */
 int compare_wbc(const char *str_a, const char *str_b) {
     const char *walk_a = str_a, *walk_b = str_b;
     int cl_a, cl_b;

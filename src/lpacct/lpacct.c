@@ -74,12 +74,13 @@ void pr_warn(const char *func, const char *fmt, ...)
 }
 
 //-----------------------------------------------------------------------------
-/*  lpacct_analyze_main
-    @argc:      argument count
-    @argv:      argument vector
-
-    Used for console operation.
-*/
+/*
+ * lpacct_analyze_main
+ * @argc:	argument count
+ * @argv:	argument vector
+ *
+ * Used for console operation.
+ */
 static int lpacct_analyze_main(int argc, const char **argv)
 {
     struct options proc_opt, *p = &proc_opt;
@@ -120,12 +121,13 @@ static int lpacct_analyze_main(int argc, const char **argv)
     return ret;
 }
 
-/*  lpacct_filter_main
-    @argc:      argument count
-    @argv:      argument vector
-
-    Called when used as a CUPS filter.
-*/
+/*
+ * lpacct_filter_main
+ * @argc:	argument count
+ * @argv:	argument vector
+ *
+ * Called when used as a CUPS filter.
+ */
 static int lpacct_filter_main(int argc, const char **argv)
 {
     const char *input_file = NULL;
@@ -168,15 +170,16 @@ static int lpacct_filter_main(int argc, const char **argv)
     return EXIT_SUCCESS;
 }
 
-/*  ghostscript_init
-    @input_file:        gs param -- postscript file to parse
-    @pid:               store point for PID
-    @dpi:               gs param -- dots per inch
-
-    Starts the GhostScript interpreter on @input_file with @dpi x @dpi
-    resolution. Puts the PID of the subprocess into @pid and returns the
-    file descriptor for it. Aborts on error.
-*/
+/*
+ * ghostscript_init
+ * @input_file:	gs param -- postscript file to parse
+ * @pid:	store point for PID
+ * @dpi:	gs param -- dots per inch
+ *
+ * Starts the GhostScript interpreter on @input_file with @dpi x @dpi
+ * resolution. Puts the PID of the subprocess into @pid and returns the
+ * file descriptor for it. Aborts on error.
+ */
 static int ghostscript_init(const char *input_file, pid_t *pid,
   const struct options *op)
 {

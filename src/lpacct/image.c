@@ -32,11 +32,12 @@ static inline double px_to_cm(unsigned int, unsigned int);
 static inline double px_to_in(unsigned int, unsigned int);
 
 //-----------------------------------------------------------------------------
-/*  invert_image
-    @image:     image to operate on
-
-    Efficiently inverts all pixels in the image.
-*/
+/*
+ * invert_image
+ * @image:	image to operate on
+ *
+ * Efficiently inverts all pixels in the image.
+ */
 void invert_image(struct image *image)
 {
     unsigned long *Lptr = image->buffer;
@@ -54,13 +55,14 @@ void invert_image(struct image *image)
     return;
 }
 
-/*  mpxm_chunk_next
-    @image:     image state to operate on
-
-    Reads the next chunk from @image->fd. Returns the number of bytes read,
-    or zero on end-of-image, and %-errno on failure. Returns %-EPIPE when
-    EOF is prematurely encountered.
-*/
+/*
+ * mpxm_chunk_next
+ * @image:	image state to operate on
+ *
+ * Reads the next chunk from @image->fd. Returns the number of bytes read,
+ * or zero on end-of-image, and %-errno on failure. Returns %-EPIPE when
+ * EOF is prematurely encountered.
+ */
 long mpxm_chunk_next(int fd, struct image *image)
 {
     unsigned long block_size, read_size;
@@ -94,13 +96,14 @@ long mpxm_chunk_next(int fd, struct image *image)
     return block_size;
 }
 
-/*  mpxm_process
-    @fd:        file descriptor to read from
-    @cost:      accounting structure
-
-    Process all pages from @fd and write accounting results into @cost.
-    Propagates the error from any subfunction to the caller.
-*/
+/*
+ * mpxm_process
+ * @fd:		file descriptor to read from
+ * @cost:	accounting structure
+ *
+ * Process all pages from @fd and write accounting results into @cost.
+ * Propagates the error from any subfunction to the caller.
+ */
 int mpxm_process(int fd, const struct options *op)
 {
     struct image image = {};
@@ -160,12 +163,13 @@ static inline unsigned long min2(unsigned long a, unsigned long b)
     return (a < b) ? a : b;
 }
 
-/*  mpxm_chunk_alloc
-    @image:     image state to operate on
-
-    Allocates the buffer for chunk reading. Returns positive non-zero on
-    success or %-errno otherwise.
-*/
+/*
+ * mpxm_chunk_alloc
+ * @image:	image state to operate on
+ *
+ * Allocates the buffer for chunk reading. Returns positive non-zero on
+ * success or %-errno otherwise.
+ */
 static int mpxm_chunk_alloc(struct image *image)
 {
     if(image->buffer == NULL) {
@@ -177,12 +181,13 @@ static int mpxm_chunk_alloc(struct image *image)
     return 1;
 }
 
-/*  mpxm_fdgetl
-    @fd:        file descriptor to read from
-    @res:       buffer to put data into
-
-    Reads a line from @fd and puts it into @res.
-*/
+/*
+ * mpxm_fdgetl
+ * @fd:		file descriptor to read from
+ * @res:	buffer to put data into
+ *
+ * Reads a line from @fd and puts it into @res.
+ */
 static int mpxm_fdgetl(int fd, hmc_t **res)
 {
     char temp[256], *temp_ptr = temp;
@@ -209,13 +214,14 @@ static int mpxm_fdgetl(int fd, hmc_t **res)
     return (ret < 0) ? -errno : 0;
 }
 
-/*  mpxm_get_header
-    @fd:        file descriptor to read from
-    @image:     pointer to image parameters
-
-    Reads the next PPM header from the stream @fd into @image. Returns true on
-    success, otherwise false.
-*/
+/*
+ * mpxm_get_header
+ * @fd:		file descriptor to read from
+ * @image:	pointer to image parameters
+ *
+ * Reads the next PPM header from the stream @fd into @image. Returns true on
+ * success, otherwise false.
+ */
 static int mpxm_get_header(int fd, struct image *image)
 {
     hmc_t *ln = NULL;

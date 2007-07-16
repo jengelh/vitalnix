@@ -17,12 +17,13 @@
 #include <vitalnix/libvxutil/defines.h>
 
 //-----------------------------------------------------------------------------
-/*  db_read_shadow
-    @fp:        stdio filehandle to read from
-    @dq:        state->dq_user
-
-    Updates the user list with bits from the shadow file.
-*/
+/*
+ * db_read_shadow
+ * @fp:	stdio filehandle to read from
+ * @dq:	state->dq_user
+ *
+ * Updates the user list with bits from the shadow file.
+ */
 void db_read_shadow(FILE *fp, struct HXdeque *dq) {
     struct vxpdb_user *u = NULL;
     char *ln = NULL;

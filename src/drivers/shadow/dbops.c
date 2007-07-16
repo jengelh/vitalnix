@@ -109,13 +109,14 @@ void db_close(struct shadow_state *state) {
 #undef close_fpd
 }
 
-/*  db_flush
-    @state:     Current instance
-    @force:     Force flush even if in-memory copy is recent
-
-    Flush the in-memory database to disk if required. The files must be open
-    with %O_RDWR when this function is called.
-*/
+/*
+ * db_flush
+ * @state:	Current instance
+ * @force:	Force flush even if in-memory copy is recent
+ *
+ * Flush the in-memory database to disk if required. The files must be open
+ * with %O_RDWR when this function is called.
+ */
 void db_flush(struct shadow_state *state, int force) {
     if(!force && !(state->flags & PDB_SYNC))
         return;
