@@ -4,7 +4,7 @@ Version:        3.1.0
 Release:        0
 Group:          System/Base
 Summary:        Vitalnix User Management Suite and Essential Tools
-License:        LGPL2
+License:        LGPL2/3
 URL:            http://vitalnix.sourceforge.net/
 
 Source:         http://heanet.dl.sourceforge.net/sourceforge/%name/%name-%version.tar.bz2
