@@ -19,49 +19,45 @@ external advertisements for this software. */
 #include <vitalnix/libvxmdfmt/vtable.h>
 #include <vitalnix/libvxutil/defines.h>
 
-//-----------------------------------------------------------------------------
 static void pgtxt_tbl_header(const struct pwlfmt_workspace *state,
-  const struct pwl_data *data)
+    const struct pwl_data *data)
 {
-    fprintf(state->output_fh,
-        "\n\n"
-        "                                  Formatted by Vitalnix (%s)\n\n\n"
-        "  >>> Group %s\n\n"
-        "  %-35s  %-10s  %s\n"
-        "  =======================================================================\n",
-        VITALNIX_VERSION, data->pvgrp, "Name", "Login", "Password"
-    );
-    return;
+	fprintf(state->output_fh,
+		"\n\n"
+		"                                  Formatted by Vitalnix (%s)\n\n\n"
+		"  >>> Group %s\n\n"
+		"  %-35s  %-10s  %s\n"
+		"  =======================================================================\n",
+		VITALNIX_VERSION, data->pvgrp, "Name", "Login", "Password"
+	);
+	return;
 }
 
 static void pgtxt_tbl_entry(const struct pwlfmt_workspace *state,
-  const struct pwl_data *data)
+    const struct pwl_data *data)
 {
-    char buf[MAXSNLEN];
-    snprintf(buf, MAXSNLEN, "%s, %s", data->surname, data->first_name);
-    fprintf(state->output_fh, "  %-*s  %-10s  %s\n",
-            35 + pwlfmt_extra_whitespace(buf), buf, data->username,
-            data->password);
-    return;
+	char buf[MAXSNLEN];
+	snprintf(buf, MAXSNLEN, "%s, %s", data->surname, data->first_name);
+	fprintf(state->output_fh, "  %-*s  %-10s  %s\n",
+	        35 + pwlfmt_extra_whitespace(buf), buf, data->username,
+	        data->password);
+	return;
 }
 
 static void pgtxt_tbl_footer(const struct pwlfmt_workspace *state,
-  const struct pwl_data *data)
+    const struct pwl_data *data)
 {
-    fputc('\f', state->output_fh);
-    return;
+	fputc('\f', state->output_fh);
+	return;
 }
 
-//-----------------------------------------------------------------------------
 static const struct pwlstyle_vtable THIS_STYLE = {
-    .name       = "pg_txt",
-    .desc       = "pvgrp-sorted text/plain",
+	.name       = "pg_txt",
+	.desc       = "pvgrp-sorted text/plain",
 
-    .tbl_header = pgtxt_tbl_header,
-    .tbl_entry  = pgtxt_tbl_entry,
-    .tbl_footer = pgtxt_tbl_footer,
+	.tbl_header = pgtxt_tbl_header,
+	.tbl_entry  = pgtxt_tbl_entry,
+	.tbl_footer = pgtxt_tbl_footer,
 };
 
 REGISTER_MODULE(pg_txt, &THIS_STYLE);
-
-//=============================================================================

@@ -5,25 +5,23 @@ LIBDIR=.;
 usage="Usage: vitalnix-config [--cflags] [--ldflags] [--libs]";
 
 if [ $# -eq 0 ]; then
-    echo -e "$usage";
-    exit 1;
+	echo -e "$usage";
+	exit 1;
 fi;
 
 while [ $# -gt 0 ]; do
-    case "$1" in
-        (--cflags)
-            echo "-I$INCLUDE";
-            ;;
-        (--ldflags|--libs)
-            # --libs does not output any libraries because there is
-            # no list of fixed libraries for the Vitalnix Suite
-            echo "-L$LIBDIR -Wl,-rpath,$LIBDIR";
-            ;;
-        (*)
-            echo -e "$usage";
-            ;;
-    esac;
-    shift;
+	case "$1" in
+		(--cflags)
+			echo "-I$INCLUDE";
+			;;
+		(--ldflags|--libs)
+			# --libs does not output any libraries because there is
+			# no list of fixed libraries for the Vitalnix Suite
+			echo "-L$LIBDIR -Wl,-rpath,$LIBDIR";
+			;;
+		(*)
+			echo -e "$usage";
+			;;
+	esac;
+	shift;
 done;
-
-#<<eof>>

@@ -5,14 +5,14 @@
 extern "C" {
 #endif
 
-// Definitions
+/* Definitions */
 struct edsformat_vtable;
 struct vxeds_entry {
-    char *username, *first_name, *surname, *full_name, *pvgrp, *uuid;
+	char *username, *first_name, *surname, *full_name, *pvgrp, *uuid;
 };
 
 /*
- *      EDS.C
+ *	EDS.C
  */
 extern int vxeds_open(const char *, const char *, void **);
 extern int vxeds_read(void *, struct vxeds_entry *);
@@ -22,12 +22,12 @@ extern void vxeds_free_entry(struct vxeds_entry *);
 extern const struct edsformat_vtable *vxeds_formats_trav(void **);
 
 /*
- *      INTERNAL USE
+ *	INTERNAL USE
  */
 extern char *vxeds_bfullname(const char *, const char *);
 
 #ifdef __cplusplus
-} // extern "C"
+} /* extern "C" */
 #endif
 
-#endif // _VITALNIX_LIBVXEDS_LIBVXEDS_H
+#endif /* _VITALNIX_LIBVXEDS_LIBVXEDS_H */

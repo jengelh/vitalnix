@@ -3,11 +3,11 @@
 
 #include <sys/types.h>
 #ifndef __cplusplus
-#    include <stdio.h>
-#    include <stdlib.h>
+#	include <stdio.h>
+#	include <stdlib.h>
 #else
-#    include <cstdio>
-#    include <cstdlib>
+#	include <cstdio>
+#	include <cstdlib>
 #endif
 #include <libHX.h>
 
@@ -18,46 +18,46 @@ extern "C" {
 struct HXoption;
 
 /*
- *      CRYPT.C
+ *	CRYPT.C
  */
 enum {
-    CRYPW_DES = 1,
-    CRYPW_MD5,
-    CRYPW_BLOWFISH,
+	CRYPW_DES = 1,
+	CRYPW_MD5,
+	CRYPW_BLOWFISH,
 };
 
 extern int vxutil_cryptpw(const char *, const char *, unsigned int, char **);
 
 /*
- *      GENPW.C
+ *	GENPW.C
  */
 enum {
-    GENPW_1DIGIT  = 1 << 0,
-    GENPW_1CASE   = 1 << 1,
-    GENPW_O1DIGIT = 1 << 2,
-    GENPW_O1CASE  = 1 << 3,
-    GENPW_RAND    = 1 << 4,
-    GENPW_JP      = 1 << 5,
-    GENPW_ZH      = 1 << 6,
+	GENPW_1DIGIT  = 1 << 0,
+	GENPW_1CASE   = 1 << 1,
+	GENPW_O1DIGIT = 1 << 2,
+	GENPW_O1CASE  = 1 << 3,
+	GENPW_RAND    = 1 << 4,
+	GENPW_JP      = 1 << 5,
+	GENPW_ZH      = 1 << 6,
 };
 
 extern int vxutil_genpw(char *, size_t, long);
 
 /*
- *      UTIL.C
+ *	UTIL.C
  */
 enum {
-    VXQUOTE_SINGLE,
-    VXQUOTE_DOUBLE,
-    VXQUOTE_XML,
-    VXQUOTE_BASE64,
-    _VXQUOTE_MAX,
+	VXQUOTE_SINGLE,
+	VXQUOTE_DOUBLE,
+	VXQUOTE_XML,
+	VXQUOTE_BASE64,
+	_VXQUOTE_MAX,
 };
 
 extern long vxutil_now_iday(void);
 extern int vxutil_only_digits(const char *);
 extern char *vxutil_propose_home(char *, size_t, const char *, const char *,
-    unsigned int);
+	unsigned int);
 extern char *vxutil_propose_lname(char *, size_t, const char *, const char *);
 extern char *vxutil_quote(const char *, unsigned int, char **);
 extern int vxutil_replace_run(const char *, const struct HXbtree *);
@@ -67,25 +67,27 @@ extern long vxutil_string_xday(const char *);
 extern int vxutil_valid_username(const char *);
 
 /*
- *      UUID.C
+ *	UUID.C
  */
 extern char *vxuuid_vx3(const char *, long);
 extern long vxuuid_vx3_get_xday(const char *);
 
 /*
- *      INLINE FUNCTIONS
+ *	INLINE FUNCTIONS
  */
-static inline const char *vxutil_azstr(const char *ptr) {
-    return (ptr != NULL) ? ptr : "";
+static inline const char *vxutil_azstr(const char *ptr)
+{
+	return (ptr != NULL) ? ptr : "";
 }
 
-static inline int vxutil_have_display(void) {
-    const char *p;
-    return (p = getenv("DISPLAY")) != NULL && *p != '\0';
+static inline int vxutil_have_display(void)
+{
+	const char *p;
+	return (p = getenv("DISPLAY")) != NULL && *p != '\0';
 }
 
 #ifdef __cplusplus
-} // extern "C"
+} /* extern "C" */
 #endif
 
-#endif // _VITALNIX_LIBVXUTIL_LIBVXUTIL_H
+#endif /* _VITALNIX_LIBVXUTIL_LIBVXUTIL_H */

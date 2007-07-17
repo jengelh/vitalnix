@@ -12,7 +12,7 @@
 
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
-#    include <wx/wx.h>
+#	include <wx/wx.h>
 #endif
 #include "steelmill/xu_common.hpp"
 
@@ -20,4 +20,4 @@ struct vxpdb_state;
 
 extern struct vxpdb_state *database_open(long, wxWindow *);
 
-#endif // STEELMILL_XU_DATABASE_HPP
+#endif /* STEELMILL_XU_DATABASE_HPP */

@@ -8,7 +8,7 @@ extern "C" {
 struct HXbtree;
 
 /*
- *      LOADER.C
+ *	LOADER.C
  */
 extern int vxcore_module_register(const char *, const char *, const void *);
 extern void vxcore_module_unregister(const char *, const char *);
@@ -17,7 +17,7 @@ extern void *vxcore_module_lookup(const char *, const char *);
 extern const void *vxcore_section_trav(void **, const char *);
 
 #ifdef __cplusplus
-} // extern "C"
+} /* extern "C" */
 #endif
 
-#endif // _VITALNIX_LIBVXCORE_LOADER_H
+#endif /* _VITALNIX_LIBVXCORE_LOADER_H */

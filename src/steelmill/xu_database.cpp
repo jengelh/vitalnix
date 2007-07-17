@@ -12,7 +12,7 @@
 #include <cstring>
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
-#    include <wx/wx.h>
+#	include <wx/wx.h>
 #endif
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxpdb/xafunc.h>
@@ -20,27 +20,29 @@
 #include "steelmill/xu_database.hpp"
 
 //-----------------------------------------------------------------------------
-struct vxpdb_state *database_open(long open_flags, wxWindow *parent) {
-    struct vxpdb_state *dbh;
-    int ret;
+struct vxpdb_state *database_open(long open_flags, wxWindow *parent)
+{
+	struct vxpdb_state *dbh;
+	int ret;
 
-    if((dbh = vxpdb_load("*")) == NULL) {
-        wxString s;
-        s.Printf(wxT("Could not load backend module \"%s\": %s\n"),
-            wxT("*"), fV8(strerror(errno)));
-        GW_Message(parent, wxT("Failure"), s, "-o").ShowModal();
-        return NULL;
-    }
+	if ((dbh = vxpdb_load("*")) == NULL) {
+		wxString s;
+		s.Printf(wxT("Could not load backend module \"%s\": %s\n"),
+		         wxT("*"), fV8(strerror(errno)));
+		GW_Message(parent, wxT("Failure"), s, "-o").ShowModal();
+		return NULL;
+	}
 
-    if((ret = vxpdb_open(dbh, open_flags)) <= 0) {
-        wxString s;
-        s.Printf(wxT("Could not open backend module: %s\n"), fV8(strerror(-ret)));
-        GW_Message(parent, wxT("Failure"), s, "-o").ShowModal();
-        vxpdb_unload(dbh);
-        return NULL;
-    }
+	if ((ret = vxpdb_open(dbh, open_flags)) <= 0) {
+		wxString s;
+		s.Printf(wxT("Could not open backend module: %s\n"),
+		         fV8(strerror(-ret)));
+		GW_Message(parent, wxT("Failure"), s, "-o").ShowModal();
+		vxpdb_unload(dbh);
+		return NULL;
+	}
 
-    return dbh;
+	return dbh;
 }
 
 //=============================================================================

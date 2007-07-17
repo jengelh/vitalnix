@@ -12,25 +12,25 @@
 
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
-#    include <wx/wx.h>
+#	include <wx/wx.h>
 #endif
 #include <wx/gbsizer.h>
 
-// Definitions
+/* Definitions */
 #define fU8(s)          wxString((s), wxConvUTF8)
 #define fV8(s)          (wxString((s), wxConvUTF8).c_str())
 #define tU8(s)          static_cast<const char *>((s).mb_str(wxConvUTF8))
 #define wxACV           wxALIGN_CENTER_VERTICAL
 #define wxCFF           (wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU | \
-                        wxCLOSE_BOX | wxMAXIMIZE_BOX | wxMINIMIZE_BOX | \
-                        wxFRAME_NO_TASKBAR)
+	                    wxCLOSE_BOX | wxMAXIMIZE_BOX | wxMINIMIZE_BOX | \
+	                    wxFRAME_NO_TASKBAR)
 #define wxDPOS          wxDefaultPosition
 #define wxDSIZE         wxDefaultSize
 
 #define PROD_NAME       "Vitalnix 2007"
 
 enum {
-    FTC_DIRECTORY = 1 << 0,
+	FTC_DIRECTORY = 1 << 0,
 };
 
 extern wxPanel *smc_logo_panel(wxWindow *);
@@ -40,78 +40,79 @@ extern void smc_size_minimum(wxWindow *, int, int);
 extern void smc_size_minimum(wxWindow *, const wxSize &);
 
 class GW_FTC : public wxPanel {
-  public: // functions
-    GW_FTC(wxWindow *, const wxString & = wxEmptyString, unsigned int = 0,
-        unsigned int = 0);
-    wxString GetValue(void) const;
+    public: /* functions */
+	GW_FTC(wxWindow *, const wxString & = wxEmptyString, unsigned int = 0,
+		unsigned int = 0);
+	wxString GetValue(void) const;
 
-  protected: // functions
-    void Browse(wxCommandEvent &);
+    protected: /* functions */
+	void Browse(wxCommandEvent &);
 
-  protected: // variables
-    wxTextCtrl *textfield;
-    unsigned int flags;
+    protected: /* variables */
+	wxTextCtrl *textfield;
+	unsigned int flags;
 
-  private: // variables
-    DECLARE_EVENT_TABLE();
+    private: /* variables */
+	DECLARE_EVENT_TABLE();
 };
 
 class GW_GroupCombo : public wxComboBox {
-  public: // functions
-    GW_GroupCombo(wxWindow *, wxWindowID = wxID_ANY, const char * = "*");
-    void switch_database(const char *);
+    public: /* functions */
+	GW_GroupCombo(wxWindow *, wxWindowID = wxID_ANY, const char * = "*");
+	void switch_database(const char *);
 };
 
 class GW_Listbox : public wxDialog {
-  public: // functions
-    GW_Listbox(wxWindow *, const wxString &, const struct HXdeque *, long = 0);
-    GW_Listbox(wxWindow *, const wxString & = wxEmptyString,
-        void (*)(wxListBox *, const void *) = NULL, const void * = NULL,
-        long = 0);
+    public: /* functions */
+	GW_Listbox(wxWindow *, const wxString &, const struct HXdeque *,
+		long = 0);
+	GW_Listbox(wxWindow *, const wxString & = wxEmptyString,
+		void (*)(wxListBox *, const void *) = NULL, const void * = NULL,
+		long = 0);
 
-    int Append(const wxString &s) { return ct_listbox->Append(s); };
+	int Append(const wxString &s) { return ct_listbox->Append(s); };
 
-  protected: // variables
-    wxListBox *ct_listbox;
+    protected: /* variables */
+	wxListBox *ct_listbox;
 };
 
 class GW_Message : public wxDialog {
-  public: // functions
-    GW_Message(wxWindow *, const wxString & = wxEmptyString,
-        const wxString & = wxEmptyString, const char * = "");
+    public: /* functions */
+	GW_Message(wxWindow *, const wxString & = wxEmptyString,
+		const wxString & = wxEmptyString, const char * = "");
 
-  protected: // functions
-    void Yes(wxCommandEvent &);
-    void No(wxCommandEvent &);
-    void Cancel(wxCommandEvent &);
+    protected: /* functions */
+	void Yes(wxCommandEvent &);
+	void No(wxCommandEvent &);
+	void Cancel(wxCommandEvent &);
 
-  private: // variables
-    DECLARE_EVENT_TABLE();
+    private: /* variables */
+	DECLARE_EVENT_TABLE();
 };
 
 class GW_Table : public wxListCtrl {
-  public: // functions
-    GW_Table(wxWindow *, wxWindowID, const wxString *, int,
-        const int *, long = 0);
-    ~GW_Table(void);
-    void Insert(const wxString *);
+    public: /* functions */
+	GW_Table(wxWindow *, wxWindowID, const wxString *, int,
+		const int *, long = 0);
+	~GW_Table(void);
+	void Insert(const wxString *);
 
-  protected: // functions
-    void Resize_Column(wxListEvent &);
-    void Resize_Table(wxSizeEvent &);
+    protected: /* functions */
+	void Resize_Column(wxListEvent &);
+	void Resize_Table(wxSizeEvent &);
 
-  protected: // variables
-    int *column_layout, column_layout_sum;
-    int num_columns;
+    protected: /* variables */
+	int *column_layout, column_layout_sum;
+	int num_columns;
 
-  private: // variables
-    DECLARE_EVENT_TABLE();
+    private: /* variables */
+	DECLARE_EVENT_TABLE();
 };
 
 class GW_UserCombo : public wxComboBox {
-  public: // functions
-    GW_UserCombo(wxWindow *, wxWindowID = wxID_ANY, const char * = "*");
-    void switch_database(const char *);
+    public: /* functions */
+	GW_UserCombo(wxWindow *, wxWindowID = wxID_ANY, const char * = "*");
+	void switch_database(const char *);
 };
 
-#endif // STEELMILL_COMMON_HPP
+#endif /* STEELMILL_COMMON_HPP */

@@ -18,19 +18,21 @@ extern "C" {
 #endif
 
 #define REGISTER_MODULE(name, ptr) \
-    static CONSTRUCTOR void register_libvxeds_##name(void) { \
-        vxcore_module_register("libvxeds", #name, (ptr)); \
-        return; \
-    } \
-    static DESTRUCTOR void unregister_libvxeds_##name(void) { \
-        vxcore_module_unregister("libvxeds", #name); \
-        return; \
-    }
+	static CONSTRUCTOR void register_libvxeds_##name(void) \
+	{ \
+		vxcore_module_register("libvxeds", #name, (ptr)); \
+		return; \
+	} \
+	static DESTRUCTOR void unregister_libvxeds_##name(void) \
+	{ \
+		vxcore_module_unregister("libvxeds", #name); \
+		return; \
+	}
 
 #ifdef __cplusplus
-} // extern "C"
+} /* extern "C" */
 #endif
 
-#endif // _VITALNIX_LIBVXEDS_STATICBUILD_H
+#endif /* _VITALNIX_LIBVXEDS_STATICBUILD_H */
 
 //=============================================================================

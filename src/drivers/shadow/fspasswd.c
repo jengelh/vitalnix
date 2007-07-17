@@ -18,7 +18,7 @@
 
 //-----------------------------------------------------------------------------
 /*
- * db_read_passwd
+ * db_read_passwd -
  * @fp:	stdio filehandle to read from
  *
  * In this function, we read all users into memory. This speeds processing up,
@@ -27,64 +27,73 @@
  * commit all changes to the user database at once (the usual case with no
  * PDB_SYNC flag set).
  */
-struct HXdeque *db_read_passwd(FILE *fp) {
-    struct HXdeque *dq;
-    struct vxpdb_user *u;
-    char *ln = NULL;
+struct HXdeque *db_read_passwd(FILE *fp)
+{
+	struct HXdeque *dq;
+	struct vxpdb_user *u;
+	char *ln = NULL;
 
-    if((dq = HXdeque_init()) == NULL)
-        return NULL;
+	if ((dq = HXdeque_init()) == NULL)
+		return NULL;
 
-    while(HX_getl(&ln, fp) != NULL) {
-        char *data[8];
+	while (HX_getl(&ln, fp) != NULL) {
+		char *data[8];
 
-        if(*ln == '#')
-            continue;
+		if (*ln == '#')
+			continue;
 
-        HX_chomp(ln);
-        memset(data, 0, sizeof(data));
-        if(HX_split5(ln, ":", ARRAY_SIZE(data), data) < 4) {
-            fprintf(stderr, "vxdb_shadow: bogus line in passwd file\n");
-            continue;
-        }
+		HX_chomp(ln);
+		memset(data, 0, sizeof(data));
+		if (HX_split5(ln, ":", ARRAY_SIZE(data), data) < 4) {
+			fprintf(stderr, "vxdb_shadow: bogus line in "
+			        "passwd file\n");
+			continue;
+		}
 
-        if((u = malloc(sizeof(struct vxpdb_user))) == NULL)
-            break;
+		if ((u = malloc(sizeof(struct vxpdb_user))) == NULL)
+			break;
 
-        vxpdb_user_clean(u);
-        u->pw_name  = HX_strdup(data[0]);
-        u->pw_uid   = strtol(data[2], NULL, 0);
-        u->pw_gid   = strtol(data[3], NULL, 0);
-        u->pw_real  = HX_strdup(data[4]);
-        u->pw_home  = HX_strdup(data[5]);
-        u->pw_shell = HX_strdup(data[6]);
+		vxpdb_user_clean(u);
+		u->pw_name  = HX_strdup(data[0]);
+		u->pw_uid   = strtol(data[2], NULL, 0);
+		u->pw_gid   = strtol(data[3], NULL, 0);
+		u->pw_real  = HX_strdup(data[4]);
+		u->pw_home  = HX_strdup(data[5]);
+		u->pw_shell = HX_strdup(data[6]);
 
-        /* Anything after the seven main fields is "reserved for future use",
-        (read: or private use), so we need to keep that intact. */
-        u->be_priv = calloc(1, sizeof(void *) * 2);
-        static_cast(char **, u->be_priv)[0] = HX_strdup(data[7]);
+		/*
+		 * Anything after the seven main fields is "reserved for future
+		 * use", (read: or private use), so we need to keep that
+		 * intact.
+		 */
+		u->be_priv = calloc(1, sizeof(void *) * 2);
+		static_cast(char **, u->be_priv)[0] = HX_strdup(data[7]);
 
-        /* In case there is no shadow entry, we need some recovery values.
-        This is already done by vxpdb_clean_user(). */
+		/*
+		 * In case there is no shadow entry, we need some recovery
+		 * values. This is already done by vxpdb_clean_user().
+		 */
 
-        /* Stuff is pushed in a linked list. The list is unordered, so it has
-        the same order as /etc/passwd. This is intentional (and suffices). */
-        HXdeque_push(dq, u);
-    }
+		/*
+		 * Stuff is pushed in a linked list. The list is unordered, so
+		 * it has the same order as /etc/passwd. This is intentional
+		 * (and suffices).
+		 */
+		HXdeque_push(dq, u);
+	}
 
-    hmc_free(ln);
-    return dq;
+	hmc_free(ln);
+	return dq;
 }
 
-void db_write_passwd(FILE *fp, const struct vxpdb_user *u) {
-    const char **priv = u->be_priv;
+void db_write_passwd(FILE *fp, const struct vxpdb_user *u)
+{
+	const char **priv = u->be_priv;
 
-    fprintf(fp, "%s:x:%ld:%ld:%s:%s:%s",
-      u->pw_name, u->pw_uid, u->pw_gid, u->pw_real, u->pw_home, u->pw_shell);
-    if(priv != NULL && priv[0] != NULL)
-        fprintf(fp, "%s", priv[0]);
-    fprintf(fp, "\n");
-    return;
+	fprintf(fp, "%s:x:%ld:%ld:%s:%s:%s", u->pw_name, u->pw_uid, u->pw_gid,
+	        u->pw_real, u->pw_home, u->pw_shell);
+	if (priv != NULL && priv[0] != NULL)
+		fprintf(fp, "%s", priv[0]);
+	fprintf(fp, "\n");
+	return;
 }
-
-//=============================================================================

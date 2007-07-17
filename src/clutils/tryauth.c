@@ -13,43 +13,45 @@
 #include <security/pam_appl.h>
 #include <vitalnix/libvxcgi/libvxcgi.h>
 
-// Functions
+/* Functions */
 static int get_options(int *, const char ***);
 
-// Variables
+/* Variables */
 static int Verbose = 0;
 
 //-----------------------------------------------------------------------------
-int main(int argc, const char **argv) {
-    hmc_t *user = NULL, *pass = NULL;
-    int ret;
+int main(int argc, const char **argv)
+{
+	hmc_t *user = NULL, *pass = NULL;
+	int ret;
 
-    if(!get_options(&argc, &argv))
-        return 127;
+	if (!get_options(&argc, &argv))
+		return 127;
 
-    HX_getl(&user, stdin);
-    HX_getl(&pass, stdin);
-    HX_chomp(user);
-    HX_chomp(pass);
-    ret = vxcgi_authenticate(user, pass);
-    hmc_free(user);
-    hmc_free(pass);
+	HX_getl(&user, stdin);
+	HX_getl(&pass, stdin);
+	HX_chomp(user);
+	HX_chomp(pass);
+	ret = vxcgi_authenticate(user, pass);
+	hmc_free(user);
+	hmc_free(pass);
 
-    if(ret < 0 && Verbose)
-        fprintf(stderr, "PAM error: %s\n", pam_strerror(NULL, -ret));
+	if (ret < 0 && Verbose)
+		fprintf(stderr, "PAM error: %s\n", pam_strerror(NULL, -ret));
 
-    return (ret > 0) ? EXIT_SUCCESS : -ret;
+	return (ret > 0) ? EXIT_SUCCESS : -ret;
 }
 
 //-----------------------------------------------------------------------------
-static int get_options(int *argc, const char ***argv) {
-    static const struct HXoption options_table[] = {
-        {.sh = 'v', .type = HXTYPE_NONE, .ptr = &Verbose,
-         .help = "Verbose error reporting"},
-        HXOPT_AUTOHELP,
-        HXOPT_TABLEEND,
-    };
-    return HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) > 0;
+static int get_options(int *argc, const char ***argv)
+{
+	static const struct HXoption options_table[] = {
+		{.sh = 'v', .type = HXTYPE_NONE, .ptr = &Verbose,
+		 .help = "Verbose error reporting"},
+		HXOPT_AUTOHELP,
+		HXOPT_TABLEEND,
+	};
+	return HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) > 0;
 }
 
 //=============================================================================

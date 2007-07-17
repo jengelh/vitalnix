@@ -10,23 +10,21 @@
 #include <cstdio>
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
-#    include <wx/wx.h>
+#	include <wx/wx.h>
 #endif
 #include <steelmill/images.hpp>
 #include "steelmill/wd_splash.hpp"
 #include "steelmill/xu_common.hpp"
 
-//-----------------------------------------------------------------------------
 WD_Splash::WD_Splash(const wxPoint &pos) :
-    wxDialog(NULL, wxID_ANY, wxEmptyString, pos, wxDSIZE,
-     wxFRAME_TOOL_WINDOW | wxSTAY_ON_TOP)
+	wxDialog(NULL, wxID_ANY, wxEmptyString, pos, wxDSIZE,
+	         wxFRAME_TOOL_WINDOW | wxSTAY_ON_TOP)
 {
-    wxBoxSizer *vp       = new wxBoxSizer(wxVERTICAL);
-    vp->Add(new wxStaticBitmap(this, wxID_ANY, *_img_steelmill_splash, wxDPOS));
-    SetSizer(vp);
-    vp->SetSizeHints(this);
-    Center();
-    return;
-}
+	wxBoxSizer *vp = new wxBoxSizer(wxVERTICAL);
 
-//=============================================================================
+	vp->Add(new wxStaticBitmap(this, wxID_ANY, *_img_steelmill_splash, wxDPOS));
+	SetSizer(vp);
+	vp->SetSizeHints(this);
+	Center();
+	return;
+}

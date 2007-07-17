@@ -599,12 +599,12 @@ char *_crypt_blowfish_rn(__CONST char *key, __CONST char *setting,
 	}
 
 	if (setting[0] != '$' ||
-	    setting[1] != '2' ||
-	    setting[2] != 'a' ||
-	    setting[3] != '$' ||
-	    setting[4] < '0' || setting[4] > '3' ||
-	    setting[5] < '0' || setting[5] > '9' ||
-	    setting[6] != '$') {
+		setting[1] != '2' ||
+		setting[2] != 'a' ||
+		setting[3] != '$' ||
+		setting[4] < '0' || setting[4] > '3' ||
+		setting[5] < '0' || setting[5] > '9' ||
+		setting[6] != '$') {
 		__set_errno(EINVAL);
 		return NULL;
 	}
@@ -729,7 +729,7 @@ char *_crypt_gensalt_blowfish_rn(unsigned long count,
 	__CONST char *input, int size, char *output, int output_size)
 {
 	if (size < 16 || output_size < 7 + 22 + 1 ||
-	    (count && (count < 4 || count > 31))) {
+		(count && (count < 4 || count > 31))) {
 		if (output_size > 0) output[0] = '\0';
 		__set_errno((output_size < 7 + 22 + 1) ? ERANGE : EINVAL);
 		return NULL;

@@ -12,12 +12,12 @@
 
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
-#    include <wx/wx.h>
+#	include <wx/wx.h>
 #endif
 
 class WD_About : public wxDialog {
-  public: // functions
-    WD_About(wxWindow *);
+    public: /* functions */
+	WD_About(wxWindow *);
 };
 
-#endif // STEELMILL_WD_ABOUT_HPP
+#endif /* STEELMILL_WD_ABOUT_HPP */

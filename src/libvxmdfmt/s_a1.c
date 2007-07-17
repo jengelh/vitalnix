@@ -15,39 +15,35 @@
 #include <vitalnix/libvxmdfmt/vtable.h>
 #include <vitalnix/libvxutil/defines.h>
 
-//-----------------------------------------------------------------------------
 static void a1_file_header(const struct pwlfmt_workspace *state)
 {
-    fprintf(state->output_fh,
-        "\n\n"
-        "                                  Formatted by Vitalnix (%s)\n\n\n"
-        "  %-8s  %-35s  %-10s  %s\n"
-        "  =======================================================================\n",
-        VITALNIX_VERSION, "Group", "Name", "Login", "Password"
-    );
-    return;
+	fprintf(state->output_fh,
+		"\n\n"
+		"                                  Formatted by Vitalnix (%s)\n\n\n"
+		"  %-8s  %-35s  %-10s  %s\n"
+		"  =======================================================================\n",
+		VITALNIX_VERSION, "Group", "Name", "Login", "Password"
+	);
+	return;
 }
 
 static void a1_tbl_entry(const struct pwlfmt_workspace *state,
-  const struct pwl_data *data)
+    const struct pwl_data *data)
 {
-    char buf[MAXSNLEN];
-    snprintf(buf, MAXSNLEN, "%s, %s", data->surname, data->first_name);
-    fprintf(state->output_fh, "  %-8s  %-*s  %-10s  %s\n",
-            data->pvgrp, 35 + pwlfmt_extra_whitespace(buf), buf,
-            data->username, data->password);
-    return;
+	char buf[MAXSNLEN];
+	snprintf(buf, MAXSNLEN, "%s, %s", data->surname, data->first_name);
+	fprintf(state->output_fh, "  %-8s  %-*s  %-10s  %s\n",
+	        data->pvgrp, 35 + pwlfmt_extra_whitespace(buf), buf,
+	        data->username, data->password);
+	return;
 }
 
-//-----------------------------------------------------------------------------
 static const struct pwlstyle_vtable THIS_STYLE = {
-    .name        = "a1",
-    .desc        = "user-sorted text/plain",
+	.name        = "a1",
+	.desc        = "user-sorted text/plain",
 
-    .file_header = a1_file_header,
-    .tbl_entry   = a1_tbl_entry,
+	.file_header = a1_file_header,
+	.tbl_entry   = a1_tbl_entry,
 };
 
 REGISTER_MODULE(a1, &THIS_STYLE);
-
-//=============================================================================

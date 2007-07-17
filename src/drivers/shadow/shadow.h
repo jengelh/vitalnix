@@ -11,9 +11,9 @@
 #define VITALNIX_DRIVERS_SHADOW_SHADOW_H 1
 
 #ifdef __cplusplus
-#    include <cstdio>
+#	include <cstdio>
 #else
-#    include <stdio.h>
+#	include <stdio.h>
 #endif
 
 #ifdef __cplusplus
@@ -21,16 +21,16 @@ extern "C" {
 #endif
 
 /*
- *      Definitions
+ *	Definitions
  */
-#define TOUCH_GROUP_TAG(i)      (state->fgroup.is_chg = (i))
-#define TOUCH_USER_TAG(i)       \
-    (state->fpasswd.is_chg = state->fshadow.is_chg = \
-    state->fvxshadow.is_chg = (i))
+#define TOUCH_GROUP_TAG(i) (state->fgroup.is_chg = (i))
+#define TOUCH_USER_TAG(i)  \
+	(state->fpasswd.is_chg = state->fshadow.is_chg = \
+	state->fvxshadow.is_chg = (i))
 
 enum {
-    CONFIG_READ  = 0,
-    CONFIG_FREE,
+	CONFIG_READ  = 0,
+	CONFIG_FREE,
 };
 
 struct HXdeque;
@@ -38,21 +38,21 @@ struct vxpdb_group;
 struct vxpdb_user;
 
 struct spdb_file {
-    char *path;
-    FILE *fp;
-    int fd;
-    char is_chg;
+	char *path;
+	FILE *fp;
+	int fd;
+	char is_chg;
 };
 
 struct shadow_state {
-    unsigned long flags;
-    struct HXdeque *dq_user, *dq_group;
-    struct spdb_file fpasswd, fshadow, fvxpasswd, fvxshadow, fgroup;
-    long uid_min, uid_max, gid_min, gid_max;
+	unsigned long flags;
+	struct HXdeque *dq_user, *dq_group;
+	struct spdb_file fpasswd, fshadow, fvxpasswd, fvxshadow, fgroup;
+	long uid_min, uid_max, gid_min, gid_max;
 };
 
 /*
- *      AUX.C
+ *	AUX.C
  */
 extern long automatic_uid(struct shadow_state *, long);
 extern long automatic_gid(struct shadow_state *, long);
@@ -67,38 +67,38 @@ extern struct HXdeque_node *skip_nis_groups(struct HXdeque_node *);
 extern void truncate_here(FILE *);
 
 /*
- *      DBOPS.C
+ *	DBOPS.C
  */
 extern int db_open(struct shadow_state *, int);
 extern void db_close(struct shadow_state *);
 extern void db_flush(struct shadow_state *, int);
 
 /*
- *      FSGROUP.C
+ *	FSGROUP.C
  */
 extern struct HXdeque *db_read_groups(FILE *);
 extern void db_flush_groups(struct shadow_state *);
 
 /*
- *      FSPASSWD.C
+ *	FSPASSWD.C
  */
 extern struct HXdeque *db_read_passwd(FILE *);
 extern void db_write_passwd(FILE *, const struct vxpdb_user *);
 
 /*
- *      FSSHADOW.C
+ *	FSSHADOW.C
  */
 extern void db_read_shadow(FILE *, struct HXdeque *);
 extern void db_write_shadow(FILE *, const struct vxpdb_user *);
 
 /*
- *      FSVXSHADOW.C
+ *	FSVXSHADOW.C
  */
 extern void db_read_vxshadow(const char *, struct HXdeque *);
 extern void db_write_vxshadow(FILE *, const struct vxpdb_user *);
 
 #ifdef __cplusplus
-} // extern "C"
+} /* extern "C" */
 #endif
 
-#endif // VITALNIX_DRIVERS_SHADOW_SHADOW_H
+#endif /* VITALNIX_DRIVERS_SHADOW_SHADOW_H */

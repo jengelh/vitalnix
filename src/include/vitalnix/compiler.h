@@ -7,15 +7,15 @@
 #define DESTRUCTOR      __attribute__((destructor))
 
 #ifdef HAVE_VISIBILITY
-#    define EXPORT_SYMBOL __attribute__((visibility("default")))
+#	define EXPORT_SYMBOL __attribute__((visibility("default")))
 #else
-#    define EXPORT_SYMBOL
+#	define EXPORT_SYMBOL
 #endif
 
-// Code annotations
+/* Code annotations */
 #define const_cast(type, expr)          ((type)(expr))
 #define signed_cast(type, expr)         ((type)(expr))
 #define static_cast(type, expr)         ((type)(expr))
 #define reinterpret_cast(type, expr)    ((type)(expr))
 
-#endif // _VITALNIX_GENERIC_COMPILER_H
+#endif /* _VITALNIX_GENERIC_COMPILER_H */

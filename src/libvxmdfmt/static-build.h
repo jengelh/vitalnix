@@ -18,19 +18,19 @@ extern "C" {
 #endif
 
 #define REGISTER_MODULE(name, ptr) \
-    static CONSTRUCTOR void register_libvxmdfmt_##name(void) { \
-        vxcore_module_register("libvxmdfmt", #name, (ptr)); \
-        return; \
-    } \
-    static DESTRUCTOR void unregister_libvxmdfmt_##name(void) { \
-        vxcore_module_unregister("libvxmdfmt", #name); \
-        return; \
-    }
+	static CONSTRUCTOR void register_libvxmdfmt_##name(void) \
+	{ \
+		vxcore_module_register("libvxmdfmt", #name, (ptr)); \
+		return; \
+	} \
+	static DESTRUCTOR void unregister_libvxmdfmt_##name(void) \
+	{ \
+		vxcore_module_unregister("libvxmdfmt", #name); \
+		return; \
+	}
 
 #ifdef __cplusplus
-} // extern "C"
+} /* extern "C" */
 #endif
 
-#endif // _VITALNIX_LIBVXMDFMT_STATICBUILD_H
-
-//=============================================================================
+#endif /* _VITALNIX_LIBVXMDFMT_STATICBUILD_H */

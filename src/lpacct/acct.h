@@ -14,14 +14,14 @@ struct options;
 struct costf;
 
 enum {
-    ACCT_SYSLOG = 1 << 0,
-    ACCT_MYSQL  = 1 << 1,
+	ACCT_SYSLOG = 1 << 0,
+	ACCT_MYSQL  = 1 << 1,
 };
 
 /*
- *      FUNCTIONS
+ *	FUNCTIONS
  */
 extern void acct_syslog(const struct options *, const struct costf *);
 extern void acct_mysql(const struct options *, const struct costf *);
 
-#endif // LPACCT_ACCT_H
+#endif /* LPACCT_ACCT_H */

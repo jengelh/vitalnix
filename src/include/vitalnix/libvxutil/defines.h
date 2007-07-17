@@ -2,8 +2,8 @@
 #define _VITALNIX_LIBVXUTIL_DEFINES_H 1
 
 #ifndef _WIN32 // Win32 specific hacks/defines
-#    define stricmp strcasecmp
-#    define strnicmp strncasecmp
+#	define stricmp strcasecmp
+#	define strnicmp strncasecmp
 #endif
 
 #define __STRINGIFY_EXPAND(s)   #s
@@ -13,4 +13,4 @@
 #define MAXFNLEN                256
 #define MAXLNLEN                1024
 
-#endif // _VITALNIX_LIBVXUTIL_DEFINES_H
+#endif /* _VITALNIX_LIBVXUTIL_DEFINES_H */

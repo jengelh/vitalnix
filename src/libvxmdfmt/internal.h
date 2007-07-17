@@ -11,9 +11,9 @@
 #define _VITALNIX_LIBVXMDFMT_INTERNAL_H 1
 
 #ifndef __cplusplus
-#    include <stdio.h>
+#	include <stdio.h>
 #else
-#    include <cstdio>
+#	include <cstdio>
 #endif
 #include <libHX.h>
 #include <vitalnix/config.h>
@@ -25,11 +25,11 @@ extern "C" {
 #endif
 
 struct pwl_data {
-    const char *pvgrp, *first_name, *surname, *username, *password;
+	const char *pvgrp, *first_name, *surname, *username, *password;
 };
 
 /*
- *      EXTRA.C
+ *	EXTRA.C
  */
 extern int compare_wbc(const char *, const char *);
 extern struct HXbtree *defcat_file_header(const struct pwlfmt_workspace *);
@@ -40,9 +40,7 @@ extern struct HXbtree *defcat_tbl_entry(const struct pwlfmt_workspace *,
 extern int pwlfmt_extra_whitespace(const char *);
 
 #ifdef __cplusplus
-} // extern "C"
+} /* extern "C" */
 #endif
 
-#endif // _VITALNIX_LIBVXMDFMT_INTERNAL_H
-
-//=============================================================================
+#endif /* _VITALNIX_LIBVXMDFMT_INTERNAL_H */

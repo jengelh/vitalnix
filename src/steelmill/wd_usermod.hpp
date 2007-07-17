@@ -12,15 +12,15 @@
 
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
-#    include <wx/wx.h>
+#	include <wx/wx.h>
 #endif
 
 class WD_Usermod : public wxDialog {
-  public: // functions
-    WD_Usermod(wxWindow *, unsigned int = 0);
+    public: /* functions */
+	WD_Usermod(wxWindow *, unsigned int = 0);
 
-  private: // variables
-    DECLARE_EVENT_TABLE();
+    private: /* variables */
+	DECLARE_EVENT_TABLE();
 };
 
-#endif // STEELMILL_WD_USERMOD_HPP
+#endif /* STEELMILL_WD_USERMOD_HPP */

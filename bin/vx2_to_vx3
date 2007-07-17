@@ -20,46 +20,47 @@ my %passwd;
 exit &main(\@ARGV);
 
 #------------------------------------------------------------------------------
-sub main {
-    my($passwd_file, $vxshadow_file) = ("/etc/passwd", "/etc/vxshadow");
-    &GetOptions(
-        "p=s" => \$passwd_file,
-        "x=s" => \$vxshadow_file,
-    );
+sub main($)
+{
+	my($passwd_file, $vxshadow_file) = ("/etc/passwd", "/etc/vxshadow");
+	&GetOptions(
+		"p=s" => \$passwd_file,
+		"x=s" => \$vxshadow_file,
+	);
 
-    open(PW, "< $passwd_file") || die "Could not open $passwd_file: $!\n";
-    open(VS, "< $vxshadow_file") || die "Could not open $vxshadow_file: $!\n";
+	open(PW, "< $passwd_file") || die "Could not open $passwd_file: $!\n";
+	open(VS, "< $vxshadow_file") || die "Could not open $vxshadow_file: $!\n";
 
-    while(defined($_ = <PW>)) {
-        chomp $_;
-        @_ = split(/:/, $_);
-        $passwd{$_[0]} = (split(/,/, $_[4]))[0];
-    }
+	while (defined($_ = <PW>)) {
+		chomp $_;
+		@_ = split(/:/, $_);
+		$passwd{$_[0]} = (split(/,/, $_[4]))[0];
+	}
 
-    print "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
-    print "<VX3_vxshadow>\n";
+	print "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
+	print "<VX3_vxshadow>\n";
 
-    while(defined($_ = <VS>)) {
-        chomp $_;
-        if($_ =~ /^\s*#/) {
-            print "  <!-- $' -->\n";
-            next;
-        }
-        @_ = split(/:/, $_);
-        if(!exists($passwd{$_[0]})) {
-            warn "Unknown user \"$_[0]\" in vxshadow\n";
-            next;
-        }
-        print "  <user lname=\"".&xmlencode($_[0])."\"";
-        print " uuid=\"".&xmlencode(&re_uuid($passwd{$_[0]}, $_[1]))."\"";
-        print " pvgrp=\"".&xmlencode($_[2])."\"";
-        print " defer=\"".($_[3] + 0)."\" />\n";
-    }
+	while (defined($_ = <VS>)) {
+		chomp $_;
+		if ($_ =~ /^\s*#/) {
+			print "  <!-- $' -->\n";
+			next;
+		}
+		@_ = split(/:/, $_);
+		if (!exists($passwd{$_[0]})) {
+			warn "Unknown user \"$_[0]\" in vxshadow\n";
+			next;
+		}
+		print "  <user lname=\"".&xmlencode($_[0])."\"";
+		print " uuid=\"".&xmlencode(&re_uuid($passwd{$_[0]}, $_[1]))."\"";
+		print " pvgrp=\"".&xmlencode($_[2])."\"";
+		print " defer=\"".($_[3] + 0)."\" />\n";
+	}
 
-    print "</VX3_vxshadow>\n";
-    close PW;
-    close VS;
-    return 0;
+	print "</VX3_vxshadow>\n";
+	close PW;
+	close VS;
+	return 0;
 }
 
 # re_uuid
@@ -68,30 +69,31 @@ sub main {
 #
 # Computes the new VX3 scheme from VX2.
 #
-sub re_uuid {
-    my($realname, $uuid_v0) = @_;
+sub re_uuid($$)
+{
+	my($realname, $uuid_v0) = @_;
 
-    if($uuid_v0 eq "") {
-        return;
-    }
+	if ($uuid_v0 eq "") {
+		return;
+	}
 
-    if($uuid_v0 =~ /^0_(.*?)/) {
-        # from Vitalnix 2.x, to Vitalnix 3.0-beta7
-        return sprintf "{VX3A}%s%s", lc substr($uuid_v0, 2, 6),
-               lc md5_hex($realname);
-    }
+	if ($uuid_v0 =~ /^0_(.*?)/) {
+		# from Vitalnix 2.x, to Vitalnix 3.0-beta7
+		return sprintf "{VX3A}%s%s", lc substr($uuid_v0, 2, 6),
+		       lc md5_hex($realname);
+	}
 
-    warn "Unknown UUID $uuid_v0 for user (realname) \"$realname\": $uuid_v0\n";
-    return;
+	warn "Unknown UUID $uuid_v0 for user (realname) ".
+	     "\"$realname\": $uuid_v0\n";
+	return;
 }
 
-sub xmlencode {
-    my $s = shift @_;
-    $s =~ s/&/&amp;/g;
-    $s =~ s/</&lt;/g;
-    $s =~ s/>/&gt;/g;
-    $s =~ s/\"/&quot;/g;
-    return $s;
+sub xmlencode($)
+{
+	my $s = shift @_;
+	$s =~ s/&/&amp;/g;
+	$s =~ s/</&lt;/g;
+	$s =~ s/>/&gt;/g;
+	$s =~ s/\"/&quot;/g;
+	return $s;
 }
-
-#==============================================================================
