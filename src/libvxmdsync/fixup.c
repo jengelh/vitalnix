@@ -72,7 +72,7 @@ static inline char *format_name(const char *name, unsigned int idx,
 	ret = snprintf(istr, sizeof(istr), "%u", idx);
 	if (ret >= MAX_LNAME - 3) {
 		fprintf(stderr, "%s: FATAL ERROR: Index number is too large "
-		        "to fit\n", __FUNCTION__);
+		        "to fit\n", __func__);
 		abort();
 	}
 

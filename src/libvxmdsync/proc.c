@@ -347,8 +347,8 @@ EXPORT_SYMBOL int mdsync_del(struct mdsync_workspace *w)
 
 	for (travp = w->delete_now->first; travp != NULL; travp = travp->next) {
 		if ((ret = vxpdb_getpwnam(w->database, travp->ptr, &res)) < 0) {
-			fprintf(stderr, "%s()+pdb_getpwnam(): %s\n", __FUNCTION__,
-			        strerror(errno));
+			fprintf(stderr, "%s()+pdb_getpwnam(): %s\n",
+			        __func__, strerror(errno));
 			return ret;
 		} else if (ret == 0) {
 			fprintf(stderr, "Warning: Someone deleted \"%s\" "
@@ -362,8 +362,8 @@ EXPORT_SYMBOL int mdsync_del(struct mdsync_workspace *w)
 		HX_rrmdir(res.pw_home);
 
 		if ((ret = vxpdb_userdel(w->database, &res)) < 0) {
-			fprintf(stderr, "%s()+pdb_userdel(): %s\n", __FUNCTION__,
-			        strerror(errno));
+			fprintf(stderr, "%s()+pdb_userdel(): %s\n",
+			        __func__, strerror(errno));
 			return ret;
 		}
 

@@ -39,10 +39,10 @@ EXPORT_SYMBOL int mdsync_read_file(struct mdsync_workspace *w,
 			if (ret == -EINVAL)
 				fprintf(stderr, "%s: Warning: Stumbled upon a "
 				        "bogus entry in Data Source, "
-				        "stopping.\n", __FUNCTION__);
+				        "stopping.\n", __func__);
 			else
-				fprintf(stderr, "%s: eds_read() returned %d (%s)\n",
-				        __FUNCTION__, ret, strerror(-ret));
+				fprintf(stderr, "%s+eds_read(): %s\n",
+				        __func__, ret, strerror(-ret));
 			vxeds_free_entry(entry);
 			free(entry);
 		} else if (ret == 0) {

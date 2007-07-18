@@ -53,7 +53,7 @@ EXPORT_SYMBOL char *vxutil_propose_home(char *dest, size_t size,
     const char *base, const char *username, unsigned int level)
 {
 	if (*username == '\0')
-		fprintf(stderr, "%s: username has zero length\n", __FUNCTION__);
+		fprintf(stderr, "%s: username has zero length\n", __func__);
 	if (level == 0)
 		snprintf(dest, size, "%s/%s", base, username);
 	else if (level == 1 || level == 10)

@@ -124,7 +124,7 @@ EXPORT_SYMBOL int vxcli_query_v(const struct vxcq_entry *tp)
 				else if (tp->type == HXTYPE_DOUBLE)
 					*static_cast(double *, tp->ptr) = strtod(buf, NULL);
 				else
-					fprintf(stderr, "%s: Unknown type\n", __FUNCTION__);
+					fprintf(stderr, "%s: Unknown type\n", __func__);
 
 				if (tp->validate != NULL && !tp->validate(tp))
 					continue;

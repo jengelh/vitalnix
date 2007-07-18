@@ -483,7 +483,7 @@ static int vmysql_usertrav_walk(struct vxpdb_state *vp, void *ptr,
 
 	/* -- part 1 -- */
 	if (columns < 6)
-		fprintf(stderr, "%s: columns < 6, crash imminent\n", __FUNCTION__);
+		fprintf(stderr, "%s: columns < 6, crash imminent\n", __func__);
 	export_passwd(res, &row[colstart]);
 	colstart += 6;
 	columns  -= 6;
@@ -491,7 +491,7 @@ static int vmysql_usertrav_walk(struct vxpdb_state *vp, void *ptr,
 	/* -- part 2 -- */
 	if (state->perm_shadow) {
 		if (columns < 8)
-			fprintf(stderr, "%s: columns < 8, crash imminent\n", __FUNCTION__);
+			fprintf(stderr, "%s: columns < 8, crash imminent\n", __func__);
 		export_shadow(res, &row[colstart]);
 		colstart += 8;
 		columns  -= 8;
@@ -500,14 +500,14 @@ static int vmysql_usertrav_walk(struct vxpdb_state *vp, void *ptr,
 	/* -- part 3 -- */
 	if (state->perm_vxshadow) {
 		if (columns < 4)
-			fprintf(stderr, "%s: columns < 4, crash immiment\n", __FUNCTION__);
+			fprintf(stderr, "%s: columns < 4, crash immiment\n", __func__);
 		export_vxshadow(res, &row[colstart]);
 		colstart += 4;
 		columns  -= 4;
 	}
 
 	if (columns != 0)
-		fprintf(stderr, "Warning: %s: columns != 0\n", __FUNCTION__);
+		fprintf(stderr, "Warning: %s: columns != 0\n", __func__);
 	return 1;
 }
 
@@ -613,8 +613,7 @@ static int vmysql_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
 	if ((ret = mysql_errno(st->cn.handle)) != 0)
 		return -ret;
 	if ((columns = mysql_num_fields(trav->res)) != 2)
-		fprintf(stderr, "%s: columns != 2, crash imminent\n",
-		    	__FUNCTION__);
+		fprintf(stderr, "%s: columns != 2, crash imminent\n", __func__);
 
 	export_group(res, row);
 	return 1;
@@ -968,7 +967,7 @@ static hmc_t *sql_groupmask(hmc_t **s, const struct mysql_state *state,
 	int n = 0;
 
 	if (*s == NULL)
-		fprintf(stderr, "Error: %s called with *s == NULL\n", __FUNCTION__);
+		fprintf(stderr, "Error: %s called with *s == NULL\n", __func__);
 	if (mask->gr_name != NULL)
 		PUT_S(names->gr_name, mask->gr_name);
 	if (mask->gr_gid != PDB_NOGID)
@@ -990,8 +989,7 @@ static hmc_t *sql_usermask(hmc_t **s, const struct mysql_state *state,
 	int n = 0;
 
 	if (*s == NULL)
-		fprintf(stderr, "Error: %s called with *s == NULL\n",
-		    	__FUNCTION__);
+		fprintf(stderr, "Error: %s called with *s == NULL\n", __func__);
 
 	if (mask->pw_name != NULL) {
 		PUT_S(names->pw_name, mask->pw_name);

@@ -68,7 +68,7 @@ static char *vxutil_crypt_des(const char *key, const char *salt)
 	rx = crypt_r(key, salt, &cd);
 	return (rx != NULL) ? HX_strdup(rx) : NULL;
 #else
-	fprintf(stderr, "%s: DES crypt not supported on non-Glibc\n", __FUNCTION__);
+	fprintf(stderr, "%s: DES crypt not supported on non-Glibc\n", __func__);
 	return NULL;
 #endif
 }
@@ -90,7 +90,7 @@ static char *vxutil_crypt_md5(const char *key, const char *salt)
 	rx = crypt_r(key, salt, &cd);
 	return (rx != NULL) ? HX_strdup(rx) : NULL;
 #else
-	fprintf(stderr, "%s: MD5 crypt not supported on non-Glibc\n", __FUNCTION__);
+	fprintf(stderr, "%s: MD5 crypt not supported on non-Glibc\n", __func__);
 	return NULL;
 #endif
 }

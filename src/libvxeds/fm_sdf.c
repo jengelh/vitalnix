@@ -72,7 +72,7 @@ static int sdf_read(void *state_ptr, struct vxeds_entry *e)
 
 	if ((num_fields = HX_split5(line, ";", ARRAY_SIZE(data), data)) < 3) {
 		fprintf(stderr, "%s: SDF-4 format: Line %d has less than three "
-		        " fields, skipping!\n", __FUNCTION__, state->current_line);
+		        " fields, skipping!\n", __func__, state->current_line);
 		free(line);
 		return sdf_read(state_ptr, e);
 	}
@@ -85,7 +85,7 @@ static int sdf_read(void *state_ptr, struct vxeds_entry *e)
 		if (--num_fields < 3) {
 			fprintf(stderr, "%s: SDF-5 format: Line %d has less "
 			        "than 4 fields, skipping!\n",
-			        __FUNCTION__, state->current_line);
+			        __func__, state->current_line);
 			free(line);
 			return sdf_read(state_ptr, e);
 		}

@@ -54,13 +54,14 @@ EXPORT_SYMBOL int vxcore_module_register(const char *section, const char *name,
 		if (sect_tree == NULL) {
 			esave = errno;
 			fprintf(stderr, "%s: Unable to spawn new section tree for %s\n",
-			     	__FUNCTION__, section);
+			     	__func__, section);
 			return -esave;
 		}
 		if (HXbtree_add(module_tree, section, sect_tree) == NULL) {
 			esave = errno;
-			fprintf(stderr, "%s: Unable to add new section %s to main "
-			    	"tree: %s\n", __FUNCTION__, section, strerror(esave));
+			fprintf(stderr, "%s: Unable to add new section %s to "
+			        "main tree: %s\n", __func__, section,
+			        strerror(esave));
 			HXbtree_free(sect_tree);
 			return -esave;
 		}
