@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -38,7 +39,7 @@ static int mdsync_update(struct mdsync_workspace *);
 static int mdsync_defer_start(struct mdsync_workspace *);
 static int mdsync_defer_stop(struct mdsync_workspace *);
 
-static inline int create_home(const struct mdsync_workspace *, const char *,
+static inline bool create_home(const struct mdsync_workspace *, const char *,
 	long, long);
 static inline char *now_in_ymdhms(char *, size_t);
 
@@ -221,7 +222,8 @@ EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
 		} else {
 			vxutil_genpw(plain_pw, c->new_pw_length, GENPW_O1CASE |
 			             GENPW_O1DIGIT | c->genpw_type);
-			vxutil_cryptpw(plain_pw, NULL, c->crypw_type, &out.sp_passwd);
+			vxutil_cryptpw(plain_pw, NULL, c->crypw_type,
+			               &out.sp_passwd);
 			out.sp_lastchg = vxutil_now_iday();
 		}
 
@@ -464,19 +466,19 @@ static int mdsync_defer_stop(struct mdsync_workspace *w)
 }
 
 //-----------------------------------------------------------------------------
-static inline int create_home(const struct mdsync_workspace *w, const char *d,
+static inline bool create_home(const struct mdsync_workspace *w, const char *d,
     long uid, long gid)
 {
 	const struct mdsync_config *c = &w->config;
 
 	if (HX_mkdir(d) <= 0)
-		return 0;
+		return false;
 	lchown(d, uid, gid);
 	chmod(d, (S_IRWXU | S_IRWXG | S_IRWXO) & ~c->add_opts.umask);
 	if (c->add_opts.skel_dir != NULL)
 		HX_copy_dir(c->add_opts.skel_dir, d,
 		            HXF_UID | HXF_GID | HXF_KEEP, uid, gid);
-	return 1;
+	return true;
 }
 
 static inline char *now_in_ymdhms(char *buf, size_t count)

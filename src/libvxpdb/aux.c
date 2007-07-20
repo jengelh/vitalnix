@@ -8,6 +8,7 @@
  *	Foundation; either version 2.1 or 3 of the License.
  */
 #include <sys/types.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -80,7 +81,7 @@ EXPORT_SYMBOL void vxpdb_user_free(struct vxpdb_user *user, int heap)
 	return;
 }
 
-EXPORT_SYMBOL int vxpdb_user_match(const struct vxpdb_user *user,
+EXPORT_SYMBOL bool vxpdb_user_match(const struct vxpdb_user *user,
     const struct vxpdb_user *mask)
 {
 	return
@@ -141,7 +142,7 @@ EXPORT_SYMBOL void vxpdb_group_free(struct vxpdb_group *group, int heap)
 	return;
 }
 
-EXPORT_SYMBOL int vxpdb_group_match(const struct vxpdb_group *group,
+EXPORT_SYMBOL bool vxpdb_group_match(const struct vxpdb_group *group,
     const struct vxpdb_group *mask)
 {
 	return

@@ -35,7 +35,7 @@ struct vxcq_entry {
 
 extern char *vxcli_query(const char *, const char *, const char *, long,
 	char *, size_t);
-extern int vxcli_query_v(const struct vxcq_entry *);
+extern unsigned int vxcli_query_v(const struct vxcq_entry *);
 
 #ifdef __cplusplus
 } /* extern "C" */

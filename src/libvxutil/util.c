@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <ctype.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,13 +41,18 @@ EXPORT_SYMBOL long vxutil_now_iday(void)
 	return time(NULL) / 86400;
 }
 
-EXPORT_SYMBOL int vxutil_only_digits(const char *p)
+/*
+ * vxutil_only_digits -
+ * @p:	string to look at
+ *
+ * Returns whether the string in @p consists only of digits.
+ */
+EXPORT_SYMBOL bool vxutil_only_digits(const char *p)
 {
-	/* Returns whether the string in P consists only of digits */
 	while (*p != '\0')
 		if (!isdigit(*p++))
-			return 0;
-	return 1;
+			return false;
+	return true;
 }
 
 EXPORT_SYMBOL char *vxutil_propose_home(char *dest, size_t size,
@@ -203,7 +209,7 @@ EXPORT_SYMBOL long vxutil_string_iday(const char *s)
 {
 	int day = 0, month = 0, year = 0, ret = 0;
 	struct tm td;
-	long sec;
+	time_t sec;
 
 	if ((ret = vxutil_parse_date(s, &day, &month, &year)) != 3)
 		return ret;
@@ -214,7 +220,7 @@ EXPORT_SYMBOL long vxutil_string_iday(const char *s)
 	if ((sec = mktime(&td)) == -1)
 		return -1;
 
-	return (unsigned long)sec / 86400;
+	return sec / 86400;
 }
 
 EXPORT_SYMBOL long vxutil_string_xday(const char *s)
@@ -225,30 +231,30 @@ EXPORT_SYMBOL long vxutil_string_xday(const char *s)
 	return ((year & 0xFFF) << 12) | ((month & 0xF) << 8) | (day & 0xFF);
 }
 
-EXPORT_SYMBOL int vxutil_valid_username(const char *n)
+EXPORT_SYMBOL bool vxutil_valid_username(const char *n)
 {
+	bool valid;
+
 	if (*n == '\0')
-		return 0;
+		return false;
 	if (!((*n >= 'A' && *n <= 'Z') || (*n >= 'a' && *n <= 'z') ||
-		*n == '_'))
-		return 0;
+	    *n == '_'))
+		return false;
 
 	while (*n != '\0') {
-		int valid;
-
 		if (*n == '$' && *(n+1) == '\0')
 			/* Samba accounts */
-			return 1;
+			return true;
 
 		valid = (*n >= 'A' && *n <= 'Z') || (*n >= 'a' && *n <= 'z') ||
 		        (*n >= '0' && *n <= '9') || *n == '_' || *n == '.' ||
 		        *n == '-';
 		if (!valid)
-			return 0;
+			return false;
 		++n;
 	}
 
-	return 1;
+	return true;
 }
 
 //-----------------------------------------------------------------------------

@@ -107,7 +107,7 @@ static const char *const zh_table[] = {
 #define zht_size (ARRAY_SIZE(zh_table) - 1)
 
 //-----------------------------------------------------------------------------
-EXPORT_SYMBOL int vxutil_genpw(char *plain, size_t len, long flags)
+EXPORT_SYMBOL void vxutil_genpw(char *plain, size_t len, long flags)
 {
 	long flad = flags & ~(GENPW_JP | GENPW_ZH);
 	if (flags & GENPW_ZH)
@@ -116,7 +116,7 @@ EXPORT_SYMBOL int vxutil_genpw(char *plain, size_t len, long flags)
 		genpw_jp(plain, len, flad);
 	else
 		genpw_random(plain, len, flad);
-	return 1;
+	return;
 }
 
 //-----------------------------------------------------------------------------

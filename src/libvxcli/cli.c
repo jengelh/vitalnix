@@ -88,9 +88,9 @@ EXPORT_SYMBOL char *vxcli_query(const char *msg, const char *prompt,
 	return buf;
 }
 
-EXPORT_SYMBOL int vxcli_query_v(const struct vxcq_entry *tp)
+EXPORT_SYMBOL unsigned int vxcli_query_v(const struct vxcq_entry *tp)
 {
-	int count = 0;
+	unsigned int count = 0;
 
 	while (tp->msg != NULL || tp->prompt != NULL) {
 		if (tp->type == HXTYPE_STRING) {

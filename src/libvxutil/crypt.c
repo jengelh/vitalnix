@@ -8,6 +8,7 @@
  *	Foundation; either version 2.1 or 3 of the License.
  */
 #include <sys/types.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <libHX.h>
 #include <vitalnix/compiler.h>
@@ -44,7 +45,7 @@ static char *(*const cryptor[])(const char *, const char *) = {
 };
 
 //-----------------------------------------------------------------------------
-EXPORT_SYMBOL int vxutil_cryptpw(const char *key, const char *salt,
+EXPORT_SYMBOL bool vxutil_cryptpw(const char *key, const char *salt,
     unsigned int meth, char **result)
 {
 	if (meth >= ARRAY_SIZE(cryptor) || cryptor[meth] == NULL ||

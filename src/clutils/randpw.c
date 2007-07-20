@@ -41,7 +41,8 @@ int main(int argc, const char **argv)
 	while (Num_pw--) {
 		vxutil_genpw(plain_pw, Length + 1,
 		             With_case | With_digit | Gen_meth);
-		vxutil_cryptpw(plain_pw, NULL, Cr_meth, &out_cr);
+		if (!vxutil_cryptpw(plain_pw, NULL, Cr_meth, &out_cr))
+			fprintf(stderr, "ERROR: vxutil_cryptpw returned false\n");
 		printf("%s\n" "%s\n", plain_pw, out_cr);
 		free(out_cr);
 	}

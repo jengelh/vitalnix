@@ -5,6 +5,7 @@
 #ifndef __cplusplus
 #	include <stdio.h>
 #	include <stdlib.h>
+#	include <stdbool.h>
 #else
 #	include <cstdio>
 #	include <cstdlib>
@@ -26,7 +27,7 @@ enum {
 	CRYPW_BLOWFISH,
 };
 
-extern int vxutil_cryptpw(const char *, const char *, unsigned int, char **);
+extern bool vxutil_cryptpw(const char *, const char *, unsigned int, char **);
 
 /*
  *	GENPW.C
@@ -41,7 +42,7 @@ enum {
 	GENPW_ZH      = 1 << 6,
 };
 
-extern int vxutil_genpw(char *, size_t, long);
+extern void vxutil_genpw(char *, size_t, long);
 
 /*
  *	UTIL.C
@@ -55,7 +56,7 @@ enum {
 };
 
 extern long vxutil_now_iday(void);
-extern int vxutil_only_digits(const char *);
+extern bool vxutil_only_digits(const char *);
 extern char *vxutil_propose_home(char *, size_t, const char *, const char *,
 	unsigned int);
 extern char *vxutil_propose_lname(char *, size_t, const char *, const char *);
@@ -64,7 +65,7 @@ extern int vxutil_replace_run(const char *, const struct HXbtree *);
 extern char *vxutil_slurp_file(const char *);
 extern long vxutil_string_iday(const char *);
 extern long vxutil_string_xday(const char *);
-extern int vxutil_valid_username(const char *);
+extern bool vxutil_valid_username(const char *);
 
 /*
  *	UUID.C
