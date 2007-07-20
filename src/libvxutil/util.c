@@ -408,8 +408,11 @@ static size_t quoted_size(const char *s, unsigned int type)
 static const char *surname_pointer(const char *s)
 {
 	const char *p;
-	while (isspace(*s)) ++s;
+
+	while (isspace(*s))
+		++s;
 	p = s;
+
 	while (*p != '\0') {
 		if (isupper(*p))
 			return p;

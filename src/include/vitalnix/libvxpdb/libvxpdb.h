@@ -13,7 +13,7 @@
 extern "C" {
 #endif
 
-// Definitions
+/* Definitions */
 enum {
 	PDB_NO_CHANGE   = -2,
 	PDB_AUTOUID     = -1,

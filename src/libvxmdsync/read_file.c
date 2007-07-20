@@ -42,7 +42,7 @@ EXPORT_SYMBOL int mdsync_read_file(struct mdsync_workspace *w,
 				        "stopping.\n", __func__);
 			else
 				fprintf(stderr, "%s+eds_read(): %s\n",
-				        __func__, ret, strerror(-ret));
+				        __func__, strerror(-ret));
 			vxeds_free_entry(entry);
 			free(entry);
 		} else if (ret == 0) {

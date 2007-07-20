@@ -46,33 +46,27 @@ EXPORT_SYMBOL struct vxpdb_state *vxpdb_load(const char *name)
 
 	if (!vxpdb_config(&cf, CONFIG_READ, name) || cf.driver_name == NULL ||
 	    *cf.driver_name == '\0') {
-			errno = EINVAL;
-			goto out;
+		errno = EINVAL;
+		goto out;
 	}
 
 	if ((new = malloc(sizeof(struct vxpdb_state))) == NULL)
 		goto out;
 
-	if (!(
-		/* Try to load the .SO and look for THIS_MODULE */
-		((new->handle = vxpdb_get_handle(&cf)) != NULL &&
-		(vtable = HX_dlsym(new->handle, "THIS_MODULE")) != NULL) ||
-
+	/* Try to load the .SO and look for THIS_MODULE */
+	new->handle = vxpdb_get_handle(&cf);
+	if (new->handle == NULL)
+		goto fail;
+	vtable = HX_dlsym(new->handle, "THIS_MODULE");
+	if (vtable == NULL)
 		/*
 		 * If the two fail, either because the .SO does not exist,
 		 * THIS_MODULE has visibility=hidden, or the module is static,
 		 * see if the module registered itself.
 		 */
-		(vtable = vxcore_module_lookup("libvxpdb", cf.driver_name)) != NULL
-		/*
-		 * Invert the whole sense because this is the
-		 * error path, not the success path.
-		 */
-	)) {
-		if (errno == 0)
-			errno = EINVAL;
-		goto out;
-	}
+		vtable = vxcore_module_lookup("libvxpdb", cf.driver_name);
+	if (vtable == NULL)
+		goto fail;
 
 	new->vtable = vtable;
 	vxpdb_fix_vtable(vtable);
@@ -84,6 +78,9 @@ EXPORT_SYMBOL struct vxpdb_state *vxpdb_load(const char *name)
 	vxpdb_cleanup(NULL, 0, &cf);
 	return new;
 
+ fail:
+	if (errno == 0)
+		errno = EINVAL;
  out:
 	errno = vxpdb_cleanup(new, errno, &cf);
 	return NULL;

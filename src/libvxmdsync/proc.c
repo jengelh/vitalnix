@@ -73,7 +73,8 @@ EXPORT_SYMBOL void mdsync_compare(struct mdsync_workspace *w)
 		/*
 		 * Users we look for (only specified group)
 		 */
-		if (pwd.vs_uuid != NULL && (eds = HXbtree_get(w->add_req, pwd.vs_uuid)) != NULL) {
+		if (pwd.vs_uuid != NULL &&
+		    (eds = HXbtree_get(w->add_req, pwd.vs_uuid)) != NULL) {
 			/*
 			 * PDB user found in EDS: Keep, and remove from add_req
 			 */
@@ -231,7 +232,8 @@ EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
 		out.sp_inact  = c->add_opts.defaults.sp_inact;
 
 		if (c->add_opts.user_preadd != NULL)
-			vxutil_replace_run(c->add_opts.user_preadd, user_catalog);
+			vxutil_replace_run(c->add_opts.user_preadd,
+			                   user_catalog);
 
 		if ((ret = vxpdb_useradd(w->database, &out)) <= 0 ||
 		    (ret = vxpdb_getpwnam(w->database, out.pw_name, &chk)) <= 0)
@@ -273,9 +275,8 @@ EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
 	vxpdb_modctl(w->database, PDB_FLUSH);
 	vxpdb_user_free(&chk, 0);
 
-	if (ret > 0)
-		if (c->add_opts.master_postadd != NULL)
-			vxutil_replace_run(c->add_opts.master_postadd, master_catalog);
+	if (ret > 0 && c->add_opts.master_postadd != NULL)
+		vxutil_replace_run(c->add_opts.master_postadd, master_catalog);
 
 	if (master_catalog != NULL)
 		HXformat_free(master_catalog);
@@ -345,7 +346,8 @@ EXPORT_SYMBOL int mdsync_del(struct mdsync_workspace *w)
 	if (c->del_opts.master_predel != NULL)
 		vxutil_replace_run(c->del_opts.master_predel, master_catalog);
 
-	for (travp = w->delete_now->first; travp != NULL; travp = travp->next) {
+	for (travp = w->delete_now->first;
+	    travp != NULL; travp = travp->next) {
 		if ((ret = vxpdb_getpwnam(w->database, travp->ptr, &res)) < 0) {
 			fprintf(stderr, "%s()+pdb_getpwnam(): %s\n",
 			        __func__, strerror(errno));
@@ -404,7 +406,8 @@ static int mdsync_update(struct mdsync_workspace *w)
 		search_rq.pw_name = act->pw_name;
 		mod_rq.vs_pvgrp   = act->vs_pvgrp;
 
-		if ((ret = vxpdb_usermod(w->database, &search_rq, &mod_rq)) <= 0)
+		ret = vxpdb_usermod(w->database, &search_rq, &mod_rq);
+		if (ret <= 0)
 			return ret;
 		if (w->report != NULL)
 			w->report(MDREP_UPDATE, w, ++users_proc, users_max);
@@ -427,7 +430,8 @@ static int mdsync_defer_start(struct mdsync_workspace *w)
 		search_rq.pw_name = node->ptr;
 		mod_rq.vs_defer   = today;
 
-		if ((ret = vxpdb_usermod(w->database, &search_rq, &mod_rq)) <= 0)
+		ret = vxpdb_usermod(w->database, &search_rq, &mod_rq);
+		if (ret <= 0)
 			return ret;
 		if (w->report != NULL)
 			w->report(MDREP_DSTART, w, ++users_proc, users_max);
@@ -449,7 +453,8 @@ static int mdsync_defer_stop(struct mdsync_workspace *w)
 		search_rq.pw_name = node->ptr;
 		mod_rq.vs_defer   = 0;
 
-		if ((ret = vxpdb_usermod(w->database, &search_rq, &mod_rq)) <= 0)
+		ret = vxpdb_usermod(w->database, &search_rq, &mod_rq);
+		if (ret <= 0)
 			return ret;
 		if (w->report != NULL)
 			w->report(MDREP_DSTOP, w, ++users_proc, users_max);
