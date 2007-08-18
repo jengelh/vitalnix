@@ -19,7 +19,7 @@
 
 static const char *const text =
 	PROD_NAME "\n"
-	"(Vitalnix " VITALNIX_VERSION " Steelmill)\n"
+	"(Vitalnix " PACKAGE_VERSION " Steelmill)\n"
 	"\n"
 	"developed by Jan Engelhardt\n"
 	"and Cordula Petzold\n"

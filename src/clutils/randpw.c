@@ -96,7 +96,7 @@ static int get_options(int *argc, const char ***argv)
 
 static void show_version(const struct HXoptcb *cbi)
 {
-	printf("Vitalnix " VITALNIX_VERSION " randpw\n");
+	printf("Vitalnix " PACKAGE_VERSION " randpw\n");
 	exit(EXIT_SUCCESS);
 }
 

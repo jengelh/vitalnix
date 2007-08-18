@@ -128,7 +128,7 @@ static int get_options(int *argc, const char ***argv,
 
 static void show_version(const struct HXoptcb *cbi)
 {
-	printf("Vitalnix " VITALNIX_VERSION " mdpwlfmt\n");
+	printf("Vitalnix " PACKAGE_VERSION " mdpwlfmt\n");
 	exit(EXIT_SUCCESS);
 }
 

@@ -268,7 +268,7 @@ static int userdel_run3(struct vxpdb_state *db, struct userdel_state *state)
 
 static void userdel_show_version(const struct HXoptcb *cbi)
 {
-	printf("Vitalnix " VITALNIX_VERSION " userdel\n");
+	printf("Vitalnix " PACKAGE_VERSION " userdel\n");
 	return;
 }
 

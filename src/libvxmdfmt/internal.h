@@ -16,7 +16,6 @@
 #	include <cstdio>
 #endif
 #include <libHX.h>
-#include <vitalnix/config.h>
 #include <vitalnix/libvxmdfmt/libvxmdfmt.h>
 #include "libvxmdfmt/static-build.h"
 

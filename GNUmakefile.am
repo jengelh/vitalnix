@@ -1,0 +1,250 @@
+
+AUTOMAKE_OPTIONS := foreign subdir-objects
+CLEANFILES       :=
+DEFAULT_INCLUDES := \
+	-I${top_builddir}/src \
+	-I${top_builddir}/include \
+	-I${srcdir}/src \
+	-I${srcdir}/src/include
+
+AM_CFLAGS    := ${AC_CFLAGS}
+AM_CXXFLAGS  := ${AC_CXXFLAGS}
+AM_SOLDFLAGS := -release ${PACKAGE_VERSION_SIMPLE}
+
+# These got some harmful crap
+CFLAGS_LIBMYSQL  := $(filter -I%,${CFLAGS_LIBMYSQL_INSANE})
+LDFLAGS_LIBMYSQL := $(filter -L% -l% -pthread,${LDFLAGS_LIBMYSQL_INSANE})
+
+bin_PROGRAMS    := \
+	cgi_chpasswd cgi_lpaview cgi_vwquota \
+	lpacct_filter mdfixuuid mdpwlfmt mdsingle mdsync pdbdump pdbinfo \
+	randpw tryauth vxuseradd vxusermod vxuserdel vxgroupadd vxgroupmod \
+	vxgroupdel steelmill
+lib_LTLIBRARIES := \
+	libvxcgi.la libvxcli.la libvxcore.la libvxeds.la \
+	libvxmdfmt.la libvxmdsync.la libvxpdb.la libvxutil.la \
+	drv_dummy.la drv_ldap.la drv_mmd.la drv_mysql.la drv_nss.la \
+	drv_nss1.la drv_shadow.la
+
+#
+#	cgiutils
+#
+cgi_chpasswd_SOURCES := src/cgiutils/chpasswd.c
+cgi_chpasswd_LDADD   := -lHX libvxcgi.la libvxutil.la
+
+cgi_lpaview_SOURCES  := src/cgiutils/lpaview.c src/lpacct/shared.c
+cgi_lpaview_CFLAGS   := ${AM_CFLAGS} ${CFLAGS_LIBMYSQL}
+cgi_lpaview_LDADD    := -lHX libvxcgi.la libvxutil.la
+cgi_lpaview_LDFLAGS  := ${LDFLAGS_LIBMYSQL}
+
+cgi_vwquota_SOURCES  := src/cgiutils/vwquota.c
+cgi_vwquota_LDADD    := -lHX libvxcgi.la libvxutil.la
+
+#
+#	clutils
+#
+mdfixuuid_SOURCES  := src/clutils/mdfixuuid.c
+mdfixuuid_LDADD    := -lHX libvxpdb.la libvxutil.la
+mdpwlfmt_SOURCES   := src/clutils/mdpwlfmt.c
+mdpwlfmt_LDADD     := -lHX libvxmdfmt.la
+mdsingle_SOURCES   := src/clutils/mdsingle.c
+mdsingle_LDADD     := -lHX libvxcli.la libvxmdsync.la libvxpdb.la
+mdsync_SOURCES     := src/clutils/mdsync.c
+mdsync_LDADD       := -lHX libvxcli.la libvxeds.la libvxmdsync.la libvxpdb.la
+pdbdump_SOURCES    := src/clutils/pdbdump.c
+pdbdump_LDADD      := libvxpdb.la libvxutil.la
+pdbinfo_SOURCES    := src/clutils/pdbinfo.c
+pdbinfo_LDADD      := -lHX libvxpdb.la
+randpw_SOURCES     := src/clutils/randpw.c
+randpw_LDADD       := libvxpdb.la
+tryauth_SOURCES    := src/clutils/tryauth.c
+tryauth_LDADD      := -lHX -lpam libvxcgi.la
+vxuseradd_SOURCES  := src/clutils/useradd.c
+vxuseradd_LDADD    := -lHX libvxpdb.la libvxutil.la
+vxusermod_SOURCES  := src/clutils/usermod.c
+vxusermod_LDADD    := -lHX libvxpdb.la libvxutil.la
+vxuserdel_SOURCES  := src/clutils/userdel.c
+vxuserdel_LDADD    := -lHX libvxpdb.la libvxutil.la
+vxgroupadd_SOURCES := src/clutils/groupadd.c
+vxgroupadd_LDADD   := -lHX libvxpdb.la libvxutil.la
+vxgroupmod_SOURCES := src/clutils/groupmod.c
+vxgroupmod_LDADD   := -lHX libvxpdb.la libvxutil.la
+vxgroupdel_SOURCES := src/clutils/groupdel.c
+vxgroupdel_LDADD   := -lHX libvxpdb.la libvxutil.la
+
+#
+#	drivers/dummy
+#
+drv_dummy_la_SOURCES := src/drivers/dummy.c
+drv_dummy_la_LIBADD  := libvxcore.la libvxpdb.la
+drv_dummy_la_LDFLAGS := ${AM_SOLDFLAGS} -module
+
+#
+#	drivers/ldap
+#
+drv_ldap_la_SOURCES := src/drivers/ldap.c
+drv_ldap_la_LIBADD  := -lldap_r libvxcore.la libvxpdb.la
+drv_ldap_la_LDFLAGS := ${AM_SOLDFLAGS} -module
+
+#
+#	drivers/mmd
+#
+drv_mmd_la_SOURCES := src/drivers/mmd.c
+drv_mmd_la_LIBADD  := -lHX libvxcore.la libvxpdb.la
+drv_mmd_la_LDFLAGS := ${AM_SOLDFLAGS} -module
+
+#
+#	drivers/nss
+#
+drv_nss_la_SOURCES  := src/drivers/nss.c
+drv_nss_la_LIBADD   := -lHX libvxcore.la libvxpdb.la
+drv_nss_la_LDFLAGS  := ${AM_SOLDFLAGS} -module
+drv_nss1_la_SOURCES := src/drivers/nss1.c
+drv_nss1_la_LIBADD  := -lHX libvxcore.la libvxpdb.la libvxutil.la
+drv_nss1_la_LDFLAGS := ${AM_SOLDFLAGS} -module
+
+#
+#	drivers/mysql
+#
+drv_mysql_la_LIBADD  := libvxcore.la libvxpdb.la libvxutil.la
+drv_mysql_la_LDFLAGS := ${AM_SOLDFLAGS} ${LDFLAGS_LIBMYSQL} -module
+drv_mysql_la_CFLAGS  := ${AM_CFLAGS} ${CFLAGS_LIBMYSQL}
+drv_mysql_la_SOURCES := src/drivers/mysql/mysql.c
+
+#
+#	drivers/shadow
+#
+drv_shadow_la_LIBADD  := -lHX libvxcore.la libvxpdb.la
+drv_shadow_la_LDFLAGS := ${AM_SOLDFLAGS} ${LDFLAGS_LIBXML} -module
+drv_shadow_la_CFLAGS  := ${AM_CFLAGS} ${CFLAGS_LIBXML}
+drv_shadow_la_SOURCES := \
+	src/drivers/shadow/aux.c \
+	src/drivers/shadow/dbops.c \
+	src/drivers/shadow/fsgroup.c \
+	src/drivers/shadow/fspasswd.c \
+	src/drivers/shadow/fsshadow.c \
+	src/drivers/shadow/fsvxshadow.c \
+	src/drivers/shadow/shadow.c
+
+#
+#	libvxcgi
+#
+libvxcgi_la_SOURCES := src/libvxcgi/auth.c src/libvxcgi/cgi.c
+libvxcgi_la_LIBADD  := -lHX -lpam
+libvxcgi_la_LDFLAGS := ${AM_SOLDFLAGS}
+
+#
+#	libvxcli
+#
+libvxcli_la_SOURCES := src/libvxcli/cli.c
+libvxcli_la_LIBADD  := -lHX
+libvxcli_la_LDFLAGS := ${AM_SOLDFLAGS}
+
+#
+#	libvxcore
+#
+libvxcore_la_SOURCES := src/libvxcore/loader.c
+libvxcore_la_LIBADD  := -lHX
+libvxcore_la_LDFLAGS := ${AM_SOLDFLAGS}
+
+#
+#	libvxeds
+#
+libvxeds_la_LIBADD     := -lHX libvxcore.la libvxutil.la
+libvxeds_la_LDFLAGS    := ${AM_SOLDFLAGS} ${LDFLAGS_LIBXML}
+libvxeds_fm_xml_CFLAGS := ${CFLAGS_LIBXML}
+libvxeds_la_SOURCES    := \
+	src/libvxeds/eds.c \
+	src/libvxeds/fm_sdf.c \
+	src/libvxeds/fm_xml.c
+
+#
+#	libvxmdfmt
+#
+libvxmdfmt_la_LIBADD  := -lHX libvxcore.la libvxutil.la
+libvxmdfmt_la_LDFLAGS := ${AM_SOLDFLAGS}
+libvxmdfmt_la_SOURCES := \
+	src/libvxmdfmt/extra.c \
+	src/libvxmdfmt/pwlfmt.c \
+	src/libvxmdfmt/s_a1.c \
+	src/libvxmdfmt/s_pghtml.c \
+	src/libvxmdfmt/s_pgrtf.c \
+	src/libvxmdfmt/s_pgtxt.c \
+	src/libvxmdfmt/s_sb.c
+
+#
+#	libvxmdsync
+#
+libvxmdsync_la_LIBADD  := -lHX libvxeds.la libvxpdb.la libvxutil.la
+libvxmdsync_la_LDFLAGS := ${AM_SOLDFLAGS}
+libvxmdsync_la_SOURCES := \
+	src/libvxmdsync/base.c \
+	src/libvxmdsync/fixup.c \
+	src/libvxmdsync/proc.c \
+	src/libvxmdsync/read_file.c
+
+#
+#	libvxpdb
+#
+libvxpdb_la_LIBADD  := -lHX libvxcore.la libvxutil.la
+libvxpdb_la_LDFLAGS := ${AM_SOLDFLAGS}
+libvxpdb_la_SOURCES := \
+	src/libvxpdb/aux.c \
+	src/libvxpdb/config.c \
+	src/libvxpdb/dummy.c \
+	src/libvxpdb/loader.c
+
+#
+#	libvxutil
+#
+libvxutil_sources := \
+	src/libvxutil/blowfish.c \
+	src/libvxutil/crypt.c \
+	src/libvxutil/genpw.c \
+	src/libvxutil/util.c \
+	src/libvxutil/uuid.c
+if X86_32
+blowfish_sources := src/libvxutil/blowfish_x86.S
+endif
+libvxutil_la_SOURCES := ${libvxutil_sources} ${blowfish_sources}
+libvxutil_la_LIBADD  := -lHX -lcrypt
+libvxutil_la_LDFLAGS := ${AM_SOLDFLAGS} ${LDFLAGS_LIBCRYPTO}
+
+#
+#	lpacct
+#
+lpacct_filter_CFLAGS  := ${AM_CFLAGS} ${CFLAGS_LIBMYSQL}
+lpacct_filter_LDADD   := -lHX libvxutil.la
+lpacct_filter_LDFLAGS := ${LDFLAGS_LIBMYSQL}
+lpacct_filter_SOURCES := \
+	src/lpacct/acct.c src/lpacct/drop.c src/lpacct/image.c \
+	src/lpacct/lpacct.c src/lpacct/shared.c
+
+#
+#	steelmill
+#
+steelmill_LDADD    := -lHX libvxeds.la libvxmdfmt.la libvxmdsync.la libvxpdb.la
+steelmill_LDFLAGS  := ${LDFLAGS_LIBWX}
+steelmill_CXXFLAGS := ${AM_CXXFLAGS} ${CXXFLAGS_LIBWX}
+steelmill_SOURCES  := \
+	src/steelmill/images.cpp \
+	src/steelmill/wd_about.cpp \
+	src/steelmill/wd_fixuuid.cpp \
+	src/steelmill/wd_main.cpp \
+	src/steelmill/wd_overview.cpp \
+	src/steelmill/wd_pwlfmt.cpp \
+	src/steelmill/wd_single.cpp \
+	src/steelmill/wd_splash.cpp \
+	src/steelmill/wd_sync.cpp \
+	src/steelmill/wd_usermod.cpp \
+	src/steelmill/xu_common.cpp \
+	src/steelmill/xu_database.cpp \
+	src/steelmill/xu_loader.cpp
+
+src/steelmill/images.cpp: src/steelmill/images.hpp
+
+src/steelmill/images.hpp: $(wildcard ${srcdir}/src/steelmill/*.png)
+	${srcdir}/src/png2wx.pl -C src/steelmill/images.cpp -H src/steelmill/images.hpp -M STEELMILL_IMAGES_HPP $^ || \
+	${srcdir}/src/png2wx.py -C src/steelmill/images.cpp -H src/steelmill/images.hpp -M STEELMILL_IMAGES_HPP $^;
+
+CLEANFILES += src/steelmill/images.cpp src/steelmill/images.hpp

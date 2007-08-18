@@ -504,7 +504,7 @@ static int ldif_safe(const char *s)
 
 static void show_version(const struct HXoptcb *cbi)
 {
-	printf("Vitalnix " VITALNIX_VERSION " pdbdump\n");
+	printf("Vitalnix " PACKAGE_VERSION " pdbdump\n");
 	exit(EXIT_SUCCESS);
 }
 

@@ -15,6 +15,7 @@
 #include <vitalnix/compiler.h>
 #include "libvxmdfmt/internal.h"
 #include <vitalnix/libvxutil/defines.h>
+#include <vitalnix/config.h>
 
 /* Definitions */
 enum {
@@ -118,9 +119,9 @@ struct HXbtree *defcat_file_header(const struct pwlfmt_workspace *ws)
 	struct HXbtree *ret;
 	if ((ret = HXformat_init()) == NULL)
 		return NULL;
-	HXformat_add(ret, "INFILE",  ws->input_file,   HXTYPE_STRING);
-	HXformat_add(ret, "OUTFILE", ws->output_file,  HXTYPE_STRING);
-	HXformat_add(ret, "VERSION", VITALNIX_VERSION, HXTYPE_STRING);
+	HXformat_add(ret, "INFILE",  ws->input_file,  HXTYPE_STRING);
+	HXformat_add(ret, "OUTFILE", ws->output_file, HXTYPE_STRING);
+	HXformat_add(ret, "VERSION", PACKAGE_VERSION, HXTYPE_STRING);
 	return ret;
 }
 
@@ -130,8 +131,8 @@ struct HXbtree *defcat_tbl_header(const struct pwlfmt_workspace *ws,
 	struct HXbtree *ret;
 	if ((ret = HXformat_init()) == NULL)
 		return NULL;
-	HXformat_add(ret, "PVGROUP", data->pvgrp,      HXTYPE_STRING);
-	HXformat_add(ret, "VERSION", VITALNIX_VERSION, HXTYPE_STRING);
+	HXformat_add(ret, "PVGROUP", data->pvgrp,     HXTYPE_STRING);
+	HXformat_add(ret, "VERSION", PACKAGE_VERSION, HXTYPE_STRING);
 	return ret;
 }
 
@@ -146,7 +147,7 @@ struct HXbtree *defcat_tbl_entry(const struct pwlfmt_workspace *ws,
 	HXformat_add(ret, "PASSWORD",  data->password,   HXTYPE_STRING);
 	HXformat_add(ret, "USERNAME",  data->username,   HXTYPE_STRING);
 	HXformat_add(ret, "FIRSTNAME", data->first_name, HXTYPE_STRING);
-	HXformat_add(ret, "VERSION",   VITALNIX_VERSION, HXTYPE_STRING);
+	HXformat_add(ret, "VERSION",   PACKAGE_VERSION,  HXTYPE_STRING);
 	return ret;
 }
 

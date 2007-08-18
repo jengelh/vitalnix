@@ -196,7 +196,7 @@ static int groupdel_read_config(void)
 
 static void groupdel_show_version(const struct HXoptcb *cbi)
 {
-	printf("Vitalnix " VITALNIX_VERSION " groupdel\n");
+	printf("Vitalnix " PACKAGE_VERSION " groupdel\n");
 	return;
 }
 

@@ -105,7 +105,7 @@ EXPORT_SYMBOL int mdsync_open_log(struct mdsync_workspace *w,
 	/* change the number if the format should ever change */
 	fprintf(w->logfile,
 		"# $logformat " MDSYNC_LOG_VER "\n"
-		"# Vitalnix libvxmdsync %s\n", VITALNIX_VERSION);
+		"# %s libvxmdsync %s\n", PACKAGE_NAME, PACKAGE_VERSION);
 	return 1;
 }
 

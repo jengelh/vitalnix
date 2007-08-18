@@ -24,11 +24,12 @@ static void pgtxt_tbl_header(const struct pwlfmt_workspace *state,
 {
 	fprintf(state->output_fh,
 		"\n\n"
-		"                                  Formatted by Vitalnix (%s)\n\n\n"
+		"                 Formatted by %s (%s)\n\n\n"
 		"  >>> Group %s\n\n"
 		"  %-35s  %-10s  %s\n"
 		"  =======================================================================\n",
-		VITALNIX_VERSION, data->pvgrp, "Name", "Login", "Password"
+		PACKAGE_NAME, PACKAGE_VERSION, data->pvgrp,
+		"Name", "Login", "Password"
 	);
 	return;
 }

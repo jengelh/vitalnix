@@ -355,7 +355,7 @@ static int get_options(int *argc, const char ***argv, struct private_info *p)
 
 static void show_version(const struct HXoptcb *cbi)
 {
-	printf("Vitalnix " VITALNIX_VERSION " mdsingle\n");
+	printf("Vitalnix " PACKAGE_VERSION " mdsingle\n");
 	if (cbi != NULL)
 		exit(EXIT_SUCCESS);
 	return;

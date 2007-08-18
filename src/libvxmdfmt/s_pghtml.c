@@ -43,10 +43,10 @@ static void pghtml_tbl_header(const struct pwlfmt_workspace *state,
 {
 	fprintf(state->output_fh,
 		"<p>&nbsp;</p><table width=\"100%%\"><tr><td><h1>Group %s</h1></td>"
-		"<td align=\"right\"><i>Formatted by Vitalnix (%s)</i></td></tr>"
+		"<td align=\"right\"><i>Formatted by %s (%s)</i></td></tr>"
 		"</table><table cellpadding=\"5\" width=\"100%%\"><tr>"
 		"<th width=\"50%%\">Name</th><th>Login</th><th>Password</th></tr>\n",
-		data->pvgrp, VITALNIX_VERSION
+		data->pvgrp, PACKAGE_NAME, PACKAGE_VERSION
 	);
 	return;
 }

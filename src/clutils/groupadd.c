@@ -197,7 +197,7 @@ static int groupadd_read_config(void)
 
 static void groupadd_show_version(const struct HXoptcb *cbi)
 {
-	printf("Vitalnix " VITALNIX_VERSION " groupadd\n");
+	printf("Vitalnix " PACKAGE_VERSION " groupadd\n");
 	return;
 }
 

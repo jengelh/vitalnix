@@ -19,10 +19,11 @@ static void a1_file_header(const struct pwlfmt_workspace *state)
 {
 	fprintf(state->output_fh,
 		"\n\n"
-		"                                  Formatted by Vitalnix (%s)\n\n\n"
+		"                 Formatted by %s (%s)\n\n\n"
 		"  %-8s  %-35s  %-10s  %s\n"
 		"  =======================================================================\n",
-		VITALNIX_VERSION, "Group", "Name", "Login", "Password"
+		PACKAGE_NAME, PACKAGE_VERSION,
+		"Group", "Name", "Login", "Password"
 	);
 	return;
 }

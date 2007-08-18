@@ -207,7 +207,7 @@ static int get_options(int *argc, const char ***argv)
 
 static void show_version(const struct HXoptcb *cbi)
 {
-	printf("Vitalnix " VITALNIX_VERSION " pdbinfo\n");
+	printf("Vitalnix " PACKAGE_VERSION " pdbinfo\n");
 	exit(EXIT_SUCCESS);
 }
 
