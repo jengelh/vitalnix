@@ -57,12 +57,18 @@ int main(int argc, const char **argv)
 			continue;
 
 		while ((dentry = HXdir_read(cdp)) != NULL) {
-			char buf[MAXFNLEN];
+			char buf[MAXFNLEN], *p;
+
 			if (strncmp(dentry, "drv_", 4) != 0 ||
 			    strcmp(dentry + strlen(dentry) - 3, ".so") != 0)
 				continue;
-			snprintf(buf, sizeof(buf), "%s/%s",
-			    	 static_cast(const char *, cd->ptr), dentry);
+			if ((p = strrchr(dentry, '-')) != NULL)
+				snprintf(buf, sizeof(buf), "%.*s",
+				         (int)(p - (dentry + 4)), dentry + 4);
+			else
+				snprintf(buf, sizeof(buf), "%.*s",
+				         (int)(strlen(dentry + 4) - 3),
+				         dentry + 4);
 			driver_info(buf);
 		}
 
