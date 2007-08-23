@@ -78,7 +78,7 @@ void WD_Pwlfmt::process(wxCommandEvent &event)
 }
 
 GW_PwlstylesChoice::GW_PwlstylesChoice(wxWindow *parent, wxWindowID id) :
-	wxChoice(parent, id, wxDPOS, wxDSIZE, 0, NULL)
+	wxChoice(parent, id, wxDPOS, wxDSIZE)
 {
 	const struct pwlstyle_vtable *vtable;
 	void *trav = NULL;

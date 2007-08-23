@@ -488,7 +488,7 @@ void WD_SyncProg::Details_Delete(wxCommandEvent &event)
 
 //-----------------------------------------------------------------------------
 GW_EdsformatChoice::GW_EdsformatChoice(wxWindow *parent, wxWindowID id) :
-	wxChoice(parent, id, wxDPOS, wxDSIZE, 0, NULL)
+	wxChoice(parent, id, wxDPOS, wxDSIZE)
 {
 	const struct edsformat_vtable *vtable;
 	void *trav = NULL;
