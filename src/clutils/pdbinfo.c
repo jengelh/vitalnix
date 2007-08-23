@@ -58,7 +58,8 @@ int main(int argc, const char **argv)
 
 		while ((dentry = HXdir_read(cdp)) != NULL) {
 			char buf[MAXFNLEN];
-			if (strncmp(dentry, "drv_", 8) != 0)
+			if (strncmp(dentry, "drv_", 4) != 0 ||
+			    strcmp(dentry + strlen(dentry) - 3, ".so") != 0)
 				continue;
 			snprintf(buf, sizeof(buf), "%s/%s",
 			    	 static_cast(const char *, cd->ptr), dentry);
