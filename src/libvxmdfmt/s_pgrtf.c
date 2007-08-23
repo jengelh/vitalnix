@@ -160,7 +160,8 @@ static hmc_t *utf8_to_rtfuni(const char *ip)
 		os = sizeof(wchar_t);
 		hmc_memcat(&dest, cfh, ip - cfh);
 		iconv(cd, reinterpret_cast(char **, &ip), &is,
-		          reinterpret_cast(char **, &op), &os);
+		          reinterpret_cast(char **,
+		          	reinterpret_cast(void *, &op)), &os);
 		snprintf(buf, sizeof(buf), "\\uc0\\u%ld", static_cast(long, oc));
 		hmc_strcat(&dest, buf);
 		cfh = ip;

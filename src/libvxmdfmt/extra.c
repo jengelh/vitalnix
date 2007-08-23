@@ -165,7 +165,7 @@ int pwlfmt_extra_whitespace(const char *s)
 
 	tw = tmp;
 	iconv(cd, reinterpret_cast(char **, &s), &in_size,
-	          reinterpret_cast(char **, &tw), &out_size);
+	          reinterpret_cast(char **, reinterpret_cast(void *, &tw)), &out_size);
 
 	tw = tmp;
 	while (*tw != 0)
