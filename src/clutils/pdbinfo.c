@@ -184,16 +184,16 @@ static void read_ldso_conf1(const char *file)
  */
 static void read_environment(void)
 {
-	char *entry, *our, *travp;
-	if ((entry = getenv("LD_LIBRARY_PATH")) == NULL)
+	char *working_copy, *walker, *dirname;
+
+	working_copy = HX_strdup(getenv("LD_LIBRARY_PATH"));
+
+	if (working_copy == NULL)
 		return;
+	while ((dirname = HX_strsep(&walker, ":")) != NULL)
+		HXdeque_push(Dirs, dirname);
 
-	HX_strclone(&our, entry);
-	travp = our;
-	while ((travp = HX_strsep(&travp, ":")) != NULL)
-		HXdeque_push(Dirs, travp);
-
-	free(our);
+	free(working_copy);
 	return;
 }
 
