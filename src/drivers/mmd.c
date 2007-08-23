@@ -353,4 +353,4 @@ static struct vxpdb_driver THIS_MODULE = {
 	DRIVER_CB_ALL(vmmd),
 };
 
-REGISTER_MODULE(multi, &THIS_MODULE);
+REGISTER_MODULE(mmd, &THIS_MODULE);
