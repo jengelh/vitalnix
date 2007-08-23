@@ -19,13 +19,17 @@
 
 struct ldap_state {
 	/* Connection */
-	LDAP *cn_handle;
+	LDAP *conn;
 	char *cn_host, *cn_socket, *cn_user, *cn_passwd, *cn_database,
 		 *cn_user2, *cn_passwd2;
 	int cn_port;
 
 	/* Misc */
 	long uid_min, uid_max, gid_min, gid_max;
+};
+
+struct ldaptrav {
+	LDAPMessage *base, *current;
 };
 
 //-----------------------------------------------------------------------------
@@ -44,13 +48,15 @@ static int vldap_open(struct vxpdb_state *vp, long flags)
 	struct ldap_state *state = vp->state;
 	int ret;
 
-	ret = ldap_initialize(&state->cn_handle, NULL);
+	ret = ldap_initialize(&state->conn, "ldap://127.0.0.1/");
 	if (ret != LDAP_SUCCESS)
-		return ret;
+		return -ret;
+
+	ret = LDAP_VERSION3;
+	ldap_set_option(state->conn, LDAP_OPT_PROTOCOL_VERSION, &ret);
 
 	/*
-	ldap_set_option(state->cn_handle, LDAP_OPT_DEREF, LDAP_DEREF_NEVER);
-	ldap_set_option(state->cn_handle, LDAP_OPT_REFERRALS, LDAP_OPT_OFF);
+	
 	ldap_bind_s(ld, pv->binddn, pv->bindpw, LDAP_AUTH_SIMPLE);
 	*/
 
@@ -59,6 +65,8 @@ static int vldap_open(struct vxpdb_state *vp, long flags)
 
 static void vldap_close(struct vxpdb_state *vp)
 {
+	struct ldap_state *state = vp->state;
+	ldap_unbind_ext(state->conn, NULL, NULL);
 	return;
 }
 
@@ -94,17 +102,106 @@ static int vldap_userinfo(struct vxpdb_state *vp,
 
 static void *vldap_usertrav_init(struct vxpdb_state *vp)
 {
-	return vp;
+	struct ldap_state *state = vp->state;
+	struct ldaptrav trav;
+	int ret;
+
+	ret = ldap_search_ext_s(state->conn, NULL, LDAP_SCOPE_SUBTREE,
+	      "(objectClass=posixAccount)", NULL, 0, NULL, NULL,
+	      NULL, 0, &trav.base);
+	if (ret != LDAP_SUCCESS) {
+		errno = 1600 + ret;
+		return NULL;
+	}
+
+	trav.current = ldap_first_entry(state->conn, trav.base);
+	return HX_memdup(&trav, sizeof(trav));
 }
 
 static int vldap_usertrav_walk(struct vxpdb_state *vp, void *ptr,
     struct vxpdb_user *dest)
 {
-	return 0;
+	struct ldap_state *state  = vp->state;
+	struct ldaptrav *trav = ptr;
+	BerElement *ber;
+	char *attr;
+
+	if (trav->current == NULL)
+		return 0;
+
+	hmc_strasg(&dest->pw_name, NULL);
+	dest->pw_uid     = PDB_NOUID;
+	dest->pw_gid     = PDB_NOGID;
+	dest->pw_igrp    = NULL;
+	hmc_strasg(&dest->pw_real, NULL);
+	hmc_strasg(&dest->pw_home, NULL);
+	hmc_strasg(&dest->pw_shell, NULL);
+	hmc_strasg(&dest->sp_passwd, NULL);
+	dest->sp_lastchg = 0;
+	dest->sp_min     = PDB_DFL_KEEPMIN;
+	dest->sp_max     = PDB_DFL_KEEPMAX;
+	dest->sp_warn    = PDB_DFL_WARNAGE;
+	dest->sp_expire  = PDB_NO_EXPIRE;
+	dest->sp_inact   = PDB_NO_INACTIVE;
+
+	for (attr = ldap_first_attribute(state->conn, trav->current, &ber);
+	    attr != NULL;
+	    attr = ldap_next_attribute(state->conn, trav->current, ber))
+	{
+		char **val;
+		
+		val = ldap_get_values(state->conn, trav->current, attr);
+		if (val == NULL)
+			continue;
+		if (*val == NULL) {
+			ldap_value_free(val);
+			continue;
+		}
+		if (strcmp(attr, "uid") == 0)
+			hmc_strasg(&dest->pw_name, *val);
+		else if (strcmp(attr, "uidNumber") == 0)
+			dest->pw_uid = strtol(*val, NULL, 0);
+		else if (strcmp(attr, "gidNumber") == 0)
+			dest->pw_gid = strtol(*val, NULL, 0);
+		else if (strcmp(attr, "gecos") == 0)
+			hmc_strasg(&dest->pw_real, *val);
+		else if (strcmp(attr, "homeDirectory") == 0)
+			hmc_strasg(&dest->pw_home, *val);
+		else if (strcmp(attr, "loginShell") == 0)
+			hmc_strasg(&dest->pw_shell, *val);
+		else if (strcmp(attr, "userPassword") == 0)
+			hmc_strasg(&dest->sp_passwd, *val);
+		else if (strcmp(attr, "shadowLastChange") == 0)
+			dest->sp_lastchg = strtol(*val, NULL, 0);
+		else if (strcmp(attr, "shadowMin") == 0)
+			dest->sp_min = strtol(*val, NULL, 0);
+		else if (strcmp(attr, "shadowMax") == 0)
+			dest->sp_max = strtol(*val, NULL, 0);
+		else if (strcmp(attr, "shadowWarning") == 0)
+			dest->sp_warn = strtol(*val, NULL, 0);
+		else if (strcmp(attr, "shadowExpire") == 0)
+			dest->sp_expire = strtol(*val, NULL, 0);
+		else if (strcmp(attr, "shadowInactive") == 0)
+			dest->sp_inact = strtol(*val, NULL, 0);
+		else if (strcmp(attr, "vitalnixDeferTimer") == 0)
+			dest->vs_defer = strtoul(*val, NULL, 0);
+		else if (strcmp(attr, "vitalnixUUID") == 0)
+			hmc_strasg(&dest->vs_uuid, *val);
+		else if (strcmp(attr, "vitalnixPvgrp") == 0)
+			hmc_strasg(&dest->vs_pvgrp, *val);
+		ldap_value_free(val);
+		ldap_memfree(attr);
+	}
+
+	trav->current = ldap_next_entry(state->conn, trav->current);
+	return 1;
 }
 
 static void vldap_usertrav_free(struct vxpdb_state *vp, void *ptr)
 {
+	struct ldaptrav *trav = ptr;
+	ldap_msgfree(trav->base);
+	free(trav);
 	return;
 }
 
@@ -134,17 +231,66 @@ static int vldap_groupinfo(struct vxpdb_state *vp,
 
 static void *vldap_grouptrav_init(struct vxpdb_state *vp)
 {
-	return vp;
+	struct ldap_state *state = vp->state;
+	struct ldaptrav trav;
+	int ret;
+
+	ret = ldap_search_ext_s(state->conn, NULL, LDAP_SCOPE_SUBTREE,
+	      "(objectClass=posixGroup)", NULL, 0, NULL, NULL,
+	      NULL, 0, &trav.base);
+	if (ret != LDAP_SUCCESS) {
+		errno = 1600 + ret;
+		return NULL;
+	}
+
+	trav.current = ldap_first_entry(state->conn, trav.base);
+	return HX_memdup(&trav, sizeof(trav));
 }
 
 static int vldap_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
     struct vxpdb_group *dest)
 {
-	return 0;
+	struct ldap_state *state = vp->state;
+	struct ldaptrav *trav    = ptr;
+	BerElement *ber;
+	char *attr;
+
+	if (trav->current == NULL)
+		return 0;
+
+	hmc_strasg(&dest->gr_name, NULL);
+	dest->gr_gid = PDB_NOGID;
+
+	for (attr = ldap_first_attribute(state->conn, trav->current, &ber);
+	    attr != NULL;
+	    attr = ldap_next_attribute(state->conn, trav->current, ber))
+	{
+		char **val;
+
+		val = ldap_get_values(state->conn, trav->current, attr);
+		if (val == NULL)
+			continue;
+		if (*val == NULL) {
+			ldap_value_free(val);
+			continue;
+		}
+		if (strcmp(attr, "gidNumber") == 0)
+			dest->gr_gid = strtol(*val, NULL, 0);
+		else if (strcmp(attr, "cn") == 0)
+			hmc_strasg(&dest->gr_name, *val);
+		ldap_value_free(val);
+		ldap_memfree(attr);
+	}
+
+	trav->current = ldap_next_entry(state->conn, trav->current);
+	return 1;
 }
 
 static void vldap_grouptrav_free(struct vxpdb_state *vp, void *ptr)
 {
+	struct ldaptrav *trav = ptr;
+	ldap_msgfree(trav->base);
+	free(trav);
 	return;
 }
 
