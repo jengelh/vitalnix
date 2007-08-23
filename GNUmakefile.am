@@ -84,8 +84,9 @@ drv_dummy_la_LDFLAGS := ${AM_SOLDFLAGS} -module
 #
 #	drivers/ldap
 #
+drv_ldap_la_CFLAGS  := ${AM_CFLAGS} -DLDAP_DEPRECATED
 drv_ldap_la_SOURCES := src/drivers/ldap.c
-drv_ldap_la_LIBADD  := -lldap_r libvxcore.la libvxpdb.la
+drv_ldap_la_LIBADD  := -lldap_r -lpthread libvxcore.la libvxpdb.la
 drv_ldap_la_LDFLAGS := ${AM_SOLDFLAGS} -module
 
 #
