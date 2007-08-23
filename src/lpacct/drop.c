@@ -217,7 +217,7 @@ static int pxcost_gray(int fd, struct image *image, struct cost *cost)
 {
 	const unsigned char *current;
 	unsigned long long k = 0;
-	long ret, pixels;
+	long ret = 0, pixels;
 
 	if (image->type == FILETYPE_PPM) {
 		while ((ret = mpxm_chunk_next(fd, image)) > 0) {
