@@ -225,7 +225,7 @@ lpacct_filter_SOURCES := \
 #
 steelmill_LDADD    := -lHX libvxeds.la libvxmdfmt.la libvxmdsync.la libvxpdb.la
 steelmill_LDFLAGS  := ${LDFLAGS_LIBWX}
-steelmill_CXXFLAGS := ${AM_CXXFLAGS} ${CXXFLAGS_LIBWX}
+steelmill_CXXFLAGS := ${AM_CXXFLAGS} ${CXXFLAGS_LIBWX} -fno-strict-aliasing
 steelmill_SOURCES  := \
 	src/steelmill/images.cpp \
 	src/steelmill/wd_about.cpp \
