@@ -7,8 +7,9 @@ DEFAULT_INCLUDES := \
 	-I${srcdir}/src \
 	-I${srcdir}/src/include
 
-AM_CFLAGS    := ${AC_CFLAGS}
-AM_CXXFLAGS  := ${AC_CXXFLAGS}
+DCONFIG      := -DCONFIG_SYSCONFDIR='"${sysconfdir}"' -DCONFIG_LIBDIR='"${libdir}"'
+AM_CFLAGS    := ${AC_CFLAGS} ${DCONFIG}
+AM_CXXFLAGS  := ${AC_CXXFLAGS} ${DCONFIG}
 AM_SOLDFLAGS := -release ${PACKAGE_VERSION_SIMPLE}
 
 # These got some harmful crap

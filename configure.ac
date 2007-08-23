@@ -51,10 +51,6 @@ PACKAGE_VERSION_SIMPLE="_xrelease";
 
 m4_sinclude(m4lib/gcc4_visibility.m4)
 
-my_sysconfdir=`eval echo "$sysconfdir"`;
-my_libdir=`eval echo "$libdir"`;
-AC_DEFINE_UNQUOTED(CONFIG_SYSCONFDIR, ["$my_sysconfdir"], [Directory to Vitalnix config files])
-AC_DEFINE_UNQUOTED(CONFIG_LIBDIR, ["$my_libdir"], [Directory to Vitalnix shared libraries])
 AC_DEFINE_UNQUOTED(PACKAGE_VERSION_SIMPLE, ["_xrelease"], [Simplified package version])
 AC_SUBST(PACKAGE_VERSION_SIMPLE)
 AC_SUBST(AC_CFLAGS)
