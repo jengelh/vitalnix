@@ -21,9 +21,10 @@ bin_PROGRAMS    := \
 	lpacct_filter mdfixuuid mdpwlfmt mdsingle mdsync pdbdump pdbinfo \
 	randpw tryauth vxuseradd vxusermod vxuserdel vxgroupadd vxgroupmod \
 	vxgroupdel steelmill
+level1_libs     := libvxcgi.la libvxcli.la libvxcore.la libvxutil.la
+level2_libs     := libvxeds.la libvxmdfmt.la libvxpdb.la
 lib_LTLIBRARIES := \
-	libvxcgi.la libvxcli.la libvxcore.la libvxeds.la \
-	libvxmdfmt.la libvxmdsync.la libvxpdb.la libvxutil.la \
+	${level1_libs} ${level2_libs} libvxmdsync.la \
 	drv_dummy.la drv_ldap.la drv_mmd.la drv_mysql.la drv_nss.la \
 	drv_nss1.la drv_shadow.la
 
