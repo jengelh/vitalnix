@@ -28,6 +28,9 @@ lib_LTLIBRARIES := \
 	drv_dummy.la drv_ldap.la drv_mmd.la drv_mysql.la drv_nss.la \
 	drv_nss1.la drv_shadow.la
 
+sysconf_DATA    := $(wildcard etc/*)
+data_DATA       := $(wildcard share/*)
+
 #
 #	cgiutils
 #
