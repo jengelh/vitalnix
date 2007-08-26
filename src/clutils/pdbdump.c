@@ -111,7 +111,6 @@ static void d_ldif_groups(struct vxpdb_state *db)
 	while (vxpdb_grouptrav_walk(db, trav, &group) > 0) {
 		printf(
 			"dn: cn=%s,ou=groups,dc=site\n"
-			"objectClass: top\n"
 			"objectClass: posixGroup\n"
 			"cn: %s\n"
 			"gidNumber: %ld\n\n",
@@ -141,7 +140,6 @@ static void d_ldif_users(struct vxpdb_state *db)
 			continue;
 		printf(
 			"dn: uid=%s,ou=users,dc=site\n"
-			"objectClass: top\n"
 			"objectClass: account\n"
 			"objectClass: posixAccount\n"
 			"uid: %s\n"
