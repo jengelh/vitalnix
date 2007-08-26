@@ -9,6 +9,7 @@
  */
 #include <errno.h>
 #include <limits.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <libHX.h>
@@ -41,11 +42,11 @@ static void d_mysql_users(struct vxpdb_state *);
 static void d_mysql_groups(struct vxpdb_state *);
 static void d_shadow(struct vxpdb_state *);
 
-static int get_options(int *, const char ***);
+static bool get_options(int *, const char ***);
 static void getopt_t(const struct HXoptcb *);
 static void getopt_u(const struct HXoptcb *);
 static void getopt_w(const struct HXoptcb *);
-static int ldif_safe(const char *);
+static bool ldif_safe(const char *);
 static void show_version(const struct HXoptcb *);
 
 /* Variables */
@@ -53,7 +54,7 @@ enum output_type_e Output_type = OUTPUT_SHADOW;
 
 static char *Database    = "*";
 static long Uid_range[2] = {0, LONG_MAX};
-static int Dump_what[4]  = {1, 1, 1, 1};
+static bool Dump_what[4]  = {1, 1, 1, 1};
 static void (*Dump_functions[])(struct vxpdb_state *) = {
 	[OUTPUT_LDIF]   = d_ldif,
 	[OUTPUT_MYSQL]  = d_mysql,
@@ -407,7 +408,7 @@ static void d_shadow(struct vxpdb_state *db)
 }
 
 //-----------------------------------------------------------------------------
-static int get_options(int *argc, const char ***argv)
+static bool get_options(int *argc, const char ***argv)
 {
 	struct HXoption options_table[] = {
 		{.sh = 'M', .type = HXTYPE_STRING, .ptr = &Database,
@@ -467,13 +468,13 @@ static void getopt_w(const struct HXoptcb *cbi)
 
 	while ((p = HX_strsep(&wk, ",")) != NULL) {
 		if (strcmp(p, "passwd") == 0)
-			Dump_what[DUMP_PASSWD] = 1;
+			Dump_what[DUMP_PASSWD] = true;
 		else if (strcmp(p, "shadow") == 0)
-			Dump_what[DUMP_SHADOW] = 1;
+			Dump_what[DUMP_SHADOW] = true;
 		else if (strcmp(p, "vxshadow") == 0)
-			Dump_what[DUMP_VXSHADOW] = 1;
+			Dump_what[DUMP_VXSHADOW] = true;
 		else if (strcmp(p, "group") == 0)
-			Dump_what[DUMP_GROUP] = 1;
+			Dump_what[DUMP_GROUP] = true;
 	}
 
 	free(orig_wk);
@@ -487,17 +488,17 @@ static void getopt_w(const struct HXoptcb *cbi)
  * Returns false if the string @s needs to be BASE-64 encoded to correspond
  * to the LDIF standard. Returns true if it can be used as-is.
  */
-static int ldif_safe(const char *s)
+static bool ldif_safe(const char *s)
 {
 	if (*const_cast(const unsigned char *, s) >= 128 ||
 	    *s == '\n' || *s == '\r' || *s == ' ' || *s == ':' || *s == '<')
-		return 0;
+		return false;
 
 	while (*++s != '\0')
 		if (*const_cast(const unsigned char *, s) >= 128 ||
 		    *s == '\n' || *s == '\r')
-			return 0;
-	return 1;
+			return false;
+	return true;
 }
 
 static void show_version(const struct HXoptcb *cbi)

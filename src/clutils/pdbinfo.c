@@ -7,6 +7,7 @@
  *	Lesser General Public License as published by the Free Software
  *	Foundation; either version 2.1 or 3 of the License.
  */
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,13 +24,13 @@ static void read_ldso_conf(void);
 static void read_ldso_conf1(const char *);
 static void read_environment(void);
 
-static int get_options(int *, const char ***);
+static bool get_options(int *, const char ***);
 static void show_version(const struct HXoptcb *);
 
 /* Variables */
 static struct HXdeque *Dirs = NULL;
 static unsigned int mcount  = 0;
-static int OP_open          = 0;
+static unsigned int OP_open = false;
 
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv)
@@ -197,7 +198,7 @@ static void read_environment(void)
 	return;
 }
 
-static int get_options(int *argc, const char ***argv)
+static bool get_options(int *argc, const char ***argv)
 {
 	struct HXoption options_table[] = {
 		{.sh = 'L', .type = HXTYPE_STRDQ, .ptr = Dirs,

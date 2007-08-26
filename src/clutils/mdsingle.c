@@ -9,6 +9,7 @@
  */
 #include <ctype.h>
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,7 +32,7 @@ struct private_info {
 	char *pvgrp, *surname, *uuid;
 	int interactive, run_master;
 
-	int open_status;
+	bool open_status;
 	struct vxpdb_state *db_handle;
 	struct mdsync_workspace *mdsw;
 };
@@ -43,7 +44,7 @@ static void single_cleanup(struct private_info *);
 static void single_interactive(struct private_info *);
 static int validate_group(const struct vxcq_entry *);
 
-static int get_options(int *, const char ***, struct private_info *);
+static bool get_options(int *, const char ***, struct private_info *);
 static void show_version(const struct HXoptcb *);
 
 //-----------------------------------------------------------------------------
@@ -94,7 +95,7 @@ static int single_init(struct private_info *priv)
 		return 0;
 	}
 
-	priv->open_status = 1;
+	priv->open_status = true;
 
 	if ((priv->mdsw = mdsw = mdsync_init()) == NULL) {
 		perror("Init procedure failed");
@@ -322,7 +323,7 @@ static int validate_group(const struct vxcq_entry *e)
 }
 
 //-----------------------------------------------------------------------------
-static int get_options(int *argc, const char ***argv, struct private_info *p)
+static bool get_options(int *argc, const char ***argv, struct private_info *p)
 {
 	struct HXoption options_table[] = {
 		{.ln = "master", .type = HXTYPE_NONE, .ptr = &p->run_master,

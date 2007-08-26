@@ -8,6 +8,7 @@
  *	Foundation; either version 2.1 or 3 of the License.
  */
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,7 +25,7 @@ struct mdf_priv {
 
 /* Functions */
 static char *rebuild_uuid(const struct mdf_priv *, struct vxpdb_state *);
-static int get_options(int *, const char ***, struct mdf_priv *);
+static bool get_options(int *, const char ***, struct mdf_priv *);
 
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv)
@@ -103,7 +104,7 @@ static char *rebuild_uuid(const struct mdf_priv *p, struct vxpdb_state *db)
 }
 
 //-----------------------------------------------------------------------------
-static int get_options(int *argc, const char ***argv, struct mdf_priv *p)
+static bool get_options(int *argc, const char ***argv, struct mdf_priv *p)
 {
 	struct HXoption options_table[] = {
 		{.sh = 'M', .type = HXTYPE_STRING, .ptr = &p->database,
@@ -119,13 +120,13 @@ static int get_options(int *argc, const char ***argv, struct mdf_priv *p)
 	};
 
 	if (HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) <= 0)
-		return 0;
+		return false;
 	if (p->username == NULL || (p->bday == NULL && p->realname == NULL)) {
 		fprintf(stderr, "You need to specify the -u option and at "
 		        "least one of -b or -r\n");
-		return 0;
+		return false;
 	}
-	return 1;
+	return true;
 }
 
 //=============================================================================

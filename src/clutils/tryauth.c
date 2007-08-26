@@ -7,6 +7,7 @@
  *	Lesser General Public License as published by the Free Software
  *	Foundation; either version 2.1 or 3 of the License.
  */
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <libHX.h>
@@ -14,10 +15,10 @@
 #include <vitalnix/libvxcgi/libvxcgi.h>
 
 /* Functions */
-static int get_options(int *, const char ***);
+static bool get_options(int *, const char ***);
 
 /* Variables */
-static int Verbose = 0;
+static unsigned int Verbose = 0;
 
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv)
@@ -43,7 +44,7 @@ int main(int argc, const char **argv)
 }
 
 //-----------------------------------------------------------------------------
-static int get_options(int *argc, const char ***argv)
+static bool get_options(int *argc, const char ***argv)
 {
 	static const struct HXoption options_table[] = {
 		{.sh = 'v', .type = HXTYPE_NONE, .ptr = &Verbose,

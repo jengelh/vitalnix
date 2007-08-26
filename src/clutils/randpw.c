@@ -7,6 +7,7 @@
  *	Lesser General Public License as published by the Free Software
  *	Foundation; either version 2.1 or 3 of the License.
  */
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <libHX.h>
@@ -14,11 +15,11 @@
 #include <vitalnix/libvxutil/libvxutil.h>
 
 /* Functions */
-static int get_options(int *, const char ***);
+static bool get_options(int *, const char ***);
 static void show_version(const struct HXoptcb *);
 
 /* Variables */
-static int
+static unsigned int
 	Length     = 9,
 	Cr_meth    = CRYPW_BLOWFISH,
 	Gen_meth   = GENPW_ZH,
@@ -50,7 +51,7 @@ int main(int argc, const char **argv)
 	return EXIT_SUCCESS;
 }
 
-static int get_options(int *argc, const char ***argv)
+static bool get_options(int *argc, const char ***argv)
 {
 	static const struct HXoption options_table[] = {
 		{.sh = '0', .type = HXTYPE_VAL,
@@ -82,9 +83,9 @@ static int get_options(int *argc, const char ***argv)
 		{.sh = 'c', .type = HXTYPE_VAL,
 		 .ptr = &With_case, .val = GENPW_O1CASE,
 		 .help = "Possibly have an uppercase character in the password"},
-		{.sh = 'l', .type = HXTYPE_INT, .ptr = &Length,
+		{.sh = 'l', .type = HXTYPE_UINT, .ptr = &Length,
 		 .help = "Password length"},
-		{.sh = 'n', .type = HXTYPE_INT, .ptr = &Num_pw,
+		{.sh = 'n', .type = HXTYPE_UINT, .ptr = &Num_pw,
 		 .help = "Number of passwords to generate"},
 		{.sh = 'r', .type = HXTYPE_VAL, .ptr = &Gen_meth, .val = 0,
 		 .help = "Use \"random\" generation method"},

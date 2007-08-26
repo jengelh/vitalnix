@@ -9,6 +9,7 @@
  */
 #include <ctype.h>
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,32 +30,32 @@
 
 struct private_info {
 	char *db_name, *group_name, *input_file, *input_fmt, *output_file;
-	int debug, no_add, no_update, no_delete, yestoall;
+	unsigned int debug, no_add, no_update, no_delete, yestoall;
 
-	int open_status;
+	bool open_status;
 	struct vxpdb_state *db_handle;
 	struct mdsync_workspace *mdsw;
 	time_t last_print;
 };
 
 /* Functions */
-static int sync_init(struct private_info *);
-static int sync_run(struct private_info *);
-static int sync_add(struct private_info *);
-static int sync_mod(struct private_info *);
-static int sync_del(struct private_info *);
+static bool sync_init(struct private_info *);
+static bool sync_run(struct private_info *);
+static bool sync_add(struct private_info *);
+static bool sync_mod(struct private_info *);
+static bool sync_del(struct private_info *);
 static void sync_cleanup(struct private_info *);
 
-static int ask_continue(const struct private_info *, const char *);
+static bool ask_continue(const struct private_info *, const char *);
 static void cb_report(unsigned int, const struct mdsync_workspace *,
 	unsigned int, unsigned int);
 static void print_compare_input(const struct mdsync_workspace *);
 static void print_compare_output(const struct mdsync_workspace *);
 static void print_compare_output2(const struct mdsync_workspace *);
 
-static int get_options(int *, const char ***, struct private_info *);
+static bool get_options(int *, const char ***, struct private_info *);
 static void show_version(const struct HXoptcb *);
-static int time_limit(time_t *, time_t);
+static bool time_limit(time_t *, time_t);
 
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv)
@@ -74,7 +75,7 @@ int main(int argc, const char **argv)
 	return ret;
 }
 
-static int sync_init(struct private_info *priv)
+static bool sync_init(struct private_info *priv)
 {
 	struct mdsync_workspace *mdsw;
 	int ret;
@@ -82,7 +83,7 @@ static int sync_init(struct private_info *priv)
 	if (priv->group_name == NULL || priv->input_file == NULL ||
 		priv->output_file == NULL) {
 		fprintf(stderr, "-g, -i and -o options are required.\n");
-		return 0;
+		return false;
 	}
 
 	if (strcmp(priv->output_file, "-") == 0)
@@ -90,28 +91,28 @@ static int sync_init(struct private_info *priv)
 
 	if ((priv->db_handle = vxpdb_load(priv->db_name)) == NULL) {
 		perror("Could not load database");
-		return 0;
+		return false;
 	}
 
 	if ((ret = vxpdb_open(priv->db_handle, PDB_WRLOCK)) <= 0) {
 		fprintf(stderr, "Could not open database: %s\n",
 		        strerror(-ret));
-		return 0;
+		return false;
 	}
 
-	priv->open_status = 1;
+	priv->open_status = true;
 	if ((priv->mdsw = mdsw = mdsync_init()) == NULL) {
 		perror("Init procedure failed");
-		return 0;
+		return false;
 	}
 
 	mdsw->database     = priv->db_handle;
 	mdsw->report       = cb_report;
 	mdsw->user_private = priv;
-	return 1;
+	return true;
 }
 
-static int sync_run(struct private_info *priv)
+static bool sync_run(struct private_info *priv)
 {
 	struct mdsync_workspace *mdsw = priv->mdsw;
 	const char *fmt;
@@ -120,30 +121,30 @@ static int sync_run(struct private_info *priv)
 	if ((ret = mdsync_prepare_group(mdsw, priv->group_name)) < 0) {
 		fprintf(stderr, "Error querying database: %s\n",
 		        strerror(-ret));
-		return 0;
+		return false;
 	} else if (ret == 0) {
 		fprintf(stderr, "Group \"%s\" does not exist\n",
 		        priv->group_name);
-		return 0;
+		return false;
 	}
 
 	if ((fmt = priv->input_fmt) == NULL &&
 	    (fmt = vxeds_derivefromname(priv->input_file)) == NULL) {
 		fprintf(stderr, "Could not determine file type of input "
 		        "data source\n");
-		return 0;
+		return false;
 	}
 
 	if ((ret = mdsync_read_file(mdsw, priv->input_file, fmt)) <= 0) {
 		fprintf(stderr, "Error while reading Data Source: %s\n",
 		        strerror(-ret));
-		return 0;
+		return false;
 	}
 
 	if ((ret = mdsync_open_log(mdsw, priv->output_file)) <= 0) {
 		fprintf(stderr, "Error trying to open logfile: %s\n",
 		        strerror(-ret));
-		return 0;
+		return false;
 	}
 
 	if (mdsw->config.add_opts.defaults.vs_defer > 0)
@@ -159,36 +160,36 @@ static int sync_run(struct private_info *priv)
 	mdsync_fixup(mdsw);
 	if (priv->debug) {
 		print_compare_output2(mdsw);
-		return 1;
+		return true;
 	}
 
 	/* Note short-circuiting */
 	return sync_add(priv) && sync_mod(priv) && sync_del(priv);
 }
 
-static int sync_add(struct private_info *priv)
+static bool sync_add(struct private_info *priv)
 {
 	int ret;
 	if (priv->mdsw->add_req->items == 0) {
 		printf("No new users to add.\n");
-		return 1;
+		return true;
 	}
 	if (priv->no_add) {
 		printf("Not adding any users due to request (command-line).\n");
-		return 1;
+		return true;
 	}
 	if (!ask_continue(priv, "Continue with adding users?\n"))
-		return 1;
+		return true;
 	if ((ret = mdsync_add(priv->mdsw)) <= 0) {
 		printf("Add procedure failed: %s\n" NOTICE_REDO,
 		       strerror(-ret));
-		return 0;
+		return false;
 	}
 	printf("Successfully added %u users\n", priv->mdsw->add_req->items);
-	return 1;
+	return true;
 }
 
-static int sync_mod(struct private_info *priv)
+static bool sync_mod(struct private_info *priv)
 {
 	struct mdsync_workspace *mdsw = priv->mdsw;
 	unsigned int total = mdsw->defer_start->items + mdsw->defer_stop->items;
@@ -196,45 +197,45 @@ static int sync_mod(struct private_info *priv)
 
 	if (total == 0) {
 		printf("No deferred deletion timers to adjust.\n");
-		return 1;
+		return true;
 	}
 	if (priv->no_update) {
 		printf("Not modifying deferred deletion timers due to request"
 		       " (command-line).\n");
-		return 1;
+		return true;
 	}
 	if (!ask_continue(priv, "Continue with modifying users?\n"))
-		return 1;
+		return true;
 	if ((ret = mdsync_mod(priv->mdsw)) <= 0) {
 		printf("Modify procedure failred: %s\n" NOTICE_REDO,
 		       strerror(-ret));
-		return 0;
+		return false;
 	}
 	printf("Successfully modified %u timers\n", total);
-	return 1;
+	return true;
 }
 
-static int sync_del(struct private_info *priv)
+static bool sync_del(struct private_info *priv)
 {
 	int ret;
 
 	if (priv->mdsw->delete_now->items == 0) {
 		printf("No old users to delete.\n");
-		return 1;
+		return true;
 	}
 	if (priv->no_delete) {
 		printf("Not deleting any users due to request (command-line).\n");
-		return 1;
+		return true;
 	}
 	if (!ask_continue(priv, "Continue with deleting users?\n"))
-		return 1;
+		return true;
 	if ((ret = mdsync_del(priv->mdsw)) <= 0) {
 		printf("Deletion procedure failed: %s\n" NOTICE_REDO,
 		       strerror(-ret));
-		return 0;
+		return false;
 	}
 	printf("Successfully deleted %u users\n", priv->mdsw->delete_now->items);
-	return 1;
+	return true;
 }
 
 static void sync_cleanup(struct private_info *priv)
@@ -255,19 +256,19 @@ static void sync_cleanup(struct private_info *priv)
 }
 
 //-----------------------------------------------------------------------------
-static int ask_continue(const struct private_info *priv, const char *msg)
+static bool ask_continue(const struct private_info *priv, const char *msg)
 {
 	char buf[4] = {};
 
 	if (priv->yestoall || !isatty(STDIN_FILENO))
-		return 1;
+		return true;
 
 	vxcli_query(msg, NULL, "yes", VXCQ_NONE, buf, sizeof(buf));
 	return tolower(*buf) == 'y';
 }
 
 static void cb_report(unsigned int type, const struct mdsync_workspace *mdsw,
-	unsigned int current, unsigned int max)
+    unsigned int current, unsigned int max)
 {
 	static const char *const fmt[] = {
 		[MDREP_ADD]     = "Add process",
@@ -357,7 +358,7 @@ static void print_compare_output2(const struct mdsync_workspace *mdsw)
 }
 
 //-----------------------------------------------------------------------------
-static int get_options(int *argc, const char ***argv, struct private_info *p)
+static bool get_options(int *argc, const char ***argv, struct private_info *p)
 {
 	struct HXoption options_table[] = {
 		{.sh = 'D', .type = HXTYPE_NONE, .ptr = &p->debug,
@@ -393,13 +394,13 @@ static void show_version(const struct HXoptcb *cbi)
 	exit(EXIT_SUCCESS);
 }
 
-static int time_limit(time_t *last, time_t interval)
+static bool time_limit(time_t *last, time_t interval)
 {
 	time_t now = time(NULL);
 	if (now - *last < interval)
-		return 0;
+		return false;
 	*last = now;
-	return 1;
+	return true;
 }
 
 //=============================================================================

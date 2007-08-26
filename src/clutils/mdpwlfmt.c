@@ -8,6 +8,7 @@
  *	Foundation; either version 2.1 or 3 of the License.
  */
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,13 +18,13 @@
 #include <vitalnix/libvxmdfmt/vtable.h>
 
 /* Functions */
-static int get_options(int *, const char ***, struct pwlfmt_workspace *);
+static bool get_options(int *, const char ***, struct pwlfmt_workspace *);
 static void list_styles(void);
 static int pwlfmt(struct pwlfmt_workspace *);
 static void show_version(const struct HXoptcb *);
 
 /* Variables */
-static int List_styles = 0;
+static unsigned int List_styles = 0;
 
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv)
@@ -103,7 +104,7 @@ static int pwlfmt(struct pwlfmt_workspace *i)
 }
 
 //-----------------------------------------------------------------------------
-static int get_options(int *argc, const char ***argv,
+static bool get_options(int *argc, const char ***argv,
     struct pwlfmt_workspace *i)
 {
 	struct HXoption options_table[] = {
