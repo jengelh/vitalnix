@@ -15,10 +15,8 @@ cn: root
 
 dn: ou=users,dc=site
 objectClass: organizationalUnit
-objectClass: top
 ou: users
 
 dn: ou=groups,dc=site
 objectClass: organizationalUnit
-objectClass: top
 ou: groups
