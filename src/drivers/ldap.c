@@ -40,9 +40,13 @@ static int vldap_init(struct vxpdb_state *vp, const char *config_file)
 {
 	struct ldap_state *state;
 
+	fprintf(stderr, "Vitalnix LDAP support still incomplete.\n");
+
 	if ((state = vp->state = calloc(1, sizeof(struct ldap_state))) == NULL)
 		return -errno;
 
+	state->uid_min      = 1000;
+	state->uid_max      = 60000;
 	state->user_suffix  = "ou=users,dc=site";
 	state->group_suffix = "ou=groups,dc=site";
 
@@ -61,10 +65,9 @@ static int vldap_open(struct vxpdb_state *vp, long flags)
 	ret = LDAP_VERSION3;
 	ldap_set_option(state->conn, LDAP_OPT_PROTOCOL_VERSION, &ret);
 
-	/*
-	
-	ldap_bind_s(ld, pv->binddn, pv->bindpw, LDAP_AUTH_SIMPLE);
-	*/
+	ret = ldap_simple_bind_s(state->conn, "cn=root,dc=site", "secret");
+	if (ret != LDAP_SUCCESS)
+		fprintf(stderr, "Will bind anon\n");
 
 	return 1;
 }
@@ -95,6 +98,11 @@ static hmc_t *dn_user(const struct ldap_state *state, const struct vxpdb_user *r
 	return ret;
 }
 
+static unsigned int find_next_id()
+{
+	
+}
+
 static int vldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 {
 	struct ldap_state *state = vp->state;
@@ -109,11 +117,25 @@ static int vldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 	if ((dn = dn_user(state, rq)) == NULL)
 		return -EINVAL;
 
-	attr[a++] = (LDAPMod){
-		.mod_op     = LDAP_MOD_ADD,
-		.mod_type   = "objectClass",
-		.mod_values = (char *[]){"posixAccount", NULL},
-	};
+	if (rq->pw_uid == PDB_NOGID)
+		s
+
+	if (rq->sp_min != PDB_DFL_KEEPMIN || rq->sp_max != PDB_DFL_KEEPMAX ||
+	    rq->sp_warn != PDB_DFL_WARNAGE || rq->sp_expire != PDB_NO_EXPIRE ||
+	    rq->sp_inact != PDB_NO_INACTIVE)
+		attr[a++] = (LDAPMod){
+			.mod_op     = LDAP_MOD_ADD,
+			.mod_type   = "objectClass",
+			.mod_values = (char *[]){"account", "posixAccount",
+			              "shadowAccount", NULL},
+		};
+	else
+		attr[a++] = (LDAPMod){
+			.mod_op     = LDAP_MOD_ADD,
+			.mod_type   = "objectClass",
+			.mod_values = (char *[]){"account", "posixAccount", NULL},
+		};
+
 	attr[a++] = (LDAPMod){
 		.mod_op     = LDAP_MOD_ADD,
 		.mod_type   = "uid",
@@ -131,12 +153,24 @@ static int vldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 		.mod_type   = "gidNumber",
 		.mod_values = (char *[]){s_pw_gid, NULL},
 	};
-	if (rq->pw_real != NULL)
+	if (rq->pw_real != NULL) {
 		attr[a++] = (LDAPMod){
 			.mod_op     = LDAP_MOD_ADD,
 			.mod_type   = "gecos",
 			.mod_values = (char *[]){rq->pw_real, NULL},
 		};
+		attr[a++] = (LDAPMod){
+			.mod_op     = LDAP_MOD_ADD,
+			.mod_type   = "cn",
+			.mod_values = (char *[]){rq->pw_real, NULL},
+		};
+	} else {
+		attr[a++] = (LDAPMod){
+			.mod_op     = LDAP_MOD_ADD,
+			.mod_type   = "cn",
+			.mod_values = (char *[]){rq->pw_name, NULL},
+		};
+	}
 	attr[a++] = (LDAPMod){
 		.mod_op     = LDAP_MOD_ADD,
 		.mod_type   = "homeDirectory",
@@ -156,14 +190,6 @@ static int vldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 		                         rq->sp_passwd, NULL},
 	};
 
-	if (rq->sp_min != PDB_DFL_KEEPMIN || rq->sp_max != PDB_DFL_KEEPMAX ||
-	    rq->sp_warn != PDB_DFL_WARNAGE || rq->sp_expire != PDB_NO_EXPIRE ||
-	    rq->sp_inact != PDB_NO_INACTIVE)
-		attr[a++] = (LDAPMod){
-			.mod_op     = LDAP_MOD_ADD,
-			.mod_type   = "objectClass",
-			.mod_values = (char *[]){"shadowAccount", NULL},
-		};
 
 	if (rq->sp_min != PDB_DFL_KEEPMIN) {
 		snprintf(s_sp_min, sizeof(s_sp_min), "%lu", rq->sp_min);
@@ -206,13 +232,20 @@ static int vldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 		};
 	}
 
-	for (i = 0; i < a; ++i)
+	fprintf(stderr, "dn: %s\n", dn);
+	for (i = 0; i < a; ++i) {
 		attr_ptrs[i] = &attr[i];
+		int j;
+		for (j = 0; attr[i].mod_values[j] != NULL; ++j)
+			fprintf(stderr, "%s: %s\n", attr[i].mod_type, attr[i].mod_values[j]);
+	}
 	attr_ptrs[i] = NULL;
 
 	ret = ldap_add_ext_s(state->conn, dn, attr_ptrs, NULL, NULL);
-	if (ret != LDAP_SUCCESS)
+	if (ret != LDAP_SUCCESS) {
+		ldap_perror(state->conn, "vldap_useradd");
 		return -(errno = 1600 + ret);
+	}
 
 	return 1;
 }
@@ -220,13 +253,13 @@ static int vldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 static int vldap_usermod(struct vxpdb_state *vp,
     const struct vxpdb_user *sr_mask, const struct vxpdb_user *mod_mask)
 {
-	return 0;
+	return -ENOENT;
 }
 
 static int vldap_userdel(struct vxpdb_state *vp,
     const struct vxpdb_user *sr_mask)
 {
-	return 0;
+	return 1;
 }
 
 static int vldap_userinfo(struct vxpdb_state *vp,
