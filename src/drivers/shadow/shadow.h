@@ -13,6 +13,7 @@
 #ifdef __cplusplus
 #	include <cstdio>
 #else
+#	include <stdbool.h>
 #	include <stdio.h>
 #endif
 
@@ -41,7 +42,7 @@ struct spdb_file {
 	char *path;
 	FILE *fp;
 	int fd;
-	char is_chg;
+	bool is_chg;
 };
 
 struct shadow_state {

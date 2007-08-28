@@ -11,6 +11,7 @@
 #include <sys/types.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <libHX.h>
@@ -172,6 +173,6 @@ static void db_flush_users(struct shadow_state *state)
 		truncate_here(state->fvxshadow.fp);
 	}
 
-	TOUCH_USER_TAG(0);
+	TOUCH_USER_TAG(false);
 	return;
 }

@@ -7,6 +7,7 @@
  *	Lesser General Public License as published by the Free Software
  *	Foundation; either version 2.1 or 3 of the License.
  */
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -72,6 +73,6 @@ void db_flush_groups(struct shadow_state *state)
 	}
 
 	truncate_here(state->fgroup.fp);
-	TOUCH_GROUP_TAG(0);
+	TOUCH_GROUP_TAG(false);
 	return;
 }

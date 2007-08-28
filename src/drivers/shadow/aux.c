@@ -8,6 +8,7 @@
  *	Foundation; either version 2.1 or 3 of the License.
  */
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -46,12 +47,12 @@ long automatic_uid(struct shadow_state *state, long wanted)
 
 	/* No? Then just scan for the next */
 	while (accept <= max) {
-		int used = 0;
+		bool used = false;
 		travp = state->dq_user->first;
 		while (travp != NULL) {
 			const struct vxpdb_user *user = travp->ptr;
 			if (user->pw_uid == accept) {
-				++used;
+				used = 1;
 				break;
 			}
 			travp = travp->next;
@@ -96,12 +97,12 @@ long automatic_gid(struct shadow_state *state, long wanted)
 
 	/* No? Then just scan for the next */
 	while (accept <= max) {
-		int used = 0;
+		bool used = false;
 		travp = state->dq_group->first;
 		while (travp != NULL) {
 			const struct vxpdb_group *group = travp->ptr;
 			if (group->gr_gid == accept) {
-				++used;
+				used = true;
 				break;
 			}
 			travp = travp->next;
