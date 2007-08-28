@@ -119,10 +119,11 @@ static int groupadd_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
 			        " Use -o to override.\n", group_id);
 			return E_GID_USED;
 		}
-	} else if (request_sys) { /* -r flag passed */
-		group_id = vxpdb_modctl(db, PDB_NEXTGID_SYS, db);
-		if (group_id == -ENOSYS)
-			return E_OTHER;
+	} else if (request_sys) {
+		/* -r flag passed */
+		group_id = PDB_AUTOGID_SYS;
+	} else {
+		group_id = PDB_AUTOGID;
 	}
 
 	HXformat_add(ext_catalog, "GROUP", group_name, HXTYPE_STRING);

@@ -305,7 +305,7 @@ static int useradd_run3(struct vxpdb_state *db, struct useradd_state *state,
 	if (user->pw_uid != PDB_NOUID) {
 		/* -u is provided */
 		if (!state->allow_dup &&
-			vxpdb_getpwuid(db, user->pw_uid, NULL) > 0)
+		    vxpdb_getpwuid(db, user->pw_uid, NULL) > 0)
 			/*
 			 * The -o flag (allow creating user with duplicate UID)
 			 * was not passed.
@@ -313,9 +313,9 @@ static int useradd_run3(struct vxpdb_state *db, struct useradd_state *state,
 			return E_UID_USED;
 	} else if (state->sys_uid) {
 		/* -r flag passed */
-		user->pw_uid = vxpdb_modctl(db, PDB_NEXTUID_SYS, db);
-		if (user->pw_uid == -ENOSYS)
-			return E_OTHER;
+		user->pw_uid = PDB_AUTOUID_SYS;
+	} else {
+		user->pw_uid = PDB_AUTOUID;
 	}
 
 	user->sp_lastchg = vxutil_now_iday();
