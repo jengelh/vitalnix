@@ -61,7 +61,7 @@ long automatic_uid(struct shadow_state *state, long wanted)
 			return accept;
 		++accept;
 	}
-	return -ENOENT;
+	return -ENOSPC;
 }
 
 long automatic_gid(struct shadow_state *state, long wanted)
@@ -111,7 +111,7 @@ long automatic_gid(struct shadow_state *state, long wanted)
 			return accept;
 		++accept;
 	}
-	return -ENOENT;
+	return -ENOSPC;
 }
 
 void free_data(struct shadow_state *state)

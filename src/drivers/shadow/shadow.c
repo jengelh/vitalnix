@@ -157,6 +157,7 @@ static int vshadow_useradd(struct vxpdb_state *vp,
 {
 	struct shadow_state *state = vp->state;
 	struct vxpdb_user *nu;
+	long uid;
 
 	if (rq->pw_name == NULL)
 		return -EINVAL;
@@ -164,6 +165,10 @@ static int vshadow_useradd(struct vxpdb_state *vp,
 		return -EEXIST;
 
 	RWLOCK_CHK(state);
+
+	uid = automatic_uid(state, rq->pw_uid);
+	if (uid == -ENOSPC)
+		return -ENOSPC;
 
 	/*
 	 * We have to be careful with strings here, as we need to duplicate
@@ -174,7 +179,7 @@ static int vshadow_useradd(struct vxpdb_state *vp,
 		return -errno;
 
 	nu->pw_name    = HX_strdup(rq->pw_name);
-	nu->pw_uid     = automatic_uid(state, rq->pw_uid);
+	nu->pw_uid     = uid;
 	nu->pw_gid     = rq->pw_gid;
 	nu->pw_real    = HX_strdup(rq->pw_real);
 	nu->pw_home    = HX_strdup(rq->pw_home);
@@ -346,6 +351,7 @@ static int vshadow_groupadd(struct vxpdb_state *vp,
 {
 	struct shadow_state *state = vp->state;
 	struct vxpdb_group *ng;
+	long gid;
 
 	if (rq->gr_name == NULL)
 		return -EINVAL;
@@ -353,11 +359,16 @@ static int vshadow_groupadd(struct vxpdb_state *vp,
 		return -ENOENT;
 
 	RWLOCK_CHK(state);
+
+	gid = automatic_gid(state, rq->gr_gid);
+	if (gid == -ENOSPC)
+		return -ENOSPC;
+
 	if ((ng = calloc(1, sizeof(struct vxpdb_group))) == NULL)
 		return -errno;
 
 	ng->gr_name = HX_strdup(rq->gr_name);
-	ng->gr_gid  = automatic_gid(state, rq->gr_gid);
+	ng->gr_gid  = gid;
 	HXdeque_push(state->dq_group, ng);
 	TOUCH_GROUP_TAG(true);
 	db_flush(state, 0);
