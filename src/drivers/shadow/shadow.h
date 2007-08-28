@@ -10,16 +10,8 @@
 #ifndef VITALNIX_DRIVERS_SHADOW_SHADOW_H
 #define VITALNIX_DRIVERS_SHADOW_SHADOW_H 1
 
-#ifdef __cplusplus
-#	include <cstdio>
-#else
-#	include <stdbool.h>
-#	include <stdio.h>
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <stdbool.h>
+#include <stdio.h>
 
 /*
  *	Definitions
@@ -97,9 +89,5 @@ extern void db_write_shadow(FILE *, const struct vxpdb_user *);
  */
 extern void db_read_vxshadow(const char *, struct HXdeque *);
 extern void db_write_vxshadow(FILE *, const struct vxpdb_user *);
-
-#ifdef __cplusplus
-} /* extern "C" */
-#endif
 
 #endif /* VITALNIX_DRIVERS_SHADOW_SHADOW_H */
