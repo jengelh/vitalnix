@@ -72,7 +72,7 @@ extern void truncate_here(FILE *);
  */
 extern int db_open(struct shadow_state *, unsigned int);
 extern void db_close(struct shadow_state *);
-extern void db_flush(struct shadow_state *, int);
+extern void db_flush(struct shadow_state *, bool);
 
 /*
  *	FSGROUP.C

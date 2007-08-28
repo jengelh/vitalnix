@@ -109,7 +109,7 @@ void db_close(struct shadow_state *state)
 
 	if (state->fpasswd.is_chg | state->fshadow.is_chg |
 		state->fvxshadow.is_chg | state->fgroup.is_chg)
-		db_flush(state, 1);
+		db_flush(state, true);
 
 	close_fpd(fvxshadow);
 	close_fpd(fgroup);
@@ -127,7 +127,7 @@ void db_close(struct shadow_state *state)
  * Flush the in-memory database to disk if required. The files must be open
  * with %O_RDWR when this function is called.
  */
-void db_flush(struct shadow_state *state, int force)
+void db_flush(struct shadow_state *state, bool force)
 {
 	if (!force && !(state->flags & PDB_SYNC))
 		return;

@@ -106,7 +106,7 @@ static long vshadow_modctl(struct vxpdb_state *vp, long command, ...)
 		case PDB_FLUSH:
 			if (!(state->flags & PDB_WRLOCK))
 				return -EPERM;
-			db_flush(state, 1);
+			db_flush(state, true);
 			return 1;
 		case PDB_COUNT_USERS:
 			return state->dq_user->items;
@@ -198,7 +198,7 @@ static int vshadow_useradd(struct vxpdb_state *vp,
 
 	HXdeque_push(state->dq_user, nu);
 	TOUCH_USER_TAG(true);
-	db_flush(state, 0);
+	db_flush(state, false);
 	return 1;
 }
 
@@ -243,7 +243,7 @@ static int vshadow_usermod(struct vxpdb_state *vp,
 	UP_INT(vs_defer);
 
 	TOUCH_USER_TAG(true);
-	db_flush(state, 0);
+	db_flush(state, false);
 	return 1;
 #undef UP_INT
 #undef UP_STR
@@ -266,7 +266,7 @@ static int vshadow_userdel(struct vxpdb_state *vp,
 	HXdeque_del(HXdeque_find(state->dq_user, user));
 	free_single_user(user);
 	TOUCH_USER_TAG(true);
-	db_flush(state, 0);
+	db_flush(state, false);
 	return 1;
 }
 
@@ -371,7 +371,7 @@ static int vshadow_groupadd(struct vxpdb_state *vp,
 	ng->gr_gid  = gid;
 	HXdeque_push(state->dq_group, ng);
 	TOUCH_GROUP_TAG(true);
-	db_flush(state, 0);
+	db_flush(state, false);
 	return 1;
 }
 
@@ -392,7 +392,7 @@ static int vshadow_groupmod(struct vxpdb_state *vp,
 		group->gr_gid = mod_mask->gr_gid;
 
 	TOUCH_GROUP_TAG(true);
-	db_flush(state, 0);
+	db_flush(state, false);
 	return 1;
 }
 
@@ -410,7 +410,7 @@ static int vshadow_groupdel(struct vxpdb_state *vp,
 	HXdeque_del(HXdeque_find(state->dq_group, grp));
 	free_single_group(grp);
 	TOUCH_GROUP_TAG(true);
-	db_flush(state, 0);
+	db_flush(state, false);
 	return 1;
 }
 
