@@ -98,11 +98,6 @@ static hmc_t *dn_user(const struct ldap_state *state, const struct vxpdb_user *r
 	return ret;
 }
 
-static unsigned int find_next_id()
-{
-	
-}
-
 static int vldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 {
 	struct ldap_state *state = vp->state;
@@ -116,9 +111,6 @@ static int vldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 
 	if ((dn = dn_user(state, rq)) == NULL)
 		return -EINVAL;
-
-	if (rq->pw_uid == PDB_NOGID)
-		s
 
 	if (rq->sp_min != PDB_DFL_KEEPMIN || rq->sp_max != PDB_DFL_KEEPMAX ||
 	    rq->sp_warn != PDB_DFL_WARNAGE || rq->sp_expire != PDB_NO_EXPIRE ||
