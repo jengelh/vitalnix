@@ -18,7 +18,6 @@
 #include <vitalnix/config.h>
 #include <vitalnix/libvxpdb/config.h>
 #include <vitalnix/libvxpdb/xafunc.h>
-#include <vitalnix/libvxpdb/xwfunc.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxutil/defines.h>
 #include <vitalnix/libvxutil/libvxutil.h>

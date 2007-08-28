@@ -208,6 +208,12 @@ static int vxmmd_userdel(struct vxpdb_state *vp,
 	return -EROFS;
 }
 
+static int vxmmd_getpwuid(struct vxpdb_state *vp, uid_t uid,
+    struct vxpdb_user *dest)
+{
+	struct multi_state *state = vp->state;
+}
+
 static int vxmmd_userinfo(struct vxpdb_state *vp,
     const struct vxpdb_user *sr_mask, struct vxpdb_user *dest, size_t size)
 {

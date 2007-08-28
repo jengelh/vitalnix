@@ -2,6 +2,7 @@
 #define _VITALNIX_LIBVXPDB_XAFUNC_H 1
 
 #include <sys/types.h>
+#include <vitalnix/compiler.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
 
 #ifdef __cplusplus
@@ -113,6 +114,42 @@ static inline int vxpdb_grouptrav_walk(struct vxpdb_state *state, void *data,
 static inline void vxpdb_grouptrav_free(struct vxpdb_state *state, void *data)
 {
 	return state->vtable->grouptrav_free(state, data);
+}
+
+static inline int vxpdb_getpwnam(struct vxpdb_state *state, const char *user,
+    struct vxpdb_user *result)
+{
+	struct vxpdb_user mask;
+	vxpdb_user_clean(&mask);
+	mask.pw_name = const_cast(char *, user);
+	return vxpdb_userinfo(state, &mask, result, result != NULL);
+}
+
+static inline int vxpdb_getpwuid(struct vxpdb_state *state, long uid,
+    struct vxpdb_user *result)
+{
+	struct vxpdb_user mask;
+	vxpdb_user_clean(&mask);
+	mask.pw_uid = uid;
+	return vxpdb_userinfo(state, &mask, result, result != NULL);
+}
+
+static inline int vxpdb_getgrnam(struct vxpdb_state *state, const char *group,
+    struct vxpdb_group *result)
+{
+	struct vxpdb_group mask;
+	mask.gr_name = const_cast(char *, group);
+	mask.gr_gid  = PDB_NOGID;
+	return vxpdb_groupinfo(state, &mask, result, result != NULL);
+}
+
+static inline int vxpdb_getgrgid(struct vxpdb_state *state, long gid,
+    struct vxpdb_group *result)
+{
+	struct vxpdb_group mask;
+	mask.gr_name = NULL;
+	mask.gr_gid  = gid;
+	return vxpdb_groupinfo(state, &mask, result, result != NULL);
 }
 
 #ifdef __cplusplus
