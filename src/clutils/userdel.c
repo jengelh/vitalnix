@@ -8,6 +8,7 @@
  *	Foundation; either version 2.1 or 3 of the License.
  */
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -37,13 +38,13 @@ struct userdel_state {
 	char *username;
 	struct vxconfig_userdel config;
 	const char *database;
-	int force, rm_cron, rm_home, rm_mail;
+	unsigned int force, rm_cron, rm_home, rm_mail;
 	struct HXbtree *sr_map;
 };
 
 /* Functions */
 static int userdel_fill_defaults(struct userdel_state *);
-static int userdel_get_options(int *, const char ***, struct userdel_state *);
+static bool userdel_get_options(int *, const char ***, struct userdel_state *);
 static void userdel_getopt_predel(const struct HXoptcb *);
 static void userdel_getopt_postdel(const struct HXoptcb *);
 static int userdel_read_config(struct userdel_state *);
@@ -51,7 +52,7 @@ static int userdel_run(struct userdel_state *);
 static int userdel_run2(struct vxpdb_state *, struct userdel_state *);
 static int userdel_run3(struct vxpdb_state *, struct userdel_state *);
 static void userdel_show_version(const struct HXoptcb *);
-static int userdel_slash_count(const char *);
+static unsigned int userdel_slash_count(const char *);
 static const char *userdel_strerror(int);
 
 //-----------------------------------------------------------------------------
@@ -61,7 +62,7 @@ int main(int argc, const char **argv)
 	int ret;
 
 	userdel_fill_defaults(&state);
-	if (userdel_get_options(&argc, &argv, &state) <= 0)
+	if (!userdel_get_options(&argc, &argv, &state))
 		return E_OTHER;
 
 	if (argc < 2) {
@@ -89,7 +90,7 @@ static int userdel_fill_defaults(struct userdel_state *sp)
 	return 1;
 }
 
-static int userdel_get_options(int *argc, const char ***argv,
+static bool userdel_get_options(int *argc, const char ***argv,
     struct userdel_state *state)
 {
 	struct vxconfig_userdel *conf = &state->config;
@@ -116,10 +117,7 @@ static int userdel_get_options(int *argc, const char ***argv,
 		HXOPT_TABLEEND,
 	};
 
-	if (HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) <= 0)
-		return 0;
-
-	return 1;
+	return HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) > 0;
 }
 
 static int userdel_run(struct userdel_state *state)
@@ -273,7 +271,8 @@ static void userdel_show_version(const struct HXoptcb *cbi)
 	return;
 }
 
-static int userdel_slash_count(const char *fn) {
+static unsigned int userdel_slash_count(const char *fn)
+{
 	const char *ptr = fn;
 	int n = 0;
 

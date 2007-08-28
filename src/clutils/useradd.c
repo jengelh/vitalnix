@@ -9,6 +9,7 @@
  */
 #include <sys/stat.h>
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -36,14 +37,14 @@ enum {
 struct useradd_state {
 	struct vxconfig_useradd config;
 	const char *database;
-	int allow_dup, force, sys_uid;
+	unsigned int allow_dup, force, sys_uid;
 	struct HXbtree *sr_map;
 };
 
 /* Functions */
 static int useradd_fill_defaults(struct useradd_state *);
 static char *useradd_genhome(struct useradd_state *);
-static int useradd_get_options(int *, const char ***, struct useradd_state *);
+static bool useradd_get_options(int *, const char ***, struct useradd_state *);
 static void useradd_getopt_expire(const struct HXoptcb *);
 static void useradd_getopt_preadd(const struct HXoptcb *);
 static void useradd_getopt_postadd(const struct HXoptcb *);
@@ -63,7 +64,7 @@ int main(int argc, const char **argv)
 	int ret;
 
 	useradd_fill_defaults(&state);
-	if (useradd_get_options(&argc, &argv, &state) <= 0)
+	if (!useradd_get_options(&argc, &argv, &state))
 		return E_OTHER;
 
 	if (argc > 1) {
@@ -132,7 +133,7 @@ static char *useradd_genhome(struct useradd_state *state)
 		   user->pw_name, conf->split_level));
 }
 
-static int useradd_get_options(int *argc, const char ***argv,
+static bool useradd_get_options(int *argc, const char ***argv,
     struct useradd_state *state)
 {
 	struct vxconfig_useradd *conf = &state->config;
@@ -187,10 +188,10 @@ static int useradd_get_options(int *argc, const char ***argv,
 	};
 
 	if (HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) <= 0)
-		return 0;
+		return false;
 	if (conf->split_level > 2)
 		conf->split_level = 2;
-	return 1;
+	return true;
 }
 
 static int useradd_run(struct useradd_state *state)

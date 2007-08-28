@@ -8,6 +8,7 @@
  *	Foundation; either version 2.1 or 3 of the License.
  */
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <libHX.h>
@@ -36,13 +37,13 @@ struct usermod_state {
 	struct vxpdb_user newstuff;
 	struct vxconfig_usermod config;
 	const char *database;
-	int allow_dup, lock_account, move_home;
+	unsigned int allow_dup, lock_account, move_home;
 	struct HXbtree *sr_map;
 };
 
 /* Functions */
 static int usermod_fill_defaults(struct usermod_state *);
-static int usermod_get_options(int *, const char ***, struct usermod_state *);
+static bool usermod_get_options(int *, const char ***, struct usermod_state *);
 static void usermod_getopt_expire(const struct HXoptcb *);
 static void usermod_getopt_premod(const struct HXoptcb *);
 static void usermod_getopt_postmod(const struct HXoptcb *);
@@ -60,7 +61,7 @@ int main(int argc, const char **argv)
 	int ret;
 
 	usermod_fill_defaults(&state);
-	if (usermod_get_options(&argc, &argv, &state) <= 0)
+	if (!usermod_get_options(&argc, &argv, &state))
 		return E_OTHER;
 
 	if (argc < 2) {
@@ -85,10 +86,10 @@ static int usermod_fill_defaults(struct usermod_state *sp)
 	if ((ret = usermod_read_config(sp)) <= 0)
 		return ret;
 
-	return (ret < 0) ? E_OTHER : 0;
+	return ret;
 }
 
-static int usermod_get_options(int *argc, const char ***argv,
+static bool usermod_get_options(int *argc, const char ***argv,
     struct usermod_state *sp)
 {
 	struct vxconfig_usermod *conf = &sp->config;
@@ -140,15 +141,15 @@ static int usermod_get_options(int *argc, const char ***argv,
 	};
 
 	if (HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) <= 0)
-		return 0;
+		return false;
 
 	if (argv[1] == NULL) {
 		/* loginname is mandatory */
 		fprintf(stderr, "You need to specify a username\n");
-		return 0;
+		return false;
 	}
 
-	return 1;
+	return true;
 }
 
 static int usermod_run(struct usermod_state *state)
