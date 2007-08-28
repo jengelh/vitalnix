@@ -8,6 +8,7 @@
  *	Foundation; either version 2.1 or 3 of the License.
  */
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,16 +39,16 @@ enum {
 /* Functions */
 static int groupdel_main2(struct vxpdb_state *);
 static int groupdel_main3(struct vxpdb_state *, struct HXbtree *);
-static int groupdel_check_pri_group(struct vxpdb_state *, struct vxpdb_group *);
-static int groupdel_get_options(int *, const char ***);
-static int groupdel_read_config(void);
+static bool groupdel_check_pri_group(struct vxpdb_state *, struct vxpdb_group *);
+static bool groupdel_get_options(int *, const char ***);
+static bool groupdel_read_config(void);
 static void groupdel_show_version(const struct HXoptcb *);
 
 /* Variables */
-static int force_deletion = 0;
-static const char *action_before = NULL;
-static const char *action_after  = NULL;
-static const char *database_name = "*";
+static unsigned int force_deletion = false;
+static const char *action_before   = NULL;
+static const char *action_after    = NULL;
+static const char *database_name   = "*";
 static const char *group_name;
 
 //-----------------------------------------------------------------------------
@@ -56,8 +57,7 @@ int main(int argc, const char **argv)
 	struct vxpdb_state *db;
 	int ret;
 
-	if (groupdel_read_config() <= 0 ||
-		groupdel_get_options(&argc, &argv) <= 0)
+	if (!groupdel_read_config() || !groupdel_get_options(&argc, &argv))
 		return E_OTHER;
 
 	if ((db = vxpdb_load(database_name)) == NULL) {
@@ -127,21 +127,21 @@ static int groupdel_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
 }
 
 //-----------------------------------------------------------------------------
-static int groupdel_check_pri_group(struct vxpdb_state *db,
+static bool groupdel_check_pri_group(struct vxpdb_state *db,
     struct vxpdb_group *mm)
 {
 	struct vxpdb_user user;
-	int pg = 0; /* some user has this as primary group */
+	bool pg = false; /* some user has this as primary group */
 	void *travp;
 
 	if ((travp = vxpdb_usertrav_init(db)) == NULL)
-		return 0;
+		return false;
 
 	while (vxpdb_usertrav_walk(db, travp, &user) > 0)
 		if ((user.pw_gid != PDB_NOGID && user.pw_gid == mm->gr_gid) ||
 		    (user.pw_igrp != NULL && mm->gr_name != NULL &&
 		    strcmp(user.pw_igrp, mm->gr_name) == 0)) {
-			pg = 1;
+			pg = true;
 			break;
 		}
 
@@ -149,7 +149,7 @@ static int groupdel_check_pri_group(struct vxpdb_state *db,
 	return pg;
 }
 
-static int groupdel_get_options(int *argc, const char ***argv)
+static bool groupdel_get_options(int *argc, const char ***argv)
 {
 	static const struct HXoption options_table[] = {
 		/* New, Vitalnix-userdel options */
@@ -174,24 +174,24 @@ static int groupdel_get_options(int *argc, const char ***argv)
 	};
 
 	if (HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) <= 0)
-		return 0;
+		return false;
 	if (argv[1] == NULL) {
 		/* Group name is mandatory */
 		fprintf(stderr, "You need to specify a group name.\n");
-		return 0;
+		return false;
 	}
 
-	return 1;
+	return true;
 }
 
-static int groupdel_read_config(void)
+static bool groupdel_read_config(void)
 {
 	static const struct HXoption config_table[] = {
 		{.ln = "GROUP_PREDEL", .type = HXTYPE_STRING, .ptr = &action_before},
 		{.ln = "GROUP_PREDEL", .type = HXTYPE_STRING, .ptr = &action_after},
 		HXOPT_TABLEEND,
 	};
-	return HX_shconfig(CONFIG_SYSCONFDIR "/groupdel.conf", config_table);
+	return HX_shconfig(CONFIG_SYSCONFDIR "/groupdel.conf", config_table) > 0;
 }
 
 static void groupdel_show_version(const struct HXoptcb *cbi)

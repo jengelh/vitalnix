@@ -8,6 +8,7 @@
  *	Foundation; either version 2.1 or 3 of the License.
  */
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,12 +41,12 @@ enum {
 /* Functions */
 static int groupmod_main2(struct vxpdb_state *);
 static int groupmod_main3(struct vxpdb_state *, struct HXbtree *);
-static int groupmod_get_options(int *, const char ***);
-static int groupmod_read_config(void);
+static bool groupmod_get_options(int *, const char ***);
+static bool groupmod_read_config(void);
 static void groupmod_show_version(const struct HXoptcb *);
 
 /* Variables */
-static int allow_dup              = 0;
+static unsigned int allow_dup     = false;
 static const char *new_group_name = NULL;
 static long new_group_id          = PDB_NOGID;
 static const char *action_before  = NULL;
@@ -59,8 +60,7 @@ int main(int argc, const char **argv)
 	struct vxpdb_state *db;
 	int ret;
 
-	if (groupmod_read_config() <= 0 ||
-	    groupmod_get_options(&argc, &argv) <= 0)
+	if (!groupmod_read_config() || !groupmod_get_options(&argc, &argv))
 		return E_OTHER;
 
 	if (new_group_name != NULL && !vxutil_valid_username(new_group_name)) {
@@ -151,7 +151,7 @@ static int groupmod_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
 }
 
 //-----------------------------------------------------------------------------
-static int groupmod_get_options(int *argc, const char ***argv)
+static bool groupmod_get_options(int *argc, const char ***argv)
 {
 	static const struct HXoption options_table[] = {
 		/* New, Vitalnix-groupmod options */
@@ -182,24 +182,24 @@ static int groupmod_get_options(int *argc, const char ***argv)
 	};
 
 	if (HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) <= 0)
-		return 0;
+		return false;
 	if (argv[1] == NULL) {
 		/* Group name is mandatory */
 		fprintf(stderr, "You need to specify a group name\n");
-		return 0;
+		return false;
 	}
 
-	return 1;
+	return true;
 }
 
-static int groupmod_read_config(void)
+static bool groupmod_read_config(void)
 {
 	static const struct HXoption config_table[] = {
 		{.ln = "AC_BEFORE", .type = HXTYPE_STRING, .ptr = &action_before},
 		{.ln = "AC_AFTER",  .type = HXTYPE_STRING, .ptr = &action_after},
 		HXOPT_TABLEEND,
 	};
-	return HX_shconfig(CONFIG_SYSCONFDIR "/groupmod.conf", config_table);
+	return HX_shconfig(CONFIG_SYSCONFDIR "/groupmod.conf", config_table) > 0;
 }
 
 static void groupmod_show_version(const struct HXoptcb *cbi)

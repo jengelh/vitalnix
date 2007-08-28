@@ -8,6 +8,7 @@
  *	Foundation; either version 2.1 or 3 of the License.
  */
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -36,14 +37,14 @@ enum {
 /* Functions */
 static int groupadd_main2(struct vxpdb_state *);
 static int groupadd_main3(struct vxpdb_state *, struct HXbtree *);
-static int groupadd_get_options(int *, const char ***);
-static int groupadd_read_config(void);
+static bool groupadd_get_options(int *, const char ***);
+static bool groupadd_read_config(void);
 static void groupadd_show_version(const struct HXoptcb *);
 
 /* Variables */
-static long group_id   = PDB_NOGID;
-static int allow_dup   = 0;
-static int request_sys = 0;
+static long group_id             = PDB_NOGID;
+static unsigned int allow_dup    = false;
+static unsigned int request_sys  = false;
 static const char *action_before = NULL;
 static const char *action_after  = NULL;
 static const char *database_name = "*";
@@ -55,8 +56,8 @@ int main(int argc, const char **argv)
 	struct vxpdb_state *db;
 	int ret;
 
-	if (groupadd_read_config() <= 0 ||
-	    groupadd_get_options(&argc, &argv) <= 0)
+	if (!groupadd_read_config() ||
+	    !groupadd_get_options(&argc, &argv))
 		return E_OTHER;
 
 	group_name = argv[1];
@@ -147,7 +148,7 @@ static int groupadd_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
 }
 
 //-----------------------------------------------------------------------------
-static int groupadd_get_options(int *argc, const char ***argv)
+static bool groupadd_get_options(int *argc, const char ***argv)
 {
 	static const struct HXoption options_table[] = {
 		/* New, Vitalnix-groupadd options */
@@ -176,24 +177,24 @@ static int groupadd_get_options(int *argc, const char ***argv)
 	};
 
 	if (HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) <= 0)
-		return 0;
+		return false;
 	if (argv[1] == NULL) {
 		/* Group name is mandatory */
 		fprintf(stderr, "Error: Need to specify a group name\n");
-		return 0;
+		return false;
 	}
 
-	return 1;
+	return true;
 }
 
-static int groupadd_read_config(void)
+static bool groupadd_read_config(void)
 {
 	static const struct HXoption config_table[] = {
 		{.ln = "GROUP_PREADD",  .type = HXTYPE_STRING, .ptr = &action_before},
 		{.ln = "GROUP_POSTADD", .type = HXTYPE_STRING, .ptr = &action_after},
 		HXOPT_TABLEEND,
 	};
-	return HX_shconfig(CONFIG_SYSCONFDIR "/groupadd.conf", config_table);
+	return HX_shconfig(CONFIG_SYSCONFDIR "/groupadd.conf", config_table) > 0;
 }
 
 static void groupadd_show_version(const struct HXoptcb *cbi)
