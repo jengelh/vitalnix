@@ -71,7 +71,8 @@ int main(int argc, const char **argv)
 	if ((ret = usermod_run(&state)) != E_SUCCESS)
 		fprintf(stderr, "%s: %s\n", usermod_strerror(ret),
 		        strerror(errno));
-	return ret;
+
+	return (ret < 0) ? E_OTHER : ret;
 }
 
 static int usermod_fill_defaults(struct usermod_state *sp)
@@ -84,7 +85,7 @@ static int usermod_fill_defaults(struct usermod_state *sp)
 	if ((ret = usermod_read_config(sp)) <= 0)
 		return ret;
 
-	return 1;
+	return (ret < 0) ? E_OTHER : 0;
 }
 
 static int usermod_get_options(int *argc, const char ***argv,

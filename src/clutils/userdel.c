@@ -72,7 +72,8 @@ int main(int argc, const char **argv)
 	if ((ret = userdel_run(&state)) != E_SUCCESS)
 		fprintf(stderr, "%s: %s\n", userdel_strerror(ret),
 		    	strerror(errno));
-	return ret;
+
+	return (ret < 0) ? E_OTHER : ret;
 }
 
 static int userdel_fill_defaults(struct userdel_state *sp)

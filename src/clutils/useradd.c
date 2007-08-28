@@ -80,7 +80,8 @@ int main(int argc, const char **argv)
 	if ((ret = useradd_run(&state)) != E_SUCCESS)
 		fprintf(stderr, "%s: %s\n", useradd_strerror(ret),
 		    	strerror(errno));
-	return ret;
+
+	return (ret < 0) ? E_OTHER : ret;
 }
 
 /*
