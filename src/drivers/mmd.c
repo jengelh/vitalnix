@@ -531,7 +531,6 @@ static long vxmmd_autogid(struct vxpdb_state *vp, long wanted)
 static int modules_construct(struct multi_state *state)
 {
 	char **rdmod_list = HX_split(state->rdmod_str, ":", NULL, 0);
-	struct module_handle *wr;
 	char **name = rdmod_list;
 	int ret = 0;
 
@@ -548,14 +547,14 @@ static int modules_construct(struct multi_state *state)
 		++name;
 	}
 
-	wr = &state->wr_mod;
-	wr->mh_name      = state->wrmod_str;
-	wr->mh_state     = STATE_OUT;
-	state->wrmod_str = NULL;
-	if ((wr->mh_instance = vxpdb_load(wr->mh_name)) == NULL) {
+	state->wr_mod.mh_name     = state->wrmod_str;
+	state->wr_mod.mh_state    = STATE_OUT;
+	state->wr_mod.mh_instance = vxpdb_load(state->wr_mod.mh_name);
+	state->wrmod_str          = NULL;
+	if (state->wr_mod.mh_instance == NULL) {
 		ret = 0;
 	} else {
-		wr->mh_state = STATE_LOADED;
+		state->wr_mod.mh_state = STATE_LOADED;
 		ret = 1;
 	}
 
@@ -568,8 +567,13 @@ static int modules_construct(struct multi_state *state)
 
 static int modules_open(struct multi_state *state, long flags)
 {
-	struct HXdeque_node *node = state->rd_mod->first;
-	int ret = 1;
+	struct HXdeque_node *node;
+	int ret;
+
+	ret = vxpdb_open(state->wr_mod.mh_instance, flags);
+	if (ret <= 0)
+		return ret;
+	state->wr_mod.mh_state = STATE_OPEN;
 
 	for (node = state->rd_mod->first; node != NULL; node = node->next) {
 		struct module_handle *mh = node->ptr;

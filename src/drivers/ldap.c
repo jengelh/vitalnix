@@ -65,9 +65,11 @@ static int vldap_open(struct vxpdb_state *vp, long flags)
 	ret = LDAP_VERSION3;
 	ldap_set_option(state->conn, LDAP_OPT_PROTOCOL_VERSION, &ret);
 
-	ret = ldap_simple_bind_s(state->conn, "cn=root,dc=site", "secret");
-	if (ret != LDAP_SUCCESS)
-		fprintf(stderr, "Will bind anon\n");
+	if (flags & PDB_WRLOCK) {
+		ret = ldap_simple_bind_s(state->conn, "cn=root,dc=site", "secret");
+		if (ret != LDAP_SUCCESS)
+			fprintf(stderr, "Simple bind failed; will use anon\n");
+	}
 
 	return 1;
 }
@@ -234,6 +236,8 @@ static int vldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 	attr_ptrs[i] = NULL;
 
 	ret = ldap_add_ext_s(state->conn, dn, attr_ptrs, NULL, NULL);
+
+	hmc_free(dn);
 	if (ret != LDAP_SUCCESS) {
 		ldap_perror(state->conn, "vldap_useradd");
 		return -(errno = 1600 + ret);
@@ -251,6 +255,20 @@ static int vldap_usermod(struct vxpdb_state *vp,
 static int vldap_userdel(struct vxpdb_state *vp,
     const struct vxpdb_user *sr_mask)
 {
+	struct ldap_state *state = vp->state;
+	hmc_t *dn;
+	int ret;
+
+	if ((dn = dn_user(state, sr_mask)) == NULL)
+		return -EINVAL;
+
+	ret = ldap_delete_ext_s(state->conn, dn, NULL, NULL);
+	hmc_free(dn);
+	if (ret != LDAP_SUCCESS) {
+		ldap_perror(state->conn, "vldap_userdel");
+		return -(errno = 1600 + ret);
+	}
+	
 	return 1;
 }
 
