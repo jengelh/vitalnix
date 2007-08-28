@@ -31,12 +31,12 @@ struct ldap_state {
 	long uid_min, uid_max, gid_min, gid_max;
 };
 
-struct ldaptrav {
+struct ldap_trav {
 	LDAPMessage *base, *current;
 };
 
 //-----------------------------------------------------------------------------
-static int vldap_init(struct vxpdb_state *vp, const char *config_file)
+static int vxldap_init(struct vxpdb_state *vp, const char *config_file)
 {
 	struct ldap_state *state;
 
@@ -53,7 +53,7 @@ static int vldap_init(struct vxpdb_state *vp, const char *config_file)
 	return 1;
 }
 
-static int vldap_open(struct vxpdb_state *vp, long flags)
+static int vxldap_open(struct vxpdb_state *vp, long flags)
 {
 	struct ldap_state *state = vp->state;
 	int ret;
@@ -74,14 +74,14 @@ static int vldap_open(struct vxpdb_state *vp, long flags)
 	return 1;
 }
 
-static void vldap_close(struct vxpdb_state *vp)
+static void vxldap_close(struct vxpdb_state *vp)
 {
 	struct ldap_state *state = vp->state;
 	ldap_unbind_ext(state->conn, NULL, NULL);
 	return;
 }
 
-static void vldap_exit(struct vxpdb_state *vp)
+static void vxldap_exit(struct vxpdb_state *vp)
 {
 	struct ldap_state *state = vp->state;
 	free(state);
@@ -100,7 +100,7 @@ static hmc_t *dn_user(const struct ldap_state *state, const struct vxpdb_user *r
 	return ret;
 }
 
-static int vldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
+static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 {
 	struct ldap_state *state = vp->state;
 
@@ -246,13 +246,13 @@ static int vldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 	return 1;
 }
 
-static int vldap_usermod(struct vxpdb_state *vp,
+static int vxldap_usermod(struct vxpdb_state *vp,
     const struct vxpdb_user *sr_mask, const struct vxpdb_user *mod_mask)
 {
 	return -ENOENT;
 }
 
-static int vldap_userdel(struct vxpdb_state *vp,
+static int vxldap_userdel(struct vxpdb_state *vp,
     const struct vxpdb_user *sr_mask)
 {
 	struct ldap_state *state = vp->state;
@@ -272,16 +272,10 @@ static int vldap_userdel(struct vxpdb_state *vp,
 	return 1;
 }
 
-static int vldap_userinfo(struct vxpdb_state *vp,
-    const struct vxpdb_user *sr_mask, struct vxpdb_user *dest, size_t size)
-{
-	return 0;
-}
-
-static void *vldap_usertrav_init(struct vxpdb_state *vp)
+static void *vxldap_usertrav_init(struct vxpdb_state *vp)
 {
 	struct ldap_state *state = vp->state;
-	struct ldaptrav trav;
+	struct ldap_trav trav;
 	int ret;
 
 	ret = ldap_search_ext_s(state->conn, NULL, LDAP_SCOPE_SUBTREE,
@@ -296,11 +290,11 @@ static void *vldap_usertrav_init(struct vxpdb_state *vp)
 	return HX_memdup(&trav, sizeof(trav));
 }
 
-static int vldap_usertrav_walk(struct vxpdb_state *vp, void *ptr,
+static int vxldap_usertrav_walk(struct vxpdb_state *vp, void *ptr,
     struct vxpdb_user *dest)
 {
-	struct ldap_state *state  = vp->state;
-	struct ldaptrav *trav = ptr;
+	struct ldap_state *state = vp->state;
+	struct ldap_trav *trav   = ptr;
 	BerElement *ber;
 	char *attr;
 
@@ -375,9 +369,9 @@ static int vldap_usertrav_walk(struct vxpdb_state *vp, void *ptr,
 	return 1;
 }
 
-static void vldap_usertrav_free(struct vxpdb_state *vp, void *ptr)
+static void vxldap_usertrav_free(struct vxpdb_state *vp, void *ptr)
 {
-	struct ldaptrav *trav = ptr;
+	struct ldap_trav *trav = ptr;
 	ldap_msgfree(trav->base);
 	free(trav);
 	return;
@@ -394,7 +388,7 @@ static hmc_t *dn_group(const struct ldap_state *state, const struct vxpdb_group 
 	return ret;
 }
 
-static int vldap_groupadd(struct vxpdb_state *vp,
+static int vxldap_groupadd(struct vxpdb_state *vp,
     const struct vxpdb_group *rq)
 {
 	struct ldap_state *state = vp->state;
@@ -412,13 +406,13 @@ static int vldap_groupadd(struct vxpdb_state *vp,
 	return 0;
 }
 
-static int vldap_groupmod(struct vxpdb_state *vp,
+static int vxldap_groupmod(struct vxpdb_state *vp,
     const struct vxpdb_group *sr_mask, const struct vxpdb_group *mod_mask)
 {
 	return 0;
 }
 
-static int vldap_groupdel(struct vxpdb_state *vp,
+static int vxldap_groupdel(struct vxpdb_state *vp,
     const struct vxpdb_group *sr_mask)
 {
 	struct ldap_state *state = vp->state;
@@ -436,20 +430,10 @@ static int vldap_groupdel(struct vxpdb_state *vp,
 	return 1;
 }
 
-static int vldap_groupinfo(struct vxpdb_state *vp,
-    const struct vxpdb_group *sr_mask, struct vxpdb_group *dest, size_t size)
-{
-	struct vxpdb_state *state = vp->state;
-	hmc_t *dn;
-
-	dn  = dn_group(state, sr_mask);
-	return 0;
-}
-
-static void *vldap_grouptrav_init(struct vxpdb_state *vp)
+static void *vxldap_grouptrav_init(struct vxpdb_state *vp)
 {
 	struct ldap_state *state = vp->state;
-	struct ldaptrav trav;
+	struct ldap_trav trav;
 	int ret;
 
 	ret = ldap_search_ext_s(state->conn, NULL, LDAP_SCOPE_SUBTREE,
@@ -464,11 +448,11 @@ static void *vldap_grouptrav_init(struct vxpdb_state *vp)
 	return HX_memdup(&trav, sizeof(trav));
 }
 
-static int vldap_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
+static int vxldap_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
     struct vxpdb_group *dest)
 {
 	struct ldap_state *state = vp->state;
-	struct ldaptrav *trav    = ptr;
+	struct ldap_trav *trav   = ptr;
 	BerElement *ber;
 	char *attr;
 
@@ -503,19 +487,32 @@ static int vldap_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
 	return 1;
 }
 
-static void vldap_grouptrav_free(struct vxpdb_state *vp, void *ptr)
+static void vxldap_grouptrav_free(struct vxpdb_state *vp, void *ptr)
 {
-	struct ldaptrav *trav = ptr;
+	struct ldap_trav *trav = ptr;
 	ldap_msgfree(trav->base);
 	free(trav);
 	return;
 }
 
 static struct vxpdb_driver THIS_MODULE = {
-	.name = "LDAP back-end module",
-	DRIVER_CB_BASE1(vldap),
-	DRIVER_CB_USER(vldap),
-	DRIVER_CB_GROUP(vldap),
+	.name           = "LDAP back-end module",
+	.init           = vxldap_init,
+	.open           = vxldap_open,
+	.close          = vxldap_close,
+	.exit           = vxldap_exit,
+	.useradd        = vxldap_useradd,
+	.usermod        = vxldap_usermod,
+	.userdel        = vxldap_userdel,
+	.usertrav_init  = vxldap_usertrav_init,
+	.usertrav_walk  = vxldap_usertrav_walk,
+	.usertrav_free  = vxldap_usertrav_free,
+	.groupadd       = vxldap_groupadd,
+	.groupmod       = vxldap_groupmod,
+	.groupdel       = vxldap_groupdel,
+	.grouptrav_init = vxldap_grouptrav_init,
+	.grouptrav_walk = vxldap_grouptrav_walk,
+	.grouptrav_free = vxldap_grouptrav_free,
 };
 
 REGISTER_MODULE(ldap, &THIS_MODULE);
