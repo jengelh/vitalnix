@@ -76,7 +76,7 @@ static void parse_group(const struct HXoptcb *info)
 {
 	struct vxpdb_user *user = info->current->uptr;
 	if (vxutil_only_digits(info->data))
-		user->pw_gid = strtol(info->data, NULL, 0);
+		user->pw_gid = strtoul(info->data, NULL, 0);
 	else
 		user->pw_igrp = HX_strdup(info->data);
 	/* FIXME: complete this */
