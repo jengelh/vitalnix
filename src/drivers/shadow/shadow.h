@@ -70,7 +70,7 @@ extern void truncate_here(FILE *);
 /*
  *	DBOPS.C
  */
-extern int db_open(struct shadow_state *, int);
+extern int db_open(struct shadow_state *, unsigned int);
 extern void db_close(struct shadow_state *);
 extern void db_flush(struct shadow_state *, int);
 

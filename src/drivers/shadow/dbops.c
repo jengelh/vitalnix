@@ -30,7 +30,7 @@ static void db_flush_users(struct shadow_state *);
  */
 
 //-----------------------------------------------------------------------------
-int db_open(struct shadow_state *state, int flags)
+int db_open(struct shadow_state *state, unsigned int flags)
 {
 #define open_fd(n) ((state->n.fd = open(state->n.path, flags)) >= 0)
 #define open_fp(n) ((state->n.fp = fdopen(state->n.fd, fpmode)) != NULL)
