@@ -40,7 +40,7 @@ long automatic_uid(struct shadow_state *state, long wanted)
 		travp = travp->next;
 	}
 
-	/* If the successor id is free, take it. */
+	/* If the successor id is not outside the boundaries, take it. */
 	if (high >= 0 && high < max)
 		return high + 1;
 
