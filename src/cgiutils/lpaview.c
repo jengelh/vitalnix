@@ -44,7 +44,7 @@ int main(int argc, const char **argv)
 		form(user);
 	else if (!vxutil_valid_username(user))
 		printf("%s", Wrong_auth);
-	else if (vxcgi_authenticate(user, pw))
+	else if (vxcgi_authenticate(user, pw, NULL))
 		do_lpaview(user, data);
 	else
 		printf("%s", Wrong_auth);

@@ -26,7 +26,8 @@ static int vxcgi_conv(int, const struct pam_message **,
 	struct pam_response **, void *);
 
 //-----------------------------------------------------------------------------
-EXPORT_SYMBOL int vxcgi_authenticate(const char *user, const char *password)
+EXPORT_SYMBOL int vxcgi_authenticate(const char *user,
+    const char *password, const char *module)
 {
 	const struct pam_conv conv = {
 		.conv        = vxcgi_conv,
@@ -35,7 +36,10 @@ EXPORT_SYMBOL int vxcgi_authenticate(const char *user, const char *password)
 	pam_handle_t *ph;
 	int ret;
 
-	if ((ret = pam_start("passwd", user, &conv, &ph)) != PAM_SUCCESS)
+	if (module == NULL)
+		module = "login";
+
+	if ((ret = pam_start(module, user, &conv, &ph)) != PAM_SUCCESS)
 		return (ret < 0) ? ret : -ret;
 
 	ret = pam_authenticate(ph, 0);

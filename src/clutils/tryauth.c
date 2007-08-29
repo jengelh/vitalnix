@@ -33,7 +33,7 @@ int main(int argc, const char **argv)
 	HX_getl(&pass, stdin);
 	HX_chomp(user);
 	HX_chomp(pass);
-	ret = vxcgi_authenticate(user, pass);
+	ret = vxcgi_authenticate(user, pass, NULL);
 	hmc_free(user);
 	hmc_free(pass);
 
