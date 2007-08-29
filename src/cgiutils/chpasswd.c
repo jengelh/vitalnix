@@ -49,7 +49,7 @@ int main(int argc, const char **argv)
 		} else if (strcmp(newpw, newpw2) != 0) {
 			printf("<p class=\"red\"><b>Passwords do not "
 			       "match!</b></p>");
-		} else if (!vxcgi_authenticate(user, oldpw, NULL)) {
+		} else if (vxcgi_authenticate(user, oldpw, NULL) <= 0) {
 			printf("<p class=\"red\"><b>Username and/or password "
 			       "invalid!</b></p>");
 		} else if (!change_password(user, newpw)) {

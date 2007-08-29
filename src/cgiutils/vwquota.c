@@ -40,7 +40,7 @@ int main(int argc, const char **argv)
 		form(user);
 	else if (!vxutil_valid_username(user))
 		printf("%s", Wrong_auth);
-	else if (vxcgi_authenticate(user, pw, NULL))
+	else if (vxcgi_authenticate(user, pw, NULL) > 0)
 		do_quota(user);
 	else
 		printf("%s", Wrong_auth);
