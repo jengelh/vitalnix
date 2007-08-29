@@ -41,6 +41,17 @@ struct multi_state {
 	long uid_min, uid_max, gid_min, gid_max;
 };
 
+/*
+ * @rd_mod:	current RD module that is traversed
+ * @wr_mod:	true if the WD module is to be traversed (changes)
+ * @itrav:	traverser for current read module
+ */
+struct vxmmd_trav {
+	void *itrav;
+	struct HXdeque_node *rd_mod;
+	bool wr_mod;
+};
+
 /* Functions */
 static void *vxmmd_usertrav_init(struct vxpdb_state *);
 static int vxmmd_usertrav_walk(struct vxpdb_state *, void *, struct vxpdb_user *);
@@ -208,59 +219,55 @@ static int vxmmd_userdel(struct vxpdb_state *vp,
 	return -EROFS;
 }
 
-static int vxmmd_getpwuid(struct vxpdb_state *vp, uid_t uid,
+static int vxmmd_getpwuid(struct vxpdb_state *vp, long uid,
     struct vxpdb_user *dest)
 {
+	const struct HXdeque_node *rd_node;
 	const struct multi_state *state = vp->state;
-}
+	int ret;
 
-static int vxmmd_userinfo(struct vxpdb_state *vp,
-    const struct vxpdb_user *sr_mask, struct vxpdb_user *dest, size_t size)
-{
-/*
-	struct shadow_state *state = vp->state;
-	const struct HXdeque_node *travp = state->dq_user->first;
-	struct vxpdb_user temp_mask;
-	int found = 0;
-
-	if (mask == result) {
-		memcpy(&temp_mask, mask, sizeof(struct vxpdb_user));
-		mask = &temp_mask;
+	if (WR_OPEN(state)) {
+		ret = vxpdb_getpwuid(WR_MOD(state), uid, dest);
+		if (ret > 0)
+			return ret;
 	}
 
-	for (travp = state->dq_user->first; travp != NULL &&
-	    (dest == NULL || size > 0); travp = travp->Next)
+	for (rd_node = state->rd_mod->first; rd_node != NULL;
+	    rd_node = rd_node->next)
 	{
-		const struct vxpdb_user *src = travp->ptr;
-		if (!vxpdb_user_match(src, mask))
-			continue;
-		if (result != NULL) {
-			vxpdb_user_copy(result, src);
-			++result;
-			++found;
-			--size;
-		} else {
-			if (size == 0)
-				return 1;
-			++found;
-		}
+		const struct module_handle *mh = rd_node->ptr;
+		ret = vxpdb_getpwuid(mh->mh_instance, uid, dest);
+		if (ret > 0)
+			return ret;
 	}
 
-	return found;
-	*/
 	return 0;
 }
 
-/*
- * @rd_mod:	current RD module that is traversed
- * @wr_mod:	true if the WD module is to be traversed (changes)
- * @itrav:	traverser for current read module
- */
-struct vxmmd_trav {
-	void *itrav;
-	struct HXdeque_node *rd_mod;
-	bool wr_mod;
-};
+static int vxmmd_getpwnam(struct vxpdb_state *vp, const char *user,
+    struct vxpdb_user *dest)
+{
+	const struct HXdeque_node *rd_node;
+	const struct multi_state *state = vp->state;
+	int ret;
+
+	if (WR_OPEN(state)) {
+		ret = vxpdb_getpwnam(WR_MOD(state), user, dest);
+		if (ret > 0)
+			return ret;
+	}
+
+	for (rd_node = state->rd_mod->first; rd_node != NULL;
+	    rd_node = rd_node->next)
+	{
+		const struct module_handle *mh = rd_node->ptr;
+		ret = vxpdb_getpwnam(mh->mh_instance, user, dest);
+		if (ret > 0)
+			return ret;
+	}
+
+	return 0;
+}
 
 static void *vxmmd_usertrav_init(struct vxpdb_state *vp)
 {
@@ -360,6 +367,56 @@ static int vxmmd_groupdel(struct vxpdb_state *vp,
 	return -EROFS;
 }
 
+static int vxmmd_getgrgid(struct vxpdb_state *vp, long gid,
+    struct vxpdb_group *dest)
+{
+	const struct HXdeque_node *rd_node;
+	const struct multi_state *state = vp->state;
+	int ret;
+
+	if (WR_OPEN(state)) {
+		ret = vxpdb_getgrgid(WR_MOD(state), gid, dest);
+		if (ret > 0)
+			return ret;
+	}
+
+	for (rd_node = state->rd_mod->first; rd_node != NULL;
+	    rd_node = rd_node->next)
+	{
+		const struct module_handle *mh = rd_node->ptr;
+		ret = vxpdb_getgrgid(mh->mh_instance, gid, dest);
+		if (ret > 0)
+			return ret;
+	}
+
+	return 0;
+}
+
+static int vxmmd_getgrnam(struct vxpdb_state *vp, const char *group,
+    struct vxpdb_group *dest)
+{
+	const struct HXdeque_node *rd_node;
+	const struct multi_state *state = vp->state;
+	int ret;
+
+	if (WR_OPEN(state)) {
+		ret = vxpdb_getgrnam(WR_MOD(state), group, dest);
+		if (ret > 0)
+			return ret;
+	}
+
+	for (rd_node = state->rd_mod->first; rd_node != NULL;
+	    rd_node = rd_node->next)
+	{
+		const struct module_handle *mh = rd_node->ptr;
+		ret = vxpdb_getgrnam(mh->mh_instance, group, dest);
+		if (ret > 0)
+			return ret;
+	}
+
+	return 0;
+}
+
 static void *vxmmd_grouptrav_init(struct vxpdb_state *vp)
 {
 	const struct multi_state *state = vp->state;
@@ -414,12 +471,6 @@ static void vxmmd_grouptrav_free(struct vxpdb_state *vp, void *ptr)
 {
 	free(ptr);
 	return;
-}
-
-static int vxmmd_groupinfo(struct vxpdb_state *vp,
-    const struct vxpdb_group *sr_mask, struct vxpdb_group *dest, size_t size)
-{
-	return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -657,8 +708,31 @@ static void read_config(struct multi_state *state, const char *file)
 }
 
 static struct vxpdb_driver THIS_MODULE = {
-	.name   = "Multiple Module driver",
-	DRIVER_CB_ALL(vxmmd),
+	.name           = "Multiple Module driver",
+	.desc           = "Logically combines databases",
+	.init           = vxmmd_init,
+	.open           = vxmmd_open,
+	.close          = vxmmd_close,
+	.exit           = vxmmd_exit,
+	.modctl         = vxmmd_modctl,
+	.lock           = vxmmd_lock,
+	.unlock         = vxmmd_unlock,
+	.useradd        = vxmmd_useradd,
+	.usermod        = vxmmd_usermod,
+	.userdel        = vxmmd_userdel,
+	.getpwuid       = vxmmd_getpwuid,
+	.getpwnam       = vxmmd_getpwnam,
+	.usertrav_init  = vxmmd_usertrav_init,
+	.usertrav_walk  = vxmmd_usertrav_walk,
+	.usertrav_free  = vxmmd_usertrav_free,
+	.groupadd       = vxmmd_groupadd,
+	.groupmod       = vxmmd_groupmod,
+	.groupdel       = vxmmd_groupdel,
+	.getgrgid       = vxmmd_getgrgid,
+	.getgrnam       = vxmmd_getgrnam,
+	.grouptrav_init = vxmmd_grouptrav_init,
+	.grouptrav_walk = vxmmd_grouptrav_walk,
+	.grouptrav_free = vxmmd_grouptrav_free,
 };
 
 REGISTER_MODULE(mmd, &THIS_MODULE);

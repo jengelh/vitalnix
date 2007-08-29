@@ -88,7 +88,8 @@ static void vxldap_exit(struct vxpdb_state *vp)
 	return;
 }
 
-static hmc_t *dn_user(const struct ldap_state *state, const struct vxpdb_user *rq)
+static hmc_t *dn_user(const struct ldap_state *state,
+    const struct vxpdb_user *rq)
 {
 	hmc_t *ret;
 	if (rq->pw_name == NULL)
@@ -228,8 +229,8 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 
 	fprintf(stderr, "dn: %s\n", dn);
 	for (i = 0; i < a; ++i) {
-		attr_ptrs[i] = &attr[i];
 		int j;
+		attr_ptrs[i] = &attr[i];
 		for (j = 0; attr[i].mod_values[j] != NULL; ++j)
 			fprintf(stderr, "%s: %s\n", attr[i].mod_type, attr[i].mod_values[j]);
 	}
@@ -238,10 +239,8 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 	ret = ldap_add_ext_s(state->conn, dn, attr_ptrs, NULL, NULL);
 
 	hmc_free(dn);
-	if (ret != LDAP_SUCCESS) {
-		ldap_perror(state->conn, "vldap_useradd");
+	if (ret != LDAP_SUCCESS)
 		return -(errno = 1600 + ret);
-	}
 
 	return 1;
 }
@@ -272,34 +271,11 @@ static int vxldap_userdel(struct vxpdb_state *vp,
 	return 1;
 }
 
-static void *vxldap_usertrav_init(struct vxpdb_state *vp)
+static void vxldap_copy_user(struct vxpdb_user *dest, LDAP *conn,
+    LDAPMessage *entry)
 {
-	struct ldap_state *state = vp->state;
-	struct ldap_trav trav;
-	int ret;
-
-	ret = ldap_search_ext_s(state->conn, NULL, LDAP_SCOPE_SUBTREE,
-	      "(objectClass=posixAccount)", NULL, 0, NULL, NULL,
-	      NULL, 0, &trav.base);
-	if (ret != LDAP_SUCCESS) {
-		errno = 1600 + ret;
-		return NULL;
-	}
-
-	trav.current = ldap_first_entry(state->conn, trav.base);
-	return HX_memdup(&trav, sizeof(trav));
-}
-
-static int vxldap_usertrav_walk(struct vxpdb_state *vp, void *ptr,
-    struct vxpdb_user *dest)
-{
-	struct ldap_state *state = vp->state;
-	struct ldap_trav *trav   = ptr;
 	BerElement *ber;
 	char *attr;
-
-	if (trav->current == NULL)
-		return 0;
 
 	hmc_strasg(&dest->pw_name, NULL);
 	dest->pw_uid     = PDB_NOUID;
@@ -316,13 +292,12 @@ static int vxldap_usertrav_walk(struct vxpdb_state *vp, void *ptr,
 	dest->sp_expire  = PDB_NO_EXPIRE;
 	dest->sp_inact   = PDB_NO_INACTIVE;
 
-	for (attr = ldap_first_attribute(state->conn, trav->current, &ber);
-	    attr != NULL;
-	    attr = ldap_next_attribute(state->conn, trav->current, ber))
+	for (attr = ldap_first_attribute(conn, entry, &ber); attr != NULL;
+	    attr = ldap_next_attribute(conn, entry, ber))
 	{
 		char **val;
 		
-		val = ldap_get_values(state->conn, trav->current, attr);
+		val = ldap_get_values(conn, entry, attr);
 		if (val == NULL)
 			continue;
 		if (*val == NULL) {
@@ -364,7 +339,77 @@ static int vxldap_usertrav_walk(struct vxpdb_state *vp, void *ptr,
 		ldap_value_free(val);
 		ldap_memfree(attr);
 	}
+	return;
+}
 
+static int vxldap_getpwx(struct ldap_state *state, const char *filter,
+    struct vxpdb_user *dest)
+{
+	LDAPMessage *result;
+	int ret;
+
+	ret = ldap_search_ext_s(state->conn, state->user_suffix,
+	      LDAP_SCOPE_SUBTREE, filter, NULL, false,
+	      NULL, NULL, NULL, 1, &result);
+	if (ret != LDAP_SUCCESS || result == NULL)
+		return -(errno = 1600 + ret);
+
+	vxldap_copy_user(dest, state->conn, result);
+	ldap_msgfree(result);
+	return 1;
+}
+
+static int vxldap_getpwuid(struct vxpdb_state *vp, long uid,
+    struct vxpdb_user *dest)
+{
+	char filter[48+Z_32];
+	snprintf(filter, sizeof(filter),
+	         "(&(objectClass=posixAccount)(uidNumber=%lu))", uid);
+	return vxldap_getpwx(vp->state, filter, dest);
+}
+
+static int vxldap_getpwnam(struct vxpdb_state *vp, const char *user,
+    struct vxpdb_user *dest)
+{
+	hmc_t *filter;
+	int ret;
+
+	filter = hmc_sinit("(&(objectClass=posixAccount)(uid=" /* )) */);
+	hmc_strcat(&filter, user);
+	hmc_strcat(&filter, /* (( */ "))");
+	ret = vxldap_getpwx(vp->state, filter, dest);
+	hmc_free(filter);
+	return ret;
+}
+
+static void *vxldap_usertrav_init(struct vxpdb_state *vp)
+{
+	struct ldap_state *state = vp->state;
+	struct ldap_trav trav;
+	int ret;
+
+	ret = ldap_search_ext_s(state->conn, NULL, LDAP_SCOPE_SUBTREE,
+	      "(objectClass=posixAccount)", NULL, 0, NULL, NULL,
+	      NULL, 0, &trav.base);
+	if (ret != LDAP_SUCCESS) {
+		errno = 1600 + ret;
+		return NULL;
+	}
+
+	trav.current = ldap_first_entry(state->conn, trav.base);
+	return HX_memdup(&trav, sizeof(trav));
+}
+
+static int vxldap_usertrav_walk(struct vxpdb_state *vp, void *ptr,
+    struct vxpdb_user *dest)
+{
+	struct ldap_state *state = vp->state;
+	struct ldap_trav *trav   = ptr;
+
+	if (trav->current == NULL)
+		return 0;
+
+	vxldap_copy_user(dest, state->conn, trav->current);
 	trav->current = ldap_next_entry(state->conn, trav->current);
 	return 1;
 }
@@ -377,7 +422,8 @@ static void vxldap_usertrav_free(struct vxpdb_state *vp, void *ptr)
 	return;
 }
 
-static hmc_t *dn_group(const struct ldap_state *state, const struct vxpdb_group *group)
+static hmc_t *dn_group(const struct ldap_state *state,
+    const struct vxpdb_group *group)
 {
 	hmc_t *ret = hmc_sinit("cn=");
 	if (group->gr_name == NULL)
@@ -401,7 +447,7 @@ static int vxldap_groupadd(struct vxpdb_state *vp,
 
 	ret = ldap_add_ext_s(state->conn, dn, attr_ptrs, NULL, NULL);
 	if (ret != LDAP_SUCCESS)
-		return 1600 + ret;
+		return -(errno = 1600 + ret);
 
 	return 0;
 }
@@ -423,11 +469,81 @@ static int vxldap_groupdel(struct vxpdb_state *vp,
 	ret = ldap_delete_ext_s(state->conn, dn, NULL, NULL);
 	if (ret != LDAP_SUCCESS) {
 		hmc_free(dn);
-		errno = 1600 + ret;
-		return -errno;
+		return -(errno = 1600 + ret);
 	}
 	hmc_free(dn);
 	return 1;
+}
+
+static void vxldap_copy_group(struct vxpdb_group *dest, LDAP *conn,
+    LDAPMessage *entry)
+{
+	BerElement *ber;
+	char *attr;
+
+	hmc_strasg(&dest->gr_name, NULL);
+	dest->gr_gid = PDB_NOGID;
+
+	for (attr = ldap_first_attribute(conn, entry, &ber); attr != NULL;
+	    attr = ldap_next_attribute(conn, entry, ber))
+	{
+		char **val;
+
+		val = ldap_get_values(conn, entry, attr);
+		if (val == NULL)
+			continue;
+		if (*val == NULL) {
+			ldap_value_free(val);
+			continue;
+		}
+		if (strcmp(attr, "gidNumber") == 0)
+			dest->gr_gid = strtol(*val, NULL, 0);
+		else if (strcmp(attr, "cn") == 0)
+			hmc_strasg(&dest->gr_name, *val);
+		ldap_value_free(val);
+		ldap_memfree(attr);
+	}
+	return;
+}
+
+static int vxldap_getgrx(struct ldap_state *state, const char *filter,
+    struct vxpdb_group *dest)
+{
+	LDAPMessage *result;
+	int ret;
+
+	ret = ldap_search_ext_s(state->conn, state->group_suffix,
+	      LDAP_SCOPE_SUBTREE, filter, NULL, false,
+	      NULL, NULL, NULL, 1, &result);
+	if (ret != LDAP_SUCCESS || result == NULL)
+		return -(errno = 1600 + ret);
+
+	vxldap_copy_group(dest, state->conn, result);
+	ldap_msgfree(result);
+	return 1;
+}
+
+static int vxldap_getgrgid(struct vxpdb_state *vp, long gid,
+    struct vxpdb_group *dest)
+{
+	char filter[48+Z_32];
+	snprintf(filter, sizeof(filter),
+	         "(&(objectClass=posixGroup)(gidNumber=%lu))", gid);
+	return vxldap_getgrx(vp->state, filter, dest);
+}
+
+static int vxldap_getgrnam(struct vxpdb_state *vp, const char *user,
+    struct vxpdb_group *dest)
+{
+	hmc_t *filter;
+	int ret;
+
+	filter = hmc_sinit("(&(objectClass=posixGroup)(cn=" /* )) */);
+	hmc_strcat(&filter, user);
+	hmc_strcat(&filter, /* (( */ "))");
+	ret = vxldap_getgrx(vp->state, filter, dest);
+	hmc_free(filter);
+	return ret;
 }
 
 static void *vxldap_grouptrav_init(struct vxpdb_state *vp)
@@ -453,36 +569,11 @@ static int vxldap_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
 {
 	struct ldap_state *state = vp->state;
 	struct ldap_trav *trav   = ptr;
-	BerElement *ber;
-	char *attr;
 
 	if (trav->current == NULL)
 		return 0;
 
-	hmc_strasg(&dest->gr_name, NULL);
-	dest->gr_gid = PDB_NOGID;
-
-	for (attr = ldap_first_attribute(state->conn, trav->current, &ber);
-	    attr != NULL;
-	    attr = ldap_next_attribute(state->conn, trav->current, ber))
-	{
-		char **val;
-
-		val = ldap_get_values(state->conn, trav->current, attr);
-		if (val == NULL)
-			continue;
-		if (*val == NULL) {
-			ldap_value_free(val);
-			continue;
-		}
-		if (strcmp(attr, "gidNumber") == 0)
-			dest->gr_gid = strtol(*val, NULL, 0);
-		else if (strcmp(attr, "cn") == 0)
-			hmc_strasg(&dest->gr_name, *val);
-		ldap_value_free(val);
-		ldap_memfree(attr);
-	}
-
+	vxldap_copy_group(dest, state->conn, trav->current);
 	trav->current = ldap_next_entry(state->conn, trav->current);
 	return 1;
 }
@@ -504,12 +595,16 @@ static struct vxpdb_driver THIS_MODULE = {
 	.useradd        = vxldap_useradd,
 	.usermod        = vxldap_usermod,
 	.userdel        = vxldap_userdel,
+	.getpwuid       = vxldap_getpwuid,
+	.getpwnam       = vxldap_getpwnam,
 	.usertrav_init  = vxldap_usertrav_init,
 	.usertrav_walk  = vxldap_usertrav_walk,
 	.usertrav_free  = vxldap_usertrav_free,
 	.groupadd       = vxldap_groupadd,
 	.groupmod       = vxldap_groupmod,
 	.groupdel       = vxldap_groupdel,
+	.getgrgid       = vxldap_getgrgid,
+	.getgrnam       = vxldap_getgrnam,
 	.grouptrav_init = vxldap_grouptrav_init,
 	.grouptrav_walk = vxldap_grouptrav_walk,
 	.grouptrav_free = vxldap_grouptrav_free,
