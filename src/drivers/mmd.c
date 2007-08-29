@@ -100,7 +100,7 @@ static void vxmmd_exit(struct vxpdb_state *vp)
 	return;
 }
 
-static unsigned int vxmmd_modctl_count(struct multi_state *state,
+static unsigned int vxmmd_modctl_count(const struct multi_state *state,
     unsigned int command)
 {
 	const struct HXdeque_node *trav;
@@ -125,7 +125,7 @@ static unsigned int vxmmd_modctl_count(struct multi_state *state,
 
 static long vxmmd_modctl(struct vxpdb_state *vp, long command, ...)
 {
-	struct multi_state *state = vp->state;
+	const struct multi_state *state = vp->state;
 	errno = 0;
 
 	switch (command) {
@@ -152,7 +152,7 @@ static long vxmmd_modctl(struct vxpdb_state *vp, long command, ...)
 
 static int vxmmd_lock(struct vxpdb_state *vp)
 {
-	struct multi_state *state = vp->state;
+	const struct multi_state *state = vp->state;
 	if (WR_OPEN(state))
 		return vxpdb_lock(WR_MOD(state));
 	return 1;
@@ -160,7 +160,7 @@ static int vxmmd_lock(struct vxpdb_state *vp)
 
 static int vxmmd_unlock(struct vxpdb_state *vp)
 {
-	struct multi_state *state = vp->state;
+	const struct multi_state *state = vp->state;
 	if (WR_OPEN(state))
 		return vxpdb_unlock(WR_MOD(state));
 	return 1;
@@ -169,8 +169,8 @@ static int vxmmd_unlock(struct vxpdb_state *vp)
 //-----------------------------------------------------------------------------
 static int vxmmd_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 {
-	struct multi_state *state = vp->state;
-	struct vxpdb_user rq2     = {};
+	const struct multi_state *state = vp->state;
+	struct vxpdb_user rq2 = {};
 	long uid;
 	int ret;
 
@@ -193,7 +193,7 @@ static int vxmmd_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 static int vxmmd_usermod(struct vxpdb_state *vp,
     const struct vxpdb_user *sr_mask, const struct vxpdb_user *mod_mask)
 {
-	struct multi_state *state = vp->state;
+	const struct multi_state *state = vp->state;
 	if (WR_OPEN(state))
 		return vxpdb_usermod(WR_MOD(state), sr_mask, mod_mask);
 	return -EROFS;
@@ -202,7 +202,7 @@ static int vxmmd_usermod(struct vxpdb_state *vp,
 static int vxmmd_userdel(struct vxpdb_state *vp,
     const struct vxpdb_user *sr_mask)
 {
-	struct multi_state *state = vp->state;
+	const struct multi_state *state = vp->state;
 	if (WR_OPEN(state))
 		return vxpdb_userdel(WR_MOD(state), sr_mask);
 	return -EROFS;
@@ -211,7 +211,7 @@ static int vxmmd_userdel(struct vxpdb_state *vp,
 static int vxmmd_getpwuid(struct vxpdb_state *vp, uid_t uid,
     struct vxpdb_user *dest)
 {
-	struct multi_state *state = vp->state;
+	const struct multi_state *state = vp->state;
 }
 
 static int vxmmd_userinfo(struct vxpdb_state *vp,
@@ -264,8 +264,8 @@ struct vxmmd_trav {
 
 static void *vxmmd_usertrav_init(struct vxpdb_state *vp)
 {
-	struct multi_state *state = vp->state;
-	struct vxmmd_trav trav    = {};
+	const struct multi_state *state = vp->state;
+	struct vxmmd_trav trav = {};
 
 	trav.rd_mod = state->rd_mod->first;
 	if (WR_OPEN(state)) {
@@ -281,8 +281,8 @@ static void *vxmmd_usertrav_init(struct vxpdb_state *vp)
 static int vxmmd_usertrav_walk(struct vxpdb_state *vp, void *ptr,
     struct vxpdb_user *dest)
 {
-	struct multi_state *state = vp->state;
-	struct vxmmd_trav *trav   = ptr;
+	const struct multi_state *state = vp->state;
+	struct vxmmd_trav *trav = ptr;
 	int ret;
 
 	if (trav->wr_mod) {
@@ -321,8 +321,8 @@ static void vxmmd_usertrav_free(struct vxpdb_state *vp, void *ptr)
 //-----------------------------------------------------------------------------
 static int vxmmd_groupadd(struct vxpdb_state *vp, const struct vxpdb_group *rq)
 {
-	struct multi_state *state = vp->state;
-	struct vxpdb_group rq2    = {};
+	const struct multi_state *state = vp->state;
+	struct vxpdb_group rq2 = {};
 	long gid;
 	int ret;
 
@@ -345,7 +345,7 @@ static int vxmmd_groupadd(struct vxpdb_state *vp, const struct vxpdb_group *rq)
 static int vxmmd_groupmod(struct vxpdb_state *vp,
     const struct vxpdb_group *sr_mask, const struct vxpdb_group *mod_mask)
 {
-	struct multi_state *state = vp->state;
+	const struct multi_state *state = vp->state;
 	if (WR_OPEN(state))
 		return vxpdb_groupmod(WR_MOD(state), sr_mask, mod_mask);
 	return -EROFS;
@@ -354,7 +354,7 @@ static int vxmmd_groupmod(struct vxpdb_state *vp,
 static int vxmmd_groupdel(struct vxpdb_state *vp,
     const struct vxpdb_group *sr_mask)
 {
-	struct multi_state *state = vp->state;
+	const struct multi_state *state = vp->state;
 	if (WR_OPEN(state))
 		return vxpdb_groupdel(WR_MOD(state), sr_mask);
 	return -EROFS;
@@ -362,8 +362,8 @@ static int vxmmd_groupdel(struct vxpdb_state *vp,
 
 static void *vxmmd_grouptrav_init(struct vxpdb_state *vp)
 {
-	struct multi_state *state = vp->state;
-	struct vxmmd_trav trav    = {};
+	const struct multi_state *state = vp->state;
+	struct vxmmd_trav trav = {};
 
 	trav.rd_mod = state->rd_mod->first;
 	if (WR_OPEN(state)) {
@@ -379,8 +379,8 @@ static void *vxmmd_grouptrav_init(struct vxpdb_state *vp)
 static int vxmmd_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
     struct vxpdb_group *dest)
 {
-	struct multi_state *state = vp->state;
-	struct vxmmd_trav *trav   = ptr;
+	const struct multi_state *state = vp->state;
+	struct vxmmd_trav *trav = ptr;
 	int ret;
 
 	if (trav->wr_mod) {
@@ -426,7 +426,7 @@ static int vxmmd_groupinfo(struct vxpdb_state *vp,
 static long vxmmd_autouid(struct vxpdb_state *vp, long wanted)
 {
 	long accept, high = PDB_NOUID, min, max;
-	struct multi_state *state = vp->state;
+	const struct multi_state *state = vp->state;
 	struct vxpdb_user dest = {};
 	void *trav;
 
@@ -481,7 +481,7 @@ static long vxmmd_autouid(struct vxpdb_state *vp, long wanted)
 static long vxmmd_autogid(struct vxpdb_state *vp, long wanted)
 {
 	long accept, high = PDB_NOGID, min, max;
-	struct multi_state *state = vp->state;
+	const struct multi_state *state = vp->state;
 	struct vxpdb_group dest = {};
 	void *trav;
 
@@ -573,7 +573,7 @@ static int modules_construct(struct multi_state *state)
 
 static int modules_open(struct multi_state *state, long flags)
 {
-	struct HXdeque_node *node;
+	const struct HXdeque_node *node;
 	int ret;
 
 	ret = vxpdb_open(state->wr_mod.mh_instance, flags);
@@ -596,7 +596,7 @@ static int modules_open(struct multi_state *state, long flags)
 
 static void modules_close(struct multi_state *state)
 {
-	struct HXdeque_node *node;
+	const struct HXdeque_node *node;
 
 	for (node = state->rd_mod->first; node != NULL; node = node->next) {
 		struct module_handle *mod = node->ptr;
@@ -615,7 +615,7 @@ static void modules_close(struct multi_state *state)
 
 static void modules_destruct(struct multi_state *state)
 {
-	struct HXdeque_node *node;
+	const struct HXdeque_node *node;
 
 	for (node = state->rd_mod->first; node != NULL; node = node->next) {
 		struct module_handle *mod = node->ptr;
