@@ -139,6 +139,8 @@ static void d_ldif_users(struct vxpdb_state *db)
 		if (!(user.pw_uid >= Uid_range[0] &&
 		    user.pw_uid <= Uid_range[1]))
 			continue;
+
+		/* defined in RFC 2307 and nis.schema */
 		printf(
 			"dn: uid=%s,ou=users,dc=site\n"
 			"objectClass: account\n"
@@ -196,6 +198,16 @@ static void d_ldif_users(struct vxpdb_state *db)
 			if (user.sp_inact > 0)
 				printf("shadowInactive: %ld\n", user.sp_inact);
 		}
+
+		if (Dump_what[DUMP_VXSHADOW]) {
+			if (user.vs_uuid != NULL)
+				/* defined in RFC 2798 (inetOrgPerson.schema) */
+				printf("employeeNumber: %s\n", user.vs_uuid);
+			if (user.vs_pvgrp != NULL)
+				/* defined in RFC 1274 (COSINE.schema) */
+				printf("userClass: %s\n", user.vs_pvgrp);
+		}
+
 		printf("\n");
 	}
 
