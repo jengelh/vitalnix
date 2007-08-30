@@ -161,10 +161,10 @@ libvxcore_la_LDFLAGS := ${regular_SOLDFLAGS}
 #
 #	libvxeds
 #
-libvxeds_la_LIBADD     := -lHX libvxcore.la libvxutil.la
-libvxeds_la_LDFLAGS    := ${regular_SOLDFLAGS} ${libxml_LIBS}
-libvxeds_fm_xml_CFLAGS := ${libxml_CFLAGS}
-libvxeds_la_SOURCES    := \
+libvxeds_la_LIBADD  := -lHX libvxcore.la libvxutil.la
+libvxeds_la_LDFLAGS := ${regular_SOLDFLAGS} ${libxml_LIBS}
+libvxeds_la_CFLAGS  := ${libxml_CFLAGS}
+libvxeds_la_SOURCES := \
 	src/libvxeds/eds.c \
 	src/libvxeds/fm_sdf.c \
 	src/libvxeds/fm_xml.c
