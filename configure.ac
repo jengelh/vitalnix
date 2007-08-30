@@ -72,4 +72,4 @@ else
 	ln -s ../../config.h include/vitalnix/config.h;
 fi;
 
-AC_OUTPUT(GNUmakefile)
+AC_OUTPUT([GNUmakefile])
