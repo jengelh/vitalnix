@@ -259,3 +259,7 @@ src/steelmill/images.hpp: $(wildcard ${srcdir}/src/steelmill/*.png)
 	${srcdir}/src/png2wx.py -C src/steelmill/images.cpp -H src/steelmill/images.hpp -M STEELMILL_IMAGES_HPP $^;
 
 CLEANFILES += src/steelmill/images.cpp src/steelmill/images.hpp
+
+suid_list := tryauth
+install-exec-hook:
+	chmod u+s $(addprefix ${DESTDIR}${bindir}/, ${suid_list})
