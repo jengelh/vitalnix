@@ -177,9 +177,7 @@ static void d_ldif_users(struct vxpdb_state *db)
 				       VXQUOTE_BASE64, &freeme));
 		}
 
-		if (!Dump_what[DUMP_SHADOW]) {
-			printf("userPassword: {crypt}x\n");
-		} else {
+		if (Dump_what[DUMP_SHADOW]) {
 			printf("objectClass: shadowAccount\n");
 			if (user.sp_passwd != NULL && *user.sp_passwd != '\0')
 				printf("userPassword: {crypt}%s\n",
