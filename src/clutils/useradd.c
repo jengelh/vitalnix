@@ -196,13 +196,17 @@ static bool useradd_get_options(int *argc, const char ***argv,
 static int useradd_run(struct useradd_state *state)
 {
 	struct vxpdb_state *db;
-	int ret;
+	int err, ret;
 
 	if ((db = vxpdb_load(state->database)) == NULL)
 		return E_OPEN;
 
 	ret = useradd_run2(db, state);
+	if (ret != 0)
+		err = errno;
 	vxpdb_unload(db);
+	if (ret != 0)
+		errno = err;
 	return ret;
 }
 
@@ -275,7 +279,7 @@ static int useradd_run2(struct vxpdb_state *db, struct useradd_state *state)
 {
 	struct vxconfig_useradd *conf = &state->config;
 	struct vxpdb_user *user;
-	int ret;
+	int err, ret;
 
 	if ((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0)
 		return E_OPEN;
@@ -286,9 +290,13 @@ static int useradd_run2(struct vxpdb_state *db, struct useradd_state *state)
 
 	state->sr_map = HXformat_init();
 	ret = useradd_run3(db, state, user);
+	if (ret != 0)
+		err = errno;
 	HXformat_free(state->sr_map);
 	free(user);
 	vxpdb_close(db);
+	if (ret != 0)
+		errno = err;
 	return ret;
 }
 
