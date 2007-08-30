@@ -320,14 +320,6 @@ static int useradd_run3(struct vxpdb_state *db, struct useradd_state *state,
 	}
 
 	user->sp_lastchg = vxutil_now_iday();
-
-	if (vxutil_only_digits(user->pw_igrp)) {
-		user->pw_gid  = strtoul(user->pw_igrp, NULL, 0);
-		user->pw_igrp = NULL;
-	} else {
-		user->pw_gid  = PDB_NOGID;
-	}
-
 	HXformat_add(state->sr_map, "USERNAME", user->pw_name, HXTYPE_STRING);
 	HXformat_add(state->sr_map, "UID", &user->pw_uid, HXTYPE_LONG);
 
