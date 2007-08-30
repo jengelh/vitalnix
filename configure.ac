@@ -45,7 +45,11 @@ PKG_CHECK_MODULES([libxml], [libxml-2.0])
 libmysql_CFLAGS_INSANE=`mysql_config --cflags`;
 libmysql_LIBS_INSANE=`mysql_config --libs_r`;
 libwx_CFLAGS=`wx-config --cflags`;
-libwx_LIBS=`wx-config --libs`;
+ret=$?
+AM_CONDITIONAL(BUILD_STEELMILL, test "$ret" -eq 0)
+if [[ "$ret" -eq 0 ]]; then
+	libwx_LIBS=`wx-config --libs`;
+fi;
 PACKAGE_VERSION_SIMPLE="_xrelease";
 
 m4_sinclude(m4lib/gcc4_visibility.m4)

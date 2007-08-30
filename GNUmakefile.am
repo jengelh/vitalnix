@@ -22,7 +22,10 @@ bin_PROGRAMS    := \
 	cgi_chpasswd cgi_lpaview cgi_ntactiv cgi_vwquota \
 	lpacct_filter mdfixuuid mdpwlfmt mdsingle mdsync pdbdump pdbinfo \
 	randpw tryauth vxuseradd vxusermod vxuserdel vxgroupadd vxgroupmod \
-	vxgroupdel steelmill
+	vxgroupdel
+if BUILD_STEELMILL
+bin_PROGRAMS    += steelmill
+endif
 level1_libs     := libvxcgi.la libvxcli.la libvxcore.la libvxutil.la
 level2_libs     := libvxeds.la libvxmdfmt.la libvxpdb.la
 lib_LTLIBRARIES := \
