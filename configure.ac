@@ -32,37 +32,31 @@ case `uname -m` in
 esac;
 AM_CONDITIONAL(X86_32, test $x86_32 -eq 1)
 
-AC_CFLAGS="-D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
+regular_CFLAGS="-D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
 	-D_REENTRANT -Wall -Waggregate-return -Wmissing-declarations \
 	-Wmissing-prototypes -Wredundant-decls -Wshadow -Wstrict-prototypes \
 	-Winline -fPIC -pipe";
-AC_CXXFLAGS="-D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
+regular_CXXFLAGS="-D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
 	-D_REENTRANT -Wall -Wno-pointer-arith -Wredundant-decls -fPIC -pipe";
 
-CFLAGS_LIBCRYPTO=`pkg-config libcrypto --cflags`;
-LDFLAGS_LIBCRYPTO=`pkg-config libcrypto --libs`;
-CFLAGS_LIBMYSQL_INSANE=`mysql_config --cflags`;
-LDFLAGS_LIBMYSQL_INSANE=`mysql_config --libs_r`;
-CFLAGS_LIBXML=`pkg-config libxml-2.0 --cflags`;
-LDFLAGS_LIBXML=`pkg-config libxml-2.0 --libs`;
-CXXFLAGS_LIBWX=`wx-config --cflags`;
-LDFLAGS_LIBWX=`wx-config --libs`;
+PKG_CHECK_MODULES([libcrypto], [libcrypto])
+PKG_CHECK_MODULES([libxml], [libxml-2.0])
+libmysql_CFLAGS_INSANE=`mysql_config --cflags`;
+libmysql_LIBS_INSANE=`mysql_config --libs_r`;
+libwx_CFLAGS=`wx-config --cflags`;
+libwx_LIBS=`wx-config --libs`;
 PACKAGE_VERSION_SIMPLE="_xrelease";
 
 m4_sinclude(m4lib/gcc4_visibility.m4)
 
 AC_DEFINE_UNQUOTED(PACKAGE_VERSION_SIMPLE, ["_xrelease"], [Simplified package version])
 AC_SUBST(PACKAGE_VERSION_SIMPLE)
-AC_SUBST(AC_CFLAGS)
-AC_SUBST(AC_CXXFLAGS)
-AC_SUBST(CFLAGS_LIBCRYPTO)
-AC_SUBST(LDFLAGS_LIBCRYPTO)
-AC_SUBST(CFLAGS_LIBMYSQL_INSANE)
-AC_SUBST(LDFLAGS_LIBMYSQL_INSANE)
-AC_SUBST(CFLAGS_LIBXML)
-AC_SUBST(LDFLAGS_LIBXML)
-AC_SUBST(CXXFLAGS_LIBWX)
-AC_SUBST(LDFLAGS_LIBWX)
+AC_SUBST(regular_CFLAGS)
+AC_SUBST(regular_CXXFLAGS)
+AC_SUBST(libmysql_CFLAGS_INSANE)
+AC_SUBST(libmysql_LIBS_INSANE)
+AC_SUBST(libwx_CFLAGS)
+AC_SUBST(libwx_LIBS)
 
 mkdir -p include/vitalnix;
 if [[ -L include/vitalnix/config.h ]]; then

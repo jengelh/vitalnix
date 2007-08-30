@@ -6,15 +6,17 @@ DEFAULT_INCLUDES := \
 	-I${top_builddir}/include \
 	-I${srcdir}/src \
 	-I${srcdir}/src/include
+regular_DCONFIG := \
+	-DCONFIG_SYSCONFDIR='"${sysconfdir}"' \
+	-DCONFIG_LIBDIR='"${libdir}"'
 
-DCONFIG      := -DCONFIG_SYSCONFDIR='"${sysconfdir}"' -DCONFIG_LIBDIR='"${libdir}"'
-AM_CFLAGS    := ${AC_CFLAGS} ${DCONFIG}
-AM_CXXFLAGS  := ${AC_CXXFLAGS} ${DCONFIG}
-AM_SOLDFLAGS := -release ${PACKAGE_VERSION_SIMPLE}
+AM_CFLAGS         := ${regular_CFLAGS} ${regular_DCONFIG}
+AM_CXXFLAGS       := ${regular_CXXFLAGS} ${regular_DCONFIG}
+regular_SOLDFLAGS := -release ${PACKAGE_VERSION_SIMPLE}
 
-# These got some harmful crap
-CFLAGS_LIBMYSQL  := $(filter -I%,${CFLAGS_LIBMYSQL_INSANE})
-LDFLAGS_LIBMYSQL := $(filter -L% -l% -pthread,${LDFLAGS_LIBMYSQL_INSANE})
+# These got some harmful crap which needs to be sanitized first
+libmysql_CFLAGS := $(filter -I%,${libmysql_CFLAGS_INSANE})
+libmysql_LIBS   := $(filter -L% -l% -pthread,${libmysql_LIBS_INSANE})
 
 bin_PROGRAMS    := \
 	cgi_chpasswd cgi_lpaview cgi_ntactiv cgi_vwquota \
@@ -38,9 +40,9 @@ cgi_chpasswd_SOURCES := src/cgiutils/chpasswd.c
 cgi_chpasswd_LDADD   := -lHX libvxcgi.la libvxutil.la
 
 cgi_lpaview_SOURCES  := src/cgiutils/lpaview.c src/lpacct/shared.c
-cgi_lpaview_CFLAGS   := ${AM_CFLAGS} ${CFLAGS_LIBMYSQL}
+cgi_lpaview_CFLAGS   := ${AM_CFLAGS} ${libmysql_CFLAGS}
 cgi_lpaview_LDADD    := -lHX libvxcgi.la libvxutil.la
-cgi_lpaview_LDFLAGS  := ${LDFLAGS_LIBMYSQL}
+cgi_lpaview_LDFLAGS  := ${libmysql_LIBS}
 
 cgi_ntactiv_SOURCES  := src/cgiutils/ntactiv.c
 cgi_ntactiv_LDADD    := -lHX libvxcgi.la libvxutil.la
@@ -85,7 +87,7 @@ vxgroupdel_LDADD   := -lHX libvxpdb.la libvxutil.la
 #
 drv_dummy_la_SOURCES := src/drivers/dummy.c
 drv_dummy_la_LIBADD  := libvxcore.la libvxpdb.la
-drv_dummy_la_LDFLAGS := ${AM_SOLDFLAGS} -module
+drv_dummy_la_LDFLAGS := ${regular_SOLDFLAGS} -module
 
 #
 #	drivers/ldap
@@ -93,39 +95,39 @@ drv_dummy_la_LDFLAGS := ${AM_SOLDFLAGS} -module
 drv_ldap_la_CFLAGS  := ${AM_CFLAGS} -DLDAP_DEPRECATED
 drv_ldap_la_SOURCES := src/drivers/ldap.c
 drv_ldap_la_LIBADD  := -lldap_r -lpthread libvxcore.la libvxpdb.la
-drv_ldap_la_LDFLAGS := ${AM_SOLDFLAGS} -module
+drv_ldap_la_LDFLAGS := ${regular_SOLDFLAGS} -module
 
 #
 #	drivers/mmd
 #
 drv_mmd_la_SOURCES := src/drivers/mmd.c
 drv_mmd_la_LIBADD  := -lHX libvxcore.la libvxpdb.la
-drv_mmd_la_LDFLAGS := ${AM_SOLDFLAGS} -module
+drv_mmd_la_LDFLAGS := ${regular_SOLDFLAGS} -module
 
 #
 #	drivers/nss
 #
 drv_nss_la_SOURCES  := src/drivers/nss.c
 drv_nss_la_LIBADD   := -lHX libvxcore.la libvxpdb.la
-drv_nss_la_LDFLAGS  := ${AM_SOLDFLAGS} -module
+drv_nss_la_LDFLAGS  := ${regular_SOLDFLAGS} -module
 drv_nss1_la_SOURCES := src/drivers/nss1.c
 drv_nss1_la_LIBADD  := -lHX libvxcore.la libvxpdb.la libvxutil.la
-drv_nss1_la_LDFLAGS := ${AM_SOLDFLAGS} -module
+drv_nss1_la_LDFLAGS := ${regular_SOLDFLAGS} -module
 
 #
 #	drivers/mysql
 #
 drv_mysql_la_LIBADD  := libvxcore.la libvxpdb.la libvxutil.la
-drv_mysql_la_LDFLAGS := ${AM_SOLDFLAGS} ${LDFLAGS_LIBMYSQL} -module
-drv_mysql_la_CFLAGS  := ${AM_CFLAGS} ${CFLAGS_LIBMYSQL}
+drv_mysql_la_LDFLAGS := ${regular_SOLDFLAGS} ${libmysql_LIBS} -module
+drv_mysql_la_CFLAGS  := ${AM_CFLAGS} ${libmysql_CFLAGS}
 drv_mysql_la_SOURCES := src/drivers/mysql/mysql.c
 
 #
 #	drivers/shadow
 #
 drv_shadow_la_LIBADD  := -lHX libvxcore.la libvxpdb.la
-drv_shadow_la_LDFLAGS := ${AM_SOLDFLAGS} ${LDFLAGS_LIBXML} -module
-drv_shadow_la_CFLAGS  := ${AM_CFLAGS} ${CFLAGS_LIBXML}
+drv_shadow_la_LDFLAGS := ${regular_SOLDFLAGS} ${libxml_LIBS} -module
+drv_shadow_la_CFLAGS  := ${AM_CFLAGS} ${libxml_CFLAGS}
 drv_shadow_la_SOURCES := \
 	src/drivers/shadow/aux.c \
 	src/drivers/shadow/dbops.c \
@@ -140,28 +142,28 @@ drv_shadow_la_SOURCES := \
 #
 libvxcgi_la_SOURCES := src/libvxcgi/auth.c src/libvxcgi/cgi.c
 libvxcgi_la_LIBADD  := -lHX -lpam
-libvxcgi_la_LDFLAGS := ${AM_SOLDFLAGS}
+libvxcgi_la_LDFLAGS := ${regular_SOLDFLAGS}
 
 #
 #	libvxcli
 #
 libvxcli_la_SOURCES := src/libvxcli/cli.c
 libvxcli_la_LIBADD  := -lHX
-libvxcli_la_LDFLAGS := ${AM_SOLDFLAGS}
+libvxcli_la_LDFLAGS := ${regular_SOLDFLAGS}
 
 #
 #	libvxcore
 #
 libvxcore_la_SOURCES := src/libvxcore/loader.c
 libvxcore_la_LIBADD  := -lHX
-libvxcore_la_LDFLAGS := ${AM_SOLDFLAGS}
+libvxcore_la_LDFLAGS := ${regular_SOLDFLAGS}
 
 #
 #	libvxeds
 #
 libvxeds_la_LIBADD     := -lHX libvxcore.la libvxutil.la
-libvxeds_la_LDFLAGS    := ${AM_SOLDFLAGS} ${LDFLAGS_LIBXML}
-libvxeds_fm_xml_CFLAGS := ${CFLAGS_LIBXML}
+libvxeds_la_LDFLAGS    := ${regular_SOLDFLAGS} ${libxml_LIBS}
+libvxeds_fm_xml_CFLAGS := ${libxml_CFLAGS}
 libvxeds_la_SOURCES    := \
 	src/libvxeds/eds.c \
 	src/libvxeds/fm_sdf.c \
@@ -171,7 +173,7 @@ libvxeds_la_SOURCES    := \
 #	libvxmdfmt
 #
 libvxmdfmt_la_LIBADD  := -lHX libvxcore.la libvxutil.la
-libvxmdfmt_la_LDFLAGS := ${AM_SOLDFLAGS}
+libvxmdfmt_la_LDFLAGS := ${regular_SOLDFLAGS}
 libvxmdfmt_la_SOURCES := \
 	src/libvxmdfmt/extra.c \
 	src/libvxmdfmt/pwlfmt.c \
@@ -185,7 +187,7 @@ libvxmdfmt_la_SOURCES := \
 #	libvxmdsync
 #
 libvxmdsync_la_LIBADD  := -lHX libvxeds.la libvxpdb.la libvxutil.la
-libvxmdsync_la_LDFLAGS := ${AM_SOLDFLAGS}
+libvxmdsync_la_LDFLAGS := ${regular_SOLDFLAGS}
 libvxmdsync_la_SOURCES := \
 	src/libvxmdsync/base.c \
 	src/libvxmdsync/fixup.c \
@@ -196,7 +198,7 @@ libvxmdsync_la_SOURCES := \
 #	libvxpdb
 #
 libvxpdb_la_LIBADD  := -lHX libvxcore.la libvxutil.la
-libvxpdb_la_LDFLAGS := ${AM_SOLDFLAGS}
+libvxpdb_la_LDFLAGS := ${regular_SOLDFLAGS}
 libvxpdb_la_SOURCES := \
 	src/libvxpdb/aux.c \
 	src/libvxpdb/config.c \
@@ -217,14 +219,14 @@ blowfish_sources := src/libvxutil/blowfish_x86.S
 endif
 libvxutil_la_SOURCES := ${libvxutil_sources} ${blowfish_sources}
 libvxutil_la_LIBADD  := -lHX -lcrypt
-libvxutil_la_LDFLAGS := ${AM_SOLDFLAGS} ${LDFLAGS_LIBCRYPTO}
+libvxutil_la_LDFLAGS := ${regular_SOLDFLAGS} ${libcrypto_LIBS}
 
 #
 #	lpacct
 #
-lpacct_filter_CFLAGS  := ${AM_CFLAGS} ${CFLAGS_LIBMYSQL}
+lpacct_filter_CFLAGS  := ${AM_CFLAGS} ${libmysql_CFLAGS}
 lpacct_filter_LDADD   := -lHX libvxutil.la
-lpacct_filter_LDFLAGS := ${LDFLAGS_LIBMYSQL}
+lpacct_filter_LDFLAGS := ${libmysql_LIBS}
 lpacct_filter_SOURCES := \
 	src/lpacct/acct.c src/lpacct/drop.c src/lpacct/image.c \
 	src/lpacct/lpacct.c src/lpacct/shared.c
@@ -233,8 +235,8 @@ lpacct_filter_SOURCES := \
 #	steelmill
 #
 steelmill_LDADD    := -lHX libvxeds.la libvxmdfmt.la libvxmdsync.la libvxpdb.la
-steelmill_LDFLAGS  := ${LDFLAGS_LIBWX}
-steelmill_CXXFLAGS := ${AM_CXXFLAGS} ${CXXFLAGS_LIBWX} -fno-strict-aliasing
+steelmill_LDFLAGS  := ${libwx_LIBS}
+steelmill_CXXFLAGS := ${AM_CXXFLAGS} ${libwx_CFLAGS} -fno-strict-aliasing
 steelmill_SOURCES  := \
 	src/steelmill/images.cpp \
 	src/steelmill/wd_about.cpp \
