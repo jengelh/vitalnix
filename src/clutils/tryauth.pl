@@ -22,7 +22,18 @@ chomp(my $password = <STDIN>);
 system qw(stty echo);
 
 my $err_msg;
-if (&authenticate($username, $password, \$err_msg)) {
+$ret = &authenticate($username, $password, \$err_msg);
+if ($ret == 7 || $ret == 10) {
+	#
+	# 7  = Incorrect password
+	# 10 = Unknown user
+	#
+	# It is more secure to combine these cases to "User and/or password
+	# incorrect" so that one cannot figure out whether the username 
+	# actually exists and try breaking its password.
+	#
+	print "Authentication failure\n";
+} else if ($ret == 0) {
 	print "Authentication successful\n";
 } else {
 	print "Authentication failure. The error text was:\n", $err_msg;
@@ -55,7 +66,7 @@ sub authenticate($$)
 	}
 
 	close FERR;
-	return $status == 0;
+	return $status;
 }
 
 #==============================================================================
