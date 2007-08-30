@@ -35,7 +35,10 @@ sub authenticate($$)
 	local(*FWRITE, *FERR);
 	my($pid, $status);
 
-	if (!defined($pid = open3(\*FWRITE, undef, \*FERR, "vxcgi_tryauth"))) {
+	#
+	# Call the tryauth binary
+	#
+	if (!defined($pid = open3(\*FWRITE, undef, \*FERR, "tryauth"))) {
 		die "Could not spawn process: $!\n";
 	}
 
