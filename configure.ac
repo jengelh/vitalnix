@@ -18,6 +18,7 @@ define(_xtmp, esyscmd(
 ))
 AC_INIT(Vitalnix, _xrelease[]ifelse(_xtmp, exported, [], [_SVN]_xtmp))
 AC_CONFIG_HEADERS(config.h)
+AC_PROG_INSTALL
 AM_INIT_AUTOMAKE
 AC_PROG_CC
 AM_PROG_CC_C_O
