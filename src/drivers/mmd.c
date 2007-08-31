@@ -196,6 +196,7 @@ static int vxmmd_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 		return -ENOSPC;
 
 	vxpdb_user_copy(&rq2, rq);
+	rq2.pw_uid = uid;
 	ret = vxpdb_useradd(WR_MOD(state), &rq2);
 	vxpdb_user_free(&rq2, 0);
 	return ret;
@@ -344,6 +345,7 @@ static int vxmmd_groupadd(struct vxpdb_state *vp, const struct vxpdb_group *rq)
 		return -ENOSPC;
 
 	vxpdb_group_copy(&rq2, rq);
+	rq2.gr_gid = gid;
 	ret = vxpdb_groupadd(WR_MOD(state), &rq2);
 	vxpdb_group_free(&rq2, 0);
 	return ret;
