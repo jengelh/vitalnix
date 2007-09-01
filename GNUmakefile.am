@@ -12,7 +12,7 @@ regular_DCONFIG := \
 
 AM_CFLAGS         := ${regular_CFLAGS} ${regular_DCONFIG}
 AM_CXXFLAGS       := ${regular_CXXFLAGS} ${regular_DCONFIG}
-regular_SOLDFLAGS := -release ${PACKAGE_VERSION_SIMPLE}
+regular_SOLDFLAGS :=
 
 # These got some harmful crap which needs to be sanitized first
 libmysql_CFLAGS := $(filter -I%,${libmysql_CFLAGS_INSANE})
