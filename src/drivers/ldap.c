@@ -107,7 +107,8 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 
 	char s_pw_uid[Z_32], s_pw_gid[Z_32], s_sp_min[Z_32], s_sp_max[Z_32];
 	char s_sp_warn[Z_32], s_sp_expire[Z_32], s_sp_inact[Z_32];
-	LDAPMod attr[14], *attr_ptrs[15];
+	char s_vs_defer[Z_32];
+	LDAPMod attr[17], *attr_ptrs[18];
 	unsigned int a = 0, i;
 	hmc_t *dn;
 	int ret;
@@ -185,7 +186,7 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 		                         rq->sp_passwd, NULL},
 	};
 
-
+	/* shadow */
 	if (rq->sp_min != PDB_DFL_KEEPMIN) {
 		snprintf(s_sp_min, sizeof(s_sp_min), "%lu", rq->sp_min);
 		attr[a++] = (LDAPMod){
@@ -227,6 +228,30 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 		};
 	}
 
+	/* vitalnix-specific */
+	if (rq->vs_pvgrp != NULL) {
+		attr[a++] = (LDAPMod){
+			.mod_op     = LDAP_MOD_ADD,
+			.mod_type   = "vitalnixGroup",
+			.mod_values = (char *[]){rq->vs_pvgrp, NULL},
+		};
+	}
+	if (rq->vs_uuid != NULL) {
+		attr[a++] = (LDAPMod){
+			.mod_op     = LDAP_MOD_ADD,
+			.mod_type   = "vitalnixUUID",
+			.mod_values = (char *[]){rq->vs_pvgrp, NULL},
+		};
+	}
+	if (rq->vs_defer > 0) {
+		snprintf(s_vs_defer, sizeof(s_vs_defer), "%lu", rq->vs_defer);
+		attr[a++] = (LDAPMod){
+			.mod_op     = LDAP_MOD_ADD,
+			.mod_type   = "vitalnixDeferTimer",
+			.mod_values = (char *[]){s_vs_defer, NULL},
+		};
+	}
+
 	fprintf(stderr, "dn: %s\n", dn);
 	for (i = 0; i < a; ++i) {
 		int j;
@@ -263,10 +288,8 @@ static int vxldap_userdel(struct vxpdb_state *vp,
 
 	ret = ldap_delete_ext_s(state->conn, dn, NULL, NULL);
 	hmc_free(dn);
-	if (ret != LDAP_SUCCESS) {
-		ldap_perror(state->conn, "vldap_userdel");
+	if (ret != LDAP_SUCCESS)
 		return -(errno = 1600 + ret);
-	}
 	
 	return 1;
 }
@@ -334,8 +357,10 @@ static void vxldap_copy_user(struct vxpdb_user *dest, LDAP *conn,
 			dest->vs_defer = strtoul(*val, NULL, 0);
 		else if (strcmp(attr, "vitalnixUUID") == 0)
 			hmc_strasg(&dest->vs_uuid, *val);
-		else if (strcmp(attr, "vitalnixPvgrp") == 0)
+		else if (strcmp(attr, "vitalnixGroup") == 0)
 			hmc_strasg(&dest->vs_pvgrp, *val);
+		else if (strcmp(attr, "vitalnixDeferTimer") == 0)
+			dest->vs_defer = strtoul(*val, NULL, 0);
 		ldap_value_free(val);
 		ldap_memfree(attr);
 	}
