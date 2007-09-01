@@ -9,6 +9,7 @@
  */
 #include <sys/types.h>
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,16 +23,16 @@ EXPORT_SYMBOL char *vxcli_query(const char *msg, const char *prompt,
     const char *defl, long opts, char *buf, size_t size)
 {
 	hmc_t *answer = NULL;
-	int i = 0;
+	bool i = false;
 
 	if (msg != NULL)
 		printf("%s", msg);
 	if (opts & VXCQ_ABORT) {
-		++i;
+		i = true;
 		printf("(Use <CTRL+A>,<Enter> to abort) ");
 	}
 	if (defl != NULL) {
-		++i;
+		i = true;
 		printf("(Leave blank to use the default)");
 		if (opts & VXCQ_EMPTY)
 			printf(" (Use <CTRL+E>,<Enter> to supply an empty answer)");
@@ -39,7 +40,7 @@ EXPORT_SYMBOL char *vxcli_query(const char *msg, const char *prompt,
 	if (i)
 		printf("\n");
 
-	while (1) {
+	while (true) {
 		if (prompt != NULL)
 			printf("%s ", prompt);
 		if (defl != NULL)

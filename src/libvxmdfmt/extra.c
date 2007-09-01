@@ -9,6 +9,7 @@
  */
 #include <ctype.h>
 #include <iconv.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -69,7 +70,7 @@ int compare_wbc(const char *str_a, const char *str_b)
 	if (cl_a == CLASS_NONE)
 		return 0;
 
-	while (1) {
+	while (true) {
 		char buf_a[MAXSNLEN], buf_b[MAXSNLEN];
 		int d;
 

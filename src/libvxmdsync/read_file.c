@@ -9,6 +9,7 @@
  */
 #include <sys/types.h>
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -32,7 +33,7 @@ EXPORT_SYMBOL int mdsync_read_file(struct mdsync_workspace *w,
 	if ((ret = vxeds_open(input_dsc, input_fmt, &state)) <= 0)
 		return ret;
 
-	while (1) {
+	while (true) {
 		entry = malloc(sizeof(struct vxeds_entry));
 
 		if ((ret = vxeds_read(state, entry)) < 0) {

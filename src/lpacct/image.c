@@ -10,6 +10,7 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -206,7 +207,7 @@ static int mpxm_fdgetl(int fd, hmc_t **res)
 	else
 		hmc_trunc(res, 0);
 
-	while (1) {
+	while (true) {
 		/*
 		 * On read error or newline (make sure newlines makes
 		 * it into @res), flush and return.
