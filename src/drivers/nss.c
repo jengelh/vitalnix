@@ -86,7 +86,7 @@ static void vnss_exit(struct vxpdb_state *vp)
 	return;
 }
 
-static long vnss_modctl(struct vxpdb_state *vp, long command, ...)
+static long vnss_modctl(struct vxpdb_state *vp, unsigned int command, ...)
 {
 	struct nss_state *state = vp->state;
 

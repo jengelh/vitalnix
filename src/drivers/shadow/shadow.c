@@ -97,7 +97,7 @@ static void vshadow_exit(struct vxpdb_state *vp)
 	return;
 }
 
-static long vshadow_modctl(struct vxpdb_state *vp, long command, ...)
+static long vshadow_modctl(struct vxpdb_state *vp, unsigned int command, ...)
 {
 	struct shadow_state *state = vp->state;
 	errno = 0;

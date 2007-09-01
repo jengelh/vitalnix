@@ -268,7 +268,7 @@ static inline void vmysql_xunlock(struct mysql_state *state)
 	return;
 }
 
-static long vmysql_modctl(struct vxpdb_state *vp, long command, ...)
+static long vmysql_modctl(struct vxpdb_state *vp, unsigned int command, ...)
 {
 	struct mysql_state *state = vp->state;
 

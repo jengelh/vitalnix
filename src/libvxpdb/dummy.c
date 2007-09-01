@@ -40,7 +40,7 @@ static int vdummy_iT(struct vxpdb_state *vp)
 ALIAS(vdummy_iT, vdummy_lock);
 ALIAS(vdummy_iT, vdummy_unlock);
 
-static long vdummy_modctl(struct vxpdb_state *vp, long command, ...)
+static long vdummy_modctl(struct vxpdb_state *vp, unsigned int command, ...)
 {
 	switch (command) {
 		case PDB_COUNT_USERS:

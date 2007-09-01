@@ -92,7 +92,7 @@ struct vxpdb_driver {
 	void (*close)(struct vxpdb_state *);
 	void (*exit)(struct vxpdb_state *);
 
-	long (*modctl)(struct vxpdb_state *, long, ...);
+	long (*modctl)(struct vxpdb_state *, unsigned int, ...);
 	int (*lock)(struct vxpdb_state *);
 	int (*unlock)(struct vxpdb_state *);
 

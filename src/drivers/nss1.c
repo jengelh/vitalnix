@@ -27,7 +27,7 @@ static inline int nssuser_match(const struct passwd *, const struct vxpdb_user *
 static inline int nssgroup_match(const struct group *, const struct vxpdb_group *);
 
 //-----------------------------------------------------------------------------
-static long vnss1_modctl(struct vxpdb_state *this, long command, ...)
+static long vnss1_modctl(struct vxpdb_state *this, unsigned int command, ...)
 {
 	errno = 0;
 	switch (command) {

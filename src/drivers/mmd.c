@@ -134,7 +134,7 @@ static unsigned int vxmmd_modctl_count(const struct multi_state *state,
 	return number;
 }
 
-static long vxmmd_modctl(struct vxpdb_state *vp, long command, ...)
+static long vxmmd_modctl(struct vxpdb_state *vp, unsigned int command, ...)
 {
 	const struct multi_state *state = vp->state;
 	errno = 0;
