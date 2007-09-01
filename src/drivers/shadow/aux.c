@@ -48,14 +48,13 @@ long automatic_uid(struct shadow_state *state, long wanted)
 	/* No? Then just scan for the next */
 	while (accept <= max) {
 		bool used = false;
-		travp = state->dq_user->first;
-		while (travp != NULL) {
+		for (travp = state->dq_user->first; travp != NULL;
+		    travp = travp->next) {
 			const struct vxpdb_user *user = travp->ptr;
 			if (user->pw_uid == accept) {
 				used = 1;
 				break;
 			}
-			travp = travp->next;
 		}
 		if (!used)
 			return accept;
@@ -98,14 +97,13 @@ long automatic_gid(struct shadow_state *state, long wanted)
 	/* No? Then just scan for the next */
 	while (accept <= max) {
 		bool used = false;
-		travp = state->dq_group->first;
-		while (travp != NULL) {
+		for (travp = state->dq_group->first; travp != NULL;
+		    travp = travp->next) {
 			const struct vxpdb_group *group = travp->ptr;
 			if (group->gr_gid == accept) {
 				used = true;
 				break;
 			}
-			travp = travp->next;
 		}
 		if (!used)
 			return accept;
@@ -119,21 +117,17 @@ void free_data(struct shadow_state *state)
 	struct HXdeque_node *travp;
 
 	if (state->dq_user != NULL) {
-		travp = state->dq_user->first;
-		while (travp != NULL) {
+		for (travp = state->dq_user->first; travp != NULL;
+		    travp = travp->next)
 			free_single_user(travp->ptr);
-			travp = travp->next;
-		}
 		HXdeque_free(state->dq_user);
 		state->dq_user = NULL;
 	}
 
 	if (state->dq_group != NULL) {
-		travp = state->dq_group->first;
-		while (travp != NULL) {
+		for (travp = state->dq_group->first; travp != NULL;
+		    travp = travp->next)
 			free_single_group(travp->ptr);
-			travp = travp->next;
-		}
 		HXdeque_free(state->dq_group);
 		state->dq_group = NULL;
 	}
@@ -186,17 +180,16 @@ void free_single_group(struct vxpdb_group *g)
 struct vxpdb_group *lookup_group(struct HXdeque *dq,
     const char *gname, long gid)
 {
-	const struct HXdeque_node *travp = dq->first;
+	const struct HXdeque_node *travp;
 
 	if (gname == NULL && gid == PDB_NOGID)
 		return NULL;
 
-	while (travp != NULL) {
+	for (travp = dq->first; travp != NULL; travp = travp->next) {
 		struct vxpdb_group *g = travp->ptr;
 		if ((gname == NULL || strcmp(g->gr_name, gname) == 0) &&
 		    (gid == PDB_NOGID || g->gr_gid == gid))
 			return g;
-		travp = travp->next;
 	}
 
 	return NULL;
@@ -215,17 +208,16 @@ struct vxpdb_group *lookup_group(struct HXdeque *dq,
 struct vxpdb_user *lookup_user(struct HXdeque *dq,
     const char *lname, long uid)
 {
-	const struct HXdeque_node *travp = dq->first;
+	const struct HXdeque_node *travp;
 
 	if (lname == NULL && uid == PDB_NOUID)
 		return NULL;
 
-	while (travp != NULL) {
+	for (travp = dq->first; travp != NULL; travp = travp->next) {
 		struct vxpdb_user *u = travp->ptr;
 		if ((lname == NULL || strcmp(u->pw_name, lname) == 0) &&
 		    (uid == PDB_NOUID || uid == u->pw_uid))
 			return u;
-		travp = travp->next;
 	}
 
 	return NULL;
@@ -264,11 +256,10 @@ void read_config(struct shadow_state *state, unsigned int action,
 struct HXdeque_node *skip_nis_users(struct HXdeque_node *node)
 {
 	const struct vxpdb_user *user;
-	while (node != NULL) {
+	for (; node != NULL; node = node->next) {
 		user = node->ptr;
 		if (*user->pw_name != '+' && *user->pw_name != '-')
 			return node;
-		node = node->next;
 	}
 	return node;
 }
@@ -276,11 +267,10 @@ struct HXdeque_node *skip_nis_users(struct HXdeque_node *node)
 struct HXdeque_node *skip_nis_groups(struct HXdeque_node *node)
 {
 	const struct vxpdb_group *group;
-	while (node != NULL) {
+	for (; node != NULL; node = node->next) {
 		group = node->ptr;
 		if (*group->gr_name != '+' && *group->gr_name != '-')
 			return node;
-		node = node->next;
 	}
 	return node;
 }
