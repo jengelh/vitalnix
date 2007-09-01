@@ -27,7 +27,10 @@
 	if ((state->names.sp_table != NULL && !state->perm_shadow) || \
 	    (state->names.vs_table != NULL && !state->perm_vxshadow)) \
 		return -EACCES;
-#define Z_32 sizeof("4294967296")
+#define ZU_32 sizeof("4294967296")
+#define ZD_32 (ZU_32 + 1)
+#define ZU_64 sizeof("18446744073709551616")
+#define ZD_64 (ZU_64 + 1)
 
 /* Definitions */
 enum {
@@ -786,13 +789,23 @@ static int queryf(MYSQL *handle, const char *fmt, ...)
 			hmc_strcat(&query, "'");
 			last_ptr += 2;
 		} else if (strncmp(next_ptr, "%ld", 3) == 0) {
-			char buf[2*sizeof(long)+1];
+			char buf[ZD_32];
 			snprintf(buf, sizeof(buf), "%ld", va_arg(argp, long));
 			hmc_strcat(&query, buf);
 			last_ptr += 3;
+		} else if (strncmp(next_ptr, "%lu", 3) == 0) {
+			char buf[ZU_32];
+			snprintf(buf, sizeof(buf), "%lu", va_arg(argp, unsigned long));
+			hmc_strcat(&query, buf);
+			last_ptr += 3;
 		} else if (strncmp(next_ptr, "%d", 2) == 0) {
-			char buf[2*sizeof(int)+1];
+			char buf[ZD_32];
 			snprintf(buf, sizeof(buf), "%d", va_arg(argp, int));
+			hmc_strcat(&query, buf);
+			last_ptr += 3;
+		} else if (strncmp(next_ptr, "%u", 2) == 0) {
+			char buf[ZU_32];
+			snprintf(buf, sizeof(buf), "%d", va_arg(argp, unsigned int));
 			hmc_strcat(&query, buf);
 			last_ptr += 3;
 		} else {
@@ -963,7 +976,7 @@ static hmc_t *sql_groupmask(hmc_t **s, const struct mysql_state *state,
     const struct vxpdb_group *mask, unsigned int flags)
 {
 	const struct mq_names *names = &state->names;
-	char tmp[Z_32];
+	char tmp[ZU_32];
 	int n = 0;
 
 	if (*s == NULL)
@@ -985,7 +998,7 @@ static hmc_t *sql_usermask(hmc_t **s, const struct mysql_state *state,
     const struct vxpdb_user *mask, unsigned int flags)
 {
 	const struct mq_names *names = &state->names;
-	char tmp[Z_32];
+	char tmp[ZU_32];
 	int n = 0;
 
 	if (*s == NULL)

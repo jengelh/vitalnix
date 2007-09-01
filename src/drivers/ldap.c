@@ -16,7 +16,7 @@
 #include "drivers/proto.h"
 #include "drivers/static-build.h"
 #include <vitalnix/libvxpdb/libvxpdb.h>
-#define Z_32 sizeof("4294967296")
+#define ZU_32 sizeof("4294967296")
 
 struct ldap_state {
 	/* Connection */
@@ -105,9 +105,9 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 {
 	struct ldap_state *state = vp->state;
 
-	char s_pw_uid[Z_32], s_pw_gid[Z_32], s_sp_min[Z_32], s_sp_max[Z_32];
-	char s_sp_warn[Z_32], s_sp_expire[Z_32], s_sp_inact[Z_32];
-	char s_vs_defer[Z_32];
+	char s_pw_uid[ZU_32], s_pw_gid[ZU_32], s_sp_min[ZU_32], s_sp_max[ZU_32];
+	char s_sp_warn[ZU_32], s_sp_expire[ZU_32], s_sp_inact[ZU_32];
+	char s_vs_defer[ZU_32];
 	LDAPMod attr[17], *attr_ptrs[18];
 	unsigned int a = 0, i;
 	hmc_t *dn;
@@ -387,7 +387,7 @@ static int vxldap_getpwx(struct ldap_state *state, const char *filter,
 static int vxldap_getpwuid(struct vxpdb_state *vp, long uid,
     struct vxpdb_user *dest)
 {
-	char filter[48+Z_32];
+	char filter[48+ZU_32];
 	snprintf(filter, sizeof(filter),
 	         "(&(objectClass=posixAccount)(uidNumber=%lu))", uid);
 	return vxldap_getpwx(vp->state, filter, dest);
@@ -551,7 +551,7 @@ static int vxldap_getgrx(struct ldap_state *state, const char *filter,
 static int vxldap_getgrgid(struct vxpdb_state *vp, long gid,
     struct vxpdb_group *dest)
 {
-	char filter[48+Z_32];
+	char filter[48+ZU_32];
 	snprintf(filter, sizeof(filter),
 	         "(&(objectClass=posixGroup)(gidNumber=%lu))", gid);
 	return vxldap_getgrx(vp->state, filter, dest);
