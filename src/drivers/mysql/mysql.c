@@ -789,12 +789,12 @@ static int queryf(MYSQL *handle, const char *fmt, ...)
 			hmc_strcat(&query, "'");
 			last_ptr += 2;
 		} else if (strncmp(next_ptr, "%ld", 3) == 0) {
-			char buf[ZD_32];
+			char buf[ZD_64];
 			snprintf(buf, sizeof(buf), "%ld", va_arg(argp, long));
 			hmc_strcat(&query, buf);
 			last_ptr += 3;
 		} else if (strncmp(next_ptr, "%lu", 3) == 0) {
-			char buf[ZU_32];
+			char buf[ZU_64];
 			snprintf(buf, sizeof(buf), "%lu", va_arg(argp, unsigned long));
 			hmc_strcat(&query, buf);
 			last_ptr += 3;
