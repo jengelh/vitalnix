@@ -34,7 +34,6 @@ enum {
 
 struct nss_state {
 	struct HXdeque *dq_user, *dq_group;
-	long uid_min, uid_max, gid_min, gid_max;
 };
 
 struct traverser_state {

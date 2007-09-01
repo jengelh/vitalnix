@@ -65,7 +65,7 @@ struct mysql_state {
 	struct mq_names names;
 	int perm_shadow, perm_vxshadow;
 	/* Misc */
-	long uid_min, uid_max, gid_min, gid_max;
+	unsigned int uid_min, uid_max, gid_min, gid_max;
 };
 
 struct traverser_state {
@@ -898,10 +898,10 @@ static void read_config(struct mysql_state *state, unsigned int action,
 
 	if (action == CONFIG_READ_BASE) {
 		struct HXoption autouid_table[] = {
-			{.ln = "UID_MIN", .type = HXTYPE_LONG, .ptr = &state->uid_min},
-			{.ln = "UID_MAX", .type = HXTYPE_LONG, .ptr = &state->uid_max},
-			{.ln = "GID_MIN", .type = HXTYPE_LONG, .ptr = &state->gid_min},
-			{.ln = "GID_MAX", .type = HXTYPE_LONG, .ptr = &state->gid_max},
+			{.ln = "UID_MIN", .type = HXTYPE_UINT, .ptr = &state->uid_min},
+			{.ln = "UID_MAX", .type = HXTYPE_UINT, .ptr = &state->uid_max},
+			{.ln = "GID_MIN", .type = HXTYPE_UINT, .ptr = &state->gid_min},
+			{.ln = "GID_MAX", .type = HXTYPE_UINT, .ptr = &state->gid_max},
 			HXOPT_TABLEEND,
 		};
 		state->uid_min = state->gid_min = 1000;

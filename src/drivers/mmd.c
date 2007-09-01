@@ -38,7 +38,7 @@ struct multi_state {
 	char *rdmod_str, *wrmod_str;
 	struct HXdeque *rd_mod;
 	struct module_handle wr_mod;
-	long uid_min, uid_max, gid_min, gid_max;
+	unsigned int uid_min, uid_max, gid_min, gid_max;
 };
 
 /*
@@ -692,10 +692,10 @@ static void modules_destruct(struct multi_state *state)
 static void read_config(struct multi_state *state, const char *file)
 {
 	struct HXoption autouid_table[] = {
-		{.ln = "UID_MIN", .type = HXTYPE_LONG, .ptr = &state->uid_min},
-		{.ln = "UID_MAX", .type = HXTYPE_LONG, .ptr = &state->uid_max},
-		{.ln = "GID_MIN", .type = HXTYPE_LONG, .ptr = &state->gid_min},
-		{.ln = "GID_MAX", .type = HXTYPE_LONG, .ptr = &state->gid_max},
+		{.ln = "UID_MIN", .type = HXTYPE_UINT, .ptr = &state->uid_min},
+		{.ln = "UID_MAX", .type = HXTYPE_UINT, .ptr = &state->uid_max},
+		{.ln = "GID_MIN", .type = HXTYPE_UINT, .ptr = &state->gid_min},
+		{.ln = "GID_MAX", .type = HXTYPE_UINT, .ptr = &state->gid_max},
 		HXOPT_TABLEEND,
 	};
 	struct HXoption options_table[] = {

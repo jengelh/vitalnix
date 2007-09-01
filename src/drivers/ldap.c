@@ -28,7 +28,7 @@ struct ldap_state {
 	char *user_suffix, *group_suffix;
 
 	/* Misc */
-	long uid_min, uid_max, gid_min, gid_max;
+	unsigned int uid_min, uid_max, gid_min, gid_max;
 };
 
 struct ldap_trav {
