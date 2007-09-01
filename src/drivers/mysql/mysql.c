@@ -11,6 +11,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -63,7 +64,7 @@ struct mq_names {
 struct mysql_state {
 	struct mq_conn  cn;
 	struct mq_names names;
-	int perm_shadow, perm_vxshadow;
+	bool perm_shadow, perm_vxshadow;
 	/* Misc */
 	unsigned int uid_min, uid_max, gid_min, gid_max;
 };
@@ -80,12 +81,12 @@ static inline void vmysql_xunlock(struct mysql_state *);
 static int vmysql_userdel_unlocked(struct mysql_state *,
 	const struct vxpdb_user *);
 
-static long count_rows(struct mysql_state *, const char *);
+static unsigned int count_rows(struct mysql_state *, const char *);
 static void export_passwd(struct vxpdb_user *, const MYSQL_ROW);
 static void export_shadow(struct vxpdb_user *, const MYSQL_ROW);
 static inline void export_vxshadow(struct vxpdb_user *, const MYSQL_ROW);
 static inline void export_group(struct vxpdb_group *, const MYSQL_ROW);
-static long find_next_id(struct mysql_state *, long);
+static unsigned int find_next_id(struct mysql_state *, unsigned int);
 static inline long ito_expire(long);
 static inline long ito_inact(long);
 static int queryf(MYSQL *, const char *, ...);
@@ -637,12 +638,12 @@ static int vmysql_groupinfo(struct vxpdb_state *vp,
 }
 
 //-----------------------------------------------------------------------------
-static long count_rows(struct mysql_state *state, const char *table)
+static unsigned int count_rows(struct mysql_state *state, const char *table)
 {
+	unsigned int ret = 0;
 	char query[256];
 	MYSQL_RES *res;
 	MYSQL_ROW row;
-	long ret = 0;
 
 	snprintf(query, sizeof(query), "select count(*) from %s", table);
 	if (mysql_query(state->cn.handle, query) != 0 ||
@@ -709,11 +710,12 @@ static inline void export_group(struct vxpdb_group *dest, const MYSQL_ROW in)
 	return;
 }
 
-static long find_next_id(struct mysql_state *state, long command)
+static unsigned int find_next_id(struct mysql_state *state,
+    unsigned int command)
 {
 	struct mq_names *names = &state->names;
 	const char *field, *table;
-	long start, end;
+	unsigned int start, end;
 	char query[256];
 
 	if (command == PDB_NEXTGID_SYS || command == PDB_NEXTGID) {
@@ -732,7 +734,7 @@ static long find_next_id(struct mysql_state *state, long command)
 		start = 1;
 	}
 
-	snprintf(query, sizeof(query), "select %s from %s where %s=%ld",
+	snprintf(query, sizeof(query), "select %s from %s where %s=%u",
 	         field, table, field, start);
 
 /*
@@ -748,7 +750,7 @@ uid between 1500 and 1509;
 
 	snprintf(query, sizeof(query), "select min(uq0.uid+1) from %s as uq0 "
 	  "where not exists (select %s from %s as uq1 where "
-	  "uq1.uid=uq0.uid+1) and uq0.uid >= %ld and uq0.uid <= %ld",
+	  "uq1.uid=uq0.uid+1) and uq0.uid >= %u and uq0.uid <= %u",
 	  table, field, table, start, end);
 
 	return 0;

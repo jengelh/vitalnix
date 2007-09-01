@@ -19,8 +19,8 @@
 #include <vitalnix/libvxutil/libvxutil.h>
 
 /* Functions */
-static long count_users(void);
-static long count_groups(void);
+static unsigned int count_users(void);
+static unsigned int count_groups(void);
 static void nssuser_copy(struct vxpdb_user *, const struct passwd *, const struct spwd *);
 static void nssgroup_copy(struct vxpdb_group *, const struct group *);
 static inline int nssuser_match(const struct passwd *, const struct vxpdb_user *);
@@ -168,26 +168,22 @@ static void vnss1_grouptrav_free(struct vxpdb_state *this, void *priv_data)
 }
 
 //-----------------------------------------------------------------------------
-static long count_users(void)
+static unsigned int count_users(void)
 {
-	long n = 0;
+	unsigned int n = 0;
 
-	setpwent();
-	while (getpwent() != NULL)
-		++n;
-
+	for (setpwent(); getpwent() != NULL; ++n)
+		;
 	endpwent();
 	return n;
 }
 
-static long count_groups(void)
+static unsigned int count_groups(void)
 {
-	long n = 0;
+	unsigned int n = 0;
 
-	setgrent();
-	while (getgrent() != NULL)
-		++n;
-
+	for (setgrent(); getgrent() != NULL; ++n)
+		;
 	endpwent();
 	return n;
 }
