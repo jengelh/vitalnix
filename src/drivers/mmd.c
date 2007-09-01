@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <libHX.h>
+#include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxpdb/xafunc.h>
@@ -709,7 +710,7 @@ static void read_config(struct multi_state *state, const char *file)
 	return;
 }
 
-struct vxpdb_driver THIS_MODULE = {
+EXPORT_SYMBOL struct vxpdb_driver THIS_MODULE = {
 	.name           = "Multiple Module driver",
 	.desc           = "Logically combines databases",
 	.init           = vxmmd_init,

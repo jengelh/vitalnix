@@ -18,6 +18,7 @@
 #include <libHX.h>
 #include <mysql.h>
 #include <mysqld_error.h>
+#include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxutil/libvxutil.h>
@@ -1006,7 +1007,7 @@ static hmc_t *sql_usermask(hmc_t **s, const struct mysql_state *state,
 #undef PUT_I
 #undef PUT_S
 
-struct vxpdb_driver THIS_MODULE = {
+EXPORT_SYMBOL struct vxpdb_driver THIS_MODULE = {
 	.name           = "MYSQL back-end module",
 	.init           = vmysql_init,
 	.open           = vmysql_open,

@@ -13,6 +13,7 @@
 #include <grp.h>
 #include <pwd.h>
 #include <shadow.h>
+#include <vitalnix/compiler.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
@@ -200,7 +201,7 @@ static void nssgroup_copy(struct vxpdb_group *dest, const struct group *src)
 	return;
 }
 
-struct vxpdb_driver THIS_MODULE = {
+EXPORT_SYMBOL struct vxpdb_driver THIS_MODULE = {
 	.name           = "NSS back-end module (not MU/MT-safe)",
 	.desc           = "API demonstration",
 	.modctl         = vnss1_modctl,
