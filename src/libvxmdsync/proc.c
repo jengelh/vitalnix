@@ -180,8 +180,8 @@ EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
 		user_catalog = HXformat_init();
 		HXformat_add(user_catalog, "USERNAME", out.pw_name,  HXTYPE_STRING);
 		HXformat_add(user_catalog, "REALNAME", out.pw_real,  HXTYPE_STRING);
-		HXformat_add(user_catalog, "UID",     &out.pw_uid,   HXTYPE_LONG);
-		HXformat_add(user_catalog, "GID",     &out.pw_gid,   HXTYPE_LONG);
+		HXformat_add(user_catalog, "UID",     &out.pw_uid,   HXTYPE_UINT);
+		HXformat_add(user_catalog, "GID",     &out.pw_gid,   HXTYPE_UINT);
 		/* igrp, sgrp unimplemented in Vitalnix */
 		HXformat_add(user_catalog, "GROUP",    "",           HXTYPE_STRING);
 		HXformat_add(user_catalog, "SGRP",     "",           HXTYPE_STRING);
@@ -337,8 +337,8 @@ EXPORT_SYMBOL int mdsync_del(struct mdsync_workspace *w)
 	if (c->del_opts.user_predel != NULL || c->del_opts.user_postdel != NULL) {
 		user_catalog = HXformat_init();
 		HXformat_add(user_catalog, "USERNAME", &res.pw_name, HXTYPE_STRP);
-		HXformat_add(user_catalog, "UID",      &res.pw_uid,  HXTYPE_LONG);
-		HXformat_add(user_catalog, "GID",      &res.pw_gid,  HXTYPE_LONG);
+		HXformat_add(user_catalog, "UID",      &res.pw_uid,  HXTYPE_UINT);
+		HXformat_add(user_catalog, "GID",      &res.pw_gid,  HXTYPE_UINT);
 		HXformat_add(user_catalog, "GROUP",    &res.pw_igrp, HXTYPE_STRP);
 		HXformat_add(user_catalog, "HOME",     &res.pw_home, HXTYPE_STRP);
 		HXformat_add(user_catalog, "DATE",     current_date, HXTYPE_STRING);

@@ -55,8 +55,8 @@ struct HXdeque *db_read_passwd(FILE *fp)
 
 		vxpdb_user_clean(u);
 		u->pw_name  = HX_strdup(data[0]);
-		u->pw_uid   = strtol(data[2], NULL, 0);
-		u->pw_gid   = strtol(data[3], NULL, 0);
+		u->pw_uid   = strtoul(data[2], NULL, 0);
+		u->pw_gid   = strtoul(data[3], NULL, 0);
 		u->pw_real  = HX_strdup(data[4]);
 		u->pw_home  = HX_strdup(data[5]);
 		u->pw_shell = HX_strdup(data[6]);
@@ -90,7 +90,7 @@ void db_write_passwd(FILE *fp, const struct vxpdb_user *u)
 {
 	const char **priv = u->be_priv;
 
-	fprintf(fp, "%s:x:%ld:%ld:%s:%s:%s", u->pw_name, u->pw_uid, u->pw_gid,
+	fprintf(fp, "%s:x:%u:%u:%s:%s:%s", u->pw_name, u->pw_uid, u->pw_gid,
 	        u->pw_real, u->pw_home, u->pw_shell);
 	if (priv != NULL && priv[0] != NULL)
 		fprintf(fp, "%s", priv[0]);

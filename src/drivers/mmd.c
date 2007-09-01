@@ -57,8 +57,8 @@ static void *vxmmd_usertrav_init(struct vxpdb_state *);
 static int vxmmd_usertrav_walk(struct vxpdb_state *, void *, struct vxpdb_user *);
 static void vxmmd_usertrav_free(struct vxpdb_state *, void *);
 
-static long vxmmd_autouid(struct vxpdb_state *, long);
-static long vxmmd_autogid(struct vxpdb_state *, long);
+static unsigned int vxmmd_autouid(struct vxpdb_state *, unsigned int);
+static unsigned int vxmmd_autogid(struct vxpdb_state *, unsigned int);
 
 static int modules_construct(struct multi_state *);
 static int modules_open(struct multi_state *, long);
@@ -476,11 +476,12 @@ static void vxmmd_grouptrav_free(struct vxpdb_state *vp, void *ptr)
 }
 
 //-----------------------------------------------------------------------------
-static long vxmmd_autouid(struct vxpdb_state *vp, long wanted)
+static unsigned int vxmmd_autouid(struct vxpdb_state *vp, unsigned int wanted)
 {
-	long accept, high = PDB_NOUID, min, max;
 	const struct multi_state *state = vp->state;
+	unsigned int accept, min, max;
 	struct vxpdb_user dest = {};
+	int high = -1;
 	void *trav;
 
 	if (wanted == PDB_AUTOUID_SYS) {
@@ -531,11 +532,12 @@ static long vxmmd_autouid(struct vxpdb_state *vp, long wanted)
 	return -ENOSPC;
 }
 
-static long vxmmd_autogid(struct vxpdb_state *vp, long wanted)
+static unsigned int vxmmd_autogid(struct vxpdb_state *vp, unsigned int wanted)
 {
-	long accept, high = PDB_NOGID, min, max;
 	const struct multi_state *state = vp->state;
+	unsigned int accept, min, max;
 	struct vxpdb_group dest = {};
+	int high = -1;
 	void *trav;
 
 	if (wanted == PDB_AUTOGID_SYS) {

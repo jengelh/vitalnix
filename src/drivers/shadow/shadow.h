@@ -41,19 +41,19 @@ struct shadow_state {
 	unsigned long flags;
 	struct HXdeque *dq_user, *dq_group;
 	struct spdb_file fpasswd, fshadow, fvxpasswd, fvxshadow, fgroup;
-	long uid_min, uid_max, gid_min, gid_max;
+	unsigned int uid_min, uid_max, gid_min, gid_max;
 };
 
 /*
  *	AUX.C
  */
-extern long automatic_uid(struct shadow_state *, long);
-extern long automatic_gid(struct shadow_state *, long);
+extern unsigned int automatic_uid(struct shadow_state *, unsigned int);
+extern unsigned int automatic_gid(struct shadow_state *, unsigned int);
 extern void free_data(struct shadow_state *);
 extern void free_single_group(struct vxpdb_group *);
 extern void free_single_user(struct vxpdb_user *);
-extern struct vxpdb_group *lookup_group(struct HXdeque *, const char *, long);
-extern struct vxpdb_user *lookup_user(struct HXdeque *, const char *, long);
+extern struct vxpdb_group *lookup_group(struct HXdeque *, const char *, unsigned int);
+extern struct vxpdb_user *lookup_user(struct HXdeque *, const char *, unsigned int);
 extern void read_config(struct shadow_state *, unsigned int, const char *);
 extern struct HXdeque_node *skip_nis_users(struct HXdeque_node *);
 extern struct HXdeque_node *skip_nis_groups(struct HXdeque_node *);

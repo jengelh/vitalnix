@@ -177,7 +177,7 @@ static bool useradd_get_options(int *argc, const char ***argv,
 		 .help = "System account (use userid < UID_MIN)"},
 		{.sh = 's', .type = HXTYPE_STRING, .ptr = &user->pw_shell,
 		 .help = "The user's default shell", .htyp = "prog"},
-		{.sh = 'u', .type = HXTYPE_LONG, .ptr = &user->pw_uid,
+		{.sh = 'u', .type = HXTYPE_UINT, .ptr = &user->pw_uid,
 		 .help = "Numerical value of the user's ID", .htyp = "uid"},
 		{.sh = 'v', .ln = "version", .type = HXTYPE_NONE,
 		 .cb = useradd_show_version, .help = "Show version information"},
@@ -328,7 +328,7 @@ static int useradd_run3(struct vxpdb_state *db, struct useradd_state *state,
 	}
 
 	HXformat_add(state->sr_map, "USERNAME", user->pw_name, HXTYPE_STRING);
-	HXformat_add(state->sr_map, "UID", &user->pw_uid, HXTYPE_LONG);
+	HXformat_add(state->sr_map, "UID", &user->pw_uid, HXTYPE_UINT);
 
 	if (conf->master_preadd != NULL)
 		vxutil_replace_run(conf->master_preadd, state->sr_map);

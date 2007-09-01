@@ -146,8 +146,8 @@ static void d_ldif_users(struct vxpdb_state *db)
 			"objectClass: account\n"
 			"objectClass: posixAccount\n"
 			"uid: %s\n"
-			"uidNumber: %ld\n"
-			"gidNumber: %ld\n",
+			"uidNumber: %u\n"
+			"gidNumber: %u\n",
 			user.pw_name, user.pw_name, user.pw_uid, user.pw_gid);
 
 		if (user.pw_real == NULL || *user.pw_real == '\0') {
@@ -297,7 +297,7 @@ static void d_mysql_users(struct vxpdb_state *db)
 		if (Dump_what[DUMP_PASSWD])
 			printf("insert into users (username, uid, gid, "
 			       "realname, homedir, shell) values "
-			       "('%s',%ld,%ld,'%s','%s','%s');\n",
+			       "('%s',%u,%u,'%s','%s','%s');\n",
 			       user.pw_name, user.pw_uid, user.pw_gid,
 			       user.pw_real, user.pw_home, user.pw_shell);
 		if (Dump_what[DUMP_SHADOW] && user.sp_passwd != NULL)
@@ -353,7 +353,7 @@ static void d_shadow(struct vxpdb_state *db)
 			if (!(user.pw_uid >= Uid_range[0] &&
 			    user.pw_uid <= Uid_range[1]))
 				continue;
-			printf("%s:x:%ld:%ld:%s:%s:%s\n", user.pw_name,
+			printf("%s:x:%u:%u:%s:%s:%s\n", user.pw_name,
 			       user.pw_uid, user.pw_gid, user.pw_real,
 			       user.pw_home, user.pw_shell);
 		}

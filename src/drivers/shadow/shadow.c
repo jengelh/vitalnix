@@ -157,7 +157,7 @@ static int vshadow_useradd(struct vxpdb_state *vp,
 {
 	struct shadow_state *state = vp->state;
 	struct vxpdb_user *nu;
-	long uid;
+	unsigned int uid;
 
 	if (rq->pw_name == NULL)
 		return -EINVAL;
@@ -351,7 +351,7 @@ static int vshadow_groupadd(struct vxpdb_state *vp,
 {
 	struct shadow_state *state = vp->state;
 	struct vxpdb_group *ng;
-	long gid;
+	unsigned int gid;
 
 	if (rq->gr_name == NULL)
 		return -EINVAL;

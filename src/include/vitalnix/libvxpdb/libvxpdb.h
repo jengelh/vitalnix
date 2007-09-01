@@ -57,7 +57,7 @@ struct vxconfig_userdel;
 struct vxpdb_user {
 	/* passwd part */
 	char *pw_name, *pw_real, *pw_home, *pw_shell, *pw_igrp;
-	long pw_uid, pw_gid;
+	unsigned int pw_uid, pw_gid;
 	struct HXdeque *pw_sgrp;
 
 	/* shadow part */

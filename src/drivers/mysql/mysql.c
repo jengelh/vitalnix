@@ -334,7 +334,7 @@ static int vmysql_useradd(struct vxpdb_state *vp,
 	 */
 	ret = queryf(state->cn.handle,
 	      "insert into %s (%s,%s,%s,%s,%s,%s) "
-	      "values ('%S','%ld','%ld','%s','%s','%s')",
+	      "values ('%S',%u,%u,'%s','%s','%s')",
 	      names->pw_table, names->pw_name, names->pw_uid, names->pw_gid,
 	      names->pw_real, names->pw_home, names->pw_shell, rq->pw_name,
 	      rq->pw_uid, rq->pw_gid, rq->pw_real, rq->pw_home, rq->pw_shell);
@@ -660,9 +660,9 @@ static void export_passwd(struct vxpdb_user *dest, const MYSQL_ROW in)
 {
 	hmc_strasg(&dest->pw_name, in[0]);
 	if (in[1] != NULL)
-		dest->pw_uid = strtol(in[1], NULL, 0);
+		dest->pw_uid = strtoul(in[1], NULL, 0);
 	if (in[2] != NULL)
-		dest->pw_gid = strtol(in[2], NULL, 0);
+		dest->pw_gid = strtoul(in[2], NULL, 0);
 	hmc_strasg(&dest->pw_real, in[3]);
 	hmc_strasg(&dest->pw_home, in[4]);
 	hmc_strasg(&dest->pw_shell, in[5]);
@@ -948,7 +948,7 @@ static char *s_join(const char *delim, ...)
 	do { \
 		if (n) hmc_strcat(s, " and "); \
 		hmc_strcat(s, (SF)); \
-		snprintf(tmp, sizeof(tmp), "=%ld", (MF)); \
+		snprintf(tmp, sizeof(tmp), "=%u", (MF)); \
 		hmc_strcat(s, tmp); \
 		n = 1; \
 	} while (0)

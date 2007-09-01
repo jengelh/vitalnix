@@ -17,10 +17,11 @@
 #include "drivers/shadow/shadow.h"
 #include <vitalnix/libvxpdb/libvxpdb.h>
 
-long automatic_uid(struct shadow_state *state, long wanted)
+unsigned int automatic_uid(struct shadow_state *state, unsigned int wanted)
 {
 	const struct HXdeque_node *travp = state->dq_user->first;
-	long accept, high = PDB_NOUID, min, max;
+	unsigned int accept, min, max;
+	int high = -1;
 
 	if (wanted == PDB_AUTOUID_SYS) {
 		min = accept = 1;
@@ -35,7 +36,7 @@ long automatic_uid(struct shadow_state *state, long wanted)
 	/* Find the highest ID */
 	while (travp != NULL) {
 		const struct vxpdb_user *user = travp->ptr;
-		long uid = user->pw_uid;
+		unsigned int uid = user->pw_uid;
 		if (uid >= min && uid <= max && uid > high)
 			high = uid;
 		travp = travp->next;
@@ -63,10 +64,11 @@ long automatic_uid(struct shadow_state *state, long wanted)
 	return -ENOSPC;
 }
 
-long automatic_gid(struct shadow_state *state, long wanted)
+unsigned int automatic_gid(struct shadow_state *state, unsigned int wanted)
 {
 	const struct HXdeque_node *travp = state->dq_group->first;
-	long accept, high = PDB_NOGID, min, max;
+	unsigned int accept, min, max;
+	int high = -1;
 
 	if (wanted == PDB_AUTOGID_SYS) {
 		min = accept = 1;
@@ -81,7 +83,7 @@ long automatic_gid(struct shadow_state *state, long wanted)
 	/* Find the highest GID */
 	while (travp != NULL) {
 		const struct vxpdb_group *group = travp->ptr;
-		long gid = group->gr_gid;
+		unsigned int gid = group->gr_gid;
 		if (gid >= min && gid <= max && gid > high)
 			high = gid;
 		travp = travp->next;
@@ -178,7 +180,7 @@ void free_single_group(struct vxpdb_group *g)
  * %PDB_NOGID, which would usually match any user, %NULL is returned too.
  */
 struct vxpdb_group *lookup_group(struct HXdeque *dq,
-    const char *gname, long gid)
+    const char *gname, unsigned int gid)
 {
 	const struct HXdeque_node *travp;
 
@@ -206,7 +208,7 @@ struct vxpdb_group *lookup_group(struct HXdeque *dq,
  * %PDB_NOUID, which would usually match any user, %NULL is returned too.
  */
 struct vxpdb_user *lookup_user(struct HXdeque *dq,
-    const char *lname, long uid)
+    const char *lname, unsigned int uid)
 {
 	const struct HXdeque_node *travp;
 
@@ -227,10 +229,10 @@ void read_config(struct shadow_state *state, unsigned int action,
     const char *file)
 {
 	struct HXoption autouid_table[] = {
-		{.ln = "UID_MIN", .type = HXTYPE_LONG, .ptr = &state->uid_min},
-		{.ln = "UID_MAX", .type = HXTYPE_LONG, .ptr = &state->uid_max},
-		{.ln = "GID_MIN", .type = HXTYPE_LONG, .ptr = &state->gid_min},
-		{.ln = "GID_MAX", .type = HXTYPE_LONG, .ptr = &state->gid_max},
+		{.ln = "UID_MIN", .type = HXTYPE_UINT, .ptr = &state->uid_min},
+		{.ln = "UID_MAX", .type = HXTYPE_UINT, .ptr = &state->uid_max},
+		{.ln = "GID_MIN", .type = HXTYPE_UINT, .ptr = &state->gid_min},
+		{.ln = "GID_MAX", .type = HXTYPE_UINT, .ptr = &state->gid_max},
 		HXOPT_TABLEEND,
 	};
 	struct HXoption options_table[] = {

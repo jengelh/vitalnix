@@ -137,13 +137,13 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 		.mod_type   = "uid",
 		.mod_values = (char *[]){rq->pw_name, NULL},
 	};
-	snprintf(s_pw_uid, sizeof(s_pw_uid), "%lu", rq->pw_uid);
+	snprintf(s_pw_uid, sizeof(s_pw_uid), "%u", rq->pw_uid);
 	attr[a++] = (LDAPMod){
 		.mod_op     = LDAP_MOD_ADD,
 		.mod_type   = "uidNumber",
 		.mod_values = (char *[]){s_pw_uid, NULL},
 	};
-	snprintf(s_pw_gid, sizeof(s_pw_gid), "%lu", rq->pw_gid);
+	snprintf(s_pw_gid, sizeof(s_pw_gid), "%u", rq->pw_gid);
 	attr[a++] = (LDAPMod){
 		.mod_op     = LDAP_MOD_ADD,
 		.mod_type   = "gidNumber",
@@ -330,9 +330,9 @@ static void vxldap_copy_user(struct vxpdb_user *dest, LDAP *conn,
 		if (strcmp(attr, "uid") == 0)
 			hmc_strasg(&dest->pw_name, *val);
 		else if (strcmp(attr, "uidNumber") == 0)
-			dest->pw_uid = strtol(*val, NULL, 0);
+			dest->pw_uid = strtoul(*val, NULL, 0);
 		else if (strcmp(attr, "gidNumber") == 0)
-			dest->pw_gid = strtol(*val, NULL, 0);
+			dest->pw_gid = strtoul(*val, NULL, 0);
 		else if (strcmp(attr, "gecos") == 0)
 			hmc_strasg(&dest->pw_real, *val);
 		else if (strcmp(attr, "homeDirectory") == 0)
