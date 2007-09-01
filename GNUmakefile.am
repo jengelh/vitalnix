@@ -90,7 +90,7 @@ vxgroupdel_LDADD   := -lHX libvxpdb.la libvxutil.la
 #
 drv_dummy_la_SOURCES := src/drivers/dummy.c
 drv_dummy_la_LIBADD  := libvxcore.la libvxpdb.la
-drv_dummy_la_LDFLAGS := ${regular_SOLDFLAGS} -module
+drv_dummy_la_LDFLAGS := ${regular_SOLDFLAGS} -module -avoid-version
 
 #
 #	drivers/ldap
@@ -98,30 +98,30 @@ drv_dummy_la_LDFLAGS := ${regular_SOLDFLAGS} -module
 drv_ldap_la_CFLAGS  := ${AM_CFLAGS} -DLDAP_DEPRECATED
 drv_ldap_la_SOURCES := src/drivers/ldap.c
 drv_ldap_la_LIBADD  := -lldap_r -lpthread libvxcore.la libvxpdb.la
-drv_ldap_la_LDFLAGS := ${regular_SOLDFLAGS} -module
+drv_ldap_la_LDFLAGS := ${regular_SOLDFLAGS} -module -avoid-version
 
 #
 #	drivers/mmd
 #
 drv_mmd_la_SOURCES := src/drivers/mmd.c
 drv_mmd_la_LIBADD  := -lHX libvxcore.la libvxpdb.la
-drv_mmd_la_LDFLAGS := ${regular_SOLDFLAGS} -module
+drv_mmd_la_LDFLAGS := ${regular_SOLDFLAGS} -module -avoid-version
 
 #
 #	drivers/nss
 #
 drv_nss_la_SOURCES  := src/drivers/nss.c
 drv_nss_la_LIBADD   := -lHX libvxcore.la libvxpdb.la
-drv_nss_la_LDFLAGS  := ${regular_SOLDFLAGS} -module
+drv_nss_la_LDFLAGS  := ${regular_SOLDFLAGS} -module -avoid-version
 drv_nss1_la_SOURCES := src/drivers/nss1.c
 drv_nss1_la_LIBADD  := -lHX libvxcore.la libvxpdb.la libvxutil.la
-drv_nss1_la_LDFLAGS := ${regular_SOLDFLAGS} -module
+drv_nss1_la_LDFLAGS := ${regular_SOLDFLAGS} -module -avoid-version
 
 #
 #	drivers/mysql
 #
 drv_mysql_la_LIBADD  := libvxcore.la libvxpdb.la libvxutil.la
-drv_mysql_la_LDFLAGS := ${regular_SOLDFLAGS} ${libmysql_LIBS} -module
+drv_mysql_la_LDFLAGS := ${regular_SOLDFLAGS} ${libmysql_LIBS} -module -avoid-version
 drv_mysql_la_CFLAGS  := ${AM_CFLAGS} ${libmysql_CFLAGS}
 drv_mysql_la_SOURCES := src/drivers/mysql/mysql.c
 
@@ -129,7 +129,7 @@ drv_mysql_la_SOURCES := src/drivers/mysql/mysql.c
 #	drivers/shadow
 #
 drv_shadow_la_LIBADD  := -lHX libvxcore.la libvxpdb.la
-drv_shadow_la_LDFLAGS := ${regular_SOLDFLAGS} ${libxml_LIBS} -module
+drv_shadow_la_LDFLAGS := ${regular_SOLDFLAGS} ${libxml_LIBS} -module -avoid-version
 drv_shadow_la_CFLAGS  := ${AM_CFLAGS} ${libxml_CFLAGS}
 drv_shadow_la_SOURCES := \
 	src/drivers/shadow/aux.c \
