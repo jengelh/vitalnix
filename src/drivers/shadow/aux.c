@@ -179,7 +179,7 @@ void free_single_group(struct vxpdb_group *g)
  * structure if found, or %NULL if not found. If @gname is %NULL and @gid is
  * %PDB_NOGID, which would usually match any user, %NULL is returned too.
  */
-struct vxpdb_group *lookup_group(struct HXdeque *dq,
+struct vxpdb_group *lookup_group(const struct HXdeque *dq,
     const char *gname, unsigned int gid)
 {
 	const struct HXdeque_node *travp;
@@ -207,7 +207,7 @@ struct vxpdb_group *lookup_group(struct HXdeque *dq,
  * structure if found, or %NULL if not found. If @lname is %NULL and @uid is
  * %PDB_NOUID, which would usually match any user, %NULL is returned too.
  */
-struct vxpdb_user *lookup_user(struct HXdeque *dq,
+struct vxpdb_user *lookup_user(const struct HXdeque *dq,
     const char *lname, unsigned int uid)
 {
 	const struct HXdeque_node *travp;

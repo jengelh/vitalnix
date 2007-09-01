@@ -10,12 +10,10 @@
 #include <errno.h>
 #include <stdio.h>
 #include <vitalnix/compiler.h>
-#include "drivers/proto.h"
 #include <vitalnix/libvxpdb/libvxpdb.h>
 
 #define ALIAS(orig, new) static typeof(orig) new __attribute__((alias(#orig)))
 
-//-----------------------------------------------------------------------------
 static int vdummy_init(struct vxpdb_state *vp, const char *config_file)
 {
 	return 1;
@@ -50,6 +48,18 @@ static long vdummy_modctl(struct vxpdb_state *vp, unsigned int command, ...)
 	return -ENOSYS;
 }
 
+static int vdummy_getpwuid(struct vxpdb_state *vp, unsigned int uid,
+    struct vxpdb_user *dest)
+{
+	return 0;
+}
+
+static int vdummy_getpwnam(struct vxpdb_state *vp, const char *name,
+    struct vxpdb_user *dest)
+{
+	return 0;
+}
+
 static int vdummy_useradd(struct vxpdb_state *vp, const struct vxpdb_user *user)
 {
 	return -EPERM;
@@ -82,8 +92,14 @@ static void vdummy_usertrav_free(struct vxpdb_state *vp, void *ptr)
 	return;
 }
 
-static int vdummy_userinfo(struct vxpdb_state *vp,
-    const struct vxpdb_user *mask, struct vxpdb_user *result, size_t size)
+static int vdummy_getgrgid(struct vxpdb_state *vp, unsigned int gid,
+    struct vxpdb_group *dest)
+{
+	return 0;
+}
+
+static int vdummy_getgrnam(struct vxpdb_state *vp, const char *name,
+    struct vxpdb_group *dest)
 {
 	return 0;
 }
@@ -121,13 +137,6 @@ static void vdummy_grouptrav_free(struct vxpdb_state *vp, void *ptr)
 	return;
 }
 
-static int vdummy_groupinfo(struct vxpdb_state *vp,
-    const struct vxpdb_group *mask, struct vxpdb_group *result, size_t size)
-{
-	return 0;
-}
-
-//-----------------------------------------------------------------------------
 /*
  * vxpdb_fix_vtable -
  * @m:	vtable
@@ -143,6 +152,8 @@ EXPORT_SYMBOL void vxpdb_fix_vtable(struct vxpdb_driver *m)
 	SET(lock);
 	SET(unlock);
 
+	SET(getpwuid);
+	SET(getpwnam);
 	SET(useradd);
 	SET(usermod);
 	SET(userdel);
@@ -152,8 +163,9 @@ EXPORT_SYMBOL void vxpdb_fix_vtable(struct vxpdb_driver *m)
 			m->usertrav_walk = vdummy_usertrav_walk;
 			m->usertrav_free = vdummy_usertrav_free;
 	}
-	SET(userinfo);
 
+	SET(getgrgid);
+	SET(getgrnam);
 	SET(groupadd);
 	SET(groupmod);
 	SET(groupdel);
@@ -163,9 +175,6 @@ EXPORT_SYMBOL void vxpdb_fix_vtable(struct vxpdb_driver *m)
 			m->grouptrav_walk = vdummy_grouptrav_walk;
 			m->grouptrav_free = vdummy_grouptrav_free;
 	}
-	SET(groupinfo);
 	return;
 #undef SET
 }
-
-//=============================================================================

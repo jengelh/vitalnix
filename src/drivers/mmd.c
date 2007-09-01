@@ -13,7 +13,6 @@
 #include <stdlib.h>
 #include <libHX.h>
 #include <vitalnix/config.h>
-#include "drivers/proto.h"
 #include "drivers/static-build.h"
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxpdb/xafunc.h>
@@ -220,7 +219,7 @@ static int vxmmd_userdel(struct vxpdb_state *vp,
 	return -EROFS;
 }
 
-static int vxmmd_getpwuid(struct vxpdb_state *vp, long uid,
+static int vxmmd_getpwuid(struct vxpdb_state *vp, unsigned int uid,
     struct vxpdb_user *dest)
 {
 	const struct HXdeque_node *rd_node;
@@ -369,7 +368,7 @@ static int vxmmd_groupdel(struct vxpdb_state *vp,
 	return -EROFS;
 }
 
-static int vxmmd_getgrgid(struct vxpdb_state *vp, long gid,
+static int vxmmd_getgrgid(struct vxpdb_state *vp, unsigned int gid,
     struct vxpdb_group *dest)
 {
 	const struct HXdeque_node *rd_node;

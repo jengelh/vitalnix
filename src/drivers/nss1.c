@@ -13,7 +13,6 @@
 #include <grp.h>
 #include <pwd.h>
 #include <shadow.h>
-#include "drivers/proto.h"
 #include "drivers/static-build.h"
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxutil/libvxutil.h>
@@ -23,8 +22,6 @@ static unsigned int count_users(void);
 static unsigned int count_groups(void);
 static void nssuser_copy(struct vxpdb_user *, const struct passwd *, const struct spwd *);
 static void nssgroup_copy(struct vxpdb_group *, const struct group *);
-static inline int nssuser_match(const struct passwd *, const struct vxpdb_user *);
-static inline int nssgroup_match(const struct group *, const struct vxpdb_group *);
 
 //-----------------------------------------------------------------------------
 static long vnss1_modctl(struct vxpdb_state *this, unsigned int command, ...)
@@ -39,39 +36,30 @@ static long vnss1_modctl(struct vxpdb_state *this, unsigned int command, ...)
 	return -ENOSYS;
 }
 
-//-----------------------------------------------------------------------------
-static int vnss1_userinfo(struct vxpdb_state *this,
-    const struct vxpdb_user *sr_mask, struct vxpdb_user *dest, size_t size)
+static int vnss1_getpwuid(struct vxpdb_state *this, unsigned int uid,
+    struct vxpdb_user *dest)
 {
-	struct vxpdb_user temp_mask;
-	struct passwd *pe;
-	int found = 0;
+	struct passwd *p;
 
-	if (sr_mask == dest) {
-		memcpy(&temp_mask, sr_mask, sizeof(struct vxpdb_user));
-		sr_mask = &temp_mask;
-	}
+	errno = 0;
+	if ((p = getpwuid(uid)) == NULL)
+		return -errno;
 
-	setpwent();
-	while ((pe = getpwent()) != NULL && (dest == NULL || size > 0)) {
-		if (!nssuser_match(pe, sr_mask))
-			continue;
+	nssuser_copy(dest, p, getspnam(p->pw_name));
+	return 1;
+}
 
-		if (dest != NULL) {
-			nssuser_copy(dest, pe, getspnam(pe->pw_name));
-			++dest;
-			++found;
-			--size;
-		} else {
-			if (size == 0) {
-				endpwent();
-				return 1;
-			}
-			++found;
-		}
-	}
+static int vnss1_getpwnam(struct vxpdb_state *this, const char *name,
+    struct vxpdb_user *dest)
+{
+	struct passwd *p;
 
-	return found;
+	errno = 0;
+	if ((p = getpwnam(name)) == NULL)
+		return -errno;
+
+	nssuser_copy(dest, p, getspnam(name));
+	return 1;
 }
 
 static void *vnss1_usertrav_init(struct vxpdb_state *this)
@@ -106,40 +94,30 @@ static void vnss1_usertrav_free(struct vxpdb_state *this, void *priv_data)
 	return;
 }
 
-//-----------------------------------------------------------------------------
-static int vnss1_groupinfo(struct vxpdb_state *this,
-    const struct vxpdb_group *sr_mask, struct vxpdb_group *dest, size_t size)
+static int vnss1_getgrgid(struct vxpdb_state *this, unsigned int gid,
+    struct vxpdb_group *dest)
 {
-	struct vxpdb_group temp_mask;
-	struct group *ge;
-	int found = 0;
+	struct group *g;
 
-	if (sr_mask == dest) {
-		memcpy(&temp_mask, sr_mask, sizeof(struct vxpdb_group));
-		sr_mask = &temp_mask;
-	}
+	errno = 0;
+	if ((g = getgrgid(gid)) == NULL)
+		return -errno;
 
-	setgrent();
-	while ((ge = getgrent()) != NULL && (dest != NULL || size > 0)) {
-		if (!nssgroup_match(ge, sr_mask))
-			continue;
+	nssgroup_copy(dest, g);
+	return 1;
+}
 
-		if (dest != NULL) {
-			nssgroup_copy(dest, ge);
-			++dest;
-			++found;
-			--size;
-		} else {
-			if (size == 0) {
-				endgrent();
-				return 1;
-			}
-			++found;
-		}
-	}
+static int vnss1_getgrnam(struct vxpdb_state *this, const char *name,
+    struct vxpdb_group *dest)
+{
+	struct group *g;
 
-	endgrent();
-	return found;
+	errno = 0;
+	if ((g = getgrnam(name)) == NULL)
+		return -errno;
+
+	nssgroup_copy(dest, g);
+	return 1;
 }
 
 static void *vnss1_grouptrav_init(struct vxpdb_state *this)
@@ -223,44 +201,20 @@ static void nssgroup_copy(struct vxpdb_group *dest, const struct group *src)
 	return;
 }
 
-static inline int nssuser_match(const struct passwd *user,
-    const struct vxpdb_user *mask)
-{
-	return
-		(mask->pw_name == NULL || strcmp(user->pw_name, mask->pw_name) == 0) &&
-		(mask->pw_uid == PDB_NOUID || user->pw_uid == mask->pw_uid) &&
-		(mask->pw_gid == PDB_NOGID || user->pw_gid == mask->pw_gid) &&
-		(mask->pw_real == NULL || strcmp(user->pw_gecos, mask->pw_real) == 0) &&
-		(mask->pw_home == NULL || strcmp(user->pw_dir, mask->pw_home) == 0) &&
-		(mask->pw_shell == NULL || strcmp(user->pw_shell, mask->pw_shell) == 0);
-}
-
-static inline int nssgroup_match(const struct group *group,
-   const struct vxpdb_group *mask)
-{
-	return
-		(mask->gr_name == NULL || strcmp(group->gr_name, mask->gr_name) == 0) &&
-		(mask->gr_gid == PDB_NOGID || group->gr_gid == mask->gr_gid);
-}
-
-//-----------------------------------------------------------------------------
 static struct vxpdb_driver THIS_MODULE = {
 	.name           = "NSS back-end module (not MU/MT-safe)",
 	.desc           = "API demonstration",
-
 	.modctl         = vnss1_modctl,
-
-	.userinfo       = vnss1_userinfo,
+	.getpwuid       = vnss1_getpwuid,
+	.getpwnam       = vnss1_getpwnam,
 	.usertrav_init  = vnss1_usertrav_init,
 	.usertrav_walk  = vnss1_usertrav_walk,
 	.usertrav_free  = vnss1_usertrav_free,
-
-	.groupinfo      = vnss1_groupinfo,
+	.getgrgid       = vnss1_getgrgid,
+	.getgrnam       = vnss1_getgrnam,
 	.grouptrav_init = vnss1_grouptrav_init,
 	.grouptrav_walk = vnss1_grouptrav_walk,
 	.grouptrav_free = vnss1_grouptrav_free,
 };
 
 REGISTER_MODULE(nss1, &THIS_MODULE);
-
-//=============================================================================

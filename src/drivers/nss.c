@@ -22,7 +22,6 @@
 #include <pwd.h>
 #include <shadow.h>
 #include <vitalnix/config.h>
-#include "drivers/proto.h"
 #include "drivers/static-build.h"
 #include <vitalnix/libvxpdb/libvxpdb.h>
 
@@ -49,8 +48,8 @@ static struct HXdeque *db_read_shadow(struct HXdeque *);
 static void free_data(struct nss_state *);
 static inline void free_single_group(struct vxpdb_group *);
 static inline void free_single_user(struct vxpdb_user *);
-static inline struct vxpdb_user *get_user(struct HXdeque *, const char *);
-static inline struct vxpdb_group *get_group(struct HXdeque *, const char *);
+static inline struct vxpdb_user *get_user(const struct HXdeque *, const char *);
+static inline struct vxpdb_group *get_group(const struct HXdeque *, const char *);
 
 //-----------------------------------------------------------------------------
 static int vnss_init(struct vxpdb_state *vp, const char *config_file)
@@ -100,39 +99,39 @@ static long vnss_modctl(struct vxpdb_state *vp, unsigned int command, ...)
 	return -ENOSYS;
 }
 
-//-----------------------------------------------------------------------------
-static int vnss_userinfo(struct vxpdb_state *vp,
-    const struct vxpdb_user *sr_mask, struct vxpdb_user *dest, size_t size)
+static int vnss_getpwuid(struct vxpdb_state *vp, unsigned int uid,
+    struct vxpdb_user *dest)
 {
-	struct nss_state *state = vp->state;
-	const struct HXdeque_node *travp;
-	struct vxpdb_user temp_mask;
-	int found = 0;
+	const struct nss_state *state = vp->state;
+	const struct HXdeque_node *trav;
+	const struct vxpdb_user *src;
 
-	if (sr_mask == dest) {
-		memcpy(&temp_mask, sr_mask, sizeof(struct vxpdb_user));
-		sr_mask = &temp_mask;
-	}
-
-	for (travp = state->dq_user->first;
-	    travp != NULL && (dest == NULL || size > 0); travp = travp->next)
-	{
-		const struct vxpdb_user *src = travp->ptr;
-		if (!vxpdb_user_match(src, sr_mask))
+	for (trav = state->dq_user->first; trav != NULL; trav = trav->next) {
+		src = trav->ptr;
+		if (src->pw_uid != uid)
 			continue;
-		if (dest != NULL) {
+		if (dest != NULL)
 			vxpdb_user_copy(dest, src);
-			++dest;
-			++found;
-			--size;
-		} else {
-			if (size == 0)
-				return 1;
-			++found;
-		}
+		return 1;
 	}
 
-	return found;
+	return 0;
+}
+
+static int vnss_getpwnam(struct vxpdb_state *vp, const char *name,
+    struct vxpdb_user *dest)
+{
+	const struct nss_state *state = vp->state;
+	const struct vxpdb_user *src;
+
+	src = get_user(state->dq_user, name);
+	if (src != NULL) {
+		if (dest != NULL)
+			vxpdb_user_copy(dest, src);
+		return 1;
+	}
+
+	return 0;
 }
 
 static void *vnss_usertrav_init(struct vxpdb_state *vp)
@@ -162,44 +161,44 @@ static void vnss_usertrav_free(struct vxpdb_state *vp, void *priv_data)
 	return;
 }
 
-//-----------------------------------------------------------------------------
-static int vnss_groupinfo(struct vxpdb_state *vp,
-    const struct vxpdb_group *sr_mask, struct vxpdb_group *dest, size_t size)
+static int vnss_getgrgid(struct vxpdb_state *vp, unsigned int gid,
+    struct vxpdb_group *dest)
 {
-	struct nss_state *state = vp->state;
-	const struct HXdeque_node *travp;
-	struct vxpdb_group temp_mask;
-	int found = 0;
+	const struct nss_state *state = vp->state;
+	const struct HXdeque_node *trav;
+	const struct vxpdb_group *src;
 
-	if (sr_mask == dest) {
-		memcpy(&temp_mask, sr_mask, sizeof(struct vxpdb_group));
-		sr_mask = &temp_mask;
-	}
-
-	for (travp = state->dq_group->first;
-	    travp != NULL && (dest == NULL || size > 0); travp = travp->next)
-	{
-		const struct vxpdb_group *src = travp->ptr;
-		if (!vxpdb_group_match(src, sr_mask))
+	for (trav = state->dq_group->first; trav != NULL; trav = trav->next) {
+		src = trav->ptr;
+		if (src->gr_gid != gid)
 			continue;
-		if (dest != NULL) {
+		if (dest != NULL)
 			vxpdb_group_copy(dest, src);
-			++dest;
-			++found;
-			--size;
-		} else {
-			if (size == 0)
-				return 1;
-			++found;
-		}
+		return 1;
 	}
 
-	return found;
+	return 0;
+}
+
+static int vnss_getgrnam(struct vxpdb_state *vp, const char *name,
+    struct vxpdb_group *dest)
+{
+	const struct nss_state *state = vp->state;
+	const struct vxpdb_group *src;
+
+	src = get_group(state->dq_group, name);
+	if (src != NULL) {
+		if (dest != NULL)
+			vxpdb_group_copy(dest, src);
+		return 1;
+	}
+
+	return 0;
 }
 
 static void *vnss_grouptrav_init(struct vxpdb_state *vp)
 {
-	struct nss_state *state = vp->state;
+	const struct nss_state *state = vp->state;
 	struct traverser_state trav;
 
 	trav.wp = state->dq_group->first;
@@ -224,7 +223,6 @@ static void vnss_grouptrav_free(struct vxpdb_state *vp, void *priv_data)
 	return;
 }
 
-//-----------------------------------------------------------------------------
 static int db_open(struct nss_state *state)
 {
 	state->dq_user  = db_read_passwd();
@@ -366,7 +364,7 @@ static inline void free_single_group(struct vxpdb_group *g)
 	return;
 }
 
-static inline struct vxpdb_user *get_user(struct HXdeque *dq,
+static inline struct vxpdb_user *get_user(const struct HXdeque *dq,
     const char *lname)
 {
 	const struct HXdeque_node *travp;
@@ -380,7 +378,7 @@ static inline struct vxpdb_user *get_user(struct HXdeque *dq,
 	return NULL;
 }
 
-static inline struct vxpdb_group *get_group(struct HXdeque *dq,
+static inline struct vxpdb_group *get_group(const struct HXdeque *dq,
     const char *name)
 {
 	const struct HXdeque_node *travp;
@@ -394,25 +392,24 @@ static inline struct vxpdb_group *get_group(struct HXdeque *dq,
 	return NULL;
 }
 
-//-----------------------------------------------------------------------------
 static struct vxpdb_driver THIS_MODULE = {
 	.name           = "NSS back-end module (not MU/MT-safe)",
 	.desc           = "API demonstration",
-
-	DRIVER_CB_BASE1(vnss),
+	.init           = vnss_init,
+	.open           = vnss_open,
+	.close          = vnss_close,
+	.exit           = vnss_exit,
 	.modctl         = vnss_modctl,
-
-	.userinfo       = vnss_userinfo,
+	.getpwuid       = vnss_getpwuid,
+	.getpwnam       = vnss_getpwnam,
 	.usertrav_init  = vnss_usertrav_init,
 	.usertrav_walk  = vnss_usertrav_walk,
 	.usertrav_free  = vnss_usertrav_free,
-
-	.groupinfo      = vnss_groupinfo,
+	.getgrgid       = vnss_getgrgid,
+	.getgrnam       = vnss_getgrnam,
 	.grouptrav_init = vnss_grouptrav_init,
 	.grouptrav_walk = vnss_grouptrav_walk,
 	.grouptrav_free = vnss_grouptrav_free,
 };
 
 REGISTER_MODULE(nss, &THIS_MODULE);
-
-//=============================================================================

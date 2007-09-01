@@ -16,7 +16,6 @@
 #include <unistd.h>
 #include <libHX.h>
 #include <vitalnix/config.h>
-#include "drivers/proto.h"
 #include "drivers/static-build.h"
 #include "drivers/shadow/shadow.h"
 #include <vitalnix/libvxpdb/libvxpdb.h>
@@ -270,54 +269,30 @@ static int vshadow_userdel(struct vxpdb_state *vp,
 	return 1;
 }
 
-static int vshadow_userinfo(struct vxpdb_state *vp,
-    const struct vxpdb_user *sr_mask, struct vxpdb_user *dest, size_t size)
+static int vshadow_getpwuid(struct vxpdb_state *vp, unsigned int uid,
+    struct vxpdb_user *dest)
 {
-	struct shadow_state *state = vp->state;
-	const struct HXdeque_node *travp = state->dq_user->first;
-	struct vxpdb_user temp_mask;
-	int found = 0;
+	const struct shadow_state *state = vp->state;
+	const struct vxpdb_user *user;
 
-	if (sr_mask == dest) {
-		memcpy(&temp_mask, sr_mask, sizeof(struct vxpdb_user));
-		sr_mask = &temp_mask;
-	}
+	if ((user = lookup_user(state->dq_user, NULL, uid)) == NULL)
+		return 0;
 
-	/*
-	 * Original condition:
-	 *     while (... && (dest == NULL || (dest != NULL && size > 0)))
-	 *
-	 *    Table:
-	 *   r     s   action
-	 *  NULL  ==0  proceed
-	 *  NULL  >0   proceed
-	 * !NULL  ==0  stop
-	 * !NULL  >0   proceed
-	 *
-	 * New formula:
-	 *     while (... && !(r != NULL && s == 0))
-	 * Transformed:
-	 *     while (... && (r == NULL || s > 0))
-	 */
-	for (travp = state->dq_user->first; travp != NULL &&
-	    (dest == NULL || size > 0); travp = travp->next)
-	{
-		const struct vxpdb_user *src = travp->ptr;
-		if (!vxpdb_user_match(src, sr_mask))
-			continue;
-		if (dest != NULL) {
-			vxpdb_user_copy(dest, src);
-			++dest;
-			++found;
-			--size;
-		} else {
-			if (size == 0)
-				return 1;
-			++found;
-		}
-	}
+	vxpdb_user_copy(dest, user);
+	return 1;
+}
 
-	return found;
+static int vshadow_getpwnam(struct vxpdb_state *vp, const char *name,
+    struct vxpdb_user *dest)
+{
+	const struct shadow_state *state = vp->state;
+	const struct vxpdb_user *user;
+
+	if ((user = lookup_user(state->dq_user, name, PDB_NOUID)) == NULL)
+		return 0;
+
+	vxpdb_user_copy(dest, user);
+	return 1;
 }
 
 static void *vshadow_usertrav_init(struct vxpdb_state *vp)
@@ -414,38 +389,30 @@ static int vshadow_groupdel(struct vxpdb_state *vp,
 	return 1;
 }
 
-static int vshadow_groupinfo(struct vxpdb_state *vp,
-    const struct vxpdb_group *sr_mask, struct vxpdb_group *dest, size_t size)
+static int vshadow_getgrgid(struct vxpdb_state *vp, unsigned int gid,
+    struct vxpdb_group *dest)
 {
-	struct shadow_state *state = vp->state;
-	const struct HXdeque_node *travp;
-	struct vxpdb_group temp_mask;
-	int found = 0;
+	const struct shadow_state *state = vp->state;
+	const struct vxpdb_group *group;
 
-	if (sr_mask == dest) {
-		memcpy(&temp_mask, sr_mask, sizeof(struct vxpdb_group));
-		sr_mask = &temp_mask;
-	}
+	if ((group = lookup_group(state->dq_group, NULL, gid)) == NULL)
+		return 0;
 
-	for (travp = state->dq_group->first; travp != NULL &&
-	    (dest == NULL || size > 0); travp = travp->next)
-	{
-		const struct vxpdb_group *src = travp->ptr;
-		if (!vxpdb_group_match(src, sr_mask))
-			continue;
-		if (dest != NULL) {
-			vxpdb_group_copy(dest, src);
-			++dest;
-			++found;
-			--size;
-		} else {
-			if (size == 0)
-				return 1;
-			++found;
-		}
-	}
+	vxpdb_group_copy(dest, group);
+	return 1;
+}
 
-	return found;
+static int vshadow_getgrnam(struct vxpdb_state *vp, const char *name,
+    struct vxpdb_group *dest)
+{
+	const struct shadow_state *state = vp->state;
+	const struct vxpdb_group *group;
+
+	if ((group = lookup_group(state->dq_group, name, PDB_NOGID)) == NULL)
+		return 0;
+
+	vxpdb_group_copy(dest, group);
+	return 1;
 }
 
 static void *vshadow_grouptrav_init(struct vxpdb_state *vp)
@@ -475,9 +442,31 @@ static void vshadow_grouptrav_free(struct vxpdb_state *vp, void *ptr)
 }
 
 static struct vxpdb_driver THIS_MODULE = {
-	.name = "vxShadow back-end module",
-	.desc = "for shadow suite (and vxshadow extension)",
-	DRIVER_CB_ALL(vshadow),
+	.name           = "vxShadow back-end module",
+	.desc           = "for shadow suite (and vxshadow extension)",
+	.init           = vshadow_init,
+	.open           = vshadow_open,
+	.close          = vshadow_close,
+	.exit           = vshadow_exit,
+	.modctl         = vshadow_modctl,
+	.lock           = vshadow_lock,
+	.unlock         = vshadow_unlock,
+	.useradd        = vshadow_useradd,
+	.usermod        = vshadow_usermod,
+	.userdel        = vshadow_userdel,
+	.getpwuid       = vshadow_getpwuid,
+	.getpwnam       = vshadow_getpwnam,
+	.usertrav_init  = vshadow_usertrav_init,
+	.usertrav_walk  = vshadow_usertrav_walk,
+	.usertrav_free  = vshadow_usertrav_free,
+	.groupadd       = vshadow_groupadd,
+	.groupmod       = vshadow_groupmod,
+	.groupdel       = vshadow_groupdel,
+	.getgrgid       = vshadow_getgrgid,
+	.getgrnam       = vshadow_getgrnam,
+	.grouptrav_init = vshadow_grouptrav_init,
+	.grouptrav_walk = vshadow_grouptrav_walk,
+	.grouptrav_free = vshadow_grouptrav_free,
 };
 
 REGISTER_MODULE(shadow, &THIS_MODULE);

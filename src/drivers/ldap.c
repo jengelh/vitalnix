@@ -13,7 +13,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ldap.h>
-#include "drivers/proto.h"
 #include "drivers/static-build.h"
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #define ZU_32 sizeof("4294967296")
@@ -384,12 +383,12 @@ static int vxldap_getpwx(struct ldap_state *state, const char *filter,
 	return 1;
 }
 
-static int vxldap_getpwuid(struct vxpdb_state *vp, long uid,
+static int vxldap_getpwuid(struct vxpdb_state *vp, unsigned int uid,
     struct vxpdb_user *dest)
 {
 	char filter[48+ZU_32];
 	snprintf(filter, sizeof(filter),
-	         "(&(objectClass=posixAccount)(uidNumber=%lu))", uid);
+	         "(&(objectClass=posixAccount)(uidNumber=%u))", uid);
 	return vxldap_getpwx(vp->state, filter, dest);
 }
 
@@ -548,12 +547,12 @@ static int vxldap_getgrx(struct ldap_state *state, const char *filter,
 	return 1;
 }
 
-static int vxldap_getgrgid(struct vxpdb_state *vp, long gid,
+static int vxldap_getgrgid(struct vxpdb_state *vp, unsigned int gid,
     struct vxpdb_group *dest)
 {
 	char filter[48+ZU_32];
 	snprintf(filter, sizeof(filter),
-	         "(&(objectClass=posixGroup)(gidNumber=%lu))", gid);
+	         "(&(objectClass=posixGroup)(gidNumber=%u))", gid);
 	return vxldap_getgrx(vp->state, filter, dest);
 }
 

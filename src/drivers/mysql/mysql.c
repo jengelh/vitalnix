@@ -19,7 +19,6 @@
 #include <mysql.h>
 #include <mysqld_error.h>
 #include <vitalnix/config.h>
-#include "drivers/proto.h"
 #include "drivers/static-build.h"
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxutil/libvxutil.h>
@@ -523,21 +522,6 @@ static void vmysql_usertrav_free(struct vxpdb_state *vp, void *ptr)
 	return;
 }
 
-static int vmysql_userinfo(struct vxpdb_state *vp,
-    const struct vxpdb_user *msk, struct vxpdb_user *result, size_t size)
-{
-	/*
-	hmc_t *query = hmc_minit(NULL, 0);
-	hmc_strcat(&query, "select * from ");
-	hmc_strcat(&query, st->ctable
-	char query[1024];
-	snprintf(query, sizeof(query),
-		"select * from users,shadow where users.username=shadow.username"
-	*/
-	return 0;
-}
-
-//-----------------------------------------------------------------------------
 static int vmysql_groupadd(struct vxpdb_state *vp,
     const struct vxpdb_group *rq)
 {
@@ -631,13 +615,6 @@ static void vmysql_grouptrav_free(struct vxpdb_state *vp, void *ptr)
 	return;
 }
 
-static int vmysql_groupinfo(struct vxpdb_state *vp,
-    const struct vxpdb_group *srk, struct vxpdb_group *res, size_t rsize)
-{
-	return 0;
-}
-
-//-----------------------------------------------------------------------------
 static unsigned int count_rows(struct mysql_state *state, const char *table)
 {
 	unsigned int ret = 0;
@@ -1032,11 +1009,23 @@ static hmc_t *sql_usermask(hmc_t **s, const struct mysql_state *state,
 
 static struct vxpdb_driver THIS_MODULE = {
 	.name   = "MYSQL back-end module",
-
-	DRIVER_CB_BASE1(vmysql),
-	.modctl = vmysql_modctl,
-	DRIVER_CB_USER(vmysql),
-	DRIVER_CB_GROUP(vmysql),
+	.init           = vmysql_init,
+	.open           = vmysql_open,
+	.close          = vmysql_close,
+	.exit           = vmysql_exit,
+	.modctl         = vmysql_modctl,
+	.useradd        = vmysql_useradd,
+	.usermod        = vmysql_usermod,
+	.userdel        = vmysql_userdel,
+	.usertrav_init  = vmysql_usertrav_init,
+	.usertrav_walk  = vmysql_usertrav_walk,
+	.usertrav_free  = vmysql_usertrav_free,
+	.groupadd       = vmysql_groupadd,
+	.groupmod       = vmysql_groupmod,
+	.groupdel       = vmysql_groupdel,
+	.grouptrav_init = vmysql_grouptrav_init,
+	.grouptrav_walk = vmysql_grouptrav_walk,
+	.grouptrav_free = vmysql_grouptrav_free,
 };
 
 REGISTER_MODULE(mysql, &THIS_MODULE);
