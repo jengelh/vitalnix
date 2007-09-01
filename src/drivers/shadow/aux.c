@@ -52,7 +52,7 @@ long automatic_uid(struct shadow_state *state, long wanted)
 		    travp = travp->next) {
 			const struct vxpdb_user *user = travp->ptr;
 			if (user->pw_uid == accept) {
-				used = 1;
+				used = true;
 				break;
 			}
 		}
