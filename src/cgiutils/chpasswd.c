@@ -8,6 +8,7 @@
  *	Foundation; either version 2.1 or 3 of the License.
  */
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,7 +21,7 @@
 static void header(void);
 static void form(const char *);
 static void footer(void);
-static int change_password(const char *, const char *);
+static bool change_password(const char *, const char *);
 
 /* Variables */
 static const char *const Wrong_auth =
@@ -138,7 +139,7 @@ static void footer(void)
 	return;
 }
 
-static int change_password(const char *user, const char *pass)
+static bool change_password(const char *user, const char *pass)
 {
 	long uid = getuid();
 	FILE *cf;
@@ -154,8 +155,8 @@ static int change_password(const char *user, const char *pass)
 	setuid(uid);
 	seteuid(uid);
 	if (cf == NULL)
-		return 0;
+		return false;
 	fprintf(cf, "%s:%s\n", user, pass);
 	pclose(cf);
-	return 1;
+	return true;
 }
