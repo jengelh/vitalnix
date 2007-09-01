@@ -179,7 +179,8 @@ static void *vxpdb_get_handle(const struct opt *cf)
 	errno = ENOENT;
 	while (*extp != NULL) {
 		char fn[MAXFNLEN];
-		snprintf(fn, MAXFNLEN, "drv_%s%s", cf->driver_name, *extp);
+		snprintf(fn, MAXFNLEN, CONFIG_LIBDIR "/drv_%s%s",
+		         cf->driver_name, *extp);
 		if ((handle = HX_dlopen(fn)) != NULL) {
 			errno = 0;
 			break;
