@@ -209,7 +209,7 @@ static int userdel_run3(struct vxpdb_state *db, struct userdel_state *state)
 		return E_OTHER;
 
 	if (!state->force && (strcmp(result.pw_name, "root") == 0 ||
-		result.pw_uid == 0))
+	    result.pw_uid == 0))
 		return E_DENY;
 
 	if (conf->master_predel != NULL)

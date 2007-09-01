@@ -495,7 +495,7 @@ static long vxmmd_autouid(struct vxpdb_state *vp, long wanted)
 
 	/* Find the highest ID */
 	for (trav = vxmmd_usertrav_init(vp);
-	     vxmmd_usertrav_walk(vp, trav, &dest) > 0;)
+	    vxmmd_usertrav_walk(vp, trav, &dest) > 0;)
 	{
 		long uid = dest.pw_uid;
 		if (uid >= min && uid <= max && uid > high)
@@ -513,7 +513,7 @@ static long vxmmd_autouid(struct vxpdb_state *vp, long wanted)
 	while (accept <= max) {
 		bool used = false;
 		for (trav = vxmmd_usertrav_init(vp);
-		     vxmmd_usertrav_walk(vp, trav, &dest) > 0;)
+		    vxmmd_usertrav_walk(vp, trav, &dest) > 0;)
 		{
 			if (dest.pw_uid == accept) {
 				used = true;
@@ -550,7 +550,7 @@ static long vxmmd_autogid(struct vxpdb_state *vp, long wanted)
 
 	/* Find the highest ID */
 	for (trav = vxmmd_grouptrav_init(vp);
-	     vxmmd_grouptrav_walk(vp, trav, &dest) > 0;)
+	    vxmmd_grouptrav_walk(vp, trav, &dest) > 0;)
 	{
 		long gid = dest.gr_gid;
 		if (gid >= min && gid <= max && gid > high)
@@ -568,7 +568,7 @@ static long vxmmd_autogid(struct vxpdb_state *vp, long wanted)
 	while (accept <= max) {
 		bool used = false;
 		for (trav = vxmmd_grouptrav_init(vp);
-		     vxmmd_grouptrav_walk(vp, trav, &dest) > 0;)
+		    vxmmd_grouptrav_walk(vp, trav, &dest) > 0;)
 		{
 			if (dest.gr_gid == accept) {
 				used = true;

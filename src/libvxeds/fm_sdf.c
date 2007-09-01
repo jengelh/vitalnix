@@ -64,7 +64,7 @@ static int sdf_read(void *state_ptr, struct vxeds_entry *e)
 	HX_chomp(state->hmc);
 
 	if (*state->hmc == '#' || strncmp(state->hmc, "(*", 2) == 0 || /* *) */
-	     *state->hmc == '\0')
+	    *state->hmc == '\0')
 		/* Skip comment lines */
 		return sdf_read(state_ptr, e);
 

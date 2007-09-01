@@ -129,7 +129,7 @@ static char *useradd_genhome(struct useradd_state *state)
 		return NULL;
 
 	return HX_strdup(vxutil_propose_home(buf, sizeof(buf), conf->home_base,
-		   user->pw_name, conf->split_level));
+	       user->pw_name, conf->split_level));
 }
 
 static bool useradd_get_options(int *argc, const char ***argv,
