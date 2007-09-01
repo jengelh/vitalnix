@@ -47,7 +47,7 @@ static void groupmod_show_version(const struct HXoptcb *);
 /* Variables */
 static unsigned int allow_dup     = false;
 static const char *new_group_name = NULL;
-static long new_group_id          = PDB_NOGID;
+static unsigned int new_group_id  = PDB_NOGID;
 static const char *action_before  = NULL;
 static const char *action_after   = NULL;
 static const char *database_name  = "*";
@@ -114,7 +114,7 @@ static int groupmod_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
 	if (new_group_id != PDB_NOGID && new_group_id != current.gr_gid &&
 	    !allow_dup && vxpdb_getgrgid(db, new_group_id, NULL) > 0) {
 		/* If GID has changed */
-		fprintf(stderr, "A group with GID %ld already exists."
+		fprintf(stderr, "A group with GID %u already exists."
 		        " Use -o to override.\n", new_group_id);
 		return E_GID_USED;
 	}
@@ -130,7 +130,7 @@ static int groupmod_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
 
 	HXformat_add(ext_catalog, "GROUP", new_group_name, HXTYPE_STRING);
 	HXformat_add(ext_catalog, "OLD_GROUP", group_name, HXTYPE_STRING);
-	HXformat_add(ext_catalog, "GID", &new_group_id, HXTYPE_LONG);
+	HXformat_add(ext_catalog, "GID", &new_group_id, HXTYPE_UINT);
 
 	if (action_before != NULL)
 		vxutil_replace_run(action_before, ext_catalog);
@@ -164,7 +164,7 @@ static bool groupmod_get_options(int *argc, const char ***argv)
 		 .help = "Use specified database", .htyp = "name"},
 
 		/* Default options */
-		{.sh = 'g', .type = HXTYPE_LONG, .ptr = &new_group_id,
+		{.sh = 'g', .type = HXTYPE_UINT, .ptr = &new_group_id,
 		 .htyp = "gid", .help = "Numerical value of the group's "
 		 "ID (DB module might ignore this)"},
 		{.sh = 'n', .type = HXTYPE_STRING, .ptr = &new_group_name,

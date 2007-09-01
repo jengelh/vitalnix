@@ -114,7 +114,7 @@ static void d_ldif_groups(struct vxpdb_state *db)
 			"dn: cn=%s,ou=groups,dc=site\n"
 			"objectClass: posixGroup\n"
 			"cn: %s\n"
-			"gidNumber: %ld\n\n",
+			"gidNumber: %u\n\n",
 			group.gr_name, group.gr_name, group.gr_gid);
 	}
 
@@ -329,7 +329,7 @@ static void d_mysql_groups(struct vxpdb_state *db)
 		return;
 	memset(&group, 0, sizeof(group));
 	while (vxpdb_grouptrav_walk(db, trav, &group) > 0)
-		printf("insert into groups values ('%s',%ld);\n",
+		printf("insert into groups values ('%s',%u);\n",
 		       group.gr_name, group.gr_gid);
 
 	vxpdb_grouptrav_free(db, trav);
@@ -403,7 +403,7 @@ static void d_shadow(struct vxpdb_state *db)
 		if ((trav = vxpdb_grouptrav_init(db)) == NULL)
 			return;
 		while (vxpdb_grouptrav_walk(db, trav, &group) > 0)
-			printf("%s:*:%ld:\n", group.gr_name, group.gr_gid);
+			printf("%s:*:%u:\n", group.gr_name, group.gr_gid);
 		vxpdb_grouptrav_free(db, trav);
 	}
 

@@ -74,7 +74,7 @@ struct vxpdb_user {
 
 struct vxpdb_group {
 	char *gr_name;
-	long gr_gid;
+	unsigned int gr_gid;
 	void *be_priv;
 };
 

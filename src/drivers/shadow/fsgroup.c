@@ -65,7 +65,7 @@ void db_flush_groups(struct shadow_state *state)
 		const struct vxpdb_group *g = travp->ptr;
 		const char **pr = g->be_priv;
 
-		fprintf(fp, "%s:x:%ld:", g->gr_name, g->gr_gid);
+		fprintf(fp, "%s:x:%u:", g->gr_name, g->gr_gid);
 		if (pr != NULL && pr[0] != NULL)
 			fprintf(fp, "%s", pr[0]);
 		fprintf(fp, "\n");

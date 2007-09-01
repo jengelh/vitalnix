@@ -41,7 +41,7 @@ static bool groupadd_read_config(void);
 static void groupadd_show_version(const struct HXoptcb *);
 
 /* Variables */
-static long group_id             = PDB_NOGID;
+static unsigned int group_id     = PDB_NOGID;
 static unsigned int allow_dup    = false;
 static unsigned int request_sys  = false;
 static const char *action_before = NULL;
@@ -114,7 +114,7 @@ static int groupadd_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
 			 * The -o flag (allow creating group with duplicate
 			 * GID) was not passed.
 			 */
-			fprintf(stderr, "Group with GID %ld already exists."
+			fprintf(stderr, "Group with GID %u already exists."
 			        " Use -o to override.\n", group_id);
 			return E_GID_USED;
 		}
@@ -126,7 +126,7 @@ static int groupadd_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
 	}
 
 	HXformat_add(ext_catalog, "GROUP", group_name, HXTYPE_STRING);
-	HXformat_add(ext_catalog, "GID", &group_id, HXTYPE_LONG);
+	HXformat_add(ext_catalog, "GID", &group_id, HXTYPE_UINT);
 
 	if (action_before != NULL)
 		vxutil_replace_run(action_before, ext_catalog);
@@ -160,7 +160,7 @@ static bool groupadd_get_options(int *argc, const char ***argv)
 		 .help = "Use specified database", .htyp = "name"},
 
 		/* Default options */
-		{.sh = 'g', .type = HXTYPE_LONG, .ptr = &group_id,
+		{.sh = 'g', .type = HXTYPE_UINT, .ptr = &group_id,
 		 .help = "Numerical value of the group's ID", .htyp = "gid"},
 		{.sh = 'o', .type = HXTYPE_NONE, .ptr = &allow_dup,
 		 .help = "Allow creating a group with non-unique GID"},

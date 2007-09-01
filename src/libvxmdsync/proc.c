@@ -39,7 +39,7 @@ static int mdsync_defer_start(struct mdsync_workspace *);
 static int mdsync_defer_stop(struct mdsync_workspace *);
 
 static inline bool create_home(const struct mdsync_workspace *, const char *,
-	long, long);
+	unsigned int, unsigned int);
 static inline char *now_in_ymdhms(char *, size_t);
 
 //-----------------------------------------------------------------------------
@@ -47,10 +47,10 @@ EXPORT_SYMBOL void mdsync_compare(struct mdsync_workspace *w)
 {
 	const struct vxpdb_group *grp = &w->dest_group;
 	const struct HXbtree_node *ln_node;
-	long users_proc, users_max;
+	unsigned int users_proc, users_max, decision;
 	struct vxpdb_user pwd = {};
 	struct vxeds_entry *eds;
-	int analyze, decision;
+	bool analyze;
 	long defer = w->config.add_opts.defaults.vs_defer;
 	void *travp;
 
@@ -466,7 +466,7 @@ static int mdsync_defer_stop(struct mdsync_workspace *w)
 
 //-----------------------------------------------------------------------------
 static inline bool create_home(const struct mdsync_workspace *w, const char *d,
-    long uid, long gid)
+    unsigned int uid, unsigned int gid)
 {
 	const struct mdsync_config *c = &w->config;
 
