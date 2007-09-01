@@ -161,7 +161,7 @@ static void vmysql_exit(struct vxpdb_state *vp)
 	return;
 }
 
-static int vmysql_open(struct vxpdb_state *vp, long flags)
+static int vmysql_open(struct vxpdb_state *vp, unsigned int flags)
 {
 	struct mysql_state *state  = vp->state;
 	const struct mq_conn *conn = &state->cn;

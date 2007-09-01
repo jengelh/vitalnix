@@ -61,7 +61,7 @@ static int vnss_init(struct vxpdb_state *vp, const char *config_file)
 	return 1;
 }
 
-static int vnss_open(struct vxpdb_state *vp, long flags)
+static int vnss_open(struct vxpdb_state *vp, unsigned int flags)
 {
 	struct nss_state *state = vp->state;
 	int ret;

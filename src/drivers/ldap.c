@@ -53,7 +53,7 @@ static int vxldap_init(struct vxpdb_state *vp, const char *config_file)
 	return 1;
 }
 
-static int vxldap_open(struct vxpdb_state *vp, long flags)
+static int vxldap_open(struct vxpdb_state *vp, unsigned int flags)
 {
 	struct ldap_state *state = vp->state;
 	int ret;

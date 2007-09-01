@@ -61,7 +61,7 @@ static unsigned int vxmmd_autouid(struct vxpdb_state *, unsigned int);
 static unsigned int vxmmd_autogid(struct vxpdb_state *, unsigned int);
 
 static int modules_construct(struct multi_state *);
-static int modules_open(struct multi_state *, long);
+static int modules_open(struct multi_state *, unsigned int);
 static void modules_close(struct multi_state *);
 static void modules_destruct(struct multi_state *);
 static void read_config(struct multi_state *, const char *);
@@ -85,7 +85,7 @@ static int vxmmd_init(struct vxpdb_state *vp, const char *config_file)
 	return -EINVAL;
 }
 
-static int vxmmd_open(struct vxpdb_state *vp, long flags)
+static int vxmmd_open(struct vxpdb_state *vp, unsigned int flags)
 {
 	struct multi_state *state = vp->state;
 	int ret;
@@ -626,7 +626,7 @@ static int modules_construct(struct multi_state *state)
 	return ret;
 }
 
-static int modules_open(struct multi_state *state, long flags)
+static int modules_open(struct multi_state *state, unsigned int flags)
 {
 	const struct HXdeque_node *node;
 	int ret;
