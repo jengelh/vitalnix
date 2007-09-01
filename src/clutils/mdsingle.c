@@ -29,7 +29,7 @@
 struct private_info {
 	char *db_name, *bday, *first_name, *group_name, *pref_username;
 	char *pvgrp, *surname, *uuid;
-	int interactive, run_master;
+	unsigned int interactive, run_master;
 
 	bool open_status;
 	struct vxpdb_state *db_handle;
