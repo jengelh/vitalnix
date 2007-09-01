@@ -22,7 +22,6 @@
 #include <pwd.h>
 #include <shadow.h>
 #include <vitalnix/config.h>
-#include "drivers/static-build.h"
 #include <vitalnix/libvxpdb/libvxpdb.h>
 
 /* Definitions */
@@ -392,7 +391,7 @@ static inline struct vxpdb_group *get_group(const struct HXdeque *dq,
 	return NULL;
 }
 
-static struct vxpdb_driver THIS_MODULE = {
+struct vxpdb_driver THIS_MODULE = {
 	.name           = "NSS back-end module (not MU/MT-safe)",
 	.desc           = "API demonstration",
 	.init           = vnss_init,
@@ -411,5 +410,3 @@ static struct vxpdb_driver THIS_MODULE = {
 	.grouptrav_walk = vnss_grouptrav_walk,
 	.grouptrav_free = vnss_grouptrav_free,
 };
-
-REGISTER_MODULE(nss, &THIS_MODULE);

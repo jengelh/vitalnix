@@ -16,7 +16,6 @@
 #include <unistd.h>
 #include <libHX.h>
 #include <vitalnix/config.h>
-#include "drivers/static-build.h"
 #include "drivers/shadow/shadow.h"
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxutil/defines.h>
@@ -441,7 +440,7 @@ static void vshadow_grouptrav_free(struct vxpdb_state *vp, void *ptr)
 	return;
 }
 
-static struct vxpdb_driver THIS_MODULE = {
+struct vxpdb_driver THIS_MODULE = {
 	.name           = "vxShadow back-end module",
 	.desc           = "for shadow suite (and vxshadow extension)",
 	.init           = vshadow_init,
@@ -468,5 +467,3 @@ static struct vxpdb_driver THIS_MODULE = {
 	.grouptrav_walk = vshadow_grouptrav_walk,
 	.grouptrav_free = vshadow_grouptrav_free,
 };
-
-REGISTER_MODULE(shadow, &THIS_MODULE);

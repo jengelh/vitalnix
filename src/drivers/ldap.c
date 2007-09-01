@@ -13,7 +13,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ldap.h>
-#include "drivers/static-build.h"
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #define ZU_32 sizeof("4294967296")
 
@@ -610,7 +609,7 @@ static void vxldap_grouptrav_free(struct vxpdb_state *vp, void *ptr)
 	return;
 }
 
-static struct vxpdb_driver THIS_MODULE = {
+struct vxpdb_driver THIS_MODULE = {
 	.name           = "LDAP back-end module",
 	.init           = vxldap_init,
 	.open           = vxldap_open,
@@ -633,5 +632,3 @@ static struct vxpdb_driver THIS_MODULE = {
 	.grouptrav_walk = vxldap_grouptrav_walk,
 	.grouptrav_free = vxldap_grouptrav_free,
 };
-
-REGISTER_MODULE(ldap, &THIS_MODULE);

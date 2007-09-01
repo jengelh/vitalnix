@@ -59,13 +59,6 @@ EXPORT_SYMBOL struct vxpdb_state *vxpdb_load(const char *name)
 		goto fail;
 	vtable = HX_dlsym(new->handle, "THIS_MODULE");
 	if (vtable == NULL)
-		/*
-		 * If the two fail, either because the .SO does not exist,
-		 * THIS_MODULE has visibility=hidden, or the module is static,
-		 * see if the module registered itself.
-		 */
-		vtable = vxcore_module_lookup("libvxpdb", cf.driver_name);
-	if (vtable == NULL)
 		goto fail;
 
 	new->vtable = vtable;
