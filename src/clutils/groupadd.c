@@ -55,8 +55,7 @@ int main(int argc, const char **argv)
 	struct vxpdb_state *db;
 	int ret;
 
-	if (!groupadd_read_config() ||
-	    !groupadd_get_options(&argc, &argv))
+	if (!groupadd_read_config() || !groupadd_get_options(&argc, &argv))
 		return E_OTHER;
 
 	group_name = argv[1];
