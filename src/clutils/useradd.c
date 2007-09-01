@@ -327,7 +327,6 @@ static int useradd_run3(struct vxpdb_state *db, struct useradd_state *state,
 		user->pw_uid = PDB_AUTOUID;
 	}
 
-	user->sp_lastchg = vxutil_now_iday();
 	HXformat_add(state->sr_map, "USERNAME", user->pw_name, HXTYPE_STRING);
 	HXformat_add(state->sr_map, "UID", &user->pw_uid, HXTYPE_LONG);
 
