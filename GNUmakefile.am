@@ -10,8 +10,8 @@ regular_DCONFIG := \
 	-DCONFIG_SYSCONFDIR='"${sysconfdir}"' \
 	-DCONFIG_LIBDIR='"${libdir}"'
 
-AM_CFLAGS         := ${regular_CFLAGS} ${regular_DCONFIG}
-AM_CXXFLAGS       := ${regular_CXXFLAGS} ${regular_DCONFIG}
+AM_CFLAGS         := ${regular_CFLAGS} ${GCC_FVISIBILITY_HIDDEN} ${regular_DCONFIG}
+AM_CXXFLAGS       := ${regular_CXXFLAGS} ${GCC_FVISIBILITY_HIDDEN} ${regular_DCONFIG}
 regular_SOLDFLAGS :=
 
 # These got some harmful crap which needs to be sanitized first

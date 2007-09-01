@@ -6,7 +6,7 @@
 #define CONSTRUCTOR     __attribute__((constructor))
 #define DESTRUCTOR      __attribute__((destructor))
 
-#ifdef HAVE_VISIBILITY
+#ifdef HAVE_VISIBILITY_HIDDEN
 #	define EXPORT_SYMBOL __attribute__((visibility("default")))
 #else
 #	define EXPORT_SYMBOL
