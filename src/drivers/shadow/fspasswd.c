@@ -39,7 +39,7 @@ struct HXdeque *db_read_passwd(FILE *fp)
 	while (HX_getl(&ln, fp) != NULL) {
 		char *data[8];
 
-		if (*ln == '#')
+		if (*ln == '#' || *ln == '+' || *ln == '-')
 			continue;
 
 		HX_chomp(ln);

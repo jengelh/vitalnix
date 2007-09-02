@@ -36,7 +36,7 @@ void db_read_shadow(FILE *fp, struct HXdeque *dq)
 	while (HX_getl(&ln, fp) != NULL) {
 		char *data[9];
 
-		if (*ln == '#')
+		if (*ln == '#' || *ln == '+' || *ln == '-')
 			continue;
 
 		HX_chomp(ln);

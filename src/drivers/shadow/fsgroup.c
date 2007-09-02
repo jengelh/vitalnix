@@ -29,7 +29,7 @@ struct HXdeque *db_read_groups(FILE *fp)
 	while (HX_getl(&ln, fp) != NULL) {
 		char *data[4];
 
-		if (*ln == '#')
+		if (*ln == '#' || *ln == '+' || *ln == '-')
 			continue;
 
 		HX_chomp(ln);
