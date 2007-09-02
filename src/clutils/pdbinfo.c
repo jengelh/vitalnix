@@ -118,6 +118,9 @@ static void driver_info(const char *fn)
 
 	if (OP_open) {
 		vxpdb_open(md, 0);
+		printf("	Number of users/groups: %ld/%ld\n",
+		       vxpdb_modctl(md, PDB_COUNT_USERS),
+		       vxpdb_modctl(md, PDB_COUNT_GROUPS));
 		vxpdb_close(md);
 	}
 
