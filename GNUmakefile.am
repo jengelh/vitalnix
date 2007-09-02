@@ -26,6 +26,7 @@ bin_PROGRAMS    := \
 if BUILD_STEELMILL
 bin_PROGRAMS    += steelmill
 endif
+EXTRA_PROGRAMS  := testcase
 level1_libs     := libvxcgi.la libvxcli.la libvxcore.la libvxutil.la
 level2_libs     := libvxeds.la libvxmdfmt.la libvxpdb.la
 lib_LTLIBRARIES := \
@@ -84,6 +85,12 @@ vxgroupmod_SOURCES := src/clutils/groupmod.c
 vxgroupmod_LDADD   := -lHX libvxpdb.la libvxutil.la
 vxgroupdel_SOURCES := src/clutils/groupdel.c
 vxgroupdel_LDADD   := -lHX libvxpdb.la libvxutil.la
+
+#
+#	devutils
+#
+testcase_SOURCES := src/devutil/testcase.c
+testcase_LDADD   := libvxeds.la libvxutil.la
 
 #
 #	drivers/dummy
