@@ -29,6 +29,8 @@ struct ldap_trav {
 	LDAPMessage *base, *current;
 };
 
+static void vxldap_close(struct vxpdb_state *);
+
 static void vxldap_read_ldap_secret(const struct HXoptcb *cbi)
 {
 	hmc_t *pw = cbi->current->uptr;
@@ -97,8 +99,15 @@ static int vxldap_open(struct vxpdb_state *vp, unsigned int flags)
 
 	ret = LDAP_VERSION3;
 	ldap_set_option(state->conn, LDAP_OPT_PROTOCOL_VERSION, &ret);
+	ret = LDAP_MAXINT;
+	ret = ldap_set_option(state->conn, LDAP_OPT_SIZELIMIT, &ret);
 
 	if (flags & PDB_WRLOCK) {
+		if (ret != LDAP_SUCCESS) {
+			fprintf(stderr, "Could not raise search limit to maximum, but we need it!\n");
+			vxldap_close(vp);
+			return -(errno = 1600 + ret);
+		}
 		ldap_start_tls_s(state->conn, NULL, NULL);
 		ret = ldap_simple_bind_s(state->conn, "cn=root,dc=site", "secret");
 		if (ret != LDAP_SUCCESS)
