@@ -18,15 +18,10 @@
 #define ZU_32 sizeof("4294967296")
 
 struct ldap_state {
-	/* Connection */
 	LDAP *conn;
-	char *cn_host, *cn_socket, *cn_user, *cn_passwd, *cn_database,
-		 *cn_user2, *cn_passwd2;
-	int cn_port;
-
+	char *uri, *root_dn;
+	hmc_t *root_pw;
 	char *user_suffix, *group_suffix;
-
-	/* Misc */
 	unsigned int uid_min, uid_max, gid_min, gid_max;
 };
 
@@ -34,7 +29,50 @@ struct ldap_trav {
 	LDAPMessage *base, *current;
 };
 
-//-----------------------------------------------------------------------------
+static void vxldap_read_ldap_secret(const struct HXoptcb *cbi)
+{
+	hmc_t *pw = cbi->current->uptr;
+	FILE *fp;
+	if ((fp = fopen(cbi->data, "r")) == NULL)
+		return;
+	HX_getl(&pw, fp);
+	return;
+}
+
+static void vxldap_read_config(struct ldap_state *state, const char *file,
+    bool deallocate)
+{
+	struct HXoption autouid_table[] = {
+		{.ln = "UID_MIN", .type = HXTYPE_UINT, .ptr = &state->uid_min},
+		{.ln = "UID_MAX", .type = HXTYPE_UINT, .ptr = &state->uid_max},
+		{.ln = "GID_MIN", .type = HXTYPE_UINT, .ptr = &state->gid_min},
+		{.ln = "GID_MAX", .type = HXTYPE_UINT, .ptr = &state->gid_max},
+		HXOPT_TABLEEND,
+	};
+	struct HXoption options_table[] = {
+		{.ln = "URI",          .type = HXTYPE_STRING, .ptr = &state->uri},
+		{.ln = "USER_SUFFIX",  .type = HXTYPE_STRING, .ptr = &state->user_suffix},
+		{.ln = "GROUP_SUFFIX", .type = HXTYPE_STRING, .ptr = &state->group_suffix},
+		{.ln = "ROOT_DN",      .type = HXTYPE_STRING, .ptr = &state->root_dn},
+		{.ln = "ROOT_PWFILE",  .type = HXTYPE_STRING, .cb  = vxldap_read_ldap_secret, .uptr = &state->root_pw},
+		HXOPT_TABLEEND,
+	};
+
+	if (deallocate) {
+		HX_shconfig_free(options_table);
+		return;
+	}
+
+	state->uri          = "ldap://localhost/";
+	state->uid_min      = state->gid_min = 1000;
+	state->uid_max      = state->gid_max = 60000;
+	state->user_suffix  = "ou=users,dc=site";
+	state->group_suffix = "ou=groups,dc=site";
+	HX_shconfig(CONFIG_SYSCONFDIR "/autouid.conf", autouid_table);
+	HX_shconfig(file, options_table);
+	return;
+}
+
 static int vxldap_init(struct vxpdb_state *vp, const char *config_file)
 {
 	struct ldap_state *state;
@@ -44,11 +82,7 @@ static int vxldap_init(struct vxpdb_state *vp, const char *config_file)
 	if ((state = vp->state = calloc(1, sizeof(struct ldap_state))) == NULL)
 		return -errno;
 
-	state->uid_min      = 1000;
-	state->uid_max      = 60000;
-	state->user_suffix  = "ou=users,dc=site";
-	state->group_suffix = "ou=groups,dc=site";
-
+	vxldap_read_config(state, config_file, false);
 	return 1;
 }
 
@@ -57,7 +91,7 @@ static int vxldap_open(struct vxpdb_state *vp, unsigned int flags)
 	struct ldap_state *state = vp->state;
 	int ret;
 
-	ret = ldap_initialize(&state->conn, "ldap://127.0.0.1/");
+	ret = ldap_initialize(&state->conn, state->uri);
 	if (ret != LDAP_SUCCESS)
 		return -ret;
 
@@ -65,6 +99,7 @@ static int vxldap_open(struct vxpdb_state *vp, unsigned int flags)
 	ldap_set_option(state->conn, LDAP_OPT_PROTOCOL_VERSION, &ret);
 
 	if (flags & PDB_WRLOCK) {
+		ldap_start_tls_s(state->conn, NULL, NULL);
 		ret = ldap_simple_bind_s(state->conn, "cn=root,dc=site", "secret");
 		if (ret != LDAP_SUCCESS)
 			fprintf(stderr, "Simple bind failed; will use anon\n");
@@ -83,6 +118,8 @@ static void vxldap_close(struct vxpdb_state *vp)
 static void vxldap_exit(struct vxpdb_state *vp)
 {
 	struct ldap_state *state = vp->state;
+	vxldap_read_config(state, NULL, true);
+	hmc_free(state->root_pw);
 	free(state);
 	return;
 }
