@@ -332,15 +332,7 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 		};
 	}
 
-	fprintf(stderr, "dn: %s\n", dn);
-	for (i = 0; i < a; ++i) {
-		int j;
-		attr_ptrs[i] = &attr[i];
-		for (j = 0; attr[i].mod_values[j] != NULL; ++j)
-			fprintf(stderr, "%s: %s\n", attr[i].mod_type, attr[i].mod_values[j]);
-	}
 	attr_ptrs[i] = NULL;
-
 	ret = ldap_add_ext_s(state->conn, dn, attr_ptrs, NULL, NULL);
 
 	hmc_free(dn);
