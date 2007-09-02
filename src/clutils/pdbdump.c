@@ -369,12 +369,13 @@ static void d_shadow(struct vxpdb_state *db)
 			if (!(user.pw_uid >= Uid_range[0] &&
 			    user.pw_uid <= Uid_range[1]))
 				continue;
-			if (user.sp_passwd != NULL)
-				printf("%s:%s:%ld:%ld:%ld:%ld:%ld:%ld\n",
-				       user.pw_name, user.sp_passwd,
-				       user.sp_lastchg, user.sp_min,
-				       user.sp_max, user.sp_warn,
-				       user.sp_expire, user.sp_inact);
+			printf("%s:%s:%ld:%ld:%ld:%ld:%ld:%ld\n",
+			       user.pw_name,
+			       (user.sp_passwd == NULL) ?
+			       "*" : user.sp_passwd,
+			       user.sp_lastchg, user.sp_min,
+			       user.sp_max, user.sp_warn,
+			       user.sp_expire, user.sp_inact);
 		}
 		vxpdb_usertrav_free(db, trav);
 	}
