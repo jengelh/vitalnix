@@ -450,19 +450,23 @@ static void vxldap_copy_user(struct vxpdb_user *dest, LDAP *conn,
 static int vxldap_getpwx(struct ldap_state *state, const char *filter,
     struct vxpdb_user *dest)
 {
-	LDAPMessage *result;
+	LDAPMessage *result, *entry;
 	int ret;
 
 	ret = ldap_search_ext_s(state->conn, state->user_suffix,
-	      LDAP_SCOPE_SUBTREE, filter, NULL, false,
-	      NULL, NULL, NULL, 1, &result);
+	      LDAP_SCOPE_SUBTREE, filter, NULL, false, NULL, NULL, NULL, 1,
+	      &result);
 	if (ret != LDAP_SUCCESS || result == NULL)
 		return -(errno = 1600 + ret);
-
+	entry = ldap_first_entry(state->conn, result);
+	if (entry == NULL) {
+		ldap_msgfree(result);
+		return 0;
+	}
 	if (dest != NULL)
 		vxldap_copy_user(dest, state->conn, result);
 	ldap_msgfree(result);
-	return 1;
+	return ret;
 }
 
 static int vxldap_getpwuid(struct vxpdb_state *vp, unsigned int uid,
@@ -615,7 +619,7 @@ static void vxldap_copy_group(struct vxpdb_group *dest, LDAP *conn,
 static int vxldap_getgrx(struct ldap_state *state, const char *filter,
     struct vxpdb_group *dest)
 {
-	LDAPMessage *result;
+	LDAPMessage *result, *entry;
 	int ret;
 
 	ret = ldap_search_ext_s(state->conn, state->group_suffix,
@@ -623,7 +627,11 @@ static int vxldap_getgrx(struct ldap_state *state, const char *filter,
 	      NULL, NULL, NULL, 1, &result);
 	if (ret != LDAP_SUCCESS || result == NULL)
 		return -(errno = 1600 + ret);
-
+	entry = ldap_first_entry(state->conn, result);
+	if (entry == NULL) {
+		ldap_msgfree(result);
+		return 0;
+	}
 	if (dest != NULL)
 		vxldap_copy_group(dest, state->conn, result);
 	ldap_msgfree(result);
