@@ -33,11 +33,12 @@ static void vxldap_close(struct vxpdb_state *);
 
 static void vxldap_read_ldap_secret(const struct HXoptcb *cbi)
 {
-	hmc_t *pw = cbi->current->uptr;
+	hmc_t **pw = cbi->current->uptr;
 	FILE *fp;
 	if ((fp = fopen(cbi->data, "r")) == NULL)
 		return;
-	HX_getl(&pw, fp);
+	*pw = hmc_sinit("");
+	HX_getl(pw, fp);
 	return;
 }
 
