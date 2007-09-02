@@ -499,8 +499,8 @@ static void *vxldap_usertrav_init(struct vxpdb_state *vp)
 	int ret;
 
 	ret = ldap_search_ext_s(state->conn, NULL, LDAP_SCOPE_SUBTREE,
-	      "(objectClass=posixAccount)", NULL, 0, NULL, NULL,
-	      NULL, 0, &trav.base);
+	      "(objectClass=posixAccount)", NULL, 0, NULL, NULL, NULL,
+	      LDAP_MAXINT, &trav.base);
 	if (ret != LDAP_SUCCESS) {
 		errno = 1600 + ret;
 		return NULL;
@@ -663,8 +663,8 @@ static void *vxldap_grouptrav_init(struct vxpdb_state *vp)
 	int ret;
 
 	ret = ldap_search_ext_s(state->conn, NULL, LDAP_SCOPE_SUBTREE,
-	      "(objectClass=posixGroup)", NULL, 0, NULL, NULL,
-	      NULL, 0, &trav.base);
+	      "(objectClass=posixGroup)", NULL, 0, NULL, NULL, NULL,
+	      LDAP_MAXINT, &trav.base);
 	if (ret != LDAP_SUCCESS) {
 		errno = 1600 + ret;
 		return NULL;
