@@ -136,10 +136,8 @@ static void vxldap_exit(struct vxpdb_state *vp)
 static unsigned int vxldap_count(LDAP *conn, const char *base,
     const char *filter)
 {
-	LDAPMessage *result;
+	LDAPMessage *result, *entry;
 	unsigned int count = 0;
-	BerElement *ber;
-	char *attr;
 	int ret;
 
 	ret = ldap_search_ext_s(conn, base, LDAP_SCOPE_SUBTREE, filter, NULL,
@@ -147,12 +145,9 @@ static unsigned int vxldap_count(LDAP *conn, const char *base,
 	if (ret != LDAP_SUCCESS || result == NULL)
 		return -(errno = 1600 + ret);
 
-	for (attr = ldap_first_attribute(conn, result, &ber);
-	    attr != NULL; attr = ldap_next_attribute(conn, result, ber))
-	{
+	for (entry = ldap_first_entry(conn, result); entry != NULL;
+	    entry = ldap_next_entry(conn, entry))
 		++count;
-		ldap_memfree(attr);
-	}
 
 	ldap_msgfree(result);
 	return count;
