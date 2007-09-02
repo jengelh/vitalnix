@@ -332,6 +332,8 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 		};
 	}
 
+	for (i = 0; i < a; ++i)
+		attr_ptrs[i] = &attr[i];
 	attr_ptrs[i] = NULL;
 	ret = ldap_add_ext_s(state->conn, dn, attr_ptrs, NULL, NULL);
 
@@ -458,7 +460,7 @@ static int vxldap_getpwx(struct ldap_state *state, const char *filter,
 	if (dest != NULL)
 		vxldap_copy_user(dest, state->conn, result);
 	ldap_msgfree(result);
-	return ret;
+	return 1;
 }
 
 static int vxldap_getpwuid(struct vxpdb_state *vp, unsigned int uid,

@@ -34,7 +34,7 @@ enum {
 };
 
 struct userdel_state {
-	char *username;
+	const char *username;
 	struct vxconfig_userdel config;
 	const char *database;
 	unsigned int force, rm_cron, rm_home, rm_mail;
@@ -69,6 +69,7 @@ int main(int argc, const char **argv)
 		return E_OTHER;
 	}
 
+	state.username = argv[1];
 	if ((ret = userdel_run(&state)) != E_SUCCESS)
 		fprintf(stderr, "%s: %s\n", userdel_strerror(ret),
 		    	strerror(errno));
