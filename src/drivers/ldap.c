@@ -133,6 +133,46 @@ static void vxldap_exit(struct vxpdb_state *vp)
 	return;
 }
 
+static unsigned int vxldap_count(LDAP *conn, const char *base,
+    const char *filter)
+{
+	LDAPMessage *result;
+	unsigned int count = 0;
+	BerElement *ber;
+	char *attr;
+	int ret;
+
+	ret = ldap_search_ext_s(conn, base, LDAP_SCOPE_SUBTREE, filter, NULL,
+	      false, NULL, NULL, NULL, LDAP_MAXINT, &result);
+	if (ret != LDAP_SUCCESS || result == NULL)
+		return -(errno = 1600 + ret);
+
+	for (attr = ldap_first_attribute(conn, result, &ber);
+	    attr != NULL; attr = ldap_next_attribute(conn, result, ber))
+	{
+		++count;
+		ldap_memfree(attr);
+	}
+
+	ldap_msgfree(result);
+	return count;
+}
+
+static long vxldap_modctl(struct vxpdb_state *vp, unsigned int command, ...)
+{
+	struct ldap_state *state = vp->state;
+	errno = 0;
+	switch (command) {
+		case PDB_COUNT_USERS:
+			return vxldap_count(state->conn, state->user_suffix,
+			       "(objectClass=posixAccount)");
+		case PDB_COUNT_GROUPS:
+			return vxldap_count(state->conn, state->group_suffix,
+			       "(objectClass=posixGroup)");
+	}
+	return -ENOSYS;
+}
+
 static hmc_t *dn_user(const struct ldap_state *state,
     const struct vxpdb_user *rq)
 {
@@ -662,6 +702,7 @@ EXPORT_SYMBOL struct vxpdb_driver THIS_MODULE = {
 	.open           = vxldap_open,
 	.close          = vxldap_close,
 	.exit           = vxldap_exit,
+	.modctl         = vxldap_modctl,
 	.useradd        = vxldap_useradd,
 	.usermod        = vxldap_usermod,
 	.userdel        = vxldap_userdel,
