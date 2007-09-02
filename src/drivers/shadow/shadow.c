@@ -277,8 +277,8 @@ static int vshadow_getpwuid(struct vxpdb_state *vp, unsigned int uid,
 
 	if ((user = lookup_user(state->dq_user, NULL, uid)) == NULL)
 		return 0;
-
-	vxpdb_user_copy(dest, user);
+	if (dest != NULL)
+		vxpdb_user_copy(dest, user);
 	return 1;
 }
 
@@ -290,8 +290,8 @@ static int vshadow_getpwnam(struct vxpdb_state *vp, const char *name,
 
 	if ((user = lookup_user(state->dq_user, name, PDB_NOUID)) == NULL)
 		return 0;
-
-	vxpdb_user_copy(dest, user);
+	if (dest != NULL)
+		vxpdb_user_copy(dest, user);
 	return 1;
 }
 
@@ -397,8 +397,8 @@ static int vshadow_getgrgid(struct vxpdb_state *vp, unsigned int gid,
 
 	if ((group = lookup_group(state->dq_group, NULL, gid)) == NULL)
 		return 0;
-
-	vxpdb_group_copy(dest, group);
+	if (dest != NULL)
+		vxpdb_group_copy(dest, group);
 	return 1;
 }
 
@@ -410,8 +410,8 @@ static int vshadow_getgrnam(struct vxpdb_state *vp, const char *name,
 
 	if ((group = lookup_group(state->dq_group, name, PDB_NOGID)) == NULL)
 		return 0;
-
-	vxpdb_group_copy(dest, group);
+	if (dest != NULL)
+		vxpdb_group_copy(dest, group);
 	return 1;
 }
 

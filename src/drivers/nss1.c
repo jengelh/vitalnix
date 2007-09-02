@@ -45,7 +45,8 @@ static int vnss1_getpwuid(struct vxpdb_state *this, unsigned int uid,
 	if ((p = getpwuid(uid)) == NULL)
 		return -errno;
 
-	nssuser_copy(dest, p, getspnam(p->pw_name));
+	if (dest != NULL)
+		nssuser_copy(dest, p, getspnam(p->pw_name));
 	return 1;
 }
 
@@ -58,7 +59,8 @@ static int vnss1_getpwnam(struct vxpdb_state *this, const char *name,
 	if ((p = getpwnam(name)) == NULL)
 		return -errno;
 
-	nssuser_copy(dest, p, getspnam(name));
+	if (dest != NULL)
+		nssuser_copy(dest, p, getspnam(name));
 	return 1;
 }
 
@@ -103,7 +105,8 @@ static int vnss1_getgrgid(struct vxpdb_state *this, unsigned int gid,
 	if ((g = getgrgid(gid)) == NULL)
 		return -errno;
 
-	nssgroup_copy(dest, g);
+	if (dest != NULL)
+		nssgroup_copy(dest, g);
 	return 1;
 }
 
@@ -116,7 +119,8 @@ static int vnss1_getgrnam(struct vxpdb_state *this, const char *name,
 	if ((g = getgrnam(name)) == NULL)
 		return -errno;
 
-	nssgroup_copy(dest, g);
+	if (dest != NULL)
+		nssgroup_copy(dest, g);
 	return 1;
 }
 

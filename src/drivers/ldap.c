@@ -459,7 +459,8 @@ static int vxldap_getpwx(struct ldap_state *state, const char *filter,
 	if (ret != LDAP_SUCCESS || result == NULL)
 		return -(errno = 1600 + ret);
 
-	vxldap_copy_user(dest, state->conn, result);
+	if (dest != NULL)
+		vxldap_copy_user(dest, state->conn, result);
 	ldap_msgfree(result);
 	return 1;
 }
@@ -623,7 +624,8 @@ static int vxldap_getgrx(struct ldap_state *state, const char *filter,
 	if (ret != LDAP_SUCCESS || result == NULL)
 		return -(errno = 1600 + ret);
 
-	vxldap_copy_group(dest, state->conn, result);
+	if (dest != NULL)
+		vxldap_copy_group(dest, state->conn, result);
 	ldap_msgfree(result);
 	return 1;
 }
