@@ -29,9 +29,14 @@ static void test_2(void)
 
 	vxutil_cryptpw("", NULL, CRYPW_BLOWFISH, &r);
 	printf(
-		"--- TEST 2 --- Blowfish encryption\n"
+		"--- TEST 2a --- Blowfish encryption\n"
 		"Output: %s\n", r);
+	free(r);
 
+	vxutil_cryptpw("el07pf68?", NULL, CRYPW_SMBNT, &r);
+	printf(
+		"--- TEST 2b --- SMBNT encryption\n"
+		"Output: %s\n", r);
 	free(r);
 	return;
 }

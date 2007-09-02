@@ -25,6 +25,7 @@ enum {
 	CRYPW_DES = 1,
 	CRYPW_MD5,
 	CRYPW_BLOWFISH,
+	CRYPW_SMBNT,
 };
 
 extern bool vxutil_cryptpw(const char *, const char *, unsigned int, char **);
