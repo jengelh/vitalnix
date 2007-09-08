@@ -341,8 +341,10 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 	ret = ldap_add_ext_s(state->conn, dn, attr_ptrs, NULL, NULL);
 
 	hmc_free(dn);
-	if (ret != LDAP_SUCCESS)
+	if (ret != LDAP_SUCCESS) {
+		ldap_perror(state->conn, "The entry was not added:\n");
 		return -(errno = 1600 + ret);
+	}
 
 	return 1;
 }
@@ -553,7 +555,8 @@ static int vxldap_groupadd(struct vxpdb_state *vp,
     const struct vxpdb_group *rq)
 {
 	struct ldap_state *state = vp->state;
-	LDAPMod attr[14], *attr_ptrs[15];
+	LDAPMod attr[3], *attr_ptrs[4];
+	unsigned int a = 0, i;
 	hmc_t *dn;
 	int ret;
 
@@ -564,7 +567,40 @@ static int vxldap_groupadd(struct vxpdb_state *vp,
 	if (ret != LDAP_SUCCESS)
 		return -(errno = 1600 + ret);
 
-	return 0;
+	attr[a++] = (LDAPMod){
+		.mod_op     = LDAP_MOD_ADD,
+		.mod_type   = "objectClass",
+		.mod_values = (char *[]){"groupOfNames", "posixGroup", NULL},
+	};
+	attr[a++] = (LDAPMod){
+		.mod_op     = LDAP_MOD_ADD,
+		.mod_type   = "cn",
+		.mod_values = (char *[]){rq->gr_name, NULL},
+	};
+	/*
+	 * this dummy attribute seems required because groupOfNames has a
+	 * "MUST member" in its spec, yet we need to have this group
+	 * appear empty. (Resolving the "member" attribute will not yield
+	 * a posixAccount.)
+	 */
+	attr[a++] = (LDAPMod){
+		.mod_op     = LDAP_MOD_ADD,
+		.mod_type   = "member",
+		.mod_values = (char *[]){dn, NULL},
+	};
+
+	for (i = 0; i < a; ++i)
+		attr_ptrs[i] = &attr[i];
+	attr_ptrs[i] = NULL;
+	ret = ldap_add_ext_s(state->conn, dn, attr_ptrs, NULL, NULL);
+
+	hmc_free(dn);
+	if (ret != LDAP_SUCCESS) {
+		ldap_perror(state->conn, "The entry was not added:\n");
+		return -(errno = 1600 + ret);
+	}
+
+	return 1;
 }
 
 static int vxldap_groupmod(struct vxpdb_state *vp,
