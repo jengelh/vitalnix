@@ -349,7 +349,7 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 
 	hmc_free(dn);
 	if (ret != LDAP_SUCCESS) {
-		ldap_perror(state->conn, "The entry was not added:\n");
+		ldap_perror(state->conn, "The entry was not added");
 		return -(errno = 1600 + ret);
 	}
 
@@ -557,8 +557,7 @@ static hmc_t *dn_group(const struct ldap_state *state, const char *name)
 	return ret;
 }
 
-static int vxldap_groupadd(struct vxpdb_state *vp,
-    const struct vxpdb_group *rq)
+static int vxldap_groupadd(struct vxpdb_state *vp, const struct vxpdb_group *rq)
 {
 	struct ldap_state *state = vp->state;
 	LDAPMod attr[3], *attr_ptrs[4];
@@ -602,7 +601,7 @@ static int vxldap_groupadd(struct vxpdb_state *vp,
 
 	hmc_free(dn);
 	if (ret != LDAP_SUCCESS) {
-		ldap_perror(state->conn, "The entry was not added:\n");
+		ldap_perror(state->conn, "The entry was not added");
 		return -(errno = 1600 + ret);
 	}
 
