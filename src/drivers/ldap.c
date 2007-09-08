@@ -178,14 +178,13 @@ static long vxldap_modctl(struct vxpdb_state *vp, unsigned int command, ...)
 	return -ENOSYS;
 }
 
-static hmc_t *dn_user(const struct ldap_state *state,
-    const struct vxpdb_user *rq)
+static hmc_t *dn_user(const struct ldap_state *state, const char *name)
 {
 	hmc_t *ret;
-	if (rq->pw_name == NULL)
+	if (name == NULL)
 		return NULL;
 	ret = hmc_sinit("uid=");
-	hmc_strcat(&ret, rq->pw_name);
+	hmc_strcat(&ret, name);
 	hmc_strcat(&ret, ",");
 	hmc_strcat(&ret, state->user_suffix);
 	return ret;
@@ -203,7 +202,7 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 	hmc_t *dn;
 	int ret;
 
-	if ((dn = dn_user(state, rq)) == NULL)
+	if ((dn = dn_user(state, rq->pw_name)) == NULL)
 		return -EINVAL;
 
 	if (rq->sp_min != PDB_DFL_KEEPMIN || rq->sp_max != PDB_DFL_KEEPMAX ||
@@ -369,7 +368,7 @@ static int vxldap_userdel(struct vxpdb_state *vp,
 	hmc_t *dn;
 	int ret;
 
-	if ((dn = dn_user(state, sr_mask)) == NULL)
+	if ((dn = dn_user(state, sr_mask->pw_name)) == NULL)
 		return -EINVAL;
 
 	ret = ldap_delete_ext_s(state->conn, dn, NULL, NULL);
@@ -545,13 +544,12 @@ static void vxldap_usertrav_free(struct vxpdb_state *vp, void *ptr)
 	return;
 }
 
-static hmc_t *dn_group(const struct ldap_state *state,
-    const struct vxpdb_group *group)
+static hmc_t *dn_group(const struct ldap_state *state, const char *name)
 {
 	hmc_t *ret = hmc_sinit("cn=");
-	if (group->gr_name == NULL)
+	if (name == NULL)
 		return ret;
-	hmc_strcat(&ret, group->gr_name);
+	hmc_strcat(&ret, name);
 	hmc_strcat(&ret, ",");
 	hmc_strcat(&ret, state->group_suffix);
 	return ret;
@@ -566,7 +564,7 @@ static int vxldap_groupadd(struct vxpdb_state *vp,
 	hmc_t *dn;
 	int ret;
 
-	if ((dn = dn_group(state, rq)) == NULL)
+	if ((dn = dn_group(state, rq->gr_name)) == NULL)
 		return -ENOMEM;
 
 	ret = ldap_add_ext_s(state->conn, dn, attr_ptrs, NULL, NULL);
@@ -622,7 +620,7 @@ static int vxldap_groupdel(struct vxpdb_state *vp,
 	hmc_t *dn;
 	int ret;
 
-	dn  = dn_group(state, sr_mask);
+	dn  = dn_group(state, sr_mask->gr_name);
 	ret = ldap_delete_ext_s(state->conn, dn, NULL, NULL);
 	if (ret != LDAP_SUCCESS) {
 		hmc_free(dn);
