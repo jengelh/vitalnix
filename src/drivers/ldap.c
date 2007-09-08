@@ -74,11 +74,8 @@ static void vxldap_read_config(struct ldap_state *state, const char *file,
 		return;
 	}
 
-	state->uri          = "ldap://localhost/";
 	state->uid_min      = state->gid_min = 1000;
 	state->uid_max      = state->gid_max = 60000;
-	state->user_suffix  = "ou=users,dc=site";
-	state->group_suffix = "ou=groups,dc=site";
 	HX_shconfig(CONFIG_SYSCONFDIR "/autouid.conf", autouid_table);
 	HX_shconfig(file, options_table);
 	return;
@@ -101,6 +98,9 @@ static int vxldap_open(struct vxpdb_state *vp, unsigned int flags)
 {
 	struct ldap_state *state = vp->state;
 	int ret;
+
+	if (state->uri == NULL)
+		return -ENOTCONN;
 
 	ret = ldap_initialize(&state->conn, state->uri);
 	if (ret != LDAP_SUCCESS)
