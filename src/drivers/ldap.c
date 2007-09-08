@@ -118,7 +118,8 @@ static int vxldap_open(struct vxpdb_state *vp, unsigned int flags)
 			return -(errno = 1600 + ret);
 		}
 		ldap_start_tls_s(state->conn, NULL, NULL);
-		ret = ldap_simple_bind_s(state->conn, "cn=root,dc=site", state->root_pw);
+		ret = ldap_simple_bind_s(state->conn, state->root_dn,
+		      state->root_pw);
 		if (ret != LDAP_SUCCESS)
 			fprintf(stderr, "Simple bind failed; will use anon\n");
 	}
