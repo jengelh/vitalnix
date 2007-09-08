@@ -179,11 +179,12 @@ static void d_ldif_users(struct vxpdb_state *db)
 				       VXQUOTE_BASE64, &freeme));
 		}
 
+		if (user.sp_passwd != NULL && *user.sp_passwd != '\0')
+			printf("userPassword: {crypt}%s\n",
+			       user.sp_passwd);
+
 		if (Dump_what[DUMP_SHADOW]) {
 			printf("objectClass: shadowAccount\n");
-			if (user.sp_passwd != NULL && *user.sp_passwd != '\0')
-				printf("userPassword: {crypt}%s\n",
-				       user.sp_passwd);
 			if (user.sp_lastchg > 0)
 				printf("shadowLastChange: %ld\n",
 				       user.sp_lastchg);
@@ -200,12 +201,13 @@ static void d_ldif_users(struct vxpdb_state *db)
 		}
 
 		if (Dump_what[DUMP_VXSHADOW]) {
+			printf("objectClass: vitalnixManagedAccount\n");
 			if (user.vs_uuid != NULL)
-				/* defined in RFC 2798 (inetOrgPerson.schema) */
-				printf("employeeNumber: %s\n", user.vs_uuid);
+				printf("vitalnixUUID: %s\n", user.vs_uuid);
 			if (user.vs_pvgrp != NULL)
-				/* defined in RFC 1274 (COSINE.schema) */
-				printf("userClass: %s\n", user.vs_pvgrp);
+				printf("vitalnixGroup: %s\n", user.vs_pvgrp);
+			if (user.vs_defer > 0)
+				printf("vitalnixDeferTimer: %ld\n", user.vs_defer);
 		}
 
 		printf("\n");
