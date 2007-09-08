@@ -32,8 +32,13 @@ struct ldap_trav {
 	LDAPMessage *base, *current;
 };
 
+/* Functions */
 static void vxldap_close(struct vxpdb_state *);
 
+/* Variables */
+static const char *const no_attrs[] = {"", NULL};
+
+//-----------------------------------------------------------------------------
 static void vxldap_read_ldap_secret(const struct HXoptcb *cbi)
 {
 	hmc_t **pw = cbi->current->uptr;
@@ -140,13 +145,12 @@ static void vxldap_exit(struct vxpdb_state *vp)
 static unsigned int vxldap_count(LDAP *conn, const char *base,
     const char *filter)
 {
-	static const char *const attrs[] = {"", NULL};
 	LDAPMessage *result, *entry;
 	unsigned int count = 0;
 	int ret;
 
 	ret = ldap_search_ext_s(conn, base, LDAP_SCOPE_SUBTREE, filter,
-	      const_cast(char **, attrs), true, NULL, NULL,
+	      const_cast(char **, no_attrs), true, NULL, NULL,
 	      NULL, LDAP_MAXINT, &result);
 	if (ret != LDAP_SUCCESS || result == NULL)
 		return -(errno = 1600 + ret);
