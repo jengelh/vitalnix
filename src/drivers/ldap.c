@@ -410,6 +410,7 @@ static void vxldap_copy_user(struct vxpdb_user *dest, LDAP *conn,
 			continue;
 		if (*val == NULL) {
 			ldap_value_free(val);
+			ldap_memfree(attr);
 			continue;
 		}
 		if (strcmp(attr, "uid") == 0)
@@ -648,6 +649,7 @@ static void vxldap_copy_group(struct vxpdb_group *dest, LDAP *conn,
 			continue;
 		if (*val == NULL) {
 			ldap_value_free(val);
+			ldap_memfree(attr);
 			continue;
 		}
 		if (strcmp(attr, "gidNumber") == 0)
