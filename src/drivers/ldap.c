@@ -146,7 +146,7 @@ static unsigned int vxldap_count(LDAP *conn, const char *base,
 	int ret;
 
 	ret = ldap_search_ext_s(conn, base, LDAP_SCOPE_SUBTREE, filter,
-	      reinterpret_cast(char **, attrs), true, NULL, NULL,
+	      const_cast(char **, attrs), true, NULL, NULL,
 	      NULL, LDAP_MAXINT, &result);
 	if (ret != LDAP_SUCCESS || result == NULL)
 		return -(errno = 1600 + ret);
@@ -508,9 +508,8 @@ static void *vxldap_usertrav_init(struct vxpdb_state *vp)
 	int ret;
 
 	ret = ldap_search_ext_s(state->conn, state->user_suffix,
-	      LDAP_SCOPE_SUBTREE, F_POSIXACCOUNT,
-	      reinterpret_cast(char **, attrs), false, NULL, NULL,
-	      NULL, LDAP_MAXINT, &trav.base);
+	      LDAP_SCOPE_SUBTREE, F_POSIXACCOUNT, const_cast(char **, attrs),
+	      false, NULL, NULL, NULL, LDAP_MAXINT, &trav.base);
 	if (ret != LDAP_SUCCESS) {
 		errno = 1600 + ret;
 		return NULL;
@@ -715,9 +714,8 @@ static void *vxldap_grouptrav_init(struct vxpdb_state *vp)
 	int ret;
 
 	ret = ldap_search_ext_s(state->conn, state->group_suffix,
-	      LDAP_SCOPE_SUBTREE, F_POSIXGROUP,
-	      reinterpret_cast(char **, attrs), false, NULL, NULL,
-	      NULL, LDAP_MAXINT, &trav.base);
+	      LDAP_SCOPE_SUBTREE, F_POSIXGROUP, const_cast(char **, attrs),
+	      false, NULL, NULL, NULL, LDAP_MAXINT, &trav.base);
 	if (ret != LDAP_SUCCESS) {
 		errno = 1600 + ret;
 		return NULL;
