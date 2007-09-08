@@ -201,21 +201,20 @@ static int vxmmd_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 	return ret;
 }
 
-static int vxmmd_usermod(struct vxpdb_state *vp,
-    const struct vxpdb_user *sr_mask, const struct vxpdb_user *mod_mask)
+static int vxmmd_usermod(struct vxpdb_state *vp, const char *name,
+    const struct vxpdb_user *newstuff)
 {
 	const struct multi_state *state = vp->state;
 	if (WR_OPEN(state))
-		return vxpdb_usermod(WR_MOD(state), sr_mask, mod_mask);
+		return vxpdb_usermod(WR_MOD(state), name, newstuff);
 	return -EROFS;
 }
 
-static int vxmmd_userdel(struct vxpdb_state *vp,
-    const struct vxpdb_user *sr_mask)
+static int vxmmd_userdel(struct vxpdb_state *vp, const char *name)
 {
 	const struct multi_state *state = vp->state;
 	if (WR_OPEN(state))
-		return vxpdb_userdel(WR_MOD(state), sr_mask);
+		return vxpdb_userdel(WR_MOD(state), name);
 	return -EROFS;
 }
 
@@ -350,21 +349,20 @@ static int vxmmd_groupadd(struct vxpdb_state *vp, const struct vxpdb_group *rq)
 	return ret;
 }
 
-static int vxmmd_groupmod(struct vxpdb_state *vp,
-    const struct vxpdb_group *sr_mask, const struct vxpdb_group *mod_mask)
+static int vxmmd_groupmod(struct vxpdb_state *vp, const char *name,
+    const struct vxpdb_group *newstuff)
 {
 	const struct multi_state *state = vp->state;
 	if (WR_OPEN(state))
-		return vxpdb_groupmod(WR_MOD(state), sr_mask, mod_mask);
+		return vxpdb_groupmod(WR_MOD(state), name, newstuff);
 	return -EROFS;
 }
 
-static int vxmmd_groupdel(struct vxpdb_state *vp,
-    const struct vxpdb_group *sr_mask)
+static int vxmmd_groupdel(struct vxpdb_state *vp, const char *name)
 {
 	const struct multi_state *state = vp->state;
 	if (WR_OPEN(state))
-		return vxpdb_groupdel(WR_MOD(state), sr_mask);
+		return vxpdb_groupdel(WR_MOD(state), name);
 	return -EROFS;
 }
 

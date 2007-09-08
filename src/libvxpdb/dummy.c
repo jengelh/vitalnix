@@ -65,13 +65,13 @@ static int vdummy_useradd(struct vxpdb_state *vp, const struct vxpdb_user *user)
 	return -EPERM;
 }
 
-static int vdummy_usermod(struct vxpdb_state *vp,
-    const struct vxpdb_user *mask, const struct vxpdb_user *mod)
+static int vdummy_usermod(struct vxpdb_state *vp, const char *name,
+    const struct vxpdb_user *newstuff)
 {
 	return -EPERM;
 }
 
-static int vdummy_userdel(struct vxpdb_state *vp, const struct vxpdb_user *hint)
+static int vdummy_userdel(struct vxpdb_state *vp, const char *name)
 {
 	return -EPERM;
 }
@@ -109,14 +109,13 @@ static int vdummy_groupadd(struct vxpdb_state *vp, const struct vxpdb_group *u)
 	return -EPERM;
 }
 
-static int vdummy_groupmod(struct vxpdb_state *vp,
-    const struct vxpdb_group *vprk, const struct vxpdb_group *mod)
+static int vdummy_groupmod(struct vxpdb_state *vp, const char *name,
+    const struct vxpdb_group *newstuff)
 {
 	return -EPERM;
 }
 
-static int vdummy_groupdel(struct vxpdb_state *vp,
-    const struct vxpdb_group *hint)
+static int vdummy_groupdel(struct vxpdb_state *vp, const char *name)
 {
 	return -EPERM;
 }

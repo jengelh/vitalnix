@@ -138,7 +138,7 @@ static int groupmod_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
 	mod_request.gr_name = static_cast(char *, new_group_name);
 	mod_request.gr_gid  = new_group_id;
 
-	if ((ret = vxpdb_groupmod(db, &current, &mod_request)) <= 0) {
+	if ((ret = vxpdb_groupmod(db, group_name, &mod_request)) <= 0) {
 		fprintf(stderr, "Error: Group updating failed: %s\n",
 		        strerror(-ret));
 		return E_UPDATE;

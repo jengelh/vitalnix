@@ -42,16 +42,15 @@ static inline int vxpdb_useradd(struct vxpdb_state *state,
 	return state->vtable->useradd(state, user);
 }
 
-static inline int vxpdb_usermod(struct vxpdb_state *state,
-    const struct vxpdb_user *mask, const struct vxpdb_user *repl)
+static inline int vxpdb_usermod(struct vxpdb_state *state, const char *name,
+    const struct vxpdb_user *newstuff)
 {
-	return state->vtable->usermod(state, mask, repl);
+	return state->vtable->usermod(state, name, newstuff);
 }
 
-static inline int vxpdb_userdel(struct vxpdb_state *state,
-    const struct vxpdb_user *hint)
+static inline int vxpdb_userdel(struct vxpdb_state *state, const char *name)
 {
-	return state->vtable->userdel(state, hint);
+	return state->vtable->userdel(state, name);
 }
 
 static inline void *vxpdb_usertrav_init(struct vxpdb_state *state)
@@ -76,16 +75,15 @@ static inline int vxpdb_groupadd(struct vxpdb_state *state,
 	return state->vtable->groupadd(state, group);
 }
 
-static inline int vxpdb_groupmod(struct vxpdb_state *state,
-    const struct vxpdb_group *mask, const struct vxpdb_group *repl)
+static inline int vxpdb_groupmod(struct vxpdb_state *state, const char *name,
+    const struct vxpdb_group *newstuff)
 {
-	return state->vtable->groupmod(state, mask, repl);
+	return state->vtable->groupmod(state, name, newstuff);
 }
 
-static inline int vxpdb_groupdel(struct vxpdb_state *state,
-    const struct vxpdb_group *hint)
+static inline int vxpdb_groupdel(struct vxpdb_state *state, const char *name)
 {
-	return state->vtable->groupdel(state, hint);
+	return state->vtable->groupdel(state, name);
 }
 
 static inline void *vxpdb_grouptrav_init(struct vxpdb_state *state)

@@ -29,7 +29,7 @@ static bool get_options(int *, const char ***, struct mdf_priv *);
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv)
 {
-	struct vxpdb_user sr_mask, mod_mask;
+	struct vxpdb_user mod_mask;
 	struct vxpdb_state *db;
 	struct mdf_priv p = {};
 	int ret;
@@ -46,15 +46,13 @@ int main(int argc, const char **argv)
 		return EXIT_FAILURE;
 	}
 
-	vxpdb_user_clean(&sr_mask);
 	vxpdb_user_nomodify(&mod_mask);
-	sr_mask.pw_name  = p.username;
 	mod_mask.pw_real = p.realname;
 	mod_mask.vs_uuid = rebuild_uuid(&p, db);
 	if (mod_mask.vs_uuid == NULL)
 		return EXIT_FAILURE;
 
-	if ((ret = vxpdb_usermod(db, &sr_mask, &mod_mask)) <= 0) {
+	if ((ret = vxpdb_usermod(db, p.username, &mod_mask)) <= 0) {
 		fprintf(stderr, "User update unsuccessful: %s\n",
 		        strerror(-ret));
 		return EXIT_FAILURE;

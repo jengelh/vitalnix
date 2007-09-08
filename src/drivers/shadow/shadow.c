@@ -201,8 +201,8 @@ static int vshadow_useradd(struct vxpdb_state *vp,
 	return 1;
 }
 
-static int vshadow_usermod(struct vxpdb_state *vp,
-    const struct vxpdb_user *sr_mask, const struct vxpdb_user *mod_mask)
+static int vshadow_usermod(struct vxpdb_state *vp, const char *name,
+    const struct vxpdb_user *mod_mask)
 {
 #define UP_INT(__field) \
 	if (mod_mask->__field != PDB_NO_CHANGE) \
@@ -216,9 +216,9 @@ static int vshadow_usermod(struct vxpdb_state *vp,
 
 	RWLOCK_CHK(state);
 
-	if (sr_mask->pw_name == NULL && sr_mask->pw_uid == PDB_NOUID)
+	if (name == NULL)
 		return -EINVAL;
-	user = lookup_user(state->dq_user, sr_mask->pw_name, sr_mask->pw_uid);
+	user = lookup_user(state->dq_user, name, PDB_NOUID);
 	if (user == NULL)
 		return -ENOENT;
 
@@ -248,17 +248,16 @@ static int vshadow_usermod(struct vxpdb_state *vp,
 #undef UP_STR
 }
 
-static int vshadow_userdel(struct vxpdb_state *vp,
-    const struct vxpdb_user *sr_mask)
+static int vshadow_userdel(struct vxpdb_state *vp, const char *name)
 {
 	struct shadow_state *state = vp->state;
 	struct vxpdb_user *user;
 
 	RWLOCK_CHK(state);
 
-	if (sr_mask->pw_name == NULL && sr_mask->pw_uid == PDB_NOUID)
+	if (name == NULL)
 		return -EINVAL;
-	user = lookup_user(state->dq_user, sr_mask->pw_name, sr_mask->pw_uid);
+	user = lookup_user(state->dq_user, name, PDB_NOUID);
 	if (user == NULL)
 		return -ENOENT;
 
@@ -350,14 +349,14 @@ static int vshadow_groupadd(struct vxpdb_state *vp,
 	return 1;
 }
 
-static int vshadow_groupmod(struct vxpdb_state *vp,
-    const struct vxpdb_group *sr_mask, const struct vxpdb_group *mod_mask)
+static int vshadow_groupmod(struct vxpdb_state *vp, const char *name,
+    const struct vxpdb_group *mod_mask)
 {
 	struct shadow_state *state = vp->state;
 	struct vxpdb_group *group;
 
 	RWLOCK_CHK(state);
-	group = lookup_group(state->dq_group, sr_mask->gr_name, sr_mask->gr_gid);
+	group = lookup_group(state->dq_group, name, PDB_NOGID);
 	if (group == NULL)
 		return -ENOENT;
 
@@ -371,14 +370,13 @@ static int vshadow_groupmod(struct vxpdb_state *vp,
 	return 1;
 }
 
-static int vshadow_groupdel(struct vxpdb_state *vp,
-    const struct vxpdb_group *sr_mask)
+static int vshadow_groupdel(struct vxpdb_state *vp, const char *name)
 {
 	struct shadow_state *state = vp->state;
 	struct vxpdb_group *grp;
 
 	RWLOCK_CHK(state);
-	grp = lookup_group(state->dq_group, sr_mask->gr_name, sr_mask->gr_gid);
+	grp = lookup_group(state->dq_group, name, PDB_NOGID);
 	if (grp == NULL)
 		return -ENOENT;
 

@@ -90,7 +90,7 @@ static int groupdel_main2(struct vxpdb_state *db)
 
 static int groupdel_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
 {
-	struct vxpdb_group group_info;
+	struct vxpdb_group group_info = {};
 	int ret;
 
 	if ((ret = vxpdb_getgrnam(db, group_name, &group_info)) < 0) {
@@ -112,9 +112,7 @@ static int groupdel_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
 	if (action_before != NULL)
 		vxutil_replace_run(action_before, ext_catalog);
 
-	group_info.gr_name = static_cast(char *, group_name);
-	group_info.gr_gid  = PDB_NOGID;
-	if ((ret = vxpdb_groupdel(db, &group_info)) <= 0) {
+	if ((ret = vxpdb_groupdel(db, group_name)) <= 0) {
 		fprintf(stderr, "Error: Deleting group failed: %s\n",
 		        strerror(-ret));
 		return E_UPDATE;

@@ -200,7 +200,7 @@ static int userdel_run2(struct vxpdb_state *db, struct userdel_state *state)
 static int userdel_run3(struct vxpdb_state *db, struct userdel_state *state)
 {
 	struct vxconfig_userdel *conf = &state->config;
-	struct vxpdb_user search = {}, result = {};
+	struct vxpdb_user result = {};
 	char *home, *username;
 	int ret;
 
@@ -221,8 +221,7 @@ static int userdel_run3(struct vxpdb_state *db, struct userdel_state *state)
 	username = HX_strdup(result.pw_name);
 	home     = HX_strdup(result.pw_home);
 
-	search.pw_name = username;
-	if ((ret = vxpdb_userdel(db, &search)) <= 0) {
+	if ((ret = vxpdb_userdel(db, username)) <= 0) {
 		free(username);
 		free(home);
 		return E_UPDATE;

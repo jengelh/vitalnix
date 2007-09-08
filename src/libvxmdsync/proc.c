@@ -364,7 +364,7 @@ EXPORT_SYMBOL int mdsync_del(struct mdsync_workspace *w)
 
 		HX_rrmdir(res.pw_home);
 
-		if ((ret = vxpdb_userdel(w->database, &res)) < 0) {
+		if ((ret = vxpdb_userdel(w->database, res.pw_name)) < 0) {
 			fprintf(stderr, "%s()+pdb_userdel(): %s\n",
 			        __func__, strerror(errno));
 			return ret;
@@ -395,19 +395,17 @@ static int mdsync_update(struct mdsync_workspace *w)
 {
 	unsigned int users_proc = 0, users_max = w->update_req->items;
 	void *travp = HXbtrav_init(w->update_req);
-	struct vxpdb_user search_rq, mod_rq;
+	struct vxpdb_user mod_rq;
 	const struct HXbtree_node *node;
 	const struct vxpdb_user *act;
 	int ret;
 
 	while ((node = HXbtraverse(travp)) != NULL) {
-		vxpdb_user_clean(&search_rq);
 		vxpdb_user_nomodify(&mod_rq);
 		act = node->data;
-		search_rq.pw_name = act->pw_name;
 		mod_rq.vs_pvgrp   = act->vs_pvgrp;
 
-		ret = vxpdb_usermod(w->database, &search_rq, &mod_rq);
+		ret = vxpdb_usermod(w->database, act->pw_name, &mod_rq);
 		if (ret <= 0)
 			return ret;
 		if (w->report != NULL)
@@ -420,18 +418,16 @@ static int mdsync_update(struct mdsync_workspace *w)
 static int mdsync_defer_start(struct mdsync_workspace *w)
 {
 	unsigned int users_proc = 0, users_max = w->defer_start->items;
-	struct vxpdb_user search_rq, mod_rq;
+	struct vxpdb_user mod_rq;
 	const struct HXdeque_node *node;
 	long today = vxutil_now_iday();
 	int ret;
 
 	for (node = w->defer_start->first; node != NULL; node = node->next) {
-		vxpdb_user_clean(&search_rq);
 		vxpdb_user_nomodify(&mod_rq);
-		search_rq.pw_name = node->ptr;
 		mod_rq.vs_defer   = today;
 
-		ret = vxpdb_usermod(w->database, &search_rq, &mod_rq);
+		ret = vxpdb_usermod(w->database, node->ptr, &mod_rq);
 		if (ret <= 0)
 			return ret;
 		if (w->report != NULL)
@@ -444,17 +440,15 @@ static int mdsync_defer_start(struct mdsync_workspace *w)
 static int mdsync_defer_stop(struct mdsync_workspace *w)
 {
 	unsigned int users_proc = 0, users_max = w->defer_stop->items;
-	struct vxpdb_user search_rq, mod_rq;
+	struct vxpdb_user mod_rq;
 	const struct HXdeque_node *node;
 	int ret;
 
 	for (node = w->defer_stop->first; node != NULL; node = node->next) {
-		vxpdb_user_clean(&search_rq);
 		vxpdb_user_nomodify(&mod_rq);
-		search_rq.pw_name = node->ptr;
 		mod_rq.vs_defer   = 0;
 
-		ret = vxpdb_usermod(w->database, &search_rq, &mod_rq);
+		ret = vxpdb_usermod(w->database, node->ptr, &mod_rq);
 		if (ret <= 0)
 			return ret;
 		if (w->report != NULL)

@@ -236,7 +236,7 @@ static int usermod_run2(struct vxpdb_state *db, struct usermod_state *state)
 static int usermod_run3(struct vxpdb_state *db, struct usermod_state *state)
 {
 	struct vxconfig_usermod *conf = &state->config;
-	struct vxpdb_user search_mask = {}, modify_mask = {};
+	struct vxpdb_user modify_mask = {};
 	int ret;
 
 	if ((ret = vxpdb_getpwnam(db, state->username, NULL)) < 0)
@@ -249,7 +249,7 @@ static int usermod_run3(struct vxpdb_state *db, struct usermod_state *state)
 	if (conf->user_premod != NULL)
 		vxutil_replace_run(conf->user_premod, state->sr_map);
 
-	if ((ret = vxpdb_usermod(db, &search_mask, &modify_mask)) <= 0)
+	if ((ret = vxpdb_usermod(db, state->username, &modify_mask)) <= 0)
 		return E_UPDATE;
 
 	if (conf->user_postmod != NULL)

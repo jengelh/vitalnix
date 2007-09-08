@@ -77,8 +77,7 @@ struct traverser_state {
 static int vmysql_xlock_user(struct mysql_state *);
 static int vmysql_xlock_group(struct mysql_state *);
 static inline void vmysql_xunlock(struct mysql_state *);
-static int vmysql_userdel_unlocked(struct mysql_state *,
-	const struct vxpdb_user *);
+static int vmysql_userdel_unlocked(struct mysql_state *, const char *);
 
 static unsigned int count_rows(struct mysql_state *, const char *);
 static void export_passwd(struct vxpdb_user *, const MYSQL_ROW);
@@ -351,13 +350,13 @@ static int vmysql_useradd(struct vxpdb_state *vp,
 	return 1;
 
  out:
-	vmysql_userdel_unlocked(state, rq);
+	vmysql_userdel_unlocked(state, rq->pw_name);
 	vmysql_xunlock(state);
 	return -ret;
 }
 
-static int vmysql_usermod(struct vxpdb_state *vp,
-    const struct vxpdb_user *sr_mask, const struct vxpdb_user *mod_mask)
+static int vmysql_usermod(struct vxpdb_state *vp, const char *name,
+    const struct vxpdb_user *param)
 {
 	/*
 	struct mysql_state *state = vp->state;
@@ -371,24 +370,22 @@ static int vmysql_usermod(struct vxpdb_state *vp,
 	return 0;
 }
 
-static int vmysql_userdel(struct vxpdb_state *vp,
-    const struct vxpdb_user *sr_mask)
+static int vmysql_userdel(struct vxpdb_state *vp, const char *name)
 {
 	struct mysql_state *state = vp->state;
 	int ret;
 
 	CHECK_ACCESS();
-	if (sr_mask->pw_name == NULL && sr_mask->pw_uid == PDB_NOUID)
+	if (name == NULL)
 		return -EINVAL;
 	if ((ret = vmysql_xlock_user(state)) <= 0)
 		return ret;
-	ret = vmysql_userdel_unlocked(state, sr_mask);
+	ret = vmysql_userdel_unlocked(state, name);
 	vmysql_xunlock(state);
 	return ret;
 }
 
-static int vmysql_userdel_unlocked(struct mysql_state *state,
-    const struct vxpdb_user *sr_mask)
+static int vmysql_userdel_unlocked(struct mysql_state *state, const char *name)
 {
 	/*
 	hmc_t *wtable_pw = where_pw_u(state, sr_mask, WHERE_PW_NAME | WHERE_PW_UID);
@@ -534,14 +531,13 @@ static int vmysql_groupadd(struct vxpdb_state *vp,
 	return 0;
 }
 
-static int vmysql_groupmod(struct vxpdb_state *vp,
-    const struct vxpdb_group *msk, const struct vxpdb_group *mod)
+static int vmysql_groupmod(struct vxpdb_state *vp, const char *name,
+    const struct vxpdb_group *param)
 {
 	return 0;
 }
 
-static int vmysql_groupdel(struct vxpdb_state *vp,
-    const struct vxpdb_group *sr_mask)
+static int vmysql_groupdel(struct vxpdb_state *vp, const char *name)
 {
 	/*
 	struct mysql_state *state = vp->state;

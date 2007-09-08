@@ -97,8 +97,8 @@ struct vxpdb_driver {
 	int (*unlock)(struct vxpdb_state *);
 
 	int (*useradd)(struct vxpdb_state *, const struct vxpdb_user *);
-	int (*usermod)(struct vxpdb_state *, const struct vxpdb_user *, const struct vxpdb_user *);
-	int (*userdel)(struct vxpdb_state *, const struct vxpdb_user *);
+	int (*usermod)(struct vxpdb_state *, const char *, const struct vxpdb_user *);
+	int (*userdel)(struct vxpdb_state *, const char *);
 	int (*getpwuid)(struct vxpdb_state *, unsigned int, struct vxpdb_user *);
 	int (*getpwnam)(struct vxpdb_state *, const char *, struct vxpdb_user *);
 	void *(*usertrav_init)(struct vxpdb_state *);
@@ -106,8 +106,8 @@ struct vxpdb_driver {
 	void (*usertrav_free)(struct vxpdb_state *, void *);
 
 	int (*groupadd)(struct vxpdb_state *, const struct vxpdb_group *);
-	int (*groupmod)(struct vxpdb_state *, const struct vxpdb_group *, const struct vxpdb_group *);
-	int (*groupdel)(struct vxpdb_state *, const struct vxpdb_group *);
+	int (*groupmod)(struct vxpdb_state *, const char *, const struct vxpdb_group *);
+	int (*groupdel)(struct vxpdb_state *, const char *);
 	int (*getgrgid)(struct vxpdb_state *, unsigned int, struct vxpdb_group *);
 	int (*getgrnam)(struct vxpdb_state *, const char *, struct vxpdb_group *);
 	void *(*grouptrav_init)(struct vxpdb_state *);

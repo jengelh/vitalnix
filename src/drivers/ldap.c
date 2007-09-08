@@ -355,20 +355,19 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 	return 1;
 }
 
-static int vxldap_usermod(struct vxpdb_state *vp,
-    const struct vxpdb_user *sr_mask, const struct vxpdb_user *mod_mask)
+static int vxldap_usermod(struct vxpdb_state *vp, const char *name,
+    const struct vxpdb_user *param)
 {
 	return -ENOENT;
 }
 
-static int vxldap_userdel(struct vxpdb_state *vp,
-    const struct vxpdb_user *sr_mask)
+static int vxldap_userdel(struct vxpdb_state *vp, const char *name)
 {
 	struct ldap_state *state = vp->state;
 	hmc_t *dn;
 	int ret;
 
-	if ((dn = dn_user(state, sr_mask->pw_name)) == NULL)
+	if ((dn = dn_user(state, name)) == NULL)
 		return -EINVAL;
 
 	ret = ldap_delete_ext_s(state->conn, dn, NULL, NULL);
@@ -607,20 +606,19 @@ static int vxldap_groupadd(struct vxpdb_state *vp,
 	return 1;
 }
 
-static int vxldap_groupmod(struct vxpdb_state *vp,
-    const struct vxpdb_group *sr_mask, const struct vxpdb_group *mod_mask)
+static int vxldap_groupmod(struct vxpdb_state *vp, const char *name,
+    const struct vxpdb_group *param)
 {
 	return 0;
 }
 
-static int vxldap_groupdel(struct vxpdb_state *vp,
-    const struct vxpdb_group *sr_mask)
+static int vxldap_groupdel(struct vxpdb_state *vp, const char *name)
 {
 	struct ldap_state *state = vp->state;
 	hmc_t *dn;
 	int ret;
 
-	dn  = dn_group(state, sr_mask->gr_name);
+	dn  = dn_group(state, name);
 	ret = ldap_delete_ext_s(state->conn, dn, NULL, NULL);
 	if (ret != LDAP_SUCCESS) {
 		hmc_free(dn);
