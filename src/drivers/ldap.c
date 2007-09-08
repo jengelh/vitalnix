@@ -272,7 +272,7 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 	LDAPMod attr[21], *attr_ptrs[22];
 	const char *object_classes[6];
 	unsigned int a = 0, i, o = 0, uid;
-	hmc_t *dn;
+	hmc_t *dn, *password;
 	int ret;
 
 	if ((dn = dn_user(state, rq->pw_name)) == NULL)
@@ -345,11 +345,12 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 			.mod_values = (char *[]){rq->pw_shell, NULL},
 		};
 
+	password = hmc_sinit(rq->sp_passwd);
+	hmc_strpcat(&password, "{crypt}");
 	attr[a++] = (LDAPMod){
 		.mod_op     = LDAP_MOD_ADD,
 		.mod_type   = "userPassword",
-		.mod_values = (char *[]){(rq->sp_passwd == NULL) ? "" :
-		                         rq->sp_passwd, NULL},
+		.mod_values = (char *[]){password, NULL},
 	};
 
 	/* shadowAccount */
