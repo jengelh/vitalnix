@@ -382,8 +382,8 @@ static int vxldap_userdel(struct vxpdb_state *vp, const char *name)
 static void vxldap_copy_user(struct vxpdb_user *dest, LDAP *conn,
     LDAPMessage *entry)
 {
+	char *attr, **val;
 	BerElement *ber;
-	char *attr;
 
 	hmc_strasg(&dest->pw_name, NULL);
 	dest->pw_uid     = PDB_NOUID;
@@ -403,8 +403,6 @@ static void vxldap_copy_user(struct vxpdb_user *dest, LDAP *conn,
 	for (attr = ldap_first_attribute(conn, entry, &ber); attr != NULL;
 	    attr = ldap_next_attribute(conn, entry, ber))
 	{
-		char **val;
-		
 		val = ldap_get_values(conn, entry, attr);
 		if (val == NULL)
 			continue;
@@ -450,6 +448,9 @@ static void vxldap_copy_user(struct vxpdb_user *dest, LDAP *conn,
 		ldap_value_free(val);
 		ldap_memfree(attr);
 	}
+
+	if (ber != NULL)
+		ber_free(ber, 0);
 	return;
 }
 
@@ -633,8 +634,8 @@ static int vxldap_groupdel(struct vxpdb_state *vp, const char *name)
 static void vxldap_copy_group(struct vxpdb_group *dest, LDAP *conn,
     LDAPMessage *entry)
 {
+	char *attr, **val;
 	BerElement *ber;
-	char *attr;
 
 	hmc_strasg(&dest->gr_name, NULL);
 	dest->gr_gid = PDB_NOGID;
@@ -642,8 +643,6 @@ static void vxldap_copy_group(struct vxpdb_group *dest, LDAP *conn,
 	for (attr = ldap_first_attribute(conn, entry, &ber); attr != NULL;
 	    attr = ldap_next_attribute(conn, entry, ber))
 	{
-		char **val;
-
 		val = ldap_get_values(conn, entry, attr);
 		if (val == NULL)
 			continue;
@@ -659,6 +658,9 @@ static void vxldap_copy_group(struct vxpdb_group *dest, LDAP *conn,
 		ldap_value_free(val);
 		ldap_memfree(attr);
 	}
+
+	if (ber != NULL)
+		ber_free(ber, 0);
 	return;
 }
 
