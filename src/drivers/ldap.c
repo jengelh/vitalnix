@@ -405,7 +405,12 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 	/* sambaSamAccount */
 	if (rq->sp_ntpasswd != NULL && state->domain_sid != NULL &&
 	    vxldap_uid_to_sid(state, s_sid, sizeof(s_sid), uid) > 0) {
-		snprintf(s_smblastchg, sizeof(s_smblastchg), "%lu", time(NULL));
+	    	if (rq->sp_lastchg > 0)
+			snprintf(s_smblastchg, sizeof(s_smblastchg),
+			         "%lu", rq->sp_lastchg * 86400);
+		else
+			snprintf(s_smblastchg, sizeof(s_smblastchg),
+			         "%lu", time(NULL));
 		attr[a++] = (LDAPMod){
 			.mod_op     = LDAP_MOD_ADD,
 			.mod_type   = "sambaSID",
