@@ -137,12 +137,14 @@ static void vxldap_exit(struct vxpdb_state *vp)
 static unsigned int vxldap_count(LDAP *conn, const char *base,
     const char *filter)
 {
+	static const char *const attrs[] = {"", NULL};
 	LDAPMessage *result, *entry;
 	unsigned int count = 0;
 	int ret;
 
-	ret = ldap_search_ext_s(conn, base, LDAP_SCOPE_SUBTREE, filter, NULL,
-	      false, NULL, NULL, NULL, LDAP_MAXINT, &result);
+	ret = ldap_search_ext_s(conn, base, LDAP_SCOPE_SUBTREE, filter,
+	      reinterpret_cast(char **, attrs), true, NULL, NULL,
+	      NULL, LDAP_MAXINT, &result);
 	if (ret != LDAP_SUCCESS || result == NULL)
 		return -(errno = 1600 + ret);
 
@@ -489,13 +491,21 @@ static int vxldap_getpwnam(struct vxpdb_state *vp, const char *user,
 
 static void *vxldap_usertrav_init(struct vxpdb_state *vp)
 {
+	static const char *const attrs[] = {
+		"uid", "uidNumber", "gidNumber", "gecos", "homeDirectory",
+		"loginShell", "userPassword", "shadowLastChange",
+		"shadowMin", "shadowMax", "shadowWarning", "shadowExpire",
+		"shadowInactive", "vitalnixDeferTimer", "vitalnixUUID",
+		"vitalnixGroup", NULL,
+	};
 	struct ldap_state *state = vp->state;
 	struct ldap_trav trav;
 	int ret;
 
-	ret = ldap_search_ext_s(state->conn, NULL, LDAP_SCOPE_SUBTREE,
-	      "(objectClass=posixAccount)", NULL, 0, NULL, NULL, NULL,
-	      LDAP_MAXINT, &trav.base);
+	ret = ldap_search_ext_s(state->conn, state->user_suffix,
+	      LDAP_SCOPE_SUBTREE, "(objectClass=posixAccount)",
+	      reinterpret_cast(char **, attrs), false, NULL, NULL,
+	      NULL, LDAP_MAXINT, &trav.base);
 	if (ret != LDAP_SUCCESS) {
 		errno = 1600 + ret;
 		return NULL;
@@ -658,13 +668,17 @@ static int vxldap_getgrnam(struct vxpdb_state *vp, const char *user,
 
 static void *vxldap_grouptrav_init(struct vxpdb_state *vp)
 {
+	static const char *const attrs[] = {
+		"cn", "gidNumber", "member", "memberUid", NULL,
+	};
 	struct ldap_state *state = vp->state;
 	struct ldap_trav trav;
 	int ret;
 
-	ret = ldap_search_ext_s(state->conn, NULL, LDAP_SCOPE_SUBTREE,
-	      "(objectClass=posixGroup)", NULL, 0, NULL, NULL, NULL,
-	      LDAP_MAXINT, &trav.base);
+	ret = ldap_search_ext_s(state->conn, state->group_suffix,
+	      LDAP_SCOPE_SUBTREE, "(objectClass=posixGroup)",
+	      reinterpret_cast(char **, attrs), false, NULL, NULL,
+	      NULL, LDAP_MAXINT, &trav.base);
 	if (ret != LDAP_SUCCESS) {
 		errno = 1600 + ret;
 		return NULL;
