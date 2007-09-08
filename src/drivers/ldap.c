@@ -195,10 +195,10 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 {
 	struct ldap_state *state = vp->state;
 
-	char s_pw_uid[ZU_32], s_pw_gid[ZU_32], s_sp_min[ZU_32], s_sp_max[ZU_32];
-	char s_sp_warn[ZU_32], s_sp_expire[ZU_32], s_sp_inact[ZU_32];
-	char s_vs_defer[ZU_32];
-	LDAPMod attr[17], *attr_ptrs[18];
+	char s_pw_uid[ZU_32], s_pw_gid[ZU_32], s_sp_last[ZU_32];
+	char s_sp_min[ZU_32], s_sp_max[ZU_32], s_sp_warn[ZU_32];
+	char s_sp_expire[ZU_32], s_sp_inact[ZU_32], s_vs_defer[ZU_32];
+	LDAPMod attr[18], *attr_ptrs[19];
 	unsigned int a = 0, i;
 	hmc_t *dn;
 	int ret;
@@ -277,6 +277,14 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 	};
 
 	/* shadow */
+	if (rq->sp_lastchg > 0) {
+		snprintf(s_sp_last, sizeof(s_sp_last), "%lu", rq->sp_lastchg);
+		attr[a++] = (LDAPMod){
+			.mod_op     = LDAP_MOD_ADD,
+			.mod_type   = "shadowLastChange",
+			.mod_values = (char *[]){s_sp_last, NULL},
+		};
+	}
 	if (rq->sp_min != PDB_DFL_KEEPMIN) {
 		snprintf(s_sp_min, sizeof(s_sp_min), "%lu", rq->sp_min);
 		attr[a++] = (LDAPMod){
