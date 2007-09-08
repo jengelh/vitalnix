@@ -15,6 +15,9 @@
 #include <ldap.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
+
+#define F_POSIXACCOUNT "objectClass=posixAccount"
+#define F_POSIXGROUP   "objectClass=posixGroup"
 #define ZU_32 sizeof("4294967296")
 
 struct ldap_state {
@@ -163,10 +166,10 @@ static long vxldap_modctl(struct vxpdb_state *vp, unsigned int command, ...)
 	switch (command) {
 		case PDB_COUNT_USERS:
 			return vxldap_count(state->conn, state->user_suffix,
-			       "(objectClass=posixAccount)");
+			       F_POSIXACCOUNT);
 		case PDB_COUNT_GROUPS:
 			return vxldap_count(state->conn, state->group_suffix,
-			       "(objectClass=posixGroup)");
+			       F_POSIXGROUP);
 	}
 	return -ENOSYS;
 }
@@ -473,7 +476,7 @@ static int vxldap_getpwuid(struct vxpdb_state *vp, unsigned int uid,
 {
 	char filter[48+ZU_32];
 	snprintf(filter, sizeof(filter),
-	         "(&(objectClass=posixAccount)(uidNumber=%u))", uid);
+	         "(&(" F_POSIXACCOUNT ")(uidNumber=%u))", uid);
 	return vxldap_getpwx(vp->state, filter, dest);
 }
 
@@ -483,7 +486,7 @@ static int vxldap_getpwnam(struct vxpdb_state *vp, const char *user,
 	hmc_t *filter;
 	int ret;
 
-	filter = hmc_sinit("(&(objectClass=posixAccount)(uid=" /* )) */);
+	filter = hmc_sinit("(&(" F_POSIXACCOUNT ")(uid=" /* )) */);
 	hmc_strcat(&filter, user);
 	hmc_strcat(&filter, /* (( */ "))");
 	ret = vxldap_getpwx(vp->state, filter, dest);
@@ -505,7 +508,7 @@ static void *vxldap_usertrav_init(struct vxpdb_state *vp)
 	int ret;
 
 	ret = ldap_search_ext_s(state->conn, state->user_suffix,
-	      LDAP_SCOPE_SUBTREE, "(objectClass=posixAccount)",
+	      LDAP_SCOPE_SUBTREE, F_POSIXACCOUNT,
 	      reinterpret_cast(char **, attrs), false, NULL, NULL,
 	      NULL, LDAP_MAXINT, &trav.base);
 	if (ret != LDAP_SUCCESS) {
@@ -684,7 +687,7 @@ static int vxldap_getgrgid(struct vxpdb_state *vp, unsigned int gid,
 {
 	char filter[48+ZU_32];
 	snprintf(filter, sizeof(filter),
-	         "(&(objectClass=posixGroup)(gidNumber=%u))", gid);
+	         "(&(" F_POSIXGROUP ")(gidNumber=%u))", gid);
 	return vxldap_getgrx(vp->state, filter, dest);
 }
 
@@ -694,7 +697,7 @@ static int vxldap_getgrnam(struct vxpdb_state *vp, const char *user,
 	hmc_t *filter;
 	int ret;
 
-	filter = hmc_sinit("(&(objectClass=posixGroup)(cn=" /* )) */);
+	filter = hmc_sinit("(&(" F_POSIXGROUP ")(cn=" /* )) */);
 	hmc_strcat(&filter, user);
 	hmc_strcat(&filter, /* (( */ "))");
 	ret = vxldap_getgrx(vp->state, filter, dest);
@@ -712,7 +715,7 @@ static void *vxldap_grouptrav_init(struct vxpdb_state *vp)
 	int ret;
 
 	ret = ldap_search_ext_s(state->conn, state->group_suffix,
-	      LDAP_SCOPE_SUBTREE, "(objectClass=posixGroup)",
+	      LDAP_SCOPE_SUBTREE, F_POSIXGROUP,
 	      reinterpret_cast(char **, attrs), false, NULL, NULL,
 	      NULL, LDAP_MAXINT, &trav.base);
 	if (ret != LDAP_SUCCESS) {
