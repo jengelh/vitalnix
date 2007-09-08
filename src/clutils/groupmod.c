@@ -120,7 +120,7 @@ static int groupmod_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
 	}
 
 	if (new_group_name != NULL &&
-	    strcmp(current.gr_name, current.gr_name) != 0 &&
+	    strcmp(current.gr_name, new_group_name) != 0 &&
 	    vxpdb_getgrnam(db, new_group_name, NULL) > 0) {
 		/* If name has changed */
 		fprintf(stderr, "A group with that name (\"%s\") already "
