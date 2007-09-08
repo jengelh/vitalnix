@@ -330,7 +330,7 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 		attr[a++] = (LDAPMod){
 			.mod_op     = LDAP_MOD_ADD,
 			.mod_type   = "vitalnixUUID",
-			.mod_values = (char *[]){rq->vs_pvgrp, NULL},
+			.mod_values = (char *[]){rq->vs_uuid, NULL},
 		};
 	}
 	if (rq->vs_defer > 0) {
