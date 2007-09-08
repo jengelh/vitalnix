@@ -198,7 +198,7 @@ EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
 	while ((node = HXbtraverse(travp)) != NULL) {
 		struct vxeds_entry *in = node->data;
 
-		memset(&out, 0, sizeof(out));
+		vxpdb_user_clean(&out);
 		out.pw_name  = in->username;
 		out.pw_uid   = PDB_AUTOUID;
 		out.pw_gid   = w->dest_group.gr_gid;
@@ -223,6 +223,8 @@ EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
 			             GENPW_O1DIGIT | c->genpw_type);
 			vxutil_cryptpw(plain_pw, NULL, c->crypw_type,
 			               &out.sp_passwd);
+			vxutil_cryptpw(plain_pw, NULL, CRYPW_SMBNT,
+			               &out.sp_ntpasswd);
 			out.sp_lastchg = vxutil_now_iday();
 		}
 

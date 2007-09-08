@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <ldap.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
@@ -25,6 +26,8 @@ struct ldap_state {
 	char *uri, *root_dn;
 	hmc_t *root_pw;
 	char *user_suffix, *group_suffix;
+	char *domain_dn, *domain_sid;
+	unsigned int domain_algoridbase;
 	unsigned int uid_min, uid_max, gid_min, gid_max;
 };
 
@@ -66,6 +69,7 @@ static void vxldap_read_config(struct ldap_state *state, const char *file,
 		{.ln = "GROUP_SUFFIX", .type = HXTYPE_STRING, .ptr = &state->group_suffix},
 		{.ln = "ROOT_DN",      .type = HXTYPE_STRING, .ptr = &state->root_dn},
 		{.ln = "ROOT_PWFILE",  .type = HXTYPE_STRING, .cb  = vxldap_read_ldap_secret, .uptr = &state->root_pw},
+		{.ln = "DOMAIN_DN",    .type = HXTYPE_STRING, .ptr = &state->domain_dn},
 		HXOPT_TABLEEND,
 	};
 
@@ -85,13 +89,61 @@ static int vxldap_init(struct vxpdb_state *vp, const char *config_file)
 {
 	struct ldap_state *state;
 
-	fprintf(stderr, "Vitalnix LDAP support still incomplete.\n");
+	fprintf(stderr, "[ Experimental Vitalnix LDAP support. ]\n");
 
 	if ((state = vp->state = calloc(1, sizeof(struct ldap_state))) == NULL)
 		return -errno;
 
+	state->domain_algoridbase = 1000;
 	vxldap_read_config(state, config_file, false);
 	return 1;
+}
+
+static int vxldap_get_rid(struct ldap_state *state)
+{
+	static const char *const attrs[] =
+		{"sambaSID", "sambaAlgorithmicRidBase", NULL};
+	LDAPMessage *result, *entry;
+	char *attr, **val;
+	BerElement *ber;
+	int ret;
+
+	ret = ldap_search_ext_s(state->conn, state->domain_dn,
+	      LDAP_SCOPE_BASE, NULL, const_cast(char **, attrs),
+	      false, NULL, NULL, NULL, 1, &result);
+	if (ret != LDAP_SUCCESS)
+		return -ret;
+
+	entry = ldap_first_entry(state->conn, result);
+	if (entry == NULL) {
+		ldap_msgfree(result);
+		return -ret;
+	}
+
+	for (attr = ldap_first_attribute(state->conn, entry, &ber);
+	    attr != NULL; attr = ldap_next_attribute(state->conn, entry, ber))
+	{
+		val = ldap_get_values(state->conn, entry, attr);
+		if (val == NULL)
+			continue;
+		if (*val == NULL) {
+			ldap_value_free(val);
+			ldap_memfree(attr);
+			continue;
+		}
+		if (strcmp(attr, "sambaSID") == 0)
+			hmc_strasg(&state->domain_sid, *val);
+		else if (strcmp(attr, "sambaAlgorithmicRidBase") == 0)
+			state->domain_algoridbase = strtoul(*val, NULL, 0);
+		ldap_value_free(val);
+		ldap_memfree(attr);
+	}
+
+	if (ber != NULL)
+		ber_free(ber, 0);
+
+	ldap_msgfree(result);
+	return state->domain_sid != NULL && state->domain_algoridbase != 0;
 }
 
 static int vxldap_open(struct vxpdb_state *vp, unsigned int flags)
@@ -122,6 +174,12 @@ static int vxldap_open(struct vxpdb_state *vp, unsigned int flags)
 		      state->root_pw);
 		if (ret != LDAP_SUCCESS)
 			ldap_perror(state->conn, "Simple bind failed");
+
+		if (state->domain_dn != NULL) {
+			ret = vxldap_get_rid(state);
+			if (ret < 0)
+				ldap_perror(state->conn, "Could not retrieve RID");
+		}
 	}
 
 	return 1;
@@ -191,42 +249,59 @@ static hmc_t *dn_user(const struct ldap_state *state, const char *name)
 	return ret;
 }
 
+static inline int vxldap_uid_to_sid(struct ldap_state *state, char *sid,
+    size_t sid_size, unsigned int uid)
+{
+	/* samba-3.0.25/source/include/rpc_misc.h */
+#define RID_MULTIPLIER 2
+#define USER_RID_TYPE 0
+	return snprintf(sid, sid_size, "%s-%u", state->domain_sid,
+	       (uid * RID_MULTIPLIER + state->domain_algoridbase) |
+	       USER_RID_TYPE);
+#undef RID_MULTIPLIER
+#undef USER_RID_TYPE
+}
+
 static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 {
 	struct ldap_state *state = vp->state;
-
 	char s_pw_uid[ZU_32], s_pw_gid[ZU_32], s_sp_last[ZU_32];
 	char s_sp_min[ZU_32], s_sp_max[ZU_32], s_sp_warn[ZU_32];
 	char s_sp_expire[ZU_32], s_sp_inact[ZU_32], s_vs_defer[ZU_32];
-	LDAPMod attr[18], *attr_ptrs[19];
-	unsigned int a = 0, i, uid;
+	char s_sid[256], s_smblastchg[ZU_32];
+	LDAPMod attr[21], *attr_ptrs[22];
+	const char *object_classes[6];
+	unsigned int a = 0, i, o = 0, uid;
 	hmc_t *dn;
 	int ret;
 
 	if ((dn = dn_user(state, rq->pw_name)) == NULL)
 		return -EINVAL;
 
-	if (rq->sp_min != PDB_DFL_KEEPMIN || rq->sp_max != PDB_DFL_KEEPMAX ||
-	    rq->sp_warn != PDB_DFL_WARNAGE || rq->sp_expire != PDB_NO_EXPIRE ||
-	    rq->sp_inact != PDB_NO_INACTIVE)
-		attr[a++] = (LDAPMod){
-			.mod_op     = LDAP_MOD_ADD,
-			.mod_type   = "objectClass",
-			.mod_values = (char *[]){"account", "posixAccount",
-			              "shadowAccount", NULL},
-		};
-	else
-		attr[a++] = (LDAPMod){
-			.mod_op     = LDAP_MOD_ADD,
-			.mod_type   = "objectClass",
-			.mod_values = (char *[]){"account", "posixAccount", NULL},
-		};
+	object_classes[o++] = "account";
+	object_classes[o++] = "posixAccount";
+	if (rq->sp_lastchg > 0 || rq->sp_min != PDB_DFL_KEEPMIN ||
+	    rq->sp_max != PDB_DFL_KEEPMAX || rq->sp_warn != PDB_DFL_WARNAGE ||
+	    rq->sp_expire != PDB_NO_EXPIRE || rq->sp_inact != PDB_NO_INACTIVE)
+		object_classes[o++] = "shadowAccount";
+	if (rq->vs_uuid != NULL || rq->vs_pvgrp != NULL || rq->vs_defer > 0)
+		object_classes[o++] = "vitalnixManagedAccount";
+	if (rq->sp_ntpasswd != NULL && state->domain_sid != NULL)
+		object_classes[o++] = "sambaSamAccount";
+	object_classes[o] = NULL;
 
+	attr[a++] = (LDAPMod){
+		.mod_op     = LDAP_MOD_ADD,
+		.mod_type   = "objectClass",
+		.mod_values = const_cast(char **, object_classes),
+	};
 	attr[a++] = (LDAPMod){
 		.mod_op     = LDAP_MOD_ADD,
 		.mod_type   = "uid",
 		.mod_values = (char *[]){rq->pw_name, NULL},
 	};
+
+	/* posixAccount */
 	uid = rq->pw_uid; /* TBC */
 	snprintf(s_pw_uid, sizeof(s_pw_uid), "%u", uid);
 	attr[a++] = (LDAPMod){
@@ -277,7 +352,7 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 		                         rq->sp_passwd, NULL},
 	};
 
-	/* shadow */
+	/* shadowAccount */
 	if (rq->sp_lastchg > 0) {
 		snprintf(s_sp_last, sizeof(s_sp_last), "%lu", rq->sp_lastchg);
 		attr[a++] = (LDAPMod){
@@ -327,7 +402,28 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 		};
 	}
 
-	/* vitalnix-specific */
+	/* sambaSamAccount */
+	if (rq->sp_ntpasswd != NULL && state->domain_sid != NULL &&
+	    vxldap_uid_to_sid(state, s_sid, sizeof(s_sid), uid) > 0) {
+		snprintf(s_smblastchg, sizeof(s_smblastchg), "%lu", time(NULL));
+		attr[a++] = (LDAPMod){
+			.mod_op     = LDAP_MOD_ADD,
+			.mod_type   = "sambaSID",
+			.mod_values = (char *[]){s_sid, NULL},
+		};
+		attr[a++] = (LDAPMod){
+			.mod_op     = LDAP_MOD_ADD,
+			.mod_type   = "sambaNTPassword",
+			.mod_values = (char *[]){rq->sp_ntpasswd, NULL},
+		};
+		attr[a++] = (LDAPMod){
+			.mod_op     = LDAP_MOD_ADD,
+			.mod_type   = "sambaPwdLastSet",
+			.mod_values = (char *[]){s_smblastchg, NULL},
+		};
+	}
+
+	/* vitalnixManagedAccount */
 	if (rq->vs_pvgrp != NULL) {
 		attr[a++] = (LDAPMod){
 			.mod_op     = LDAP_MOD_ADD,

@@ -61,7 +61,7 @@ struct vxpdb_user {
 	struct HXdeque *pw_sgrp;
 
 	/* shadow part */
-	char *sp_passwd;
+	char *sp_passwd, *sp_ntpasswd;
 	long sp_lastchg, sp_min, sp_max, sp_warn, sp_expire, sp_inact;
 
 	/* vxshadow part (vs_), used by libvxmdsync */

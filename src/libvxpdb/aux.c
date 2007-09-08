@@ -44,6 +44,7 @@ EXPORT_SYMBOL void vxpdb_user_copy(struct vxpdb_user *dest,
 	hmc_strasg(&dest->pw_home, src->pw_home);
 	hmc_strasg(&dest->pw_shell, src->pw_shell);
 	hmc_strasg(&dest->sp_passwd, src->sp_passwd);
+	hmc_strasg(&dest->sp_ntpasswd, src->sp_ntpasswd);
 	dest->sp_lastchg = src->sp_lastchg;
 	dest->sp_min     = src->sp_min;
 	dest->sp_max     = src->sp_max;
@@ -74,6 +75,7 @@ EXPORT_SYMBOL void vxpdb_user_free(struct vxpdb_user *user, int heap)
 	hmc_free(user->pw_home);
 	hmc_free(user->pw_shell);
 	hmc_free(user->sp_passwd);
+	hmc_free(user->sp_ntpasswd);
 	hmc_free(user->vs_uuid);
 	hmc_free(user->vs_pvgrp);
 	if (heap)
