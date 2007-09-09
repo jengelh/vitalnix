@@ -52,10 +52,6 @@ struct vxmmd_trav {
 };
 
 /* Functions */
-static void *vxmmd_usertrav_init(struct vxpdb_state *);
-static int vxmmd_usertrav_walk(struct vxpdb_state *, void *, struct vxpdb_user *);
-static void vxmmd_usertrav_free(struct vxpdb_state *, void *);
-
 static unsigned int vxmmd_autouid(struct vxpdb_state *, unsigned int);
 static unsigned int vxmmd_autogid(struct vxpdb_state *, unsigned int);
 
