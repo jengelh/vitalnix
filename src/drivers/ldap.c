@@ -253,13 +253,13 @@ static inline int vxldap_uid_to_sid(struct ldap_state *state, char *sid,
     size_t sid_size, unsigned int uid)
 {
 	/* samba-3.0.25/source/include/rpc_misc.h */
-#define RID_MULTIPLIER 2
-#define USER_RID_TYPE 0
+	enum {
+		RID_MULTIPLIER = 2,
+		USER_RID_TYPE  = 0,
+	};
 	return snprintf(sid, sid_size, "%s-%u", state->domain_sid,
 	       (uid * RID_MULTIPLIER + state->domain_algoridbase) |
 	       USER_RID_TYPE);
-#undef RID_MULTIPLIER
-#undef USER_RID_TYPE
 }
 
 static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
