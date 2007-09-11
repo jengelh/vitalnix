@@ -379,6 +379,8 @@ static bool get_options(int *argc, const char ***argv, struct private_info *p)
 		 .help = "Output log file (for -S)", .htyp = "file"},
 		{.ln = "no-add", .type = HXTYPE_NONE, .ptr = &p->no_add,
 		 .help = "Do not add any users"},
+		{.ln = "no-mod", .type = HXTYPE_NONE, .ptr = &p->no_update,
+		 .help = "Do not update any existing users (e.g. vitalnixGroup and vitalnixDeferTimer field)"},
 		{.ln = "no-del", .type = HXTYPE_NONE, .ptr = &p->no_delete,
 		 .help = "Do not delete any users"},
 		HXOPT_AUTOHELP,
