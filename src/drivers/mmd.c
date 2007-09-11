@@ -420,7 +420,7 @@ static void *vxmmd_grouptrav_init(struct vxpdb_state *vp)
 	trav.rd_mod = state->rd_mod->first;
 	if (WR_OPEN(state)) {
 		trav.wr_mod = true;
-		trav.itrav  = vxpdb_usertrav_init(WR_MOD(state));
+		trav.itrav  = vxpdb_grouptrav_init(WR_MOD(state));
 		if (trav.itrav == NULL)
 			trav.wr_mod = false;
 	}
