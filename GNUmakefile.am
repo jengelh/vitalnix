@@ -20,9 +20,10 @@ libmysql_LIBS   := $(filter -L% -l% -pthread,${libmysql_LIBS_INSANE})
 
 bin_PROGRAMS    := \
 	cgi_chpasswd cgi_lpaview cgi_ntactiv cgi_vwquota \
-	lpacct_filter mdfixuuid mdpwlfmt mdsingle mdsync pdbdump pdbinfo \
-	randpw tryauth vxuseradd vxusermod vxuserdel vxgroupadd vxgroupmod \
-	vxgroupdel
+	lpacct_filter \
+	mdckuuid mdfixuuid mdpwlfmt mdsingle mdsync \
+	pdbdump pdbinfo randpw tryauth \
+	vxuseradd vxusermod vxuserdel vxgroupadd vxgroupmod vxgroupdel
 if BUILD_STEELMILL
 bin_PROGRAMS    += steelmill
 endif
@@ -57,6 +58,8 @@ cgi_vwquota_LDADD    := -lHX libvxcgi.la libvxutil.la
 #
 #	clutils
 #
+mdckuuid_SOURCES   := src/clutils/mdckuuid.c
+mdckuuid_LDADD     := -lHX libvxeds.la libvxpdb.la libvxutil.la
 mdfixuuid_SOURCES  := src/clutils/mdfixuuid.c
 mdfixuuid_LDADD    := -lHX libvxpdb.la libvxutil.la
 mdpwlfmt_SOURCES   := src/clutils/mdpwlfmt.c
