@@ -46,6 +46,7 @@ EXPORT_SYMBOL int mdsync_read_file(struct mdsync_workspace *w,
 				        __func__, strerror(-ret));
 			vxeds_free_entry(entry);
 			free(entry);
+			continue;
 		} else if (ret == 0) {
 			/* End of list */
 			free(entry);
