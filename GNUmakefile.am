@@ -36,7 +36,7 @@ lib_LTLIBRARIES := \
 	drv_nss1.la drv_shadow.la pam_ihlogon.la
 
 sysconf_DATA    := $(wildcard etc/*)
-data_DATA       := $(wildcard share/*)
+pkgdata_DATA    := $(wildcard share/*)
 
 #
 #	cgiutils
