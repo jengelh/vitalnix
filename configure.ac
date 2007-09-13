@@ -74,6 +74,11 @@ else
 	AC_MSG_RESULT([no])
 fi;
 
+AC_ARG_WITH([pkgconfigdir], AS_HELP_STRING([--with-pkgconfigdir=PATH],
+	[Path to the pkgconfig directory [[LIBDIR/pkgconfig]]]),
+	[pkgconfigdir="$withval"], [pkgconfigdir='${libdir}/pkgconfig'])
+AC_SUBST(pkgconfigdir)
+
 m4_sinclude(m4lib/gcc4_visibility.m4)
 
 PACKAGE_VERSION_SIMPLE="_xrelease";
@@ -95,4 +100,4 @@ else
 	ln -s ../../config.h include/vitalnix/config.h;
 fi;
 
-AC_OUTPUT([GNUmakefile])
+AC_OUTPUT([GNUmakefile vitalnix.pc])

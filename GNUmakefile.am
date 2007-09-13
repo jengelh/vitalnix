@@ -37,6 +37,10 @@ lib_LTLIBRARIES := \
 
 sysconf_DATA    := $(wildcard etc/*)
 pkgdata_DATA    := $(wildcard share/*)
+pkgconfigdir    := @pkgconfigdir@
+pkgconfig_DATA  := vitalnix.pc
+
+${pkgconfig_DATA}: config.status
 
 #
 #	cgiutils

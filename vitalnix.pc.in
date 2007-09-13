@@ -1,0 +1,10 @@
+# -*- Makefile -*-
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name:		vitalnix
+Description:	Vitalnix User Management Suite
+Version:	@PACKAGE_VERSION_SIMPLE@
