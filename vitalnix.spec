@@ -40,6 +40,8 @@ b="%buildroot";
 rm -Rf "$b";
 mkdir "$b";
 make install DESTDIR="$b";
+install -dm0755 "$b/%_lib/security";
+ln -s "%pfx/%_lib/pam_ihlogon.so" "$b/%_lib/security/";
 
 %clean
 rm -Rf "%buildroot";

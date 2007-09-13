@@ -20,7 +20,7 @@ libmysql_LIBS   := $(filter -L% -l% -pthread,${libmysql_LIBS_INSANE})
 
 bin_PROGRAMS    := \
 	cgi_chpasswd cgi_lpaview cgi_ntactiv cgi_vwquota \
-	lpacct_filter \
+	ihlogon lpacct_filter \
 	mdckuuid mdfixuuid mdpwlfmt mdsingle mdsync \
 	pdbdump pdbinfo randpw tryauth \
 	vxuseradd vxusermod vxuserdel vxgroupadd vxgroupmod vxgroupdel
@@ -33,7 +33,7 @@ level2_libs     := libvxeds.la libvxmdfmt.la libvxpdb.la
 lib_LTLIBRARIES := \
 	${level1_libs} ${level2_libs} libvxmdsync.la \
 	drv_dummy.la drv_ldap.la drv_mmd.la drv_mysql.la drv_nss.la \
-	drv_nss1.la drv_shadow.la
+	drv_nss1.la drv_shadow.la pam_ihlogon.la
 
 sysconf_DATA    := $(wildcard etc/*)
 data_DATA       := $(wildcard share/*)
@@ -58,6 +58,9 @@ cgi_vwquota_LDADD    := -lHX libvxcgi.la libvxutil.la
 #
 #	clutils
 #
+ihlogon_SOURCES    := src/clutils/ihlogon.c
+ihlogon_CFLAGS     := -DSTANDALONE_DEBUG
+ihlogon_LDADD      := -lHX -lpam libvxpdb.la
 mdckuuid_SOURCES   := src/clutils/mdckuuid.c
 mdckuuid_LDADD     := -lHX libvxeds.la libvxpdb.la libvxutil.la
 mdfixuuid_SOURCES  := src/clutils/mdfixuuid.c
@@ -68,6 +71,9 @@ mdsingle_SOURCES   := src/clutils/mdsingle.c
 mdsingle_LDADD     := -lHX libvxcli.la libvxmdsync.la libvxpdb.la
 mdsync_SOURCES     := src/clutils/mdsync.c
 mdsync_LDADD       := -lHX libvxcli.la libvxeds.la libvxmdsync.la libvxpdb.la
+pam_ihlogon_la_SOURCES := src/clutils/ihlogon.c
+pam_ihlogon_la_LIBADD  := -lHX -lpam libvxpdb.la
+pam_ihlogon_la_LDFLAGS := ${regular_SOLDFLAGS} -module -avoid-version
 pdbdump_SOURCES    := src/clutils/pdbdump.c
 pdbdump_LDADD      := libvxpdb.la libvxutil.la
 pdbinfo_SOURCES    := src/clutils/pdbinfo.c
