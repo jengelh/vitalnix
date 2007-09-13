@@ -1,16 +1,20 @@
 
-Name:           vitalnix
-Version:        3.1.0
-Release:        0
-Group:          System/Base
-Summary:        Vitalnix User Management Suite and Essential Tools
-License:        LGPL
-URL:            http://vitalnix.sourceforge.net/
+Name:		vitalnix
+Version:	3.1.0
+Release:	0
+Group:		System/Base
+Summary:	Vitalnix User Management Suite and Essential Tools
+License:	LGPL
+URL:		http://vitalnix.sourceforge.net/
 
-Source:         http://heanet.dl.sourceforge.net/sourceforge/%name/%name-%version.tar.bz2
-BuildRoot:      %_tmppath/%name-%version-build
-BuildRequires:  openssl-devel, perl >= 5.6.0, wxWidgets-devel >= 2.7.0
-%define pfx     /opt/%name-%version
+Source:		http://heanet.dl.sourceforge.net/sourceforge/%name/%name-%version.tar.bz2
+BuildRoot:	%_tmppath/%name-%version-build
+BuildRequires:	gcc-c++
+BuildRequires:	libHX >= 1.10, libxml2-devel, mysql-devel >= 5.0
+BuildRequires:	openldap2-devel
+BuildRequires:	openssl-devel, pam-devel, perl >= 5.6.0, pkg-config
+BuildRequires:	wxWidgets-devel >= 2.7.0
+%define pfx	/opt/%name-%version
 
 %description
 Vitalnix is a suite consisting of a library providing unified methods
@@ -30,10 +34,12 @@ Developers:
 %build
 %configure \
 	--sysconfdir="%_sysconfdir/vitalnix" \
+	--bindir="%pfx/bin" \
 	--includedir="%pfx/include" \
-	--libdir="%pfx/%_lib";
+	--libdir="%pfx/%_lib" \
+	--datadir="%pfx/share" \
+	--with-pkgconfigdir="%_libdir/pkgconfig";
 make %{?jobs:-j%jobs};
-popd;
 
 %install
 b="%buildroot";
@@ -49,7 +55,7 @@ rm -Rf "%buildroot";
 %files
 %defattr(-,root,root)
 %config(noreplace) %_sysconfdir/%name/*
-%_bindir/*
+/%_lib/security/*
 %_libdir/pkgconfig/*
 %dir %pfx
 %pfx/bin
@@ -57,6 +63,6 @@ rm -Rf "%buildroot";
 %pfx/%_lib
 %dir %pfx/share
 %config(noreplace) %pfx/share/*
-%doc obj/doc/*
+#%doc obj/doc/*
 
 %changelog -n vitalnix
