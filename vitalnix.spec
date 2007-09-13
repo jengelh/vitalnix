@@ -9,7 +9,7 @@ URL:            http://vitalnix.sourceforge.net/
 
 Source:         http://heanet.dl.sourceforge.net/sourceforge/%name/%name-%version.tar.bz2
 BuildRoot:      %_tmppath/%name-%version-build
-BuildRequires:  openssl-devel, perl >= 5.6.0, rsync, wxWidgets-devel >= 2.7.0
+BuildRequires:  openssl-devel, perl >= 5.6.0, wxWidgets-devel >= 2.7.0
 %define pfx     /opt/%name-%version
 
 %description
