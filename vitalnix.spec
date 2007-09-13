@@ -28,6 +28,7 @@ Developers:
   Cordula Petzold
   (Contributors see doc/index.html)
 
+%debug_package
 %prep
 %setup
 
