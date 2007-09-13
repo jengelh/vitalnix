@@ -41,20 +41,42 @@ regular_CFLAGS="-D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
 regular_CXXFLAGS="-D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
 	-D_REENTRANT -Wall -Wno-pointer-arith -Wredundant-decls -fPIC -pipe";
 
+#
+#	openssl-devel, libxml-devel
+#
 PKG_CHECK_MODULES([libcrypto], [libcrypto])
 PKG_CHECK_MODULES([libxml], [libxml-2.0])
-libmysql_CFLAGS_INSANE=`mysql_config --cflags`;
+
+#
+#	mysql
+#
+AC_MSG_CHECKING([for mysql])
+libmysql_CFLAGS_INSANE=`mysql_config --cflags 2>/dev/null`;
+if [[ "$?" -eq 0 ]]; then
+	AC_MSG_RESULT([yes])
+else
+	AC_MSG_RESULT([no])
+	AC_MSG_ERROR([mysql is mandatory])
+fi;
 libmysql_LIBS_INSANE=`mysql_config --libs_r`;
-libwx_CFLAGS=`wx-config --cflags`;
+
+#
+#	wxWidgets
+#
+AC_MSG_CHECKING([for wxWidgets])
+libwx_CFLAGS=`wx-config --cflags 2>/dev/null`;
 ret=$?
 AM_CONDITIONAL(BUILD_STEELMILL, test "$ret" -eq 0)
 if [[ "$ret" -eq 0 ]]; then
+	AC_MSG_RESULT([yes])
 	libwx_LIBS=`wx-config --libs`;
+else
+	AC_MSG_RESULT([no])
 fi;
-PACKAGE_VERSION_SIMPLE="_xrelease";
 
 m4_sinclude(m4lib/gcc4_visibility.m4)
 
+PACKAGE_VERSION_SIMPLE="_xrelease";
 AC_DEFINE_UNQUOTED(PACKAGE_VERSION_SIMPLE, ["_xrelease"], [Simplified package version])
 AC_SUBST(PACKAGE_VERSION_SIMPLE)
 AC_SUBST(regular_CFLAGS)
