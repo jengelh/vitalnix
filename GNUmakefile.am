@@ -24,7 +24,7 @@ libmysql_LIBS   := $(filter -L% -l% -pthread,${libmysql_LIBS_INSANE})
 #
 #	Extra directories
 #
-pkgconfigdir    := @pkgconfigdir@
+pkgconfigdir = @pkgconfigdir@
 
 #
 #	Targets
@@ -308,3 +308,8 @@ CLEANFILES += src/steelmill/images.cpp src/steelmill/images.hpp
 suid_list := tryauth
 install-exec-hook:
 	chmod u+s $(addprefix ${DESTDIR}${bindir}/, ${suid_list});
+
+install-data-hook:
+	${INSTALL} -dm0755 ${DESTDIR}${pkgincludedir};
+	cp -a ${top_srcdir}/src/include/vitalnix/* ${DESTDIR}${pkgincludedir}/;
+	cp -Lp include/vitalnix/config.h ${DESTDIR}${pkgincludedir}/;
