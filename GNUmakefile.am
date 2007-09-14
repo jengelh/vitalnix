@@ -29,14 +29,14 @@ pkgconfigdir = @pkgconfigdir@
 #
 #	Targets
 #
-bin_PROGRAMS    := \
+sbin_PROGRAMS   := \
 	cgi_chpasswd cgi_lpaview cgi_ntactiv cgi_vwquota \
-	ihlogon lpacct_cfb lpacct_filter \
+	ihlogon lpacct_filter lpacct_scv \
 	mdckuuid mdfixuuid mdpwlfmt mdsingle mdsync \
 	pdbdump pdbinfo randpw tryauth \
 	vxuseradd vxusermod vxuserdel vxgroupadd vxgroupmod vxgroupdel
 if BUILD_STEELMILL
-bin_PROGRAMS    += steelmill
+sbin_PROGRAMS   += steelmill
 endif
 EXTRA_PROGRAMS  := testcase
 level1_libs     := libvxcgi.la libvxcli.la libvxcore.la libvxutil.la
@@ -269,17 +269,17 @@ libvxutil_la_LDFLAGS := ${regular_SOLDFLAGS} ${libcrypto_LIBS}
 #
 #	src/lpacct
 #
-lpacct_cfb_CFLAGS     := ${AM_CFLAGS} ${libmysql_CFLAGS}
-lpacct_cfb_LDADD      := -lHX libvxutil.la
-lpacct_cfb_LDFLAGS    := ${libmysql_LIBS}
-lpacct_cfb_SOURCES    := \
-	src/lpacct/confirm.c src/lpacct/shared.c
 lpacct_filter_CFLAGS  := ${AM_CFLAGS} ${libmysql_CFLAGS}
 lpacct_filter_LDADD   := -lHX libvxutil.la
 lpacct_filter_LDFLAGS := ${libmysql_LIBS}
 lpacct_filter_SOURCES := \
 	src/lpacct/acct.c src/lpacct/drop.c src/lpacct/image.c \
 	src/lpacct/lpacct.c src/lpacct/shared.c
+lpacct_scv_CFLAGS     := ${AM_CFLAGS} ${libmysql_CFLAGS}
+lpacct_scv_LDADD      := -lHX libvxutil.la
+lpacct_scv_LDFLAGS    := ${libmysql_LIBS}
+lpacct_scv_SOURCES    := \
+	src/lpacct/confirm.c src/lpacct/shared.c
 
 #
 #	src/steelmill

@@ -47,8 +47,9 @@ b="%buildroot";
 rm -Rf "$b";
 mkdir "$b";
 make install DESTDIR="$b";
-install -dm0755 "$b/%_lib/security";
+install -dm0755 "$b/%_lib/security" "$b/%_libdir/cups/backend";
 ln -s "%pfx/%_lib/pam_ihlogon.so" "$b/%_lib/security/";
+ln -s "%pfx/bin/lpacct_scv" "$b/%_libdir/cups/backend/scv";
 
 %clean
 rm -Rf "%buildroot";
@@ -57,6 +58,7 @@ rm -Rf "%buildroot";
 %defattr(-,root,root)
 %config(noreplace) %_sysconfdir/%name/*
 /%_lib/security/*
+%_libdir/cups/backend/*
 %_libdir/pkgconfig/*
 %dir %pfx
 %pfx/bin
