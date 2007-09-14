@@ -14,6 +14,7 @@ create table printlog (
 	black       double          not null        default 0,
 	total       double          not null        default 0,
 	pages       int unsigned    not null        default 0,
+	confirmed   boolean         not null        default false,
 	index       user (user)
 ) default charset=utf8;
 
