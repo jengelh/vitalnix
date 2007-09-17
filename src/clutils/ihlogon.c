@@ -210,12 +210,11 @@ PAM_EXTERN EXPORT_SYMBOL int pam_sm_open_session(pam_handle_t *pamh,
 	if (user == NULL || rhost == NULL)
 		return PAM_IGNORE;
 
+	/*
 	if (strlen(rhost) > 5 &&
 	    strcmp(rhost + strlen(rhost) - 5, ".site") != 0)
-		/*
-		 * Only restrict known machines.
-		 */
 		return PAM_SUCCESS;
+	*/
 
 	ret = ihlogon_init(user, rhost);
 	closelog();
