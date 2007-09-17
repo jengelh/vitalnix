@@ -187,7 +187,7 @@ static int ihlogon_init(const char *user, const char *rhost)
 	return ret;
 }
 
-PAM_EXTERN EXPORT_SYMBOL int pam_sm_open_session(pam_handle_t *pamh,
+PAM_EXTERN EXPORT_SYMBOL int pam_sm_acct_mgmt(pam_handle_t *pamh,
     int flags, int argc, const char **argv)
 {
 	const void *user = NULL, *rhost = NULL;
@@ -219,12 +219,6 @@ PAM_EXTERN EXPORT_SYMBOL int pam_sm_open_session(pam_handle_t *pamh,
 	ret = ihlogon_init(user, rhost);
 	closelog();
 	return ret;
-}
-
-PAM_EXTERN EXPORT_SYMBOL int pam_sm_close_session(pam_handle_t *pamh,
-    int flags, int argc, const char **argv)
-{
-	return PAM_IGNORE;
 }
 
 #ifdef STANDALONE_DEBUG
