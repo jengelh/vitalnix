@@ -137,11 +137,6 @@ static int ihlogon(const char *user, const char *rhost,
 		return PAM_IGNORE;
 	}
 
-	if (strcmp(user, "cf") == 0) {
-		syslog(LOG_INFO, "You is cf!\n");
-		return PAM_DENY;
-	}
-
 	if (!is_schueler(info)) {
 		syslog(LOG_INFO, "\"%s\" does not have \"schueler\" as "
 		       "primary group - skipping\n", user);
