@@ -150,6 +150,21 @@ function sqlencode($val)
 	return mysql_real_escape_string($val);
 }
 
+function helptext()
+{
+	?>
+	<p>
+	<?php if (is_verbose()) { ?>
+		CMYK: color parts;
+		S: output complete;
+		<span style="color: green;">✓</span> = yes;
+		<span style="color: red;">✘</span> = no;<br />
+	<?php } ?>
+	<i>Ink</i> is measured in fully-tinted ISO A4 pages.</p>
+	<?php
+	return;
+}
+
 function time_period($user = "")
 {
 	global $DBLINK;
@@ -274,6 +289,8 @@ function root_view()
 	</table>
 	</form>
 	<?php
+	helptext();
+	return;
 }
 
 function user_query($user)
@@ -421,11 +438,9 @@ function user_view($user)
 		<?php } ?>
 	</table>
 	</form>
-
-	<?php if (is_verbose()) { ?>
-	<?php } ?>
-
 	<?php
+	helptext();
+	return;
 }
 
 function delete_all()
@@ -543,14 +558,6 @@ if (is_root()) {
 }
 ?>
 
-<p>
-<?php if (is_verbose()) { ?>
-	CMYK: color parts;
-	S: output complete;
-	<span style="color: green;">✓</span> = yes;
-	<span style="color: red;">✘</span> = no;<br />
-<?php } ?>
-<i>Ink</i> is measured in fully-tinted ISO A4 pages.</p>
 
 </div>
 </body>
