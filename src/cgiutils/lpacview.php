@@ -235,15 +235,15 @@ function root_view()
 		<tr>
 			<th valign="bottom">Delete</th>
 			<th nowrap="nowrap" valign="bottom">Username
-				<a href="?sort=ua">↑</a>
-				<a href="?sort=ud">↓</a></th>
+				<a href="?sort=ua">▲</a><a
+				href="?sort=ud">▼</a></th>
 			<th valign="bottom">Full name</th>
 			<th nowrap="nowrap" valign="bottom">Ink
-				<a href="?sort=ia">↑</a>
-				<a href="?sort=id">↓</a></th>
+				<a href="?sort=ia">▲</a><a
+				href="?sort=id">▼</a></th>
 			<th nowrap="nowrap" valign="bottom">Pages
-				<a href="?sort=pa">↑</a>
-				<a href="?sort=pd">↓</a></th>
+				<a href="?sort=pa">▲</a><a
+				href="?sort=pd">▼</a></th>
 		</tr>
 		<?php
 		while (($data = mysql_fetch_array($ret)) !== false) {
@@ -344,15 +344,15 @@ function user_view($user)
 				<th valign="bottom">Delete</th>
 			<?php } ?>
 			<th nowrap="nowrap" valign="bottom">Date
-				<a href="?user=<?= $user ?>&amp;sort=da">↑</a>
-				<a href="?user=<?= $user ?>&amp;sort=dd">↓</a></th>
+				<a href="?user=<?= $user ?>&amp;sort=da">▲</a><a
+				href="?user=<?= $user ?>&amp;sort=dd">▼</a></th>
 			<th valign="bottom">Title</th>
 			<th nowrap="nowrap" valign="bottom">Pages
-				<a href="?user=<?= $user ?>&amp;sort=pa">↑</a>
-				<a href="?user=<?= $user ?>&amp;sort=pd">↓</a></th>
+				<a href="?user=<?= $user ?>&amp;sort=pa">▲</a><a
+				href="?user=<?= $user ?>&amp;sort=pd">▼</a></th>
 			<th nowrap="nowrap" valign="bottom">Ink
-				<a href="?user=<?= $user ?>&amp;sort=ia">↑</a>
-				<a href="?user=<?= $user ?>&amp;sort=id">↓</a></th>
+				<a href="?user=<?= $user ?>&amp;sort=ia">▲</a><a
+				href="?user=<?= $user ?>&amp;sort=id">▼</a></th>
 			<?php if (is_verbose()) { ?>
 				<th valign="bottom">C</th>
 				<th valign="bottom">M</th>
