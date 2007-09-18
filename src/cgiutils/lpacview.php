@@ -505,6 +505,9 @@ else
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="stylesheet" href="/intranet.css" type="text/css" />
+<style type="text/css">
+i { font-family: serif; }
+</style>
 </head>
 <body>
 
