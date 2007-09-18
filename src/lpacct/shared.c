@@ -83,6 +83,7 @@ MYSQL *lpacct_sql_start(const struct options *p)
 		return NULL;
 	}
 
+	mysql_query(conn, "set names 'utf8'");
 	return conn;
 }
 
