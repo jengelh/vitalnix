@@ -30,7 +30,7 @@ pkgconfigdir = @pkgconfigdir@
 #	Targets
 #
 sbin_PROGRAMS   := \
-	cgi_chpasswd cgi_lpaview cgi_ntactiv cgi_vwquota \
+	cgi_chpasswd cgi_ntactiv cgi_vwquota \
 	ihlogon lpacct_filter lpacct_scv \
 	mdckuuid mdfixuuid mdpwlfmt mdsingle mdsync \
 	pdbdump pdbinfo randpw tryauth \
@@ -68,11 +68,6 @@ pkgdata_DATA    := $(wildcard share/*)
 #
 cgi_chpasswd_SOURCES := src/cgiutils/chpasswd.c
 cgi_chpasswd_LDADD   := -lHX libvxcgi.la libvxutil.la
-
-cgi_lpaview_SOURCES  := src/cgiutils/lpaview.c src/lpacct/shared.c
-cgi_lpaview_CFLAGS   := ${AM_CFLAGS} ${libmysql_CFLAGS}
-cgi_lpaview_LDADD    := -lHX libvxcgi.la libvxutil.la
-cgi_lpaview_LDFLAGS  := ${libmysql_LIBS}
 
 cgi_ntactiv_SOURCES  := src/cgiutils/ntactiv.c
 cgi_ntactiv_LDADD    := -lHX libvxcgi.la libvxutil.la
