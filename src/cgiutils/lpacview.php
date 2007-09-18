@@ -164,7 +164,7 @@ function time_period($user = "")
 		die(mysql_error());
 	$data = mysql_fetch_array($ret);
 	if ($data === false)
-		die("Unexpected SQL result");
+		return array(NULL, NULL);
 	$time_start = $data["time"];
 
 	/* Get end of period */
@@ -212,7 +212,7 @@ function root_query()
 	         "pages from (select * from printlog group by user, jid, ".
 	         "title) as plog group by user $order", $DBLINK);
 	if ($ret === false)
-	       die(mysql_error());
+		return false;
 
 	return $ret;
 }
@@ -288,7 +288,7 @@ function user_query($user)
 	         "total as ink, cyan, magenta, yellow, black, pages, ".
 	         "confirmed from printlog $user $order", $DBLINK);
 	if ($ret === false)
-	       die(mysql_error());
+		return false;
 
 	return $ret;
 }
