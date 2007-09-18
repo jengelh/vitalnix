@@ -350,7 +350,7 @@ function user_view($user)
 				<th valign="bottom">M</th>
 				<th valign="bottom">Y</th>
 				<th valign="bottom">K</th>
-				<th valign="bottom">Cf.</th>
+				<th valign="bottom">S</th>
 				<th valign="bottom">Job ID</th>
 			<?php } ?>
 		</tr>
@@ -415,8 +415,6 @@ function user_view($user)
 	</form>
 
 	<?php if (is_verbose()) { ?>
-	<p><span style="color: green;">✓</span> = yes;
-	<span style="color: red;">✘</span> = no</p>
 	<?php } ?>
 
 	<?php
@@ -536,6 +534,16 @@ if (is_root()) {
 	login_form();
 }
 ?>
+
+<p>
+<?php if (is_verbose()) { ?>
+	CMYK: color parts;
+	S: output complete;
+	<span style="color: green;">✓</span> = yes;
+	<span style="color: red;">✘</span> = no;<br />
+<?php } ?>
+<i>Ink</i> is measured in fully-tinted ISO A4 pages.</p>
+
 </div>
 </body>
 </html>
