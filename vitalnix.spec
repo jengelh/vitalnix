@@ -10,7 +10,7 @@ URL:		http://vitalnix.sourceforge.net/
 Source:		http://heanet.dl.sourceforge.net/sourceforge/%name/%name-%version.tar.bz2
 BuildRoot:	%_tmppath/%name-%version-build
 BuildRequires:	cups-devel, gcc-c++
-BuildRequires:	libHX >= 1.10, libxml2-devel, mysql-devel >= 5.0
+BuildRequires:	libHX-devel >= 1.10, libxml2-devel, mysql-devel >= 5.0
 BuildRequires:	openldap2-devel
 BuildRequires:	openssl-devel, pam-devel, perl >= 5.6.0, pkg-config
 BuildRequires:	wxWidgets-devel >= 2.7.0
