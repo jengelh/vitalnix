@@ -303,7 +303,7 @@ function user_view($user)
 	$msum = 0;
 	$ysum = 0;
 	$ksum = 0;
-
+	$jsum = 0;
 	?>
 
 	<p><a href="?logout">Logout</a></p>
@@ -362,6 +362,7 @@ function user_view($user)
 			$msum += $data["magenta"];
 			$ysum += $data["yellow"];
 			$ksum += $data["black"];
+			++$jsum;
 		?>
 		<tr>
 			<?php if (is_root()) { ?>
@@ -385,7 +386,7 @@ function user_view($user)
 			<?php if (is_root()) { ?>
 				<td><input type="checkbox" name="d_user[]" value="<?= $_GET['user'] ?>" /></td>
 			<?php } ?>
-			<td colspan="2"><b>All jobs</b></td>
+			<td colspan="2"><b>All jobs</b> (<?= $jsum ?>)</td>
 			<td align="right"><b><?= $psum ?></b></td>
 			<td align="right"><b><?= sprintf("%.2f", $isum) ?></b></td>
 			<?php if (is_verbose()) { ?>
