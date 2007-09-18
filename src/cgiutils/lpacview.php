@@ -293,6 +293,14 @@ function user_query($user)
 	return $ret;
 }
 
+/*
+ * strip_smbprn - Remove smbprn.00000000 prefix
+ */
+function strip_smbprn($s)
+{
+	return preg_replace('/^smbprn\.\d+/', "", $s);
+}
+
 function user_view($user)
 {
 	list($time_start, $time_end) = time_period($user);
@@ -369,7 +377,7 @@ function user_view($user)
 				<td><input type="checkbox" name="d_job[]" value="<?= $data['queue'] ?>/<?= $data['jid'] ?>/<?= $data['user'] ?>"></td>
 			<?php } ?>
 			<td><?= htmlspecialchars($data["time"]) ?></td>
-			<td><?= htmlspecialchars($data["title"]) ?></td>
+			<td><?= strip_smbprn(htmlspecialchars($data["title"])) ?></td>
 			<td align="right"><?= $data["pages"] ?></td>
 			<td align="right"><?= sprintf("%.3f", $data["ink"]) ?></td>
 			<?php if (is_verbose()) { ?>
