@@ -16,6 +16,7 @@ function force_https()
 		header("Location: https://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"]);
 		exit();
 	}
+	return;
 }
 
 /*
@@ -101,12 +102,13 @@ function do_logout($cont = false)
 	session_unset();
 	if ($cont)
 		return;
+
+	header("HTTP/1.1 302 Found");
 	if (($ret = strpos($_SERVER["REQUEST_URI"], '?')) !== false)
 		header("Location: ".substr($_SERVER["REQUEST_URI"], 0, $ret));
 	else
 		header("Location: ".$_SERVER["REQUEST_URI"]);
 	exit();
-	return;
 }
 
 function do_authenticate_login()
@@ -122,13 +124,10 @@ function do_authenticate_login()
 		session_start();
 	}
 	$_SESSION["user"] = $_POST["username"];
-	/*
-	 * Trigger reload of page so that on reload (after this Redirect)
-	 * browser won't ask to send POSTDATA again.
-	 */
+
+	header("HTTP/1.1 302 Found");
 	header("Location: ".$_SERVER["REQUEST_URI"]);
 	exit();
-	return;
 }
 
 function is_root()
@@ -503,6 +502,22 @@ function delete_jobs($job)
 	return;
 }
 
+function process_delete()
+{
+	if (isset($_POST["d_trunc"]))
+		delete_all();
+	else if (isset($_POST["d_user"]))
+		delete_users($_POST["d_user"]);
+	else if (isset($_POST["d_job"]))
+		delete_jobs($_POST["d_job"]);
+	else
+		return;
+
+	header("HTTP/1.1 302 Found");
+	header("Location: ".$_SERVER["REQUEST_URI"]);
+	exit();
+}
+
 force_https();
 
 $Config = config_read("/usr/src/vitalnix/etc/lpacct.conf");
@@ -535,13 +550,7 @@ i { font-family: serif; }
 <div align="center">
 <?php
 if (is_root()) {
-	if (isset($_POST["d_trunc"]))
-		delete_all();
-	else if (isset($_POST["d_user"]))
-		delete_users($_POST["d_user"]);
-	else if (isset($_POST["d_job"]))
-		delete_jobs($_POST["d_job"]);
-
+	process_delete();
 	if (isset($_GET["user"]) && $_GET["user"] != "")
 		user_view($_GET["user"]);
 	else
