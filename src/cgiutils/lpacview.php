@@ -318,6 +318,29 @@ function user_query($user)
 	return $ret;
 }
 
+function user_query2($user, $confirmed = false)
+{
+	global $DBLINK;
+
+	$select = "";
+	if ($confirmed !== false && $confirmed == 0)
+		$select = "and confirmed=0";
+	else if ($confirmed !== false && $confirmed == 1)
+		$select = "and confirmed=1";
+
+	$user  = sprintf("where user='%s'", sqlencode($user));
+	$query = "select count(*) as jobs, sum(cyan) as cyan, sum(magenta) ".
+	         "as magenta, sum(yellow) as yellow, sum(black) as black, ".
+	         "sum(total) as total, sum(pages) as pages from printlog ".
+	         "$user $select";
+	$ret   = mysql_query($query, $DBLINK);
+	if ($ret === false)
+		echo "<p><b>SELECT query failed:</b><br />",
+		     htmlspecialchars(mysql_error(), ENT_NOQUOTES), "<br />",
+		     "<b>", htmlspecialchars($query, ENT_NOQUOTES), "</b></p>";
+	return $ret;
+}
+
 /*
  * strip_smbprn - Remove smbprn.00000000 prefix
  */
@@ -329,14 +352,10 @@ function strip_smbprn($s)
 function user_view($user)
 {
 	list($time_start, $time_end) = time_period($user);
-	$ret  = user_query($user);
-	$isum = 0;
-	$psum = 0;
-	$csum = 0;
-	$msum = 0;
-	$ysum = 0;
-	$ksum = 0;
-	$jsum = 0;
+	$job_list = user_query($user);
+	$cum_succ = user_query2($user, 1);
+	$cum_fail = user_query2($user, 0);
+	$cum_all  = user_query2($user, false);
 	?>
 
 	<p><a href="?logout">Logout</a></p>
@@ -388,14 +407,7 @@ function user_view($user)
 			<th valign="bottom">S</th>
 		</tr>
 		<?php
-		while (($data = mysql_fetch_array($ret)) !== false) {
-			$isum += $data["ink"];
-			$psum += $data["pages"];
-			$csum += $data["cyan"];
-			$msum += $data["magenta"];
-			$ysum += $data["yellow"];
-			$ksum += $data["black"];
-			++$jsum;
+		while (($data = mysql_fetch_array($job_list)) !== false) {
 		?>
 		<tr>
 			<?php if (is_root()) { ?>
@@ -404,7 +416,7 @@ function user_view($user)
 			<td><?= htmlspecialchars($data["time"], ENT_NOQUOTES) ?></td>
 			<td><?= htmlspecialchars(strip_smbprn($data["title"]), ENT_NOQUOTES) ?></td>
 			<td align="right"><?= $data["pages"] ?></td>
-			<td align="right"><?= sprintf("%.3f", $data["ink"]) ?></td>
+			<td align="right"><?= sprintf("%.3f", $data["total"]) ?></td>
 			<?php if (is_verbose()) { ?>
 				<td align="right"><?= sprintf("%.3f", $data["cyan"]) ?></td>
 				<td align="right"><?= sprintf("%.3f", $data["magenta"]) ?></td>
@@ -414,23 +426,69 @@ function user_view($user)
 			<?php } ?>
 			<td align="center"><?= $data["confirmed"] ? "<span style=\"color: green;\">✓</span>" : "<span style=\"color: red;\">✘</span>" ?></td>
 		</tr>
-		<?php } ?>
+		<?php
+		}
+		if (($data = mysql_fetch_array($cum_succ)) !== false) {
+		?>
 		<tr>
 			<?php if (is_root()) { ?>
-				<td><input type="checkbox" name="d_user[]" value="<?= $_GET['user'] ?>" /></td>
+				<td><input type="checkbox" name="d_usersucc[]" value="<?= $_GET['user'] ?>" /></td>
 			<?php } ?>
-			<td colspan="2"><b>All jobs</b> (<?= $jsum ?>)</td>
-			<td align="right"><b><?= $psum ?></b></td>
-			<td align="right"><b><?= sprintf("%.2f", $isum) ?></b></td>
+			<td colspan="2"><b>All successful jobs</b> (<?= $data["jobs"] ?>)</td>
+			<td align="right"><?= $data["pages"] ?></td>
+			<td align="right"><?= sprintf("%.2f", $data["total"]) ?></td>
 			<?php if (is_verbose()) { ?>
-				<td align="right"><b><?= sprintf("%.3f", $csum) ?></b></td>
-				<td align="right"><b><?= sprintf("%.3f", $msum) ?></b></td>
-				<td align="right"><b><?= sprintf("%.3f", $ysum) ?></b></td>
-				<td align="right"><b><?= sprintf("%.3f", $ksum) ?></b></td>
+				<td align="right"><?= sprintf("%.2f", $data["cyan"]) ?></td>
+				<td align="right"><?= sprintf("%.2f", $data["magenta"]) ?></td>
+				<td align="right"><?= sprintf("%.2f", $data["yellow"]) ?></td>
+				<td align="right"><?= sprintf("%.2f", $data["black"]) ?></td>
 				<td>&nbsp;</td>
 			<?php } ?>
 			<td>&nbsp;</td>
 		</tr>
+		<?php
+		}
+		if (($data = mysql_fetch_array($cum_fail)) !== false) {
+		?>
+		<tr>
+			<?php if (is_root()) { ?>
+				<td><input type="checkbox" name="d_userfail[]" value="<?= $_GET['user'] ?>" /></td>
+			<?php } ?>
+			<td colspan="2"><b>All unsuccessful jobs</b> (<?= $data["jobs"] ?>)</td>
+			<td align="right"><?= $data["pages"] ?></td>
+			<td align="right"><?= sprintf("%.2f", $data["total"]) ?></td>
+			<?php if (is_verbose()) { ?>
+				<td align="right"><?= sprintf("%.2f", $data["cyan"]) ?></td>
+				<td align="right"><?= sprintf("%.2f", $data["magenta"]) ?></td>
+				<td align="right"><?= sprintf("%.2f", $data["yellow"]) ?></td>
+				<td align="right"><?= sprintf("%.2f", $data["black"]) ?></td>
+				<td>&nbsp;</td>
+			<?php } ?>
+			<td>&nbsp;</td>
+		</tr>
+		<?php
+		}
+		if (($data = mysql_fetch_array($cum_all)) !== false) {
+		?>
+		<tr>
+			<?php if (is_root()) { ?>
+				<td><input type="checkbox" name="d_user[]" value="<?= $_GET['user'] ?>" /></td>
+			<?php } ?>
+			<td colspan="2"><b>All jobs</b> (<?= $data["jobs"] ?>)</td>
+			<td align="right"><?= $data["pages"] ?></td>
+			<td align="right"><?= sprintf("%.2f", $data["total"]) ?></td>
+			<?php if (is_verbose()) { ?>
+				<td align="right"><?= sprintf("%.2f", $data["cyan"]) ?></td>
+				<td align="right"><?= sprintf("%.2f", $data["magenta"]) ?></td>
+				<td align="right"><?= sprintf("%.2f", $data["yellow"]) ?></td>
+				<td align="right"><?= sprintf("%.2f", $data["black"]) ?></td>
+				<td>&nbsp;</td>
+			<?php } ?>
+			<td>&nbsp;</td>
+		</tr>
+		<?php
+		}
+		?>
 		<?php if (is_root()) { ?>
 		<tr>
 			<?php if (is_verbose()) { ?>
