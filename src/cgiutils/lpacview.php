@@ -155,10 +155,10 @@ function helptext()
 	<p>
 	<?php if (is_verbose()) { ?>
 		CMYK: color parts;
+	<?php } ?>
 		S: output complete;
 		<span style="color: green;">✓</span> = yes;
 		<span style="color: red;">✘</span> = no;<br />
-	<?php } ?>
 	<i>Ink</i> is measured in fully-tinted ISO A4 pages.</p>
 	<?php
 	return;
