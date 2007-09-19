@@ -287,6 +287,9 @@ function root_view()
 		</tr>
 	</table>
 	</form>
+
+	<p>Note: Values listed in this view include unsuccessful jobs.</p>
+
 	<?php
 	helptext();
 	return;
