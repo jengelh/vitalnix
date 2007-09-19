@@ -521,13 +521,19 @@ function delete_all()
 	return;
 }
 
-function delete_users($user)
+function delete_users($user, $confirmed = false)
 {
 	global $DBLINK;
 
+	if ($confirmed === false)
+		$confirmed = "";
+	else
+		$confirmed = "and confirmed=$confirmed";
+
 	for ($i = 0; $i < sizeof($user); ++$i) {
-		$query = sprintf("delete from printlog where user='%s'",
-		         $user[$i]);
+		$query = sprintf("delete from printlog where ".
+		         "user='%s' $confirmed", $user[$i]);
+		echo "<p>$query</p>";
 		$ret = mysql_query($query, $DBLINK);
 		if ($ret === false) {
 			echo "<p><b>DELETE query failed:</b><br />",
@@ -573,14 +579,19 @@ function delete_jobs($job)
 
 function process_delete()
 {
-	if (isset($_POST["d_trunc"]))
+	if (isset($_POST["d_trunc"])) {
 		delete_all();
-	else if (isset($_POST["d_user"]))
-		delete_users($_POST["d_user"]);
-	else if (isset($_POST["d_job"]))
-		delete_jobs($_POST["d_job"]);
-	else
+	} else {
+		if (isset($_POST["d_user"]))
+			delete_users($_POST["d_user"], false);
+		if (isset($_POST["d_usersucc"]))
+			delete_users($_POST["d_user"], 1);
+		if (isset($_POST["d_userfail"]))
+			delete_users($_POST["d_user"], 0);
+		if (isset($_POST["d_job"]))
+			delete_jobs($_POST["d_job"]);
 		return;
+	}
 
 	header("HTTP/1.1 302 Found");
 	header("Location: ".$_SERVER["REQUEST_URI"]);
