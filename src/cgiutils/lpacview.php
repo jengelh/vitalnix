@@ -229,7 +229,8 @@ function root_query()
 	if ($ret === false)
 		echo "<p><b>SELECT query failed:</b><br />",
 		     htmlspecialchars($query, ENT_NOQUOTES), "<br />",
-		     "<b>", mysql_error(), "</b></p>";
+		     "<b>", htmlspecialchars(mysql_error(), ENT_NOQUOTES),
+		     "</b></p>";
 	return $ret;
 }
 
@@ -271,7 +272,7 @@ function root_view()
 		<tr>
 			<td><input type="checkbox" name="d_user[]" value="<?= $data['user'] ?>"></td>
 			<td><a href="?user=<?= $data['user'] ?>"><?= $data["user"] ?></a> (<?= $gent["name"] ?>)</td>
-			<td><?= htmlspecialchars($pent["gecos"]) ?></td>
+			<td><?= htmlspecialchars($pent["gecos"], ENT_NOQUOTES) ?></td>
 			<td align="right"><?= sprintf("%.2f", $data["ink"]) ?></td>
 			<td align="right"><?= $data["pages"] ?></td>
 		</tr>
@@ -312,8 +313,8 @@ function user_query($user)
 	if ($ret === false)
 		echo "<p><b>SELECT query failed:</b><br />",
 		     htmlspecialchars($query, ENT_NOQUOTES), "<br />",
-		     "<b>", mysql_error(), "</b></p>";
-
+		     "<b>", htmlspecialchars(mysql_error(), ENT_NOQUOTES),
+		     "</b></p>";
 	return $ret;
 }
 
@@ -400,8 +401,8 @@ function user_view($user)
 			<?php if (is_root()) { ?>
 				<td><input type="checkbox" name="d_job[]" value="<?= $data['queue'] ?>/<?= $data['jid'] ?>/<?= $data['user'] ?>"></td>
 			<?php } ?>
-			<td><?= htmlspecialchars($data["time"]) ?></td>
-			<td><?= strip_smbprn(htmlspecialchars($data["title"])) ?></td>
+			<td><?= htmlspecialchars($data["time"], ENT_NOQUOTES) ?></td>
+			<td><?= htmlspecialchars(strip_smbprn($data["title"]), ENT_NOQUOTES) ?></td>
 			<td align="right"><?= $data["pages"] ?></td>
 			<td align="right"><?= sprintf("%.3f", $data["ink"]) ?></td>
 			<?php if (is_verbose()) { ?>
@@ -409,7 +410,7 @@ function user_view($user)
 				<td align="right"><?= sprintf("%.3f", $data["magenta"]) ?></td>
 				<td align="right"><?= sprintf("%.3f", $data["yellow"]) ?></td>
 				<td align="right"><?= sprintf("%.3f", $data["black"]) ?></td>
-				<td><?= htmlspecialchars($data["queue"]."/".$data["jid"]) ?></td>
+				<td><?= htmlspecialchars($data["queue"]."/".$data["jid"], ENT_NOQUOTES) ?></td>
 			<?php } ?>
 			<td align="center"><?= $data["confirmed"] ? "<span style=\"color: green;\">✓</span>" : "<span style=\"color: red;\">✘</span>" ?></td>
 		</tr>
@@ -472,8 +473,9 @@ function delete_users($user)
 		$ret = mysql_query($query, $DBLINK);
 		if ($ret === false) {
 			echo "<p><b>DELETE query failed:</b><br />",
-			     htmlspecialchars($query), "<br />",
-			     "<b>", mysql_error(), "</b><br />",
+			     htmlspecialchars($query, ENT_NOQUOTES), "<br />",
+			     "<b>", htmlspecialchars(mysql_error(), ENT_NOQUOTES),
+			     "</b><br />",
 			     "Operation aborted.</p>";
 			break;
 		}
@@ -500,8 +502,9 @@ function delete_jobs($job)
 		$ret = mysql_query($query, $DBLINK);
 		if ($ret === false) {
 			echo "<p><b>DELETE query failed:</b><br />",
-			     htmlspecialchars($query), "<br />",
-			     "<b>", mysql_error(), "</b><br />",
+			     htmlspecialchars($query, ENT_NOQUOTES), "<br />",
+			     "<b>", htmlspecialchars(mysql_error(), ENT_NOQUOTES),
+			     "</b><br />",
 			     "Operation aborted.</p>";
 			break;
 		}
