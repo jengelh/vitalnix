@@ -222,12 +222,14 @@ function root_query()
 	if (!isset($_GET["sort"]))
 		$_GET["sort"] = "id";
 	$order = order_command($_GET["sort"]);
-	$ret   = mysql_query("select user, sum(total) as ink, sum(pages) as ".
-	         "pages from (select * from printlog group by user, jid, ".
-	         "title) as plog group by user $order", $DBLINK);
+	$query = "select user, sum(total) as ink, sum(pages) as pages from ".
+	         "(select * from printlog group by user, jid, title) as ".
+	         "plog group by user $order";
+	$ret   = mysql_query($query, $DBLINK);
 	if ($ret === false)
-		return false;
-
+		echo "<p><b>SELECT query failed:</b><br />",
+		     htmlspecialchars($query, ENT_NOQUOTES), "<br />",
+		     "<b>", mysql_error(), "</b></p>";
 	return $ret;
 }
 
@@ -303,11 +305,14 @@ function user_query($user)
 		$_GET["sort"] = "dd";
 	$order = order_command($_GET["sort"]);
 	$user  = sprintf("where user='%s'", sqlencode($user));
-	$ret   = mysql_query("select time, queue, jid, user, title, ".
-	         "total as ink, cyan, magenta, yellow, black, pages, ".
-	         "confirmed from printlog $user $order", $DBLINK);
+	$query = "select time, queue, jid, user, title, total as ink, ".
+	         "cyan, magenta, yellow, black, pages, confirmed ".
+	         "from printlog $user $order";
+	$ret   = mysql_query($query, $DBLINK);
 	if ($ret === false)
-		return false;
+		echo "<p><b>SELECT query failed:</b><br />",
+		     htmlspecialchars($query, ENT_NOQUOTES), "<br />",
+		     "<b>", mysql_error(), "</b></p>";
 
 	return $ret;
 }
