@@ -374,9 +374,9 @@ function user_view($user)
 				<th valign="bottom">M</th>
 				<th valign="bottom">Y</th>
 				<th valign="bottom">K</th>
-				<th valign="bottom">S</th>
 				<th valign="bottom">Job ID</th>
 			<?php } ?>
+			<th valign="bottom">S</th>
 		</tr>
 		<?php
 		while (($data = mysql_fetch_array($ret)) !== false) {
@@ -401,9 +401,9 @@ function user_view($user)
 				<td align="right"><?= sprintf("%.3f", $data["magenta"]) ?></td>
 				<td align="right"><?= sprintf("%.3f", $data["yellow"]) ?></td>
 				<td align="right"><?= sprintf("%.3f", $data["black"]) ?></td>
-				<td align="center"><?= $data["confirmed"] ? "<span style=\"color: green;\">✓</span>" : "<span style=\"color: red;\">✘</span>" ?></td>
 				<td><?= htmlspecialchars($data["queue"]."/".$data["jid"]) ?></td>
 			<?php } ?>
+			<td align="center"><?= $data["confirmed"] ? "<span style=\"color: green;\">✓</span>" : "<span style=\"color: red;\">✘</span>" ?></td>
 		</tr>
 		<?php } ?>
 		<tr>
@@ -419,8 +419,8 @@ function user_view($user)
 				<td align="right"><b><?= sprintf("%.3f", $ysum) ?></b></td>
 				<td align="right"><b><?= sprintf("%.3f", $ksum) ?></b></td>
 				<td>&nbsp;</td>
-				<td>&nbsp;</td>
 			<?php } ?>
+			<td>&nbsp;</td>
 		</tr>
 		<?php if (is_root()) { ?>
 		<tr>
@@ -430,7 +430,7 @@ function user_view($user)
 					value="Delete selected entries" /></td>
 			<?php } else { ?>
 				<td>&nbsp;</td>
-				<td colspan="6"><input type="submit"
+				<td colspan="5"><input type="submit"
 					value="Delete selected entries" /></td>
 			<?php } ?>
 		</tr>
