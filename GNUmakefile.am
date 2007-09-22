@@ -46,6 +46,11 @@ lib_LTLIBRARIES := \
 	drv_dummy.la drv_ldap.la drv_mmd.la drv_mysql.la drv_nss.la \
 	drv_nss1.la drv_shadow.la pam_ihlogon.la
 
+if GOT_TOOLS_FOR_DOC
+doc_subdir := src/doc
+endif
+SUBDIRS := ${doc_subdir}
+
 #
 #	.
 #

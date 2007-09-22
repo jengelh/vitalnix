@@ -34,6 +34,22 @@ case `uname -m` in
 esac;
 AM_CONDITIONAL(X86_32, test $x86_32 -eq 1)
 
+#
+#	doc
+#
+AC_PATH_PROG([PERL], [perl])
+if [[ -z "$PERL" ]]; then
+	AC_PATH_PROG([perl5])
+fi;
+AC_PATH_PROG([PHP], [php5])
+if [[ -z "$PHP" ]]; then
+	AC_PATH_PROG([php])
+fi;
+AC_PATH_PROG([W3M], [w3m])
+
+AM_CONDITIONAL([GOT_TOOLS_FOR_DOC],
+	[$am_make -v | grep -q GNU && test -n "$PERL" -a -n "$PHP" -a -n "$W3M"])
+
 regular_CFLAGS="-D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
 	-D_REENTRANT -Wall -Waggregate-return -Wmissing-declarations \
 	-Wmissing-prototypes -Wredundant-decls -Wshadow -Wstrict-prototypes \
@@ -100,4 +116,4 @@ else
 	ln -s ../../config.h include/vitalnix/config.h;
 fi;
 
-AC_OUTPUT([GNUmakefile vitalnix.pc])
+AC_OUTPUT([GNUmakefile src/doc/GNUmakefile vitalnix.pc])
