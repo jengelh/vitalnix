@@ -1,7 +1,8 @@
 # -*- Makefile -*-
 
 targets = $(patsubst ${srcdir}/%.php,%.html,$(wildcard ${srcdir}/*.php)) \
-          $(patsubst ${srcdir}/%.php,%.txt,$(wildcard ${srcdir}/*.php))
+          $(patsubst ${srcdir}/%.php,%.txt,$(wildcard ${srcdir}/*.php)) \
+          $(patsubst ${srcdir}/%.icss,%.css,$(wildcard ${srcdir}/*.icss))
 
 CLEANFILES = ${targets}
 AM_VERBOSE_GEN = $(if $(V),,@echo "  GEN     " $@;)
@@ -13,3 +14,6 @@ all: ${targets}
 
 %.txt: %.html
 	${AM_VERBOSE_GEN}${W3M} -dump $< >$@;
+
+%.css: ${srcdir}/%.icss
+	cp -f "$<" "$@";
