@@ -18,11 +18,7 @@ create table printlog (
 	index       user (user)
 ) default charset=utf8;
 
-grant insert, select
+grant select, insert, update, delete
 	on vxlpacct.printlog
 	to 'lp'@'localhost'
 	identified by 'FUNkyaCCounting';
-
-# For later
-#
-#grant delete on vxlpacct.printlog to 'lp'@'localhost';
