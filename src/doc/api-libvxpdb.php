@@ -132,14 +132,12 @@ underlying function, they will all allocate the internal data buffer in the
 <b>void</b> vxpdb_user_copy(<b>struct</b> vxpdb_user <b>*</b>dest, <b>const struct</b> vxpdb_user <b>*</b>src);<br />
 <b>struct</b> vxpdb_user <b>*</b>vxpdb_user_dup(<b>const struct</b> vxpdb_user <b>*</b>src);<br />
 <b>void</b> vxpdb_user_free(<b>struct</b> vxpdb_user <b>*</b>user, <b>int</b> heap);<br />
-<b>int</b> vxpdb_user_match(<b>const struct</b> vxpdb_user <b>*</b>user, <b>const struct</b> vxpdb_user <b>*</b>mask);<br />
 <b>void</b> vxpdb_user_nomodify(<b>struct</b> vxpdb_user <b>*</b>user);<br />
 <br />
 <b>void</b> vxpdb_group_clean(<b>struct</b> vxpdb_group <b>*</b>group);<br />
 <b>void</b> vxpdb_group_copy(<b>struct</b> vxpdb_group <b>*</b>dest, <b>const struct</b> vxpdb_group <b>*</b>src);<br />
 <b>struct</b> vxpdb_user <b>*</b>vxpdb_group_dup(<b>const struct</b> vxpdb_group <b>*</b>src);<br />
 <b>void</b> vxpdb_group_free(<b>struct</b> vxpdb_user <b>*</b>user, <b>int</b> heap);<br />
-<b>int</b> vxpdb_group_match(<b>const struct</b> vxpdb_group <b>*</b>group, <b>const struct</b> vxpdb_group <b>*</b>mask);<br />
 <b>void</b> vxpdb_group_nomodify(<b>struct</b> vxpdb_group <b>*</b>group);</code></p>
 
 <h2>vxpdb_user_clean</h2>
@@ -254,13 +252,6 @@ vxpdb_group_free</h2>
 <p class="block">Free the structure or part thereof. If <code>heap</code> is
 non-zero, the object is freed in its entirety (do not use it for stack
 objects), or if it is zero, only free substructures which are on the heap.</p>
-
-<h2>vxpdb_user_match<br />
-vxpdb_group_match</h2>
-
-<p class="block">Returns non-zero if the user or group can be matched with
-mask, respectively. An empty mask (such as produced by
-<code>vxpdb_user_clean</code>) will always match.</p>
 
 <h2>vxpdb_user_nomodify<br />
 vxpdb_group_nomodify</h2>

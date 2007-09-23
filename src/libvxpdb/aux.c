@@ -93,19 +93,6 @@ EXPORT_SYMBOL void vxpdb_user_free(struct vxpdb_user *user, int heap)
 	return;
 }
 
-EXPORT_SYMBOL bool vxpdb_user_match(const struct vxpdb_user *user,
-    const struct vxpdb_user *mask)
-{
-	return
-	(mask->pw_name == NULL || strcmp(user->pw_name, mask->pw_name) == 0) &&
-	(mask->pw_uid == PDB_NOUID || user->pw_uid == mask->pw_uid) &&
-	(mask->pw_gid == PDB_NOGID || user->pw_gid == mask->pw_gid) &&
-	(mask->pw_real == NULL || strcmp(user->pw_real, mask->pw_real) == 0) &&
-	(mask->pw_home == NULL || strcmp(user->pw_home, mask->pw_home) == 0) &&
-	(mask->pw_shell == NULL || strcmp(user->pw_shell, mask->pw_shell) == 0);
-	/* lacks comparing mask->{sp,md}_* */
-}
-
 EXPORT_SYMBOL void vxpdb_user_nomodify(struct vxpdb_user *u)
 {
 	memset(u, 0, sizeof(struct vxpdb_user));
@@ -153,14 +140,6 @@ EXPORT_SYMBOL void vxpdb_group_free(struct vxpdb_group *group, int heap)
 	if (heap)
 		free(group);
 	return;
-}
-
-EXPORT_SYMBOL bool vxpdb_group_match(const struct vxpdb_group *group,
-    const struct vxpdb_group *mask)
-{
-	return
-	(mask->gr_name == NULL || strcmp(group->gr_name, mask->gr_name) == 0) &&
-	(mask->gr_gid == PDB_NOGID || group->gr_gid == mask->gr_gid);
 }
 
 EXPORT_SYMBOL void vxpdb_group_nomodify(struct vxpdb_group *group)

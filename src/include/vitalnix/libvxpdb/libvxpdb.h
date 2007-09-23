@@ -124,16 +124,12 @@ extern void vxpdb_user_copy(struct vxpdb_user *, const struct vxpdb_user *);
 extern struct vxpdb_user *vxpdb_user_dup(const struct vxpdb_user *);
 extern void vxpdb_user_free(struct vxpdb_user *, int);
 extern void vxpdb_user_nomodify(struct vxpdb_user *);
-extern bool vxpdb_user_match(const struct vxpdb_user *,
-	const struct vxpdb_user *);
 
 extern void *vxpdb_group_alloc(struct vxpdb_group *, size_t);
 extern void vxpdb_group_clean(struct vxpdb_group *);
 extern void vxpdb_group_copy(struct vxpdb_group *, const struct vxpdb_group *);
 extern struct vxpdb_group *vxpdb_group_dup(const struct vxpdb_group *);
 extern void vxpdb_group_free(struct vxpdb_group *, int);
-extern bool vxpdb_group_match(const struct vxpdb_group *,
-	const struct vxpdb_group *);
 extern void vxpdb_group_nomodify(struct vxpdb_group *);
 
 /*
