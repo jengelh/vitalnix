@@ -22,30 +22,14 @@
 //-----------------------------------------------------------------------------
 EXPORT_SYMBOL void vxpdb_user_clean(struct vxpdb_user *u)
 {
-	hmc_free(u->pw_name);
-	u->pw_name   = NULL;
+	memset(u, 0, sizeof(struct vxpdb_user));
 	u->pw_uid    = PDB_NOUID;
 	u->pw_gid    = PDB_NOGID;
-	u->pw_igrp   = NULL;
-	hmc_free(u->pw_real);
-	u->pw_real    = NULL;
-	hmc_free(u->pw_home);
-	u->pw_home    = NULL;
-	hmc_free(u->pw_shell);
-	u->pw_shell   = NULL;
-	hmc_free(u->sp_passwd);
-	u->sp_passwd  = NULL;
-	u->sp_lastchg = 0;
 	u->sp_min    = PDB_DFL_KEEPMIN;
 	u->sp_max    = PDB_DFL_KEEPMAX;
 	u->sp_warn   = PDB_DFL_WARNAGE;
 	u->sp_expire = PDB_NO_EXPIRE;
 	u->sp_inact  = PDB_NO_INACTIVE;
-	hmc_free(u->vs_uuid);
-	u->vs_uuid    = NULL;
-	hmc_free(u->vs_pvgrp);
-	u->vs_pvgrp   = NULL;
-	u->vs_defer   = 0;
 	return;
 }
 
@@ -116,7 +100,6 @@ EXPORT_SYMBOL void vxpdb_user_nomodify(struct vxpdb_user *u)
 
 EXPORT_SYMBOL void vxpdb_group_clean(struct vxpdb_group *group)
 {
-	hmc_free(group->gr_name);
 	group->gr_name = NULL;
 	group->gr_gid  = PDB_NOGID;
 	group->be_priv = NULL;
