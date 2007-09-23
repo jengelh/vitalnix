@@ -22,14 +22,24 @@
 //-----------------------------------------------------------------------------
 EXPORT_SYMBOL void vxpdb_user_clean(struct vxpdb_user *u)
 {
-	memset(u, 0, sizeof(struct vxpdb_user));
+	hmc_strasg(&u->pw_name, NULL);
+	u->pw_name   = NULL;
 	u->pw_uid    = PDB_NOUID;
 	u->pw_gid    = PDB_NOGID;
+	u->pw_igrp   = NULL;
+	hmc_strasg(&u->pw_real, NULL);
+	hmc_strasg(&u->pw_home, NULL);
+	hmc_strasg(&u->pw_shell, NULL);
+	hmc_strasg(&u->sp_passwd, NULL);
+	u->sp_lastchg = 0;
 	u->sp_min    = PDB_DFL_KEEPMIN;
 	u->sp_max    = PDB_DFL_KEEPMAX;
 	u->sp_warn   = PDB_DFL_WARNAGE;
 	u->sp_expire = PDB_NO_EXPIRE;
 	u->sp_inact  = PDB_NO_INACTIVE;
+	hmc_strasg(&u->vs_uuid, NULL);
+	hmc_strasg(&u->vs_pvgrp, NULL);
+	u->vs_defer   = 0;
 	return;
 }
 
@@ -51,9 +61,9 @@ EXPORT_SYMBOL void vxpdb_user_copy(struct vxpdb_user *dest,
 	dest->sp_warn    = src->sp_warn;
 	dest->sp_expire  = src->sp_expire;
 	dest->sp_inact   = src->sp_inact;
-	dest->vs_defer   = src->vs_defer;
 	hmc_strasg(&dest->vs_uuid, src->vs_uuid);
 	hmc_strasg(&dest->vs_pvgrp, src->vs_pvgrp);
+	dest->vs_defer   = src->vs_defer;
 	dest->be_priv    = NULL;
 	return;
 }
@@ -107,12 +117,13 @@ EXPORT_SYMBOL void vxpdb_user_nomodify(struct vxpdb_user *u)
 	u->sp_warn    = PDB_NO_CHANGE;
 	u->sp_expire  = PDB_NO_CHANGE;
 	u->sp_inact   = PDB_NO_CHANGE;
+	u->vs_defer   = PDB_NO_CHANGE;
 	return;
 }
 
 EXPORT_SYMBOL void vxpdb_group_clean(struct vxpdb_group *group)
 {
-	group->gr_name = NULL;
+	hmc_strasg(&group->gr_name, NULL);
 	group->gr_gid  = PDB_NOGID;
 	group->be_priv = NULL;
 	return;
