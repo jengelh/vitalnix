@@ -146,9 +146,11 @@ static void find_other_backends(void)
 
 static void confirm_syslog(const char **argv)
 {
+	const char *queue = getenv("PRINTER");
+
 	openlog(SYSLPREFIX, LOG_NDELAY | LOG_PID, LOG_LPR);
-	syslog(LOG_INFO, "id=%s user=%s confirmed\n",
-	       argv[ARGP_JOBID], argv[ARGP_USER]);
+	syslog(LOG_INFO, "id=%s/%s/%s confirmed\n",
+	       queue, argv[ARGP_JOBID], argv[ARGP_USER]);
 	closelog();
 	return;
 }

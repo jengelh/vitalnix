@@ -25,7 +25,7 @@
 void acct_syslog(const struct options *op, const struct costf *cost)
 {
 	openlog(SYSLPREFIX, LOG_NDELAY | LOG_PID, LOG_LPR);
-	syslog(LOG_INFO, "q/id=%s/%s user=%s +cmyktp(%f, %f, %f, %f, %f)"
+	syslog(LOG_INFO, "id=%s/%s/%s +cmyktp(%f, %f, %f, %f, %f)"
 	       " i*A4, %u pages\n",
 	       op->cups_args[ARGP_QUEUE], op->cups_args[ARGP_JOBID],
 	       op->cups_args[ARGP_USER], cost->c, cost->m, cost->y, cost->k,
