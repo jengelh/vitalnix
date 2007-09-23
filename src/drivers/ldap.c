@@ -499,21 +499,7 @@ static void vxldap_copy_user(struct vxpdb_user *dest, LDAP *conn,
 	char *attr, **val;
 	BerElement *ber;
 
-	hmc_strasg(&dest->pw_name, NULL);
-	dest->pw_uid     = PDB_NOUID;
-	dest->pw_gid     = PDB_NOGID;
-	dest->pw_igrp    = NULL;
-	hmc_strasg(&dest->pw_real, NULL);
-	hmc_strasg(&dest->pw_home, NULL);
-	hmc_strasg(&dest->pw_shell, NULL);
-	hmc_strasg(&dest->sp_passwd, NULL);
-	dest->sp_lastchg = 0;
-	dest->sp_min     = PDB_DFL_KEEPMIN;
-	dest->sp_max     = PDB_DFL_KEEPMAX;
-	dest->sp_warn    = PDB_DFL_WARNAGE;
-	dest->sp_expire  = PDB_NO_EXPIRE;
-	dest->sp_inact   = PDB_NO_INACTIVE;
-
+	vxpdb_user_clean(dest);
 	for (attr = ldap_first_attribute(conn, entry, &ber); attr != NULL;
 	    attr = ldap_next_attribute(conn, entry, ber))
 	{
@@ -750,9 +736,7 @@ static void vxldap_copy_group(struct vxpdb_group *dest, LDAP *conn,
 	char *attr, **val;
 	BerElement *ber;
 
-	hmc_strasg(&dest->gr_name, NULL);
-	dest->gr_gid = PDB_NOGID;
-
+	vxpdb_group_clean(dest);
 	for (attr = ldap_first_attribute(conn, entry, &ber); attr != NULL;
 	    attr = ldap_next_attribute(conn, entry, ber))
 	{
