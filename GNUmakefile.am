@@ -31,14 +31,14 @@ pkgconfigdir = @pkgconfigdir@
 #
 sbin_PROGRAMS   := \
 	cgi_chpasswd cgi_ntactiv cgi_vwquota \
-	ihlogon lpacct_filter lpacct_scv \
+	lpacct_filter lpacct_scv \
 	mdckuuid mdfixuuid mdpwlfmt mdsingle mdsync \
 	pdbdump pdbinfo randpw tryauth \
 	vxuseradd vxusermod vxuserdel vxgroupadd vxgroupmod vxgroupdel
 if BUILD_STEELMILL
 sbin_PROGRAMS   += steelmill
 endif
-EXTRA_PROGRAMS  := testcase
+EXTRA_PROGRAMS  := ihlogon testcase
 level1_libs     := libvxcgi.la libvxcli.la libvxcore.la libvxutil.la
 level2_libs     := libvxeds.la libvxmdfmt.la libvxpdb.la
 lib_LTLIBRARIES := \
