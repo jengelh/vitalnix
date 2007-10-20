@@ -4,9 +4,7 @@
 
 <p class="block"></p>
 
-<h1>Installation</h1>
-
-<h2>CUPS (Common Unix Printing System)</h2>
+<h1>Installation - CUPS (Common Unix Printing System)</h1>
 
 <p class="block">Unlike other print accounting solutions, the Vitalnix lpacct
 hook is implemented as a CUPS filter rather than as a CUPS backend. Because
@@ -40,35 +38,43 @@ compile it. It is advised to use the distributions packaging methods, e.g.
 .src.rpm for openSUSE/SLE* or Fedora/Redhat, to keep installation and upgrade
 relatively easy. Precompiled CUPS packages for openSUSE can be found in</p>
 
-<p><a href="ftp://ftp-1.gwdg.de/pub/linux/misc/suser-jengelh/SUSE-10.2/"
-target="_blank"><code>ftp://ftp-1.gwdg.de/pub/linux/misc/suser-jengelh/SUSE-10.2/</code></a></p>
+<p><a href="ftp://ftp5.gwdg.de/pub/linux/misc/suser-jengelh/SUSE-10.2/"
+target="_blank"><code>ftp://ftp5.gwdg.de/pub/linux/misc/suser-jengelh/SUSE-10.2/</code></a></p>
 
-<h2>Syslog</h2>
+<h1>Installation - Syslog</h1>
 
-<p class="block">In its simplest form, lpacct will make a syslog entry for each
-print job. You can then grep them from <code>/var/log/messages</code> and
-process them any way you like. Beware of automatic system log rotation
-utilities.</p>
+<p class="block">Usually there is no installation required. However, you will
+need your own tools to extract it from syslog. In its simplest form, lpacct
+will make a syslog entry for each print job (in fact, every Vitalnix filter
+invocation) and another entry, if it was successfully sent. You can then grep
+them from <code>/var/log/messages</code> and process them any way you like.
+Beware of automatic system log rotation utilities.</p>
 
-<h2>MySQL</h2>
+<h1>Installation - MySQL</h1>
 
-<p class="block"></p>
+<p class="block">You will have to create a new database for Vitalnix
+accounting. The required layout of the tables is given in the
+<code>lpacct_init.sql</code> file in the <code>share/</code> directory. You may
+freely choose the database, but the table name is hardcoded in a lot of places,
+as are (even more) the column names. Only one table will ever be used, so you
+may put the required <code>printlog</code> table into an already existing
+database.</p>
 
-<h1>Usage</h1>
+<h1>lpacview</h1>
+
+<p class="block"><i>lpacview</i> is a web frontend PHP program for MySQL-stored
+print accounting information that allows users to view their print jobs.
+The administrator will have a complete overview of all users and is permitted
+to delete entries.
+
 
 <h2>Cleaning database</h2>
 
 <p class="block">As each user prints a document, details about it will be
-logged into a mysql table. The table will grow until it is manually flushed by
-the administrator, usually when the accounting period is over and it is time
-for cashing up. The exact details on how the collected data is used or billed
-is up to the administrator or authoritative people, respectively, which is why
-there are no tools besides the simple <i>lpaview</i>.</p>
-
-<p class="block">The simplest approach to empty the table and hence reset the
-counters it to do it with the following mysql statement:</p>
-
-<p class="code"><code>truncate vxlpacct.printlog;</code></p>
+logged into a mysql table. The table will grow until entries are manually
+deleted by the administrator, usually when the accounting period is over
+and it is time for cashing up. As you will see, checkboxes for convenient
+deletion (per-job, per-user, all users) are provided.</p>
 
 <h2>Cost preview</h2>
 
@@ -90,10 +96,10 @@ speed, slightly biased towards precision.</p>
 
 <h2>Accounting summary</h2>
 
-<p class="block"><i>lpaview</i> is a CGI binary that allows a user to see what
-prints job were sent to the queue and what their cost in the unit "i*A4"
-(intensity x ISO A4) is. Total page count is also displayed. Detailed stats
-about exact CMYK ink usage can be selected at the authentication dialog.</p>
+<p class="block"><i>lpacview.php</i> is a PHP script providing a web interface
+that allows a user to see what print jobs were sent to the queue and what their
+cost in the unit "i*A4" (intensity x ISO A4) is. Total page count is also
+displayed. Detailed stats about exact CMYK ink usage can be selected.</p>
 
 <h2>Totals overview</h2>
 
