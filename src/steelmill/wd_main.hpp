@@ -1,6 +1,7 @@
 /*
  *	steelmill/wd_main.hpp
- *	Copyright © Jan Engelhardt <jengelh [at] computergmbh de>, 2005 - 2007
+ *	Copyright © CC Computer Consultants GmbH, 2005 - 2007
+ *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU

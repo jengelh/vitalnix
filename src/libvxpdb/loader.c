@@ -1,6 +1,7 @@
 /*
  *	libvxpdb/loader.c - Back-end module loader
- *	Copyright © Jan Engelhardt <jengelh [at] computergmbh de>, 2003 - 2007
+ *	Copyright © CC Computer Consultants GmbH, 2003 - 2007
+ *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU

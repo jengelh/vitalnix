@@ -1,6 +1,7 @@
 /*
  *	libvxmdfmt/s_pgtxt.c - text/plain formatter
- *	Copyright © Jan Engelhardt <jengelh [at] computergmbh de>, 2002 - 2007
+ *	Copyright © CC Computer Consultants GmbH, 2002 - 2007
+ *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
