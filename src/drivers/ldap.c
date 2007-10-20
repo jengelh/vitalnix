@@ -21,6 +21,15 @@
 #define F_POSIXGROUP   "objectClass=posixGroup"
 #define ZU_32 sizeof("4294967296")
 
+struct ldap_attrmap {
+	bool posixAccount, shadowAccount, sambaSamAccount;
+	bool vitalnixManagedAccount;
+	bool cn, userPassword, loginShell, gecos, shadowLastChange, shadowMin;
+	bool shadowMax, shadowWarning, shadowInactive, shadowExpire;
+	bool sambaNTPassword;
+	bool vitalnixUUID, vitalnixGroup, vitalnixDeferTimer;
+};
+
 struct ldap_state {
 	LDAP *conn;
 	char *uri, *root_dn;
@@ -470,10 +479,306 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 	return 1;
 }
 
+static void vxldap_getattr(struct ldap_state *state, const char *dn,
+    struct ldap_attrmap *xa)
+{
+	static const char *const attrs[] =
+		{"objectClass", "userPassword", "loginShell", "gecos",
+		"shadowLastChange", "shadowMin", "shadowMax", "shadowWarning",
+		"shadowInactive", "shadowExpire", "sambaNTPassword",
+		"vitalnixUUID", "vitalnixGroup", "vitalnixDeferTimer", NULL};
+	LDAPMessage *result, *entry;
+	char *attr, **vals, **val_ptr;
+	BerElement *ber;
+	int ret;
+
+	ret = ldap_search_ext_s(state->conn, dn, LDAP_SCOPE_BASE, NULL,
+	      const_cast(char **, attrs), false, NULL, NULL, NULL, 1, &result);
+	if (ret != LDAP_SUCCESS)
+		return;
+
+	entry = ldap_first_entry(state->conn, result);
+	if (entry == NULL)
+		goto out;
+
+	for (attr = ldap_first_attribute(state->conn, entry, &ber);
+	    attr != NULL; attr = ldap_next_attribute(state->conn, entry, ber))
+	{
+		if (strcmp(attr, "cn") == 0)
+			xa->cn = true;
+		else if (strcmp(attr, "userPassword") == 0)
+			xa->userPassword = true;
+		else if (strcmp(attr, "loginShell") == 0)
+			xa->loginShell = true;
+		else if (strcmp(attr, "gecos") == 0)
+			xa->gecos = true;
+		else if (strcmp(attr, "shadowLastChange") == 0)
+			xa->shadowLastChange = true;
+		else if (strcmp(attr, "shadowMin") == 0)
+			xa->shadowMin = true;
+		else if (strcmp(attr, "shadowMax") == 0)
+			xa->shadowMax = true;
+		else if (strcmp(attr, "shadowWarning") == 0)
+			xa->shadowWarning = true;
+		else if (strcmp(attr, "shadowExpire") == 0)
+			xa->shadowExpire = true;
+		else if (strcmp(attr, "shadowInactive") == 0)
+			xa->shadowInactive = true;
+		else if (strcmp(attr, "sambaNTPassword") == 0)
+			xa->sambaNTPassword = true;
+		else if (strcmp(attr, "vitalnixUUID") == 0)
+			xa->vitalnixUUID = true;
+		else if (strcmp(attr, "vitalnixGroup") == 0)
+			xa->vitalnixGroup = true;
+		else if (strcmp(attr, "vitalnixDeferTimer") == 0)
+			xa->vitalnixDeferTimer = true;
+		
+		if (strcmp(attr, "objectClass") != 0) {
+			ldap_memfree(attr);
+			continue;
+		}
+
+		vals = ldap_get_values(state->conn, entry, attr);
+		if (vals == NULL) {
+			ldap_memfree(attr);
+			continue;
+		}
+
+		for (val_ptr = vals; *val_ptr != NULL; ++val_ptr)
+			if (strcmp(*val_ptr, "posixAccount") == 0)
+				xa->posixAccount = true;
+			else if (strcmp(*val_ptr, "shadowAccount") == 0)
+				xa->shadowAccount = true;
+			else if (strcmp(*val_ptr, "sambaSamAccount") == 0)
+				xa->sambaSamAccount = true;
+			else if (strcmp(*val_ptr, "vitalnixManagedAccount") == 0)
+				xa->vitalnixManagedAccount = true;
+
+		ldap_value_free(vals);
+		ldap_memfree(attr);
+	}
+	if (ber != NULL)
+		ber_free(ber, 0);
+ out:
+	ldap_msgfree(result);
+	return;
+}
+
+static int vxldap_usermod2(struct ldap_state *state, hmc_t *old_dn,
+    const char *new_name)
+{
+	hmc_t *new_rdn;
+	int ret;
+
+	new_rdn = hmc_sinit("uid=");
+	hmc_strcat(&new_rdn, new_name);
+	ret = ldap_rename_s(state->conn, old_dn, new_rdn,
+	      NULL, false, NULL, NULL);
+	hmc_free(new_rdn);
+	if (ret != LDAP_SUCCESS) {
+		ldap_perror(state->conn, "The DN was not modified");
+		return -(errno = 1600 + ret);
+	}
+
+	return 1;
+}
+
+#define repl_add(x) ((x) ? LDAP_MOD_REPLACE : LDAP_MOD_ADD)
+
 static int vxldap_usermod(struct vxpdb_state *vp, const char *name,
     const struct vxpdb_user *param)
 {
-	return -ENOENT;
+	struct ldap_state *state = vp->state;
+	char s_pw_uid[ZU_32], s_pw_gid[ZU_32], s_sp_last[ZU_32];
+	char s_sp_min[ZU_32], s_sp_max[ZU_32], s_sp_warn[ZU_32];
+	char s_sp_expire[ZU_32], s_sp_inact[ZU_32], s_vs_defer[ZU_32];
+	struct ldap_attrmap attr_map = {};
+	LDAPMod attr[20], *attr_ptrs[21];
+	hmc_t *dn, *password = NULL;
+	unsigned int a = 0, i;
+	int ret;
+
+	if ((dn = dn_user(state, name)) == NULL)
+		return -EINVAL;
+
+	vxldap_getattr(state, dn, &attr_map);
+	if (!attr_map.posixAccount)
+		return -ENOENT;
+
+	/* posixAccount */
+	if (param->pw_uid != PDB_NO_CHANGE) {
+		snprintf(s_pw_uid, sizeof(s_pw_uid), "%u", param->pw_uid);
+		attr[a++] = (LDAPMod){
+			.mod_op     = LDAP_MOD_REPLACE,
+			.mod_type   = "uidNumber",
+			.mod_values = (char *[]){s_pw_uid, NULL},
+		};
+	}
+	if (param->pw_gid != PDB_NO_CHANGE) {
+		snprintf(s_pw_gid, sizeof(s_pw_gid), "%u", param->pw_gid);
+		attr[a++] = (LDAPMod){
+			.mod_op     = LDAP_MOD_REPLACE,
+			.mod_type   = "gidNumber",
+			.mod_values = (char *[]){s_pw_gid, NULL},
+		};
+	}
+	if (param->pw_real != NULL) {
+		attr[a++] = (LDAPMod){
+			.mod_op     = repl_add(attr_map.gecos),
+			.mod_type   = "gecos",
+			.mod_values = (char *[]){param->pw_real, NULL},
+		};
+		attr[a++] = (LDAPMod){
+			.mod_op     = repl_add(attr_map.cn),
+			.mod_type   = "cn",
+			.mod_values = (char *[]){param->pw_real, NULL},
+		};
+	}
+	if (param->pw_home != NULL)
+		attr[a++] = (LDAPMod){
+			.mod_op     = LDAP_MOD_REPLACE,
+			.mod_type   = "homeDirectory",
+			.mod_values = (char *[]){param->pw_home, NULL},
+		};
+	if (param->pw_shell != NULL)
+		attr[a++] = (LDAPMod){
+			.mod_op     = repl_add(attr_map.loginShell),
+			.mod_type   = "loginShell",
+			.mod_values = (char *[]){param->pw_shell, NULL},
+		};
+	if (param->sp_passwd != NULL) {
+		password = hmc_sinit(param->sp_passwd);
+		hmc_strpcat(&password, "{crypt}");
+		attr[a++] = (LDAPMod){
+			.mod_op     = repl_add(attr_map.userPassword),
+			.mod_type   = "userPassword",
+			.mod_values = (char *[]){password, NULL},
+		};
+	}
+
+	/* shadowAccount */
+	if (!attr_map.shadowAccount && (param->sp_lastchg != PDB_NO_CHANGE ||
+	    param->sp_min != PDB_NO_CHANGE || param->sp_max != PDB_NO_CHANGE ||
+	    param->sp_warn != PDB_NO_CHANGE ||
+	    param->sp_expire != PDB_NO_CHANGE ||
+	    param->sp_inact != PDB_NO_CHANGE))
+		attr[a++] = (LDAPMod){
+			.mod_op     = LDAP_MOD_ADD,
+			.mod_type   = "objectClass",
+			.mod_values = (char *[]){"shadowAccount", NULL},
+		};
+	if (param->sp_lastchg != PDB_NO_CHANGE) {
+		snprintf(s_sp_last, sizeof(s_sp_last), "%lu", param->sp_lastchg);
+		attr[a++] = (LDAPMod){
+			.mod_op     = repl_add(attr_map.shadowLastChange),
+			.mod_type   = "shadowLastChange",
+			.mod_values = (char *[]){s_sp_last, NULL},
+		};
+	}
+	if (param->sp_min != PDB_NO_CHANGE) {
+		snprintf(s_sp_min, sizeof(s_sp_min), "%lu", param->sp_min);
+		attr[a++] = (LDAPMod){
+			.mod_op     = repl_add(attr_map.shadowMin),
+			.mod_type   = "shadowMin",
+			.mod_values = (char *[]){s_sp_min, NULL},
+		};
+	}
+	if (param->sp_max != PDB_NO_CHANGE) {
+		snprintf(s_sp_max, sizeof(s_sp_max), "%lu", param->sp_max);
+		attr[a++] = (LDAPMod){
+			.mod_op     = repl_add(attr_map.shadowMax),
+			.mod_type   = "shadowMax",
+			.mod_values = (char *[]){s_sp_max, NULL},
+		};
+	}
+	if (param->sp_warn != PDB_NO_CHANGE) {
+		snprintf(s_sp_warn, sizeof(s_sp_warn), "%lu", param->sp_warn);
+		attr[a++] = (LDAPMod){
+			.mod_op     = repl_add(attr_map.shadowWarning),
+			.mod_type   = "shadowWarning",
+			.mod_values = (char *[]){s_sp_warn, NULL},
+		};
+	}
+	if (param->sp_expire != PDB_NO_CHANGE) {
+		snprintf(s_sp_expire, sizeof(s_sp_expire),
+		         "%lu", param->sp_expire);
+		attr[a++] = (LDAPMod){
+			.mod_op     = repl_add(attr_map.shadowExpire),
+			.mod_type   = "shadowExpire",
+			.mod_values = (char *[]){s_sp_expire, NULL},
+		};
+	}
+	if (param->sp_inact != PDB_NO_CHANGE) {
+		snprintf(s_sp_inact, sizeof(s_sp_inact),
+		         "%lu", param->sp_inact);
+		attr[a++] = (LDAPMod){
+			.mod_op     = LDAP_MOD_REPLACE,
+			.mod_type   = "shadowInactive",
+			.mod_values = (char *[]){s_sp_inact, NULL},
+		};
+	}
+
+	/* sambaSamAccount */
+	if (!attr_map.sambaSamAccount && param->sp_ntpasswd != NULL)
+		attr[a++] = (LDAPMod){
+			.mod_op     = LDAP_MOD_ADD,
+			.mod_type   = "objectClass",
+			.mod_values = (char *[]){"sambaSamAccount", NULL},
+		};
+	if (param->sp_ntpasswd != NULL)
+		attr[a++] = (LDAPMod){
+			.mod_op     = repl_add(attr_map.sambaNTPassword),
+			.mod_type   = "sambaNTPassword",
+			.mod_values = (char *[]){param->sp_ntpasswd, NULL},
+		};
+
+	/* vitalnixManagedAccount */
+	if (!attr_map.vitalnixManagedAccount && (param->vs_uuid != NULL ||
+	    param->vs_pvgrp != NULL || param->vs_defer != PDB_NO_CHANGE))
+		attr[a++] = (LDAPMod){
+			.mod_op     = LDAP_MOD_ADD,
+			.mod_type   = "objectClass",
+			.mod_values = (char *[]){"vitalnixManagedAccount", NULL},
+		};
+	if (param->vs_uuid != NULL)
+		attr[a++] = (LDAPMod){
+			.mod_op     = repl_add(attr_map.vitalnixUUID),
+			.mod_type   = "vitalnixUUID",
+			.mod_values = (char *[]){param->vs_uuid, NULL},
+		};
+	if (param->vs_pvgrp != NULL)
+		attr[a++] = (LDAPMod){
+			.mod_op     = repl_add(attr_map.vitalnixGroup),
+			.mod_type   = "vitalnixGroup",
+			.mod_values = (char *[]){param->vs_pvgrp, NULL},
+		};
+	if (param->vs_defer != PDB_NO_CHANGE) {
+		snprintf(s_vs_defer, sizeof(s_vs_defer),
+		         "%lu", param->vs_defer);
+		attr[a++] = (LDAPMod){
+			.mod_op     = repl_add(attr_map.vitalnixDeferTimer),
+			.mod_type   = "vitalnixDeferTimer",
+			.mod_values = (char *[]){s_vs_defer, NULL},
+		};
+	}
+
+	for (i = 0; i < a; ++i)
+		attr_ptrs[i] = &attr[i];
+	attr_ptrs[i] = NULL;
+
+	ret = ldap_modify_ext_s(state->conn, dn, attr_ptrs, NULL, NULL);
+	if (ret != LDAP_SUCCESS) {
+		ldap_perror(state->conn, "The entry was not modified");
+		hmc_free(dn);
+		return -(errno = 1600 + ret);
+	}
+
+	if (param->pw_name == NULL) {
+		hmc_free(dn);
+		return 1;
+	}
+
+	return vxldap_usermod2(state, dn, param->pw_name);
 }
 
 static int vxldap_userdel(struct vxpdb_state *vp, const char *name)
