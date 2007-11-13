@@ -12,8 +12,8 @@ BuildRoot:	%_tmppath/%name-%version-build
 BuildRequires:	cups-devel, gcc-c++
 BuildRequires:	libHX-devel >= 1.10, libxml2-devel, mysql-devel >= 5.0
 BuildRequires:	openldap2-devel
-BuildRequires:	openssl-devel, pam-devel, perl >= 5.6.0, pkg-config
-BuildRequires:	wxWidgets-devel >= 2.7.0
+BuildRequires:	openssl-devel, pam-devel, perl >= 5.6.0, php >= 5, pkg-config
+BuildRequires:	w3m, wxWidgets-devel >= 2.7.0
 %define pfx	/opt/%name-%version
 
 %description
