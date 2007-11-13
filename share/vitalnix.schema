@@ -1,0 +1,27 @@
+attributetype (
+	1.3.6.1.4.1.29795.1.1
+	NAME 'vitalnixGroup'
+	EQUALITY caseIgnoreMatch
+	SUBSTR caseIgnoreSubstringsMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+
+attribute (
+	1.3.6.1.4.1.29795.1.2
+	NAME 'vitalnixUUID'
+	EQUALITY caseIgnoreMatch
+	SUBSTR caseIgnoreSubstringsMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+	SINGLE-VALUE )
+
+attribute (
+	1.3.6.1.4.1.29795.1.3
+	NAME 'vitalnixDeferTimer'
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+	SINGLE-VALUE )
+
+objectClass (
+	1.3.6.1.4.1.29795.1.0
+	NAME 'vitalnixManagedAccount'
+	DESC 'Additional attributes for Vitalnix-managed accounts'
+	SUP posixAccount AUXILIARY
+	MAY ( vitalnixGroup $ vitalnixUUID $ vitalnixDeferTimer ) )
