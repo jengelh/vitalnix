@@ -52,11 +52,18 @@ b="%buildroot";
 rm -Rf "$b";
 mkdir "$b";
 make install DESTDIR="$b";
-install -dm0755 "$b/%_lib/security" "$b/%_libdir/cups/backend";
-install -dm0755 "$b/%_bindir" "$b/%_sbindir";
+install -dm0755 \
+	"$b/%_sysconfdir/openldap2/schema" \
+	"$b/%_lib/security" \
+	"$b/%_libdir/cups/backend" \
+	"$b/%_bindir" \
+	"$b/%_sbindir";
 ln -s "%pfx/%_lib/pam_ihlogon.so" "$b/%_lib/security/";
 ln -s "%pfx/sbin/lpacct_scv" "$b/%_libdir/cups/backend/scv";
 
+for i in "$b/%pfx/share/vitalnix"/*.schema; do
+	ln -s "${i#$b}" "$b/%_sysconfdir/openldap2/schema/";
+done;
 for i in vxrandpw; do
 	ln -s "%pfx/bin/$i" "$b/%_bindir/";
 done;
@@ -65,7 +72,7 @@ for i in md{ckuuid,fixuuid,pwlfmt,single,sync} vxtryauth \
 	ln -s "%pfx/sbin/$i" "$b/%_sbindir/";
 done;
 
-rm -f "%pfx/%_lib"/*.la;
+rm -f "$b/%pfx/%_lib"/*.la;
 
 %clean
 rm -Rf "%buildroot";
@@ -73,6 +80,7 @@ rm -Rf "%buildroot";
 %files
 %defattr(-,root,root)
 %config(noreplace) %_sysconfdir/%name/*
+%_sysconfdir/openldap2/schema/*
 /%_lib/security/*
 %_libdir/cups/backend/*
 %_libdir/pkgconfig/*
@@ -84,7 +92,6 @@ rm -Rf "%buildroot";
 %pfx/include
 %pfx/%_lib
 %dir %pfx/share
-%config(noreplace) %pfx/share/*
+%dir %pfx/share/vitalnix
+%config(noreplace) %pfx/share/vitalnix/*
 %doc src/doc/*.html src/doc/*.css
-
-%changelog -n vitalnix
