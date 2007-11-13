@@ -38,14 +38,8 @@ AM_CONDITIONAL(X86_32, test $x86_32 -eq 1)
 #
 #	doc
 #
-AC_PATH_PROG([PERL], [perl])
-if [[ -z "$PERL" ]]; then
-	AC_PATH_PROG([perl5])
-fi;
-AC_PATH_PROG([PHP], [php5])
-if [[ -z "$PHP" ]]; then
-	AC_PATH_PROG([php])
-fi;
+AC_PATH_PROGS([PERL], [perl perl5])
+AC_PATH_PROGS([PHP], [php php5])
 AC_PATH_PROG([W3M], [w3m])
 
 AM_CONDITIONAL([GOT_TOOLS_FOR_DOC],
