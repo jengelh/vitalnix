@@ -33,7 +33,7 @@ sbin_PROGRAMS   := \
 	cgi_chpasswd cgi_ntactiv cgi_vwquota \
 	lpacct_filter lpacct_scv \
 	mdckuuid mdfixuuid mdpwlfmt mdsingle mdsync \
-	pdbdump pdbinfo randpw tryauth \
+	pdbdump pdbinfo vxrandpw vxtryauth \
 	vxuseradd vxusermod vxuserdel vxgroupadd vxgroupmod vxgroupdel
 if BUILD_STEELMILL
 sbin_PROGRAMS   += steelmill
@@ -100,10 +100,10 @@ pdbdump_SOURCES    := src/clutils/pdbdump.c
 pdbdump_LDADD      := libvxpdb.la libvxutil.la
 pdbinfo_SOURCES    := src/clutils/pdbinfo.c
 pdbinfo_LDADD      := -lHX libvxpdb.la
-randpw_SOURCES     := src/clutils/randpw.c
-randpw_LDADD       := libvxpdb.la
-tryauth_SOURCES    := src/clutils/tryauth.c
-tryauth_LDADD      := -lHX -lpam libvxcgi.la
+vxrandpw_SOURCES   := src/clutils/randpw.c
+vxrandpw_LDADD     := libvxpdb.la
+vxtryauth_SOURCES  := src/clutils/tryauth.c
+vxtryauth_LDADD    := -lHX -lpam libvxcgi.la
 vxuseradd_SOURCES  := src/clutils/useradd.c
 vxuseradd_LDADD    := -lHX libvxpdb.la libvxutil.la
 vxusermod_SOURCES  := src/clutils/usermod.c
@@ -310,7 +310,7 @@ src/steelmill/images.hpp: $(wildcard ${srcdir}/src/steelmill/*.png)
 
 CLEANFILES += src/steelmill/images.cpp src/steelmill/images.hpp
 
-suid_list := tryauth
+suid_list := vxtryauth
 install-exec-hook:
 	chmod u+s $(addprefix ${DESTDIR}${bindir}/, ${suid_list});
 
