@@ -30,12 +30,17 @@ Developers:
 
 %debug_package
 %prep
-%setup
+%setup -q
 
 %build
+if [ ! -e configure ]; then
+	./autogen.sh;
+fi;
 %configure \
 	--sysconfdir="%_sysconfdir/vitalnix" \
+	--prefix="%pfx" \
 	--bindir="%pfx/bin" \
+	--sbindir="%pfx/sbin" \
 	--includedir="%pfx/include" \
 	--libdir="%pfx/%_lib" \
 	--datadir="%pfx/share" \
@@ -48,8 +53,19 @@ rm -Rf "$b";
 mkdir "$b";
 make install DESTDIR="$b";
 install -dm0755 "$b/%_lib/security" "$b/%_libdir/cups/backend";
+install -dm0755 "$b/%_bindir" "$b/%_sbindir";
 ln -s "%pfx/%_lib/pam_ihlogon.so" "$b/%_lib/security/";
-ln -s "%pfx/bin/lpacct_scv" "$b/%_libdir/cups/backend/scv";
+ln -s "%pfx/sbin/lpacct_scv" "$b/%_libdir/cups/backend/scv";
+
+for i in vxrandpw; do
+	ln -s "%pfx/bin/$i" "$b/%_bindir/";
+done;
+for i in md{ckuuid,fixuuid,pwlfmt,single,sync} vxtryauth \
+    vx{user,group}{add,mod,del}; do
+	ln -s "%pfx/sbin/$i" "$b/%_sbindir/";
+done;
+
+rm -f "%pfx/%_lib"/*.la;
 
 %clean
 rm -Rf "%buildroot";
@@ -60,12 +76,15 @@ rm -Rf "%buildroot";
 /%_lib/security/*
 %_libdir/cups/backend/*
 %_libdir/pkgconfig/*
+%_bindir/*
+%_sbindir/*
 %dir %pfx
 %pfx/bin
+%pfx/sbin
 %pfx/include
 %pfx/%_lib
 %dir %pfx/share
 %config(noreplace) %pfx/share/*
-#%doc obj/doc/*
+%doc src/doc/*.html src/doc/*.css
 
 %changelog -n vitalnix
