@@ -29,11 +29,13 @@ pkgconfigdir = @pkgconfigdir@
 #
 #	Targets
 #
+bin_PROGRAMS    := \
+	vxrandpw
 sbin_PROGRAMS   := \
 	cgi_chpasswd cgi_ntactiv cgi_vwquota \
 	lpacct_filter lpacct_scv \
 	mdckuuid mdfixuuid mdpwlfmt mdsingle mdsync \
-	pdbdump pdbinfo vxrandpw vxtryauth \
+	pdbdump pdbinfo vxtryauth \
 	vxuseradd vxusermod vxuserdel vxgroupadd vxgroupmod vxgroupdel
 if BUILD_STEELMILL
 sbin_PROGRAMS   += steelmill
@@ -310,9 +312,9 @@ src/steelmill/images.hpp: $(wildcard ${srcdir}/src/steelmill/*.png)
 
 CLEANFILES += src/steelmill/images.cpp src/steelmill/images.hpp
 
-suid_list := vxtryauth
+suid_sbin_list := vxtryauth
 install-exec-hook:
-	chmod u+s $(addprefix ${DESTDIR}${bindir}/, ${suid_list});
+	chmod u+s $(addprefix ${DESTDIR}${sbindir}/, ${suid_sbin_list});
 
 install-data-hook:
 	${INSTALL} -dm0755 ${DESTDIR}${pkgincludedir};
