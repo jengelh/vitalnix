@@ -1,7 +1,7 @@
 
 Name:		vitalnix
 Version:	3.1.0
-Release:	0
+Release:	1
 Group:		System/Base
 Summary:	Vitalnix User Management Suite and Essential Tools
 License:	LGPL
@@ -53,17 +53,15 @@ rm -Rf "$b";
 mkdir "$b";
 make install DESTDIR="$b";
 install -dm0755 \
-	"$b/%_sysconfdir/openldap2/schema" \
+	"$b/%_sysconfdir/openldap/schema" \
 	"$b/%_lib/security" \
 	"$b/%_libdir/cups/backend" \
 	"$b/%_bindir" \
 	"$b/%_sbindir";
 ln -s "%pfx/%_lib/pam_ihlogon.so" "$b/%_lib/security/";
 ln -s "%pfx/sbin/lpacct_scv" "$b/%_libdir/cups/backend/scv";
+ln -s "%pfx/share/vitalnix/vitalnix.schema" "$b/%_sysconfdir/openldap/schema/";
 
-for i in "$b/%pfx/share/vitalnix"/*.schema; do
-	ln -s "${i#$b}" "$b/%_sysconfdir/openldap2/schema/";
-done;
 for i in vxrandpw; do
 	ln -s "%pfx/bin/$i" "$b/%_bindir/";
 done;
@@ -80,7 +78,7 @@ rm -Rf "%buildroot";
 %files
 %defattr(-,root,root)
 %config(noreplace) %_sysconfdir/%name/*
-%_sysconfdir/openldap2/schema/*
+%_sysconfdir/openldap/schema/*
 /%_lib/security/*
 %_libdir/cups/backend/*
 %_libdir/pkgconfig/*
