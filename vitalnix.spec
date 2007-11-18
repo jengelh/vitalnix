@@ -65,7 +65,7 @@ ln -s "%pfx/share/vitalnix/vitalnix.schema" "$b/%_sysconfdir/openldap/schema/";
 for i in vx{finger,randpw}; do
 	ln -s "%pfx/bin/$i" "$b/%_bindir/";
 done;
-for i in md{ckuuid,fixuuid,pwlfmt,single,sync} vxtryauth \
+for i in md{ckuuid,fixuuid,pwlfmt,single,sync} vx{dbdump,tryauth} \
     vx{user,group}{add,mod,del}; do
 	ln -s "%pfx/sbin/$i" "$b/%_sbindir/";
 done;
