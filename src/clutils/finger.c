@@ -126,8 +126,12 @@ static void finger_grep(struct vxpdb_state *db, const char *keyword)
 	hmc_trunc(&lc_real, 0);
 
 	while (vxpdb_usertrav_walk(db, trav, &user) > 0) {
-		if (!Fullgecos && (p = strchr(user.pw_real, ',')) != NULL)
+		if (!Fullgecos && user.pw_real != NULL &&
+		    (p = strchr(user.pw_real, ',')) != NULL)
 			*p = '\0';
+
+		if (user.pw_real == NULL)
+			user.pw_real = hmc_sinit("");
 
 		if (Icase) {
 			hmc_strasg(&lc_name, user.pw_name);
