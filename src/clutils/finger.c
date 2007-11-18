@@ -160,15 +160,17 @@ static void finger_grep(struct vxpdb_state *db, const char *keyword)
 			unsigned int z0 = name_ptr - user.pw_name;
 			unsigned int z1 = (*name_ptr != '\0') ? keyword_len : 0;
 			unsigned int z2 = (*real_ptr != '\0') ? keyword_len : 0;
+			unsigned int z3 = real_ptr - user.pw_real;
+
 			printf(
-				"Login: %-.*s\e[%sm%-.*s\e[%sm%-*s  " // ]
-				"Name: %-.*s\e[%sm%-.*s\e[%sm%s\n", // ]
+				"Login: %-.*s\e[%sm%-.*s\e[%sm%-*s  ", // ]
 				z0, user.pw_name,
 				grep_color,
 				z1, name_ptr, stop_color,
-				24 - z0 - z1, &name_ptr[z1],
-
-				real_ptr - user.pw_real, user.pw_real,
+				24 - z0 - z1, &name_ptr[z1]);
+			printf(
+				"Name: %-.*s\e[%sm%-.*s\e[%sm%s\n", // ]
+				z3, user.pw_real,
 				grep_color,
 				z2, real_ptr, stop_color,
 				&real_ptr[z2]);
