@@ -62,10 +62,10 @@ ln -s "%pfx/%_lib/pam_ihlogon.so" "$b/%_lib/security/";
 ln -s "%pfx/sbin/lpacct_scv" "$b/%_libdir/cups/backend/scv";
 ln -s "%pfx/share/vitalnix/vitalnix.schema" "$b/%_sysconfdir/openldap/schema/";
 
-for i in vxrandpw; do
+for i in vx{finger,randpw}; do
 	ln -s "%pfx/bin/$i" "$b/%_bindir/";
 done;
-for i in md{ckuuid,fixuuid,pwlfmt,single,sync} vx{finger,tryauth} \
+for i in md{ckuuid,fixuuid,pwlfmt,single,sync} vxtryauth \
     vx{user,group}{add,mod,del}; do
 	ln -s "%pfx/sbin/$i" "$b/%_sbindir/";
 done;
