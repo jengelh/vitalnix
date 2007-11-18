@@ -55,7 +55,7 @@ enum output_type_e Output_type = OUTPUT_SHADOW;
 
 static char *Database    = "*";
 static long Uid_range[2] = {0, LONG_MAX};
-static bool Dump_what[4]  = {1, 1, 1, 1};
+static bool Dump_what[4]  = {true, true, true, true};
 static void (*Dump_functions[])(struct vxpdb_state *) = {
 	[OUTPUT_LDIF]   = d_ldif,
 	[OUTPUT_MYSQL]  = d_mysql,
@@ -86,7 +86,7 @@ int main(int argc, const char **argv)
 	Dump_functions[Output_type](db);
 	vxpdb_close(db);
 	vxpdb_unload(db);
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 //-----------------------------------------------------------------------------
