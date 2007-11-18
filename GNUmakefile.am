@@ -30,7 +30,7 @@ pkgconfigdir = @pkgconfigdir@
 #	Targets
 #
 bin_PROGRAMS    := \
-	vxrandpw
+	vxcconfig vxrandpw
 sbin_PROGRAMS   := \
 	cgi_chpasswd cgi_ntactiv cgi_vwquota \
 	lpacct_filter lpacct_scv \
@@ -128,6 +128,7 @@ pam_ihlogon_la_LDFLAGS := ${regular_SOLDFLAGS} -module -avoid-version
 #
 testcase_SOURCES := src/devutil/testcase.c
 testcase_LDADD   := libvxeds.la libvxutil.la
+vxcconfig_SOURCES := src/devutil/vxcconfig.c
 
 #
 #	src/drivers/dummy
