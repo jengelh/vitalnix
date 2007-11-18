@@ -53,6 +53,11 @@ regular_CXXFLAGS="-D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
 	-D_REENTRANT -Wall -Wno-pointer-arith -Wredundant-decls -fPIC -pipe";
 
 #
+#	libc
+#
+AC_HAVE_HEADERS([lastlog.h paths.h utmpx.h])
+
+#
 #	openssl-devel, libxml-devel
 #
 PKG_CHECK_MODULES([libcrypto], [libcrypto])

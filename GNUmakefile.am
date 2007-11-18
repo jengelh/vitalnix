@@ -30,7 +30,7 @@ pkgconfigdir = @pkgconfigdir@
 #	Targets
 #
 bin_PROGRAMS    := \
-	vxcconfig vxrandpw
+	vxcconfig vxfinger vxrandpw
 sbin_PROGRAMS   := \
 	cgi_chpasswd cgi_ntactiv cgi_vwquota \
 	lpacct_filter lpacct_scv \
@@ -102,6 +102,8 @@ vxdbdump_SOURCES   := src/clutils/pdbdump.c
 vxdbdump_LDADD     := libvxpdb.la libvxutil.la
 vxdbinfo_SOURCES   := src/clutils/pdbinfo.c
 vxdbinfo_LDADD     := -lHX libvxpdb.la
+vxfinger_SOURCES   := src/clutils/finger.c
+vxfinger_LDADD     := -lHX libvxpdb.la
 vxrandpw_SOURCES   := src/clutils/randpw.c
 vxrandpw_LDADD     := libvxpdb.la
 vxtryauth_SOURCES  := src/clutils/tryauth.c
