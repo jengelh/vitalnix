@@ -274,10 +274,15 @@ static void single_interactive(struct private_info *priv)
 	};
 
 	vxcli_query_v(table_1);
-	if (!isupper(*priv->first_name))
+	if (!isupper(*priv->first_name)) {
+		if (isatty(STDOUT_FILENO))
+			printf("\e[1;37;41m"); // ]
 		printf("WARNING: The first char of the name is not uppercase, "
 		       "which is incorrect in most cases. (Hit Ctrl+C to "
 		       "exit and retry.)\n");
+		if (isatty(STDOUT_FILENO))
+			printf("\e[0m"); // ]
+	}
 
 	vxutil_propose_lname(tmp, sizeof(tmp), priv->surname, priv->first_name);
 	vxcli_query_v(table_2);
