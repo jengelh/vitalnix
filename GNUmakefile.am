@@ -35,7 +35,7 @@ sbin_PROGRAMS   := \
 	cgi_chpasswd cgi_ntactiv cgi_vwquota \
 	lpacct_filter lpacct_scv \
 	mdckuuid mdfixuuid mdpwlfmt mdsingle mdsync \
-	pdbdump pdbinfo vxtryauth \
+	vxdbdump vxdbinfo vxtryauth \
 	vxuseradd vxusermod vxuserdel vxgroupadd vxgroupmod vxgroupdel
 if BUILD_STEELMILL
 sbin_PROGRAMS   += steelmill
@@ -98,10 +98,10 @@ mdsingle_SOURCES   := src/clutils/mdsingle.c
 mdsingle_LDADD     := -lHX libvxcli.la libvxmdsync.la libvxpdb.la
 mdsync_SOURCES     := src/clutils/mdsync.c
 mdsync_LDADD       := -lHX libvxcli.la libvxeds.la libvxmdsync.la libvxpdb.la
-pdbdump_SOURCES    := src/clutils/pdbdump.c
-pdbdump_LDADD      := libvxpdb.la libvxutil.la
-pdbinfo_SOURCES    := src/clutils/pdbinfo.c
-pdbinfo_LDADD      := -lHX libvxpdb.la
+vxdbdump_SOURCES   := src/clutils/pdbdump.c
+vxdbdump_LDADD     := libvxpdb.la libvxutil.la
+vxdbinfo_SOURCES   := src/clutils/pdbinfo.c
+vxdbinfo_LDADD     := -lHX libvxpdb.la
 vxrandpw_SOURCES   := src/clutils/randpw.c
 vxrandpw_LDADD     := libvxpdb.la
 vxtryauth_SOURCES  := src/clutils/tryauth.c
