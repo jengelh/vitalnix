@@ -217,7 +217,9 @@ static bool check_utmp(const char *user)
 	setutxent();
 	while ((ut = getutxent()) != NULL) {
 		if (ut->ut_type != USER_PROCESS ||
-		    strcmp(ut->ut_user, user) != 0 || kill(ut->ut_pid, 0) != 0)
+		    strcmp(ut->ut_user, user) != 0)
+			continue;
+		if (!(kill(ut->ut_pid, 0) == 0 || errno != ESRCH))
 			continue;
 
 		ret = true;
