@@ -33,6 +33,9 @@
 #ifndef _PATH_LASTLOG
 #	define _PATH_LASTLOG "/var/log/lastlog"
 #endif
+#ifndef _PATH_MAILDIR
+#	define _PATH_MAILDIR "/var/mail"
+#endif
 
 /* Functions */
 static bool get_options(int *, const char ***);
@@ -293,21 +296,25 @@ static void check_mail(const char *user)
 	struct stat sb;
 	time_t tmp;
 
-	snprintf(filename, sizeof(filename), "/var/mail/%s", user);
+	snprintf(filename, sizeof(filename), "%s/%s", _PATH_MAILDIR, user);
 	if (stat(filename, &sb) != 0) {
-		printf("No mail in %s\n", filename);
+		printf("No mail.\n");
 		return;
+	} else if (sb.st_size == 0) {
+		printf("No mail, ");
 	}
 
+	/* Read time */
 	tmp = sb.st_atime;
 	strftime(astr, sizeof(astr), "%Y-%m-%d %H:%M", localtime(&tmp));
+	/* Receive/modify time */
 	tmp = sb.st_mtime;
 	strftime(mstr, sizeof(mstr), "%Y-%m-%d %H:%M", localtime(&tmp));
 
-	if (sb.st_mtime + 60 >= sb.st_atime)
-		printf("Mail last read on %s\n", astr);
-	else
+	if (sb.st_mtime >= sb.st_atime + 60)
 		printf("New mail received %s\n" "     Unread since %s\n",
 		       mstr, astr);
+	else
+		printf("Mail last read on %s\n", astr);
 	return;
 }
