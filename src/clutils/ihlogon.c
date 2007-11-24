@@ -10,6 +10,7 @@
  */
 #define PAM_SM_SESSION 1
 #include <sys/types.h>
+#include <ctype.h>
 #include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -29,6 +30,11 @@ enum slice_type {
 	D_NONE = 0,
 	D_ALLOW,
 	D_DENY,
+};
+
+enum deny_reason {
+	REASON_MULTILOGON = 1 << 0,
+	REASON_TIMESLICE  = 1 << 1,
 };
 
 struct time_period {
@@ -124,7 +130,7 @@ static bool ts_allowed(time_t now, const struct time_period *tbp)
 }
 
 static int ihlogon(const char *user, const char *rhost,
-    struct vxpdb_user *info, struct vxpdb_state *db)
+    struct vxpdb_user *info, struct vxpdb_state *db, unsigned int mask)
 {
 	time_t now = ourtime();
 	unsigned int pgrp;
@@ -145,26 +151,26 @@ static int ihlogon(const char *user, const char *rhost,
 	}
 
 	pgrp = get_vitalnixgroup(info);
-	if (login_times(user) >= 1) {
+	if ((mask & REASON_MULTILOGON) && login_times(user) >= 1) {
 		syslog(LOG_INFO, "\"%s\" (pgrp=%u) already logged in once (this rhost=%s)\n",
 		       user, pgrp, rhost);
 		return PAM_DENY;
 	}
 
-	if ((pgrp <= 10 && !ts_allowed(now, timetable_sek1)) ||
-	    (pgrp >= 11 && !ts_allowed(now, timetable_sek2)))
-	{
-		/* Block timeslices */
-		syslog(LOG_INFO, "\"%s\" blocked due to timeslice (pgrp=%u)\n",
-		       user, pgrp);
-		return PAM_DENY;
-	}
+	if (mask & REASON_TIMESLICE)
+		if ((pgrp <= 10 && !ts_allowed(now, timetable_sek1)) ||
+		    (pgrp >= 11 && !ts_allowed(now, timetable_sek2))) {
+			/* Block timeslices */
+			syslog(LOG_INFO, "\"%s\" blocked due to timeslice "
+			       "(pgrp=%u)\n", user, pgrp);
+			return PAM_DENY;
+		}
 
 	syslog(LOG_INFO, "Accepted %s (pgrp=%u)\n", user, pgrp);
 	return PAM_SUCCESS;
 }
 
-static int ihlogon_init(const char *user, const char *rhost)
+static int ihlogon_init(const char *user, const char *rhost, unsigned int mask)
 {
 	struct vxpdb_user uinfo = {};
 	struct vxpdb_state *db;
@@ -181,7 +187,7 @@ static int ihlogon_init(const char *user, const char *rhost)
 		return PAM_SUCCESS;
 	}
 
-	ret = ihlogon(user, rhost, &uinfo, db);
+	ret = ihlogon(user, rhost, &uinfo, db, mask);
 	vxpdb_close(db);
 	vxpdb_unload(db);
 	vxpdb_user_free(&uinfo, false);
@@ -191,18 +197,21 @@ static int ihlogon_init(const char *user, const char *rhost)
 PAM_EXTERN EXPORT_SYMBOL int pam_sm_acct_mgmt(pam_handle_t *pamh,
     int flags, int argc, const char **argv)
 {
-	const void *user = NULL, *rhost = NULL;
+	const char *user = NULL, *rhost = NULL;
+	unsigned int mask = REASON_MULTILOGON;
 	int ret;
 
 	openlog("pam_ihlogon", LOG_PERROR | LOG_PID, LOG_AUTHPRIV);
 
-	ret = pam_get_item(pamh, PAM_USER, &user);
+	ret = pam_get_item(pamh, PAM_USER, static_cast(const void **,
+	      static_cast(const void *, &user)));
 	if (ret != PAM_SUCCESS) {
 		syslog(LOG_ERR, "pam_get_item(PAM_USER): %s\n", pam_strerror(pamh, ret));
 		return PAM_SERVICE_ERR;
 	}
 
-	ret = pam_get_item(pamh, PAM_RHOST, &rhost);
+	ret = pam_get_item(pamh, PAM_RHOST, static_cast(const void **,
+	      static_cast(const void *, &rhost)));
 	if (ret != PAM_SUCCESS) {
 		syslog(LOG_ERR, "pam_get_item(PAM_RHOST): %s\n", pam_strerror(pamh, ret));
 		return PAM_SERVICE_ERR;
@@ -211,13 +220,11 @@ PAM_EXTERN EXPORT_SYMBOL int pam_sm_acct_mgmt(pam_handle_t *pamh,
 	if (user == NULL || rhost == NULL)
 		return PAM_IGNORE;
 
-	/*
-	if (strlen(rhost) > 5 &&
-	    strcmp(rhost + strlen(rhost) - 5, ".site") != 0)
-		return PAM_SUCCESS;
-	*/
+	if (tolower(rhost[0]) == 'b' && isdigit(rhost[1]) &&
+	    isdigit(rhost[2]) && strcmp(&rhost[3], ".site") == 0)
+		mask |= REASON_TIMESLICE;
 
-	ret = ihlogon_init(user, rhost);
+	ret = ihlogon_init(user, rhost, mask);
 	closelog();
 	return ret;
 }
@@ -229,6 +236,6 @@ int main(int argc, const char **argv)
 		fprintf(stderr, "%s: Need an username\n", *argv);
 		return 127;
 	}
-	return ihlogon_init(argv[1], "localhost");
+	return ihlogon_init(argv[1], "localhost", ~0U);
 }
 #endif
