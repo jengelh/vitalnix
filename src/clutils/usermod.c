@@ -264,7 +264,7 @@ static int usermod_run3(struct vxpdb_state *db, struct usermod_state *state)
 static void usermod_show_version(const struct HXoptcb *cbi)
 {
 	printf("Vitalnix " PACKAGE_VERSION " usermod\n");
-	return;
+	exit(EXIT_SUCCESS);
 }
 
 //=============================================================================

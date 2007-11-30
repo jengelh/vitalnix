@@ -364,7 +364,7 @@ static int useradd_run3(struct vxpdb_state *db, struct useradd_state *state,
 static void useradd_show_version(const struct HXoptcb *cbi)
 {
 	printf("Vitalnix " PACKAGE_VERSION " useradd\n");
-	return;
+	exit(EXIT_SUCCESS);
 }
 
 //=============================================================================

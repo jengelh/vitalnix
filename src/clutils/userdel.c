@@ -108,7 +108,7 @@ static bool userdel_get_options(int *argc, const char ***argv,
 		{.sh = 'M', .type = HXTYPE_STRING, .ptr = &state->database,
 		 .help = "Use specified database", .htyp = "name"},
 
-		// Default options
+		/* Default options */
 		{.sh = 'r', .type = HXTYPE_NONE, .ptr = &state->rm_home,
 		 .help = "Remove home directory, cron tables and mail spool"},
 		{.sh = 'v', .ln = "version", .type = HXTYPE_NONE,
@@ -268,7 +268,7 @@ static int userdel_run3(struct vxpdb_state *db, struct userdel_state *state)
 static void userdel_show_version(const struct HXoptcb *cbi)
 {
 	printf("Vitalnix " PACKAGE_VERSION " userdel\n");
-	return;
+	exit(EXIT_SUCCESS);
 }
 
 static unsigned int userdel_slash_count(const char *fn)

@@ -205,7 +205,7 @@ static bool groupmod_read_config(void)
 static void groupmod_show_version(const struct HXoptcb *cbi)
 {
 	printf("Vitalnix " PACKAGE_VERSION " groupmod\n");
-	return;
+	exit(EXIT_SUCCESS);
 }
 
 //=============================================================================
