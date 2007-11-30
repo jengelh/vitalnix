@@ -259,7 +259,7 @@ vxpdb_group_nomodify</h2>
 <p class="block">Sets all fields in the <code>struct vxpdb_user</code> or
 <code>struct vxpdb_group</code> so that when passed to
 <code>vxpdb_usermod()</code> or <code>vxpdb_groupmod()</code>, respectively, as
-a modify mask, no changes to the user or gruop would occurr.</p>
+a modify mask, no changes to the user or group would occurr.</p>
 
 <h1>Per-user/per-group internal data</h1>
 
