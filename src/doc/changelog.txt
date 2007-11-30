@@ -1,0 +1,6 @@
+
+SVN /trunk
+==========
+- [r533]: rename pdbdump, pdbinfo -> vxdbdump, vxdbinfo
+- [r536]: added new vxfinger utility
+- [r547]: added new userwebpages.cgi to the Vitalnix tree
