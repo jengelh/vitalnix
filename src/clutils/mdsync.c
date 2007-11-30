@@ -1,5 +1,5 @@
 /*
- *	mdsync - Mass user synchronization
+ *	vxusersync - Mass user synchronization
  *	Copyright © CC Computer Consultants GmbH, 2003 - 2007
  *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
  *

@@ -34,9 +34,10 @@ bin_PROGRAMS    := \
 sbin_PROGRAMS   := \
 	cgi_chpasswd cgi_ntactiv cgi_vwquota \
 	lpacct_filter lpacct_scv \
-	mdckuuid mdfixuuid mdpwlfmt mdsingle mdsync \
+	mdckuuid mdfixuuid mdpwlfmt mdsingle \
 	vxdbdump vxdbinfo vxtryauth \
-	vxuseradd vxusermod vxuserdel vxgroupadd vxgroupmod vxgroupdel
+	vxuseradd vxusermod vxuserdel vxusersync \
+	vxgroupadd vxgroupmod vxgroupdel
 if BUILD_STEELMILL
 sbin_PROGRAMS   += steelmill
 endif
@@ -96,8 +97,6 @@ mdpwlfmt_SOURCES   := src/clutils/mdpwlfmt.c
 mdpwlfmt_LDADD     := -lHX libvxmdfmt.la
 mdsingle_SOURCES   := src/clutils/mdsingle.c
 mdsingle_LDADD     := -lHX libvxcli.la libvxmdsync.la libvxpdb.la
-mdsync_SOURCES     := src/clutils/mdsync.c
-mdsync_LDADD       := -lHX libvxcli.la libvxeds.la libvxmdsync.la libvxpdb.la
 vxdbdump_SOURCES   := src/clutils/pdbdump.c
 vxdbdump_LDADD     := libvxpdb.la libvxutil.la
 vxdbinfo_SOURCES   := src/clutils/pdbinfo.c
@@ -114,6 +113,8 @@ vxusermod_SOURCES  := src/clutils/usermod.c
 vxusermod_LDADD    := -lHX libvxpdb.la libvxutil.la
 vxuserdel_SOURCES  := src/clutils/userdel.c
 vxuserdel_LDADD    := -lHX libvxpdb.la libvxutil.la
+vxusersync_SOURCES := src/clutils/mdsync.c
+vxusersync_LDADD   := -lHX libvxcli.la libvxeds.la libvxmdsync.la libvxpdb.la
 vxgroupadd_SOURCES := src/clutils/groupadd.c
 vxgroupadd_LDADD   := -lHX libvxpdb.la libvxutil.la
 vxgroupmod_SOURCES := src/clutils/groupmod.c
