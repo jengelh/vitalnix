@@ -6,3 +6,4 @@ SVN /trunk
 - [r547]: added new userwebpages.cgi to the Vitalnix tree
 - [r548]: rename mdsync -> vxusersync
 - [r551]: add missing exit() calls for various show_version() functions
+- [r552]: fix mdckuuid segfault when -i parameter is missing

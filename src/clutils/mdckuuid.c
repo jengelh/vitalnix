@@ -59,7 +59,15 @@ static bool get_options(int *argc, const char ***argv)
 		HXOPT_TABLEEND,
 	};
 
-	return HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) > 0;
+	if (HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) <= 0)
+		return false;
+
+	if (ck_input_file == NULL) {
+		fprintf(stderr, "%s: You need to specify -i\n", **argv);
+		return false;
+	}
+
+	return true;
 }
 
 static void read_eds(struct HXdeque *workspace)
