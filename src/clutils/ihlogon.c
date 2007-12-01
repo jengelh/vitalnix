@@ -22,6 +22,7 @@
 #include <libHX.h>
 #include <security/pam_appl.h>
 #include <security/pam_modules.h>
+#include <vitalnix/compiler.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxpdb/xafunc.h>
 #define MAXLNLEN 1024
