@@ -16,6 +16,7 @@
 #include <time.h>
 #include <libHX.h>
 #include <vitalnix/config.h>
+#include <vitalnix/compiler.h>
 #include <vitalnix/libvxeds/libvxeds.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxpdb/xafunc.h>
