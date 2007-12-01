@@ -82,7 +82,7 @@ static inline const char *vxutil_azstr(const char *ptr)
 	return (ptr != NULL) ? ptr : "";
 }
 
-static inline int vxutil_have_display(void)
+static inline bool vxutil_have_display(void)
 {
 	const char *p;
 	return (p = getenv("DISPLAY")) != NULL && *p != '\0';
