@@ -14,8 +14,8 @@ for the command-line (CLI) variants of various programs included.</p>
 &nbsp; &nbsp; <b>const char *</b>msg;<br />
 &nbsp; &nbsp; <b>const char *</b>prompt;<br />
 &nbsp; &nbsp; <b>const char *</b>defl;<br />
-&nbsp; &nbsp; <b>int</b> type;<br />
-&nbsp; &nbsp; <b>long</b> flags;<br />
+&nbsp; &nbsp; <b>unsigned int</b> type;<br />
+&nbsp; &nbsp; <b>unsigned int</b> flags;<br />
 &nbsp; &nbsp; <b>void *</b>ptr;<br />
 &nbsp; &nbsp; <b>int (*</b>validate<b>)</b>(<b>const struct</b> vxcq_entry <b>*</b>);<br />
 };</code></p>
@@ -75,8 +75,8 @@ a sentinel to a <code>struct vxcq_entry</code>.</p>
 <p class="code"><code>
 <b>#</b>include &lt;libvxcli/libvxcli.h&gt;<br />
 <br />
-<b>char *</b>vxcli_query(<b>const char *</b>msg, <b>const char *</b>prompt, <b>const char *</b>defl, <b>long</b> flags, <b>char *</b>buf, <b>size_t</b> size);<br />
-<b>int</b> vxcli_query_v(<b>const struct</b> vxcq_entry <b>*</b>table);
+<b>char *</b>vxcli_query(<b>const char *</b>msg, <b>const char *</b>prompt, <b>const char *</b>defl, <b>unsigned int</b> flags, <b>char *</b>buf, <b>unsigned int</b> size);<br />
+<b>unsigned int</b> vxcli_query_v(<b>const struct</b> vxcq_entry <b>*</b>table);
 </code></p>
 
 <h2>vxcli_query</h2>

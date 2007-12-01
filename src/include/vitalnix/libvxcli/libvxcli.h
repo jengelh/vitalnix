@@ -27,14 +27,13 @@ enum {
 
 struct vxcq_entry {
 	const char *msg, *prompt, *defl;
-	int type;
+	unsigned int type, flags;
 	void *ptr, *uptr;
-	long flags;
 	int (*validate)(const struct vxcq_entry *);
 };
 
-extern char *vxcli_query(const char *, const char *, const char *, long,
-	char *, size_t);
+extern char *vxcli_query(const char *, const char *, const char *,
+	unsigned int, char *, unsigned int);
 extern unsigned int vxcli_query_v(const struct vxcq_entry *);
 
 #ifdef __cplusplus

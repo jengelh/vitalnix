@@ -21,7 +21,7 @@
 
 //-----------------------------------------------------------------------------
 EXPORT_SYMBOL char *vxcli_query(const char *msg, const char *prompt,
-    const char *defl, long opts, char *buf, size_t size)
+    const char *defl, unsigned int opts, char *buf, unsigned int size)
 {
 	hmc_t *answer = NULL;
 	bool i = false;
