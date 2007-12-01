@@ -19,6 +19,8 @@
 #include <time.h>
 #include <unistd.h>
 #include <libHX.h>
+#include <vitalnix/config.h>
+#include <vitalnix/compiler.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
 #include <vitalnix/libvxpdb/xafunc.h>
 #ifdef HAVE_LASTLOG_H
