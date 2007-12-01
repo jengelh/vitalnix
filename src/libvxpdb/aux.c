@@ -68,7 +68,7 @@ EXPORT_SYMBOL struct vxpdb_user *vxpdb_user_dup(const struct vxpdb_user *src)
 	return dest;
 }
 
-EXPORT_SYMBOL void vxpdb_user_free(struct vxpdb_user *user, int heap)
+EXPORT_SYMBOL void vxpdb_user_free(struct vxpdb_user *user, bool heap)
 {
 	hmc_free(user->pw_name);
 	hmc_free(user->pw_igrp);
@@ -125,7 +125,7 @@ EXPORT_SYMBOL struct vxpdb_group *vxpdb_group_dup(const struct vxpdb_group *src)
 	return dest;
 }
 
-EXPORT_SYMBOL void vxpdb_group_free(struct vxpdb_group *group, int heap)
+EXPORT_SYMBOL void vxpdb_group_free(struct vxpdb_group *group, bool heap)
 {
 	hmc_free(group->gr_name);
 	if (heap)

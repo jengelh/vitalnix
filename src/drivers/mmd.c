@@ -194,7 +194,7 @@ static int vxmmd_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 	vxpdb_user_copy(&rq2, rq);
 	rq2.pw_uid = uid;
 	ret = vxpdb_useradd(WR_MOD(state), &rq2);
-	vxpdb_user_free(&rq2, 0);
+	vxpdb_user_free(&rq2, false);
 	return ret;
 }
 
@@ -342,7 +342,7 @@ static int vxmmd_groupadd(struct vxpdb_state *vp, const struct vxpdb_group *rq)
 	vxpdb_group_copy(&rq2, rq);
 	rq2.gr_gid = gid;
 	ret = vxpdb_groupadd(WR_MOD(state), &rq2);
-	vxpdb_group_free(&rq2, 0);
+	vxpdb_group_free(&rq2, false);
 	return ret;
 }
 
@@ -500,7 +500,7 @@ static unsigned int vxmmd_autouid(struct vxpdb_state *vp, unsigned int wanted)
 
 	/* If the successor id is not outside the boundaries, take it. */
 	if (high >= 0 && high < max) {
-		vxpdb_user_free(&dest, 0);
+		vxpdb_user_free(&dest, false);
 		return high + 1;
 	}
 
@@ -517,12 +517,12 @@ static unsigned int vxmmd_autouid(struct vxpdb_state *vp, unsigned int wanted)
 		}
 		vxmmd_usertrav_free(vp, trav);
 		if (!used) {
-			vxpdb_user_free(&dest, 0);
+			vxpdb_user_free(&dest, false);
 			return accept;
 		}
 		++accept;
 	}
-	vxpdb_user_free(&dest, 0);
+	vxpdb_user_free(&dest, false);
 	return -ENOSPC;
 }
 
@@ -556,7 +556,7 @@ static unsigned int vxmmd_autogid(struct vxpdb_state *vp, unsigned int wanted)
 
 	/* If the successor id is not outside the boundaries, take it. */
 	if (high >= 0 && high < max) {
-		vxpdb_group_free(&dest, 0);
+		vxpdb_group_free(&dest, false);
 		return high + 1;
 	}
 
@@ -573,12 +573,12 @@ static unsigned int vxmmd_autogid(struct vxpdb_state *vp, unsigned int wanted)
 		}
 		vxmmd_grouptrav_free(vp, trav);
 		if (!used) {
-			vxpdb_group_free(&dest, 0);
+			vxpdb_group_free(&dest, false);
 			return accept;
 		}
 		++accept;
 	}
-	vxpdb_group_free(&dest, 0);
+	vxpdb_group_free(&dest, false);
 	return -ENOSPC;
 }
 

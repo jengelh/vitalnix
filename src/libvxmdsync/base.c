@@ -10,6 +10,7 @@
  */
 #include <sys/stat.h>
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -145,7 +146,7 @@ EXPORT_SYMBOL void mdsync_free(struct mdsync_workspace *w)
 	}
 
 	/* mdsync_prepare_group() */
-	vxpdb_group_free(&w->dest_group, 0);
+	vxpdb_group_free(&w->dest_group, false);
 	return;
 }
 
@@ -175,7 +176,7 @@ static void kill_eds(const struct HXbtree_node *node)
  */
 static void kill_pwd(const struct HXbtree_node *node)
 {
-	vxpdb_user_free(node->data, 1);
+	vxpdb_user_free(node->data, true);
 	if (node->sub[0] != NULL)
 		kill_pwd(node->sub[0]);
 	if (node->sub[1] != NULL)

@@ -200,7 +200,7 @@ void GW_GroupCombo::switch_database(const char *db_name)
 			Append(fU8(group.gr_name));
 
 	vxpdb_grouptrav_free(db, trav);
-	vxpdb_group_free(&group, 0);
+	vxpdb_group_free(&group, false);
  out_close:
 	vxpdb_close(db);
  out_unload:
@@ -412,7 +412,7 @@ void GW_UserCombo::switch_database(const char *db_name)
 	    Append(fU8(user.pw_name));
 
 	vxpdb_usertrav_free(db, trav);
-	vxpdb_user_free(&user, 0);
+	vxpdb_user_free(&user, false);
  out_close:
 	vxpdb_close(db);
  out_unload:

@@ -320,7 +320,7 @@ static int validate_group(const struct vxcq_entry *e)
 	else if (ret == 0)
 		fprintf(stderr, "Group \"%s\" does not exist\n", group_name);
 
-	vxpdb_group_free(&group, 0);
+	vxpdb_group_free(&group, false);
 
  out_open:
 	vxpdb_unload(mh);

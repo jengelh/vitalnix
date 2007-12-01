@@ -120,7 +120,7 @@ static void d_ldif_groups(struct vxpdb_state *db)
 	}
 
 	vxpdb_grouptrav_free(db, trav);
-	vxpdb_group_free(&group, 0);
+	vxpdb_group_free(&group, false);
 	return;
 }
 
@@ -215,7 +215,7 @@ static void d_ldif_users(struct vxpdb_state *db)
 	}
 
 	vxpdb_usertrav_free(db, trav);
-	vxpdb_user_free(&user, 0);
+	vxpdb_user_free(&user, false);
 	free(freeme);
 	return;
 }
@@ -318,7 +318,7 @@ static void d_mysql_users(struct vxpdb_state *db)
 	}
 
 	vxpdb_usertrav_free(db, trav);
-	vxpdb_user_free(&user, 0);
+	vxpdb_user_free(&user, false);
 	printf("# Number of users: %ld\n", vxpdb_modctl(db, PDB_COUNT_USERS));
 	return;
 }
@@ -336,7 +336,7 @@ static void d_mysql_groups(struct vxpdb_state *db)
 		       group.gr_name, group.gr_gid);
 
 	vxpdb_grouptrav_free(db, trav);
-	vxpdb_group_free(&group, 0);
+	vxpdb_group_free(&group, false);
 	printf("# Number of groups: %ld\n", vxpdb_modctl(db, PDB_COUNT_GROUPS));
 	return;
 }
@@ -411,8 +411,8 @@ static void d_shadow(struct vxpdb_state *db)
 		vxpdb_grouptrav_free(db, trav);
 	}
 
-	vxpdb_user_free(&user, 0);
-	vxpdb_group_free(&group, 0);
+	vxpdb_user_free(&user, false);
+	vxpdb_group_free(&group, false);
 
 	/* Info */
 	printf("#---INFO---\n");

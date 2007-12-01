@@ -586,7 +586,7 @@ static void release_priv(struct pv_sync *priv)
 	if (priv == NULL)
 		return;
 
-	vxpdb_group_free(&priv->group, 0);
+	vxpdb_group_free(&priv->group, false);
 	if (priv->open_status)
 		vxpdb_close(priv->module_handle);
 	if (priv->module_handle != NULL)

@@ -97,7 +97,7 @@ static char *rebuild_uuid(const struct mdf_priv *p, struct vxpdb_state *db)
 		res = vxuuid_vx3(name, xday);
 
  out:
-	vxpdb_user_free(&info, 0);
+	vxpdb_user_free(&info, false);
 	return res;
 }
 

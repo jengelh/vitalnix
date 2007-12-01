@@ -126,7 +126,7 @@ EXPORT_SYMBOL void mdsync_compare(struct mdsync_workspace *w)
 	}
 
 	vxpdb_usertrav_free(w->database, travp);
-	vxpdb_user_free(&pwd, 0);
+	vxpdb_user_free(&pwd, false);
 	if (w->report != NULL)
 		w->report(MDREP_COMPARE, w, users_max, users_max);
 	return;
@@ -150,7 +150,7 @@ EXPORT_SYMBOL void mdsync_compare_simple(struct mdsync_workspace *w)
 		}
 
 	vxpdb_usertrav_free(w->database, travp);
-	vxpdb_user_free(&pwd, 0);
+	vxpdb_user_free(&pwd, false);
 	return;
 }
 
@@ -277,7 +277,7 @@ EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
 	memset(plain_pw, 0, sizeof(plain_pw));
 	HXbtrav_free(travp);
 	vxpdb_modctl(w->database, PDB_FLUSH);
-	vxpdb_user_free(&chk, 0);
+	vxpdb_user_free(&chk, false);
 
 	if (ret > 0 && c->add_opts.master_postadd != NULL)
 		vxutil_replace_run(c->add_opts.master_postadd, master_catalog);
@@ -389,7 +389,7 @@ EXPORT_SYMBOL int mdsync_del(struct mdsync_workspace *w)
 	if (user_catalog != NULL)
 		HXformat_free(user_catalog);
 
-	vxpdb_user_free(&res, 0);
+	vxpdb_user_free(&res, false);
 	return 1;
 }
 
