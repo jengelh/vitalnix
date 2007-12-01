@@ -43,7 +43,7 @@ enum {
 	GENPW_ZH      = 1 << 6,
 };
 
-extern void vxutil_genpw(char *, size_t, long);
+extern void vxutil_genpw(char *, int, unsigned int);
 
 /*
  *	UTIL.C

@@ -16,9 +16,9 @@
 #include <vitalnix/libvxutil/libvxutil.h>
 
 /* Functions */
-static void genpw_jp(char *, int, long);
-static void genpw_zh(char *, int, long);
-static void genpw_random(char *, int, long);
+static void genpw_jp(char *, int, unsigned int);
+static void genpw_zh(char *, int, unsigned int);
+static void genpw_random(char *, int, unsigned int);
 
 /* Variables */
 /*
@@ -108,7 +108,7 @@ static const char *const zh_table[] = {
 #define zht_size (ARRAY_SIZE(zh_table) - 1)
 
 //-----------------------------------------------------------------------------
-EXPORT_SYMBOL void vxutil_genpw(char *plain, size_t len, long flags)
+EXPORT_SYMBOL void vxutil_genpw(char *plain, int len, unsigned int flags)
 {
 	long flad = flags & ~(GENPW_JP | GENPW_ZH);
 	if (flags & GENPW_ZH)
@@ -121,9 +121,9 @@ EXPORT_SYMBOL void vxutil_genpw(char *plain, size_t len, long flags)
 }
 
 //-----------------------------------------------------------------------------
-static void genpw_jp(char *plain, int size, long flags)
+static void genpw_jp(char *plain, int size, unsigned int flags)
 {
-	long saved_flags  = flags;
+	unsigned int saved_flags = flags;
 	char *saved_plain = plain;
 	int saved_size    = size;
 	int prev          = -1;
@@ -175,10 +175,10 @@ static void genpw_jp(char *plain, int size, long flags)
 	return;
 }
 
-static void genpw_zh(char *plain, int size, long flags)
+static void genpw_zh(char *plain, int size, unsigned int flags)
 {
 	char *saved_plain = plain;
-	long saved_flags  = flags;
+	unsigned int saved_flags = flags;
 	int saved_size    = size;
 	int prev          = -1;
 
@@ -233,11 +233,11 @@ static void genpw_zh(char *plain, int size, long flags)
 	return;
 }
 
-static void genpw_random(char *plain, int size, long flags)
+static void genpw_random(char *plain, int size, unsigned int flags)
 {
 	char *saved_plain = plain;
-	long saved_flags  = flags;
-	int saved_size    = size;
+	unsigned int saved_flags = flags;
+	int saved_size = size;
 
 	while (size-- > 0) {
 		/* 20% probability for a digit */

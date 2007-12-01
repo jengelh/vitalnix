@@ -12,7 +12,7 @@ Vitalnix code base.</p>
 <br />
 <b>char *</b>vxutil_azstr(<b>const char *</b>string);<br />
 <b>int</b> vxutil_cryptpw(<b>const char *</b>key, <b>const char *</b>salt, <b>int</b> method, <b>char **</b>result);<br />
-<b>int</b> vxutil_genpw(<b>char *</b>dest, <b>size_t</b> size, <b>long</b> flags);<br />
+<b>int</b> vxutil_genpw(<b>char *</b>dest, <b>int</b> size, <b>unsigned int</b> flags);<br />
 <b>int</b> vxutil_have_display(<b>void</b>);<br />
 <b>long</b> vxutil_now_iday(<b>void</b>);<br />
 <b>int</b> vxutil_only_digits(<b>const char *</b>s);<br />
