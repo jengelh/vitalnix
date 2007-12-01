@@ -2,7 +2,6 @@
 #define _VITALNIX_LIBVXPDB_XAFUNC_H 1
 
 #include <sys/types.h>
-#include <vitalnix/compiler.h>
 #include <vitalnix/libvxpdb/libvxpdb.h>
 
 #ifdef __cplusplus
