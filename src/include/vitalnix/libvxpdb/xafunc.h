@@ -107,7 +107,7 @@ static inline int vxpdb_getpwnam(struct vxpdb_state *state, const char *user,
 	return state->vtable->getpwnam(state, user, result);
 }
 
-static inline int vxpdb_getpwuid(struct vxpdb_state *state, long uid,
+static inline int vxpdb_getpwuid(struct vxpdb_state *state, unsigned int uid,
     struct vxpdb_user *result)
 {
 	return state->vtable->getpwuid(state, uid, result);
@@ -119,7 +119,7 @@ static inline int vxpdb_getgrnam(struct vxpdb_state *state, const char *group,
 	return state->vtable->getgrnam(state, group, result);
 }
 
-static inline int vxpdb_getgrgid(struct vxpdb_state *state, long gid,
+static inline int vxpdb_getgrgid(struct vxpdb_state *state, unsigned int gid,
     struct vxpdb_group *result)
 {
 	return state->vtable->getgrgid(state, gid, result);
