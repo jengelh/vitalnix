@@ -209,9 +209,9 @@ static int pwlfmt_process2(struct pwlfmt_workspace *w,
     const struct HXbtree *tl_tree)
 {
 	const struct HXbtree_node *tl_node;
+	unsigned int proc = 0;
 	struct pwl_data data;
 	void *tl_trav;
-	int proc = 0;
 
 	if ((tl_trav = HXbtrav_init(tl_tree)) == NULL)
 		return -errno;

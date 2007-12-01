@@ -26,13 +26,14 @@ struct pwlstyle_vtable;
 struct pwlfmt_workspace {
 	/* Input (public) */
 	char *style_name, *input_file, *output_file, *template_file;
-	void (*report)(const struct pwlfmt_workspace *, int, int);
+	void (*report)(const struct pwlfmt_workspace *, unsigned int,
+		unsigned int);
 
 	/* Workspace (private) */
 	const struct pwlstyle_vtable *vtable;
 	FILE *input_fh, *output_fh;
 	void *style_data, *template_data;
-	long num_entries;
+	unsigned int num_entries;
 };
 
 /*
