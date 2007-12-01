@@ -281,7 +281,7 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 	char s_sid[256], s_smblastchg[ZU_32];
 	LDAPMod attr[21], *attr_ptrs[22];
 	const char *object_classes[6];
-	unsigned int a = 0, i, o = 0, uid;
+	unsigned int a = 0, i, o = 0;
 	hmc_t *dn, *password = NULL;
 	int ret;
 
@@ -312,8 +312,9 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 	};
 
 	/* posixAccount */
-	uid = rq->pw_uid; /* TBC */
-	snprintf(s_pw_uid, sizeof(s_pw_uid), "%u", uid);
+	/* FIXME: Handle PDB_AUTOUID */
+	snprintf(s_pw_uid, sizeof(s_pw_uid), "%u",
+	         static_cast(unsigned int, rq->pw_uid));
 	attr[a++] = (LDAPMod){
 		.mod_op     = LDAP_MOD_ADD,
 		.mod_type   = "uidNumber",
@@ -417,7 +418,7 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 
 	/* sambaSamAccount */
 	if (rq->sp_ntpasswd != NULL && state->domain_sid != NULL &&
-	    vxldap_uid_to_sid(state, s_sid, sizeof(s_sid), uid) > 0) {
+	    vxldap_uid_to_sid(state, s_sid, sizeof(s_sid), rq->pw_uid) > 0) {
 	    	if (rq->sp_lastchg > 0)
 			snprintf(s_smblastchg, sizeof(s_smblastchg),
 			         "%lu", rq->sp_lastchg * 86400);
@@ -966,17 +967,14 @@ static hmc_t *dn_group(const struct ldap_state *state, const char *name)
 static int vxldap_groupadd(struct vxpdb_state *vp, const struct vxpdb_group *rq)
 {
 	struct ldap_state *state = vp->state;
-	LDAPMod attr[3], *attr_ptrs[4];
+	LDAPMod attr[4], *attr_ptrs[5];
 	unsigned int a = 0, i;
+	char s_gr_gid[ZU_32];
 	hmc_t *dn;
 	int ret;
 
 	if ((dn = dn_group(state, rq->gr_name)) == NULL)
 		return -ENOMEM;
-
-	ret = ldap_add_ext_s(state->conn, dn, attr_ptrs, NULL, NULL);
-	if (ret != LDAP_SUCCESS)
-		return -(errno = 1600 + ret);
 
 	attr[a++] = (LDAPMod){
 		.mod_op     = LDAP_MOD_ADD,
@@ -987,6 +985,15 @@ static int vxldap_groupadd(struct vxpdb_state *vp, const struct vxpdb_group *rq)
 		.mod_op     = LDAP_MOD_ADD,
 		.mod_type   = "cn",
 		.mod_values = (char *[]){rq->gr_name, NULL},
+	};
+
+	/* FIXME: Handle PDB_AUTOGID */
+	snprintf(s_gr_gid, sizeof(s_gr_gid), "%u",
+	         static_cast(unsigned int, rq->gr_gid));
+	attr[a++] = (LDAPMod){
+		.mod_op     = LDAP_MOD_ADD,
+		.mod_type   = "gidNumber",
+		.mod_values = (char *[]){s_gr_gid, NULL},
 	};
 	/*
 	 * this dummy attribute seems required because groupOfNames has a
