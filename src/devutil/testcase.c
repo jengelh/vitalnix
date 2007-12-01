@@ -19,7 +19,7 @@
 static void test_1(void)
 {
 	printf("--- TEST 1 --- XDAY conversion\n");
-	printf("2006-03-04 = %lx (should be 7d6304)\n",
+	printf("2006-03-04 = %x (should be 7d6304)\n",
 		   vxutil_string_xday("2006-03-04"));
 	return;
 }

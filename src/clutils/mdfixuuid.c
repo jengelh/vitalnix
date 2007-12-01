@@ -68,8 +68,7 @@ static char *rebuild_uuid(const struct mdf_priv *p, struct vxpdb_state *db)
 {
 	struct vxpdb_user info = {};
 	char *res = NULL, *name;
-	long xday = 0;
-	int ret;
+	int ret, xday = 0;
 
 	if ((ret = vxpdb_getpwnam(db, p->username, &info)) < 0) {
 		fprintf(stderr, "Error querying database: %s\n",

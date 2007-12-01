@@ -56,7 +56,7 @@ enum {
 	_VXQUOTE_MAX,
 };
 
-extern long vxutil_now_iday(void);
+extern unsigned int vxutil_now_iday(void);
 extern bool vxutil_only_digits(const char *);
 extern char *vxutil_propose_home(char *, size_t, const char *, const char *,
 	unsigned int);
@@ -64,15 +64,15 @@ extern char *vxutil_propose_lname(char *, size_t, const char *, const char *);
 extern char *vxutil_quote(const char *, unsigned int, char **);
 extern int vxutil_replace_run(const char *, const struct HXbtree *);
 extern char *vxutil_slurp_file(const char *);
-extern long vxutil_string_iday(const char *);
-extern long vxutil_string_xday(const char *);
+extern int vxutil_string_iday(const char *);
+extern int vxutil_string_xday(const char *);
 extern bool vxutil_valid_username(const char *);
 
 /*
  *	UUID.C
  */
-extern char *vxuuid_vx3(const char *, long);
-extern long vxuuid_vx3_get_xday(const char *);
+extern char *vxuuid_vx3(const char *, unsigned int);
+extern unsigned int vxuuid_vx3_get_xday(const char *);
 
 /*
  *	INLINE FUNCTIONS

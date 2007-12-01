@@ -23,7 +23,8 @@
 #define sizeof_z(s) (sizeof(s) - 1)
 
 /* Functions */
-static int vxutil_parse_date(const char *, int *, int *, int *);
+static int vxutil_parse_date(const char *, unsigned int *, unsigned int *,
+	unsigned int *);
 static void vxutil_quote_base64(const char *, char *);
 static size_t quoted_size(const char *, unsigned int);
 static const char *surname_pointer(const char *);
@@ -37,7 +38,7 @@ static const char *const quote_match[] = {
 };
 
 //-----------------------------------------------------------------------------
-EXPORT_SYMBOL long vxutil_now_iday(void)
+EXPORT_SYMBOL unsigned int vxutil_now_iday(void)
 {
 	return time(NULL) / 86400;
 }
@@ -206,10 +207,11 @@ EXPORT_SYMBOL char *vxutil_slurp_file(const char *fn)
 	return dst;
 }
 
-EXPORT_SYMBOL long vxutil_string_iday(const char *s)
+EXPORT_SYMBOL int vxutil_string_iday(const char *s)
 {
-	int day = 0, month = 0, year = 0, ret = 0;
+	unsigned int day = 0, month = 0, year = 0;
 	struct tm td;
+	int ret = 0;
 	time_t sec;
 
 	if ((ret = vxutil_parse_date(s, &day, &month, &year)) != 3)
@@ -224,9 +226,10 @@ EXPORT_SYMBOL long vxutil_string_iday(const char *s)
 	return sec / 86400;
 }
 
-EXPORT_SYMBOL long vxutil_string_xday(const char *s)
+EXPORT_SYMBOL int vxutil_string_xday(const char *s)
 {
-	int day = 0, month = 0, year = 0, ret = 0;
+	unsigned int day = 0, month = 0, year = 0;
+	int ret = 0;
 	if ((ret = vxutil_parse_date(s, &day, &month, &year)) <= 0)
 		return ret;
 	return ((year & 0xFFF) << 12) | ((month & 0xF) << 8) | (day & 0xFF);
@@ -259,7 +262,8 @@ EXPORT_SYMBOL bool vxutil_valid_username(const char *n)
 }
 
 //-----------------------------------------------------------------------------
-static int vxutil_parse_date(const char *s, int *day, int *month, int *year)
+static int vxutil_parse_date(const char *s, unsigned int *day,
+    unsigned int *month, unsigned int *year)
 {
 	int ret = 0;
 

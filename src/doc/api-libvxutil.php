@@ -14,15 +14,15 @@ Vitalnix code base.</p>
 <b>int</b> vxutil_cryptpw(<b>const char *</b>key, <b>const char *</b>salt, <b>int</b> method, <b>char **</b>result);<br />
 <b>int</b> vxutil_genpw(<b>char *</b>dest, <b>int</b> size, <b>unsigned int</b> flags);<br />
 <b>int</b> vxutil_have_display(<b>void</b>);<br />
-<b>long</b> vxutil_now_iday(<b>void</b>);<br />
+<b>unsigned int</b> vxutil_now_iday(<b>void</b>);<br />
 <b>int</b> vxutil_only_digits(<b>const char *</b>s);<br />
 <b>char *</b>vxutil_propose_home(<b>char *</b>dest, <b>size_t</b> size, <b>const char *</b>base, <b>const char *</b>username, <b>unsigned int</b> level);<br />
 <b>char *</b>vxutil_propose_lname(<b>char *</b>dest, <b>size_t</b> size, <b>const char *</b>surname, <b>const char *</b>first_name);<br />
 <b>char *</b>vxutil_quote(<b>const char *</b>str, <b>unsigned int</b> dbl, <b>char **</b>fmp);<br />
 <b>int</b> vxutil_replace_run(<b>const char *</b>command, <b>const struct</b> HXoption <b>*</b>map);<br />
 <b>char *</b>vxutil_slurp_file(<b>const char *</b>filename);<br />
-<b>long</b> vxutil_string_iday(<b>const char *</b>date);<br />
-<b>long</b> vxutil_string_xday(<b>const char *</b>date);<br />
+<b>int</b> vxutil_string_iday(<b>const char *</b>date);<br />
+<b>int</b> vxutil_string_xday(<b>const char *</b>date);<br />
 <b>int</b> vxutil_valid_username(<b>const char *</b>username);<br />
 <b>char *</b>vxutil_vx3uuid(<b>const char *</b>full_name, <b>long</b> iday);
 </code></p>
