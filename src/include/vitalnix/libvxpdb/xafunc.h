@@ -11,7 +11,7 @@ extern "C" {
 /*
  *	INLINE FUNCTIONS
  */
-static inline int vxpdb_open(struct vxpdb_state *state, long flags)
+static inline int vxpdb_open(struct vxpdb_state *state, unsigned int flags)
 {
 	return state->vtable->open(state, flags);
 }
