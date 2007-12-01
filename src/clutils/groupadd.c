@@ -59,6 +59,11 @@ int main(int argc, const char **argv)
 	if (!groupadd_read_config() || !groupadd_get_options(&argc, &argv))
 		return E_OTHER;
 
+	if (argc < 2 || argv[1] == NULL) {
+		/* Group name is mandatory */
+		fprintf(stderr, "Error: Need to specify a group name\n");
+		return false;
+	}
 	group_name = argv[1];
 	if (!vxutil_valid_username(group_name)) {
 		fprintf(stderr, "\"%s\" is not a valid group name\n",
@@ -175,15 +180,7 @@ static bool groupadd_get_options(int *argc, const char ***argv)
 		HXOPT_TABLEEND,
 	};
 
-	if (HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) <= 0)
-		return false;
-	if (argv[1] == NULL) {
-		/* Group name is mandatory */
-		fprintf(stderr, "Error: Need to specify a group name\n");
-		return false;
-	}
-
-	return true;
+	return HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) > 0;
 }
 
 static bool groupadd_read_config(void)

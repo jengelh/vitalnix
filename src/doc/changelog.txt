@@ -7,3 +7,4 @@ SVN /trunk
 - [r548]: rename mdsync -> vxusersync
 - [r551]: add missing exit() calls for various show_version() functions
 - [r552]: fix mdckuuid segfault when -i parameter is missing
+- [r553]: fix argument presence checking in vxgroup{add,mod,del}

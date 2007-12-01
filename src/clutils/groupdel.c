@@ -60,6 +60,18 @@ int main(int argc, const char **argv)
 	if (!groupdel_read_config() || !groupdel_get_options(&argc, &argv))
 		return E_OTHER;
 
+	if (argc < 2 || argv[1] == NULL) {
+		/* Group name is mandatory */
+		fprintf(stderr, "Error: Need to specify a group name\n");
+		return false;
+	}
+	group_name = argv[1];
+	if (!vxutil_valid_username(group_name)) {
+		fprintf(stderr, "\"%s\" is not a valid group name\n",
+		        group_name);
+		return E_OTHER;
+	}
+
 	if ((db = vxpdb_load(database_name)) == NULL) {
 		fprintf(stderr, "Could not load database \"%s\": %s\n",
 		        database_name, strerror(errno));
@@ -171,15 +183,7 @@ static bool groupdel_get_options(int *argc, const char ***argv)
 		HXOPT_TABLEEND,
 	};
 
-	if (HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) <= 0)
-		return false;
-	if (argv[1] == NULL) {
-		/* Group name is mandatory */
-		fprintf(stderr, "You need to specify a group name.\n");
-		return false;
-	}
-
-	return true;
+	return HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) > 0;
 }
 
 static bool groupdel_read_config(void)
