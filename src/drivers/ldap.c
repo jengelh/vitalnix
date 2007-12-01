@@ -294,7 +294,7 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 	    rq->sp_max != PDB_DFL_KEEPMAX || rq->sp_warn != PDB_DFL_WARNAGE ||
 	    rq->sp_expire != PDB_NO_EXPIRE || rq->sp_inact != PDB_NO_INACTIVE)
 		object_classes[o++] = "shadowAccount";
-	if (rq->vs_uuid != NULL || rq->vs_pvgrp != NULL || rq->vs_defer > 0)
+	if (rq->vs_uuid != NULL || rq->vs_pvgrp != NULL || rq->vs_defer != 0)
 		object_classes[o++] = "vitalnixManagedAccount";
 	if (rq->sp_ntpasswd != NULL && state->domain_sid != NULL)
 		object_classes[o++] = "sambaSamAccount";
@@ -457,8 +457,8 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 			.mod_values = (char *[]){rq->vs_uuid, NULL},
 		};
 	}
-	if (rq->vs_defer > 0) {
-		snprintf(s_vs_defer, sizeof(s_vs_defer), "%lu", rq->vs_defer);
+	if (rq->vs_defer != 0) {
+		snprintf(s_vs_defer, sizeof(s_vs_defer), "%u", rq->vs_defer);
 		attr[a++] = (LDAPMod){
 			.mod_op     = LDAP_MOD_ADD,
 			.mod_type   = "vitalnixDeferTimer",
@@ -756,7 +756,7 @@ static int vxldap_usermod(struct vxpdb_state *vp, const char *name,
 		};
 	if (param->vs_defer != PDB_NO_CHANGE) {
 		snprintf(s_vs_defer, sizeof(s_vs_defer),
-		         "%lu", param->vs_defer);
+		         "%u", param->vs_defer);
 		attr[a++] = (LDAPMod){
 			.mod_op     = repl_add(attr_map.vitalnixDeferTimer),
 			.mod_type   = "vitalnixDeferTimer",
@@ -850,8 +850,6 @@ static void vxldap_copy_user(struct vxpdb_user *dest, LDAP *conn,
 			hmc_strasg(&dest->vs_uuid, *val);
 		else if (strcmp(attr, "vitalnixGroup") == 0)
 			hmc_strasg(&dest->vs_pvgrp, *val);
-		else if (strcmp(attr, "vitalnixDeferTimer") == 0)
-			dest->vs_defer = strtoul(*val, NULL, 0);
 		ldap_value_free(val);
 		ldap_memfree(attr);
 	}

@@ -207,8 +207,8 @@ static void d_ldif_users(struct vxpdb_state *db)
 				printf("vitalnixUUID: %s\n", user.vs_uuid);
 			if (user.vs_pvgrp != NULL)
 				printf("vitalnixGroup: %s\n", user.vs_pvgrp);
-			if (user.vs_defer > 0)
-				printf("vitalnixDeferTimer: %ld\n", user.vs_defer);
+			if (user.vs_defer != 0)
+				printf("vitalnixDeferTimer: %u\n", user.vs_defer);
 		}
 
 		printf("\n");
@@ -312,7 +312,7 @@ static void d_mysql_users(struct vxpdb_state *db)
 		if (Dump_what[DUMP_VXSHADOW] && (user.vs_uuid != NULL ||
 			user.vs_pvgrp != NULL || user.vs_defer != 0))
 			printf("insert into vxshadow values "
-			       "('%s','%s','%s',%ld);\n",
+			       "('%s','%s','%s',%u);\n",
 			       user.pw_name, user.vs_uuid, user.vs_pvgrp,
 			       user.vs_defer);
 	}
@@ -394,7 +394,7 @@ static void d_shadow(struct vxpdb_state *db)
 				continue;
 			if (user.vs_uuid != NULL || user.vs_pvgrp != NULL ||
 			    user.vs_defer != 0)
-				printf("%s:%s:%s:%ld\n", user.pw_name,
+				printf("%s:%s:%s:%u\n", user.pw_name,
 				       user.vs_uuid, user.vs_pvgrp,
 				       user.vs_defer);
 		}

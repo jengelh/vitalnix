@@ -320,7 +320,7 @@ static int vmysql_useradd(struct vxpdb_state *vp,
 	/* vxshadow part */
 	if (names->vs_table != NULL) {
 		ret = queryf(state->cn.handle, "insert into %s (%s) values "
-		      "('%S','%S','%s',%ld)", names->vs_table,
+		      "('%S','%S','%s',%u)", names->vs_table,
 		      names->csl_vxshadow, rq->pw_name, rq->vs_uuid,
 		      rq->vs_pvgrp, rq->vs_defer);
 		if (ret != 0) {
@@ -672,7 +672,7 @@ static inline void export_vxshadow(struct vxpdb_user *dest,
 	hmc_strasg(&dest->vs_uuid, in[1]);
 	hmc_strasg(&dest->vs_pvgrp, in[2]);
 	if (in[3] != NULL)
-		dest->vs_defer = strtol(in[3], NULL, 0);
+		dest->vs_defer = strtoul(in[3], NULL, 0);
 	return;
 }
 

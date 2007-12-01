@@ -66,7 +66,7 @@ struct vxpdb_user {
 
 	/* vxshadow part (vs_), used by libvxmdsync */
 	char *vs_uuid, *vs_pvgrp;
-	long vs_defer;
+	unsigned int vs_defer;
 
 	/* backend-specific private stuff */
 	void *be_priv;

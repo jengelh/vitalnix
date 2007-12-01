@@ -52,7 +52,7 @@ EXPORT_SYMBOL void mdsync_compare(struct mdsync_workspace *w)
 	struct vxpdb_user pwd = {};
 	struct vxeds_entry *eds;
 	bool analyze;
-	long defer = w->config.add_opts.defaults.vs_defer;
+	const unsigned int defer = w->config.add_opts.defaults.vs_defer;
 	void *travp;
 
 	users_proc = 0;
@@ -79,9 +79,9 @@ EXPORT_SYMBOL void mdsync_compare(struct mdsync_workspace *w)
 			/*
 			 * PDB user found in EDS: Keep, and remove from add_req
 			 */
-			decision = ACTION_UPDATE | ((pwd.vs_defer > 0) ?
+			decision = ACTION_UPDATE | ((pwd.vs_defer != 0) ?
 			           ACTION_DEFER_STOP : 0);
-		} else if (defer > 0) {
+		} else if (defer != 0) {
 			/* PDB user not found in EDS */
 			if (pwd.vs_defer == 0)
 				decision = ACTION_DEFER_START;

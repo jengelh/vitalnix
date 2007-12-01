@@ -50,7 +50,7 @@ void db_read_vxshadow(const char *file, struct HXdeque *dq)
 		u->vs_uuid  = xmlGetProp_2s(ptr, "uuid");
 		u->vs_pvgrp = xmlGetProp_2s(ptr, "pvgrp");
 		if ((defer = xmlGetProp_2s(ptr, "defer")) != NULL) {
-			u->vs_defer = strtol(defer, NULL, 0);
+			u->vs_defer = strtoul(defer, NULL, 0);
 			free(defer);
 		}
 	}
@@ -78,7 +78,7 @@ void db_write_vxshadow(FILE *fp, const struct vxpdb_user *u)
 				vxutil_quote(u->vs_pvgrp, VXQUOTE_XML, &fm));
 
 	if (u->vs_defer != 0)
-		fprintf(fp, " defer=\"%ld\"", u->vs_defer);
+		fprintf(fp, " defer=\"%u\"", u->vs_defer);
 
 	fprintf(fp, " />\n");
 	free(fm);
