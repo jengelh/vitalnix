@@ -16,7 +16,7 @@
 #include <time.h>
 #include <ldap.h>
 #include <vitalnix/compiler.h>
-#include <vitalnix/libvxdb/libvxpdb.h>
+#include <vitalnix/libvxdb/libvxdb.h>
 
 #define F_POSIXACCOUNT "objectClass=posixAccount"
 #define F_POSIXGROUP   "objectClass=posixGroup"

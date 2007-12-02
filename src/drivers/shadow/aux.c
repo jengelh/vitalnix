@@ -16,7 +16,7 @@
 #include <libHX.h>
 #include <vitalnix/config.h>
 #include "drivers/shadow/shadow.h"
-#include <vitalnix/libvxdb/libvxpdb.h>
+#include <vitalnix/libvxdb/libvxdb.h>
 
 unsigned int automatic_uid(struct shadow_state *state, unsigned int wanted)
 {

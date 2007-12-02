@@ -21,7 +21,7 @@
 #include <vitalnix/libvxcli/libvxcli.h>
 #include <vitalnix/libvxeds/libvxeds.h>
 #include <vitalnix/libvxmdsync/libvxmdsync.h>
-#include <vitalnix/libvxdb/libvxpdb.h>
+#include <vitalnix/libvxdb/libvxdb.h>
 #include <vitalnix/libvxdb/xafunc.h>
 
 /* Definitions */

@@ -19,7 +19,7 @@
 #include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
 #include "drivers/shadow/shadow.h"
-#include <vitalnix/libvxdb/libvxpdb.h>
+#include <vitalnix/libvxdb/libvxdb.h>
 #include <vitalnix/libvxutil/defines.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 

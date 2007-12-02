@@ -7,7 +7,7 @@
 #	include <cstdio>
 #endif
 #include <vitalnix/libvxdb/config.h>
-#include <vitalnix/libvxdb/libvxpdb.h>
+#include <vitalnix/libvxdb/libvxdb.h>
 
 #ifdef __cplusplus
 extern "C" {

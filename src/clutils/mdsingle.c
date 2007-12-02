@@ -22,7 +22,7 @@
 #include <vitalnix/libvxeds/libvxeds.h>
 #include <vitalnix/libvxmdsync/libvxmdsync.h>
 #include <vitalnix/libvxdb/config.h>
-#include <vitalnix/libvxdb/libvxpdb.h>
+#include <vitalnix/libvxdb/libvxdb.h>
 #include <vitalnix/libvxdb/xafunc.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 

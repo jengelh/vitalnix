@@ -15,7 +15,7 @@
 #include <string.h>
 #include <libHX.h>
 #include <vitalnix/compiler.h>
-#include <vitalnix/libvxdb/libvxpdb.h>
+#include <vitalnix/libvxdb/libvxdb.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
 #define NDSTRLEN(s) (((s) != NULL) ? strlen(s) + 1 : 0)

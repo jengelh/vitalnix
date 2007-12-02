@@ -21,7 +21,7 @@
 #include <libHX.h>
 #include <vitalnix/config.h>
 #include <vitalnix/compiler.h>
-#include <vitalnix/libvxdb/libvxpdb.h>
+#include <vitalnix/libvxdb/libvxdb.h>
 #include <vitalnix/libvxdb/xafunc.h>
 #ifdef HAVE_LASTLOG_H
 #	include <lastlog.h>

@@ -17,7 +17,7 @@
 #include <unistd.h>
 #include <libHX.h>
 #include "drivers/shadow/shadow.h"
-#include <vitalnix/libvxdb/libvxpdb.h>
+#include <vitalnix/libvxdb/libvxdb.h>
 
 /* Functions */
 static void db_flush_users(struct shadow_state *);

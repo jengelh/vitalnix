@@ -15,7 +15,7 @@
 #include <libHX.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
-#include <vitalnix/libvxdb/libvxpdb.h>
+#include <vitalnix/libvxdb/libvxdb.h>
 #include <vitalnix/libvxdb/xafunc.h>
 
 #define WR_OPEN(state)  ((state)->wr_mod.mh_state == STATE_OPEN)
