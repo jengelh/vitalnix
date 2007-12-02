@@ -138,7 +138,7 @@ extern void vxdb_group_nomodify(struct vxdb_group *);
 extern void vxdb_fix_vtable(struct vxdb_driver *);
 
 /*
- *	PDB.C
+ *	LOADER.C
  */
 extern struct vxdb_state *vxdb_load(const char *);
 extern void vxdb_unload(struct vxdb_state *);

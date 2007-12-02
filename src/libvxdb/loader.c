@@ -128,9 +128,9 @@ static int vxdb_config(struct opt *cf, unsigned int action,
 			HXOPT_TABLEEND,
 		};
 
-		/* If @name == "*", then read the database from libvxpdb.conf */
+		/* If @name == "*", then read the database from libvxdb.conf */
 		if (strcmp(L1_name, "*") == 0) {
-			HX_shconfig(CONFIG_SYSCONFDIR "/libvxpdb.conf", opt_database);
+			HX_shconfig(CONFIG_SYSCONFDIR "/libvxdb.conf", opt_database);
 			if (L2_name == NULL) {
 				HX_shconfig_free(opt_database);
 				return 0;

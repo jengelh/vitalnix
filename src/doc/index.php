@@ -22,12 +22,12 @@
 <ul>
   <li>Shell utilities (clutils)<br />
     <ul>
+      <li><a href="clutils-dbdump.php">vxdbdump</a></li>
+      <li><a href="clutils-dbinfo.php">vxdbinfo</a></li>
       <li><a href="clutils-mdfixuuid.php">mdfixuuid</a></li>
       <li><a href="clutils-mdpwlfmt.php">mdpwlfmt</a></li>
       <li><a href="clutils-mdsingle.php">mdsingle</a></li>
       <li><a href="clutils-mdsync.php">mdsync</a></li>
-      <li><a href="clutils-pdbdump.php">vxdbdump</a></li>
-      <li><a href="clutils-pdbinfo.php">vxdbinfo</a></li>
       <li><a href="clutils-randpw.php">randpw</a></li>
       <li><a href="clutils-tryauth.php">tryauth</a></li>
     </ul></li>
@@ -73,7 +73,7 @@
   <li><a href="api-libvxcgi.php">libvxcgi</a></li>
   <li><a href="api-libvxcli.php">libvxcli</a></li>
   <li><a href="api-libvxcore.php">libvxcore</a></li>
-  <li><a href="api-libvxpdb.php">libvxdb</a></li>
+  <li><a href="api-libvxdb.php">libvxdb</a></li>
   <li><a href="api-libvxeds.php">libvxeds</a></li>
   <li><a href="api-libvxmdfmt.php">libvxmdfmt</a></li>
   <li><a href="api-libvxmdsync.php">libvxmdsync</a></li>

@@ -62,7 +62,7 @@ already existing modules to see what they do, and possibly how they do it.</p>
 <p class="block">The <code>open</code> function should open a connection to the
 password database (if applicable), or do whatever is equivalent to prepare
 further actions. The <code>flags</code> parameter is explained in <a
-href="api-libvxpdb.html">the libvxdb API</a>. Some sample code:</p>
+href="api-libvxdb.html">the libvxdb API</a>. Some sample code:</p>
 
 <p class="code"><code><b>int</b> our_open(<b>struct</b> vxdb_state <b>*</b>mip, <b>long</b> flags) {<br />
 &nbsp; &nbsp; <b>struct</b> our_state <b>*</b>state <b>=</b> mip-&gt;state;<br />

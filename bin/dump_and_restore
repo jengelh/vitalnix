@@ -19,14 +19,14 @@ if [ "$type" == "ldap" ]; then
 		echo "Error with ldapsearch/ldapdelete" >&2;
 		exit 1;
 	fi;
-	pdbdump -t ldif -w passwd,shadow -u "$UIDRANGE" | \
+	vxdbdump -t ldif -w passwd,shadow -u "$UIDRANGE" | \
 	ldapadd -D "$BINDDN" -ZZx -w "$PASSWORD";
 	if [ "$?" -ne 0 ]; then
-		echo "Error with pdbdump/ldapadd" >&2;
+		echo "Error with vxdbdump/ldapadd" >&2;
 		exit 1;
 	fi;
 elif [ "$type" == "mysql" ]; then
-	pdbdump -t mysql -u "$UIDRANGE" -w passwd,shadow | \
+	vxdbdump -t mysql -u "$UIDRANGE" -w passwd,shadow | \
 	mysql -p"$PASSWORD" nss_mysql;
 	if [ "$?" -ne 0 ]; then
 		echo "Error updating MYSQL tables" >&2;
@@ -35,7 +35,7 @@ elif [ "$type" == "mysql" ]; then
 elif [ "$type" == "rmysql" ]; then
 	# push replication
 	for host in "$@"; do
-		pdbdump -t mysql -u "$UIDRANGE" -w passwd,shadow | \
+		vxdbdump -t mysql -u "$UIDRANGE" -w passwd,shadow | \
 		ssh -T "$host" "mysql -p'$PASSWORD' nss_mysql";
 		if [ "$?" -ne 0 ]; then
 			echo "Error updating MYSQL tables on $host" >&2;

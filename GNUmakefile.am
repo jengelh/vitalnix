@@ -43,7 +43,7 @@ sbin_PROGRAMS   += steelmill
 endif
 EXTRA_PROGRAMS  := ihlogon testcase
 level1_libs     := libvxcgi.la libvxcli.la libvxcore.la libvxutil.la
-level2_libs     := libvxeds.la libvxmdfmt.la libvxpdb.la
+level2_libs     := libvxdb.la libvxeds.la libvxmdfmt.la
 lib_LTLIBRARIES := \
 	${level1_libs} ${level2_libs} libvxmdsync.la \
 	drv_dummy.la drv_ldap.la drv_mmd.la drv_mysql.la drv_nss.la \
@@ -88,42 +88,42 @@ cgi_vwquota_LDADD    := -lHX libvxcgi.la libvxutil.la
 #
 ihlogon_SOURCES    := src/clutils/ihlogon.c
 ihlogon_CFLAGS     := -DSTANDALONE_DEBUG
-ihlogon_LDADD      := -lHX -lpam libvxpdb.la
+ihlogon_LDADD      := -lHX -lpam libvxdb.la
 mdckuuid_SOURCES   := src/clutils/mdckuuid.c
-mdckuuid_LDADD     := -lHX libvxeds.la libvxpdb.la libvxutil.la
+mdckuuid_LDADD     := -lHX libvxeds.la libvxdb.la libvxutil.la
 mdfixuuid_SOURCES  := src/clutils/mdfixuuid.c
-mdfixuuid_LDADD    := -lHX libvxpdb.la libvxutil.la
+mdfixuuid_LDADD    := -lHX libvxdb.la libvxutil.la
 mdpwlfmt_SOURCES   := src/clutils/mdpwlfmt.c
 mdpwlfmt_LDADD     := -lHX libvxmdfmt.la
 mdsingle_SOURCES   := src/clutils/mdsingle.c
-mdsingle_LDADD     := -lHX libvxcli.la libvxmdsync.la libvxpdb.la
-vxdbdump_SOURCES   := src/clutils/pdbdump.c
-vxdbdump_LDADD     := libvxpdb.la libvxutil.la
-vxdbinfo_SOURCES   := src/clutils/pdbinfo.c
-vxdbinfo_LDADD     := -lHX libvxpdb.la
+mdsingle_LDADD     := -lHX libvxcli.la libvxmdsync.la libvxdb.la
+vxdbdump_SOURCES   := src/clutils/dbdump.c
+vxdbdump_LDADD     := libvxdb.la libvxutil.la
+vxdbinfo_SOURCES   := src/clutils/dbinfo.c
+vxdbinfo_LDADD     := -lHX libvxdb.la
 vxfinger_SOURCES   := src/clutils/finger.c
-vxfinger_LDADD     := -lHX libvxpdb.la
+vxfinger_LDADD     := -lHX libvxdb.la
 vxrandpw_SOURCES   := src/clutils/randpw.c
-vxrandpw_LDADD     := libvxpdb.la
+vxrandpw_LDADD     := libvxdb.la
 vxtryauth_SOURCES  := src/clutils/tryauth.c
 vxtryauth_LDADD    := -lHX -lpam libvxcgi.la
 vxuseradd_SOURCES  := src/clutils/useradd.c
-vxuseradd_LDADD    := -lHX libvxpdb.la libvxutil.la
+vxuseradd_LDADD    := -lHX libvxdb.la libvxutil.la
 vxusermod_SOURCES  := src/clutils/usermod.c
-vxusermod_LDADD    := -lHX libvxpdb.la libvxutil.la
+vxusermod_LDADD    := -lHX libvxdb.la libvxutil.la
 vxuserdel_SOURCES  := src/clutils/userdel.c
-vxuserdel_LDADD    := -lHX libvxpdb.la libvxutil.la
+vxuserdel_LDADD    := -lHX libvxdb.la libvxutil.la
 vxusersync_SOURCES := src/clutils/mdsync.c
-vxusersync_LDADD   := -lHX libvxcli.la libvxeds.la libvxmdsync.la libvxpdb.la
+vxusersync_LDADD   := -lHX libvxcli.la libvxeds.la libvxmdsync.la libvxdb.la
 vxgroupadd_SOURCES := src/clutils/groupadd.c
-vxgroupadd_LDADD   := -lHX libvxpdb.la libvxutil.la
+vxgroupadd_LDADD   := -lHX libvxdb.la libvxutil.la
 vxgroupmod_SOURCES := src/clutils/groupmod.c
-vxgroupmod_LDADD   := -lHX libvxpdb.la libvxutil.la
+vxgroupmod_LDADD   := -lHX libvxdb.la libvxutil.la
 vxgroupdel_SOURCES := src/clutils/groupdel.c
-vxgroupdel_LDADD   := -lHX libvxpdb.la libvxutil.la
+vxgroupdel_LDADD   := -lHX libvxdb.la libvxutil.la
 
 pam_ihlogon_la_SOURCES := src/clutils/ihlogon.c
-pam_ihlogon_la_LIBADD  := -lHX -lpam libvxpdb.la
+pam_ihlogon_la_LIBADD  := -lHX -lpam libvxdb.la
 pam_ihlogon_la_LDFLAGS := ${regular_SOLDFLAGS} -module -avoid-version
 
 #
@@ -137,7 +137,7 @@ vxcconfig_SOURCES := src/devutil/vxcconfig.c
 #	src/drivers/dummy
 #
 drv_dummy_la_SOURCES := src/drivers/dummy.c
-drv_dummy_la_LIBADD  := libvxcore.la libvxpdb.la
+drv_dummy_la_LIBADD  := libvxcore.la libvxdb.la
 drv_dummy_la_LDFLAGS := ${regular_SOLDFLAGS} -module -avoid-version
 
 #
@@ -145,30 +145,30 @@ drv_dummy_la_LDFLAGS := ${regular_SOLDFLAGS} -module -avoid-version
 #
 drv_ldap_la_CFLAGS  := ${AM_CFLAGS} -DLDAP_DEPRECATED
 drv_ldap_la_SOURCES := src/drivers/ldap.c
-drv_ldap_la_LIBADD  := -lldap_r -lpthread libvxcore.la libvxpdb.la
+drv_ldap_la_LIBADD  := -lldap_r -lpthread libvxcore.la libvxdb.la
 drv_ldap_la_LDFLAGS := ${regular_SOLDFLAGS} -module -avoid-version
 
 #
 #	src/drivers/mmd
 #
 drv_mmd_la_SOURCES := src/drivers/mmd.c
-drv_mmd_la_LIBADD  := -lHX libvxcore.la libvxpdb.la
+drv_mmd_la_LIBADD  := -lHX libvxcore.la libvxdb.la
 drv_mmd_la_LDFLAGS := ${regular_SOLDFLAGS} -module -avoid-version
 
 #
 #	src/drivers/nss
 #
 drv_nss_la_SOURCES  := src/drivers/nss.c
-drv_nss_la_LIBADD   := -lHX libvxcore.la libvxpdb.la
+drv_nss_la_LIBADD   := -lHX libvxcore.la libvxdb.la
 drv_nss_la_LDFLAGS  := ${regular_SOLDFLAGS} -module -avoid-version
 drv_nss1_la_SOURCES := src/drivers/nss1.c
-drv_nss1_la_LIBADD  := -lHX libvxcore.la libvxpdb.la libvxutil.la
+drv_nss1_la_LIBADD  := -lHX libvxcore.la libvxdb.la libvxutil.la
 drv_nss1_la_LDFLAGS := ${regular_SOLDFLAGS} -module -avoid-version
 
 #
 #	src/drivers/mysql
 #
-drv_mysql_la_LIBADD  := libvxcore.la libvxpdb.la libvxutil.la
+drv_mysql_la_LIBADD  := libvxcore.la libvxdb.la libvxutil.la
 drv_mysql_la_LDFLAGS := ${regular_SOLDFLAGS} ${libmysql_LIBS} -module -avoid-version
 drv_mysql_la_CFLAGS  := ${AM_CFLAGS} ${libmysql_CFLAGS}
 drv_mysql_la_SOURCES := src/drivers/mysql/mysql.c
@@ -176,7 +176,7 @@ drv_mysql_la_SOURCES := src/drivers/mysql/mysql.c
 #
 #	src/drivers/shadow
 #
-drv_shadow_la_LIBADD  := -lHX libvxcore.la libvxpdb.la
+drv_shadow_la_LIBADD  := -lHX libvxcore.la libvxdb.la
 drv_shadow_la_LDFLAGS := ${regular_SOLDFLAGS} ${libxml_LIBS} -module -avoid-version
 drv_shadow_la_CFLAGS  := ${AM_CFLAGS} ${libxml_CFLAGS}
 drv_shadow_la_SOURCES := \
@@ -237,7 +237,7 @@ libvxmdfmt_la_SOURCES := \
 #
 #	src/libvxmdsync
 #
-libvxmdsync_la_LIBADD  := -lHX libvxeds.la libvxpdb.la libvxutil.la
+libvxmdsync_la_LIBADD  := -lHX libvxeds.la libvxdb.la libvxutil.la
 libvxmdsync_la_LDFLAGS := ${regular_SOLDFLAGS}
 libvxmdsync_la_SOURCES := \
 	src/libvxmdsync/base.c \
@@ -246,11 +246,11 @@ libvxmdsync_la_SOURCES := \
 	src/libvxmdsync/read_file.c
 
 #
-#	src/libvxpdb
+#	src/libvxdb
 #
-libvxpdb_la_LIBADD  := -lHX libvxcore.la libvxutil.la
-libvxpdb_la_LDFLAGS := ${regular_SOLDFLAGS}
-libvxpdb_la_SOURCES := \
+libvxdb_la_LIBADD  := -lHX libvxcore.la libvxutil.la
+libvxdb_la_LDFLAGS := ${regular_SOLDFLAGS}
+libvxdb_la_SOURCES := \
 	src/libvxdb/aux.c \
 	src/libvxdb/config.c \
 	src/libvxdb/dummy.c \
@@ -290,7 +290,7 @@ lpacct_scv_SOURCES    := \
 #
 #	src/steelmill
 #
-steelmill_LDADD    := -lHX libvxeds.la libvxmdfmt.la libvxmdsync.la libvxpdb.la
+steelmill_LDADD    := -lHX libvxeds.la libvxmdfmt.la libvxmdsync.la libvxdb.la
 steelmill_LDFLAGS  := ${libwx_LIBS}
 steelmill_CXXFLAGS := ${AM_CXXFLAGS} ${libwx_CFLAGS} -fno-strict-aliasing
 steelmill_SOURCES  := \
