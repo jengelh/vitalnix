@@ -42,12 +42,12 @@ struct mdsync_workspace {
 	void (*report)(unsigned int, const struct mdsync_workspace *,
 		unsigned int, unsigned int);
 
-	struct vxpdb_state *database;
+	struct vxdb_state *database;
 	hmc_t *output_data;
 	unsigned int num_grp;
 
 	/* private to mdsync */
-	struct vxpdb_group dest_group;
+	struct vxdb_group dest_group;
 	FILE *logfile;
 	struct HXdeque *defer_start, *defer_wait, *defer_stop, *delete_now;
 	struct HXbtree *add_req;

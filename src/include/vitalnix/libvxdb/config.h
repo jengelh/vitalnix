@@ -1,5 +1,5 @@
-#ifndef _VITALNIX_LIBVXPDB_CONFIG_H
-#define _VITALNIX_LIBVXPDB_CONFIG_H 1
+#ifndef _VITALNIX_LIBVXDB_CONFIG_H
+#define _VITALNIX_LIBVXDB_CONFIG_H 1
 
 #include <vitalnix/libvxdb/libvxdb.h>
 
@@ -11,7 +11,7 @@ struct vxconfig_useradd {
 	char *master_preadd, *master_postadd, *user_preadd, *user_postadd;
 	char *default_group, *home_base, *skel_dir;
 	unsigned int create_home, split_level, umask;
-	struct vxpdb_user defaults;
+	struct vxdb_user defaults;
 };
 
 struct vxconfig_usermod {
@@ -33,4 +33,4 @@ extern int vxconfig_read_userdel(const char *, struct vxconfig_userdel *);
 } /* extern "C" */
 #endif
 
-#endif /* _VITALNIX_LIBVXPDB_CONFIG_H */
+#endif /* _VITALNIX_LIBVXDB_CONFIG_H */

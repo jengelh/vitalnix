@@ -39,8 +39,8 @@ enum {
 };
 
 /* Functions */
-static int groupmod_main2(struct vxpdb_state *);
-static int groupmod_main3(struct vxpdb_state *, struct HXbtree *);
+static int groupmod_main2(struct vxdb_state *);
+static int groupmod_main3(struct vxdb_state *, struct HXbtree *);
 static bool groupmod_get_options(int *, const char ***);
 static bool groupmod_read_config(void);
 static void groupmod_show_version(const struct HXoptcb *);
@@ -48,7 +48,7 @@ static void groupmod_show_version(const struct HXoptcb *);
 /* Variables */
 static unsigned int allow_dup     = false;
 static const char *new_group_name = NULL;
-static unsigned int new_group_id  = PDB_NOGID;
+static unsigned int new_group_id  = VXDB_NOGID;
 static const char *action_before  = NULL;
 static const char *action_after   = NULL;
 static const char *database_name  = "*";
@@ -57,7 +57,7 @@ static const char *group_name;
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv)
 {
-	struct vxpdb_state *db;
+	struct vxdb_state *db;
 	int ret;
 
 	if (!groupmod_read_config() || !groupmod_get_options(&argc, &argv))
@@ -80,23 +80,23 @@ int main(int argc, const char **argv)
 		return E_OTHER;
 	}
 
-	if ((db = vxpdb_load(database_name)) == NULL) {
+	if ((db = vxdb_load(database_name)) == NULL) {
 		fprintf(stderr, "Could not load database \"%s\": %s\n",
 		        database_name, strerror(errno));
 		return E_OPEN;
 	}
 
 	ret = groupmod_main2(db);
-	vxpdb_unload(db);
+	vxdb_unload(db);
 	return ret;
 }
 
-static int groupmod_main2(struct vxpdb_state *db)
+static int groupmod_main2(struct vxdb_state *db)
 {
 	struct HXbtree *ext_catalog;
 	int ret;
 
-	if ((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0) {
+	if ((ret = vxdb_open(db, VXDB_WRLOCK)) <= 0) {
 		fprintf(stderr, "Could not open database: %s\n",
 		        strerror(-ret));
 		return E_OPEN;
@@ -105,16 +105,16 @@ static int groupmod_main2(struct vxpdb_state *db)
 	ext_catalog = HXformat_init();
 	ret = groupmod_main3(db, ext_catalog);
 	HXformat_free(ext_catalog);
-	vxpdb_close(db);
+	vxdb_close(db);
 	return ret;
 }
 
-static int groupmod_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
+static int groupmod_main3(struct vxdb_state *db, struct HXbtree *ext_catalog)
 {
-	struct vxpdb_group current = {}, mod_request;
+	struct vxdb_group current = {}, mod_request;
 	int ret;
 
-	if ((ret = vxpdb_getgrnam(db, group_name, &current)) < 0) {
+	if ((ret = vxdb_getgrnam(db, group_name, &current)) < 0) {
 		fprintf(stderr, "Error querying database: %s\n",
 		        strerror(-ret));
 		return E_OTHER;
@@ -123,8 +123,8 @@ static int groupmod_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
 		return E_NOEXIST;
 	}
 
-	if (new_group_id != PDB_NOGID && new_group_id != current.gr_gid &&
-	    !allow_dup && vxpdb_getgrgid(db, new_group_id, NULL) > 0) {
+	if (new_group_id != VXDB_NOGID && new_group_id != current.gr_gid &&
+	    !allow_dup && vxdb_getgrgid(db, new_group_id, NULL) > 0) {
 		/* If GID has changed */
 		fprintf(stderr, "A group with GID %u already exists."
 		        " Use -o to override.\n", new_group_id);
@@ -133,7 +133,7 @@ static int groupmod_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
 
 	if (new_group_name != NULL &&
 	    strcmp(current.gr_name, new_group_name) != 0 &&
-	    vxpdb_getgrnam(db, new_group_name, NULL) > 0) {
+	    vxdb_getgrnam(db, new_group_name, NULL) > 0) {
 		/* If name has changed */
 		fprintf(stderr, "A group with that name (\"%s\") already "
 		        "exists.\n", new_group_name);
@@ -150,7 +150,7 @@ static int groupmod_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
 	mod_request.gr_name = static_cast(char *, new_group_name);
 	mod_request.gr_gid  = new_group_id;
 
-	if ((ret = vxpdb_groupmod(db, group_name, &mod_request)) <= 0) {
+	if ((ret = vxdb_groupmod(db, group_name, &mod_request)) <= 0) {
 		fprintf(stderr, "Error: Group updating failed: %s\n",
 		        strerror(-ret));
 		return E_UPDATE;

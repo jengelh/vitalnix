@@ -20,7 +20,7 @@
 
 struct HXdeque *db_read_groups(FILE *fp)
 {
-	struct vxpdb_group *g;
+	struct vxdb_group *g;
 	struct HXdeque *dq;
 	char *ln = NULL;
 
@@ -41,7 +41,7 @@ struct HXdeque *db_read_groups(FILE *fp)
 			continue;
 		}
 
-		if ((g = malloc(sizeof(struct vxpdb_group))) == NULL)
+		if ((g = malloc(sizeof(struct vxdb_group))) == NULL)
 			return NULL;
 
 		g->gr_name = HX_strdup(data[0]);
@@ -63,7 +63,7 @@ void db_flush_groups(struct shadow_state *state)
 	fseek(state->fgroup.fp, 0, SEEK_SET);
 
 	while (travp != NULL) {
-		const struct vxpdb_group *g = travp->ptr;
+		const struct vxdb_group *g = travp->ptr;
 		const char **pr = g->be_priv;
 
 		fprintf(fp, "%s:x:%u:", g->gr_name, g->gr_gid);

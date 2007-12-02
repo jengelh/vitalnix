@@ -1,5 +1,5 @@
 /*
- *	libvxpdb/dummy.c - VTABLE crypt
+ *	libvxdb/dummy.c - VTABLE crypt
  *	Copyright © CC Computer Consultants GmbH, 2005 - 2007
  *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
  *
@@ -15,133 +15,133 @@
 
 #define ALIAS(orig, new) static typeof(orig) new __attribute__((alias(#orig)))
 
-static int vdummy_init(struct vxpdb_state *vp, const char *config_file)
+static int vdummy_init(struct vxdb_state *vp, const char *config_file)
 {
 	return 1;
 }
 
-static int vdummy_open(struct vxpdb_state *vp, unsigned int flags)
+static int vdummy_open(struct vxdb_state *vp, unsigned int flags)
 {
 	return 1;
 }
 
-static void vdummy_vT(struct vxpdb_state *vp)
+static void vdummy_vT(struct vxdb_state *vp)
 {
 	return;
 }
 ALIAS(vdummy_vT, vdummy_close);
 ALIAS(vdummy_vT, vdummy_exit);
 
-static int vdummy_iT(struct vxpdb_state *vp)
+static int vdummy_iT(struct vxdb_state *vp)
 {
 	return 1;
 }
 ALIAS(vdummy_iT, vdummy_lock);
 ALIAS(vdummy_iT, vdummy_unlock);
 
-static long vdummy_modctl(struct vxpdb_state *vp, unsigned int command, ...)
+static long vdummy_modctl(struct vxdb_state *vp, unsigned int command, ...)
 {
 	switch (command) {
-		case PDB_COUNT_USERS:
-		case PDB_COUNT_GROUPS:
+		case VXDB_COUNT_USERS:
+		case VXDB_COUNT_GROUPS:
 			return 0;
 	}
 	return -ENOSYS;
 }
 
-static int vdummy_getpwuid(struct vxpdb_state *vp, unsigned int uid,
-    struct vxpdb_user *dest)
+static int vdummy_getpwuid(struct vxdb_state *vp, unsigned int uid,
+    struct vxdb_user *dest)
 {
 	return 0;
 }
 
-static int vdummy_getpwnam(struct vxpdb_state *vp, const char *name,
-    struct vxpdb_user *dest)
+static int vdummy_getpwnam(struct vxdb_state *vp, const char *name,
+    struct vxdb_user *dest)
 {
 	return 0;
 }
 
-static int vdummy_useradd(struct vxpdb_state *vp, const struct vxpdb_user *user)
+static int vdummy_useradd(struct vxdb_state *vp, const struct vxdb_user *user)
 {
 	return -EPERM;
 }
 
-static int vdummy_usermod(struct vxpdb_state *vp, const char *name,
-    const struct vxpdb_user *newstuff)
+static int vdummy_usermod(struct vxdb_state *vp, const char *name,
+    const struct vxdb_user *newstuff)
 {
 	return -EPERM;
 }
 
-static int vdummy_userdel(struct vxpdb_state *vp, const char *name)
+static int vdummy_userdel(struct vxdb_state *vp, const char *name)
 {
 	return -EPERM;
 }
 
-static void *vdummy_usertrav_init(struct vxpdb_state *vp)
+static void *vdummy_usertrav_init(struct vxdb_state *vp)
 {
 	return vp;
 }
 
-static int vdummy_usertrav_walk(struct vxpdb_state *vp, void *ptr,
-    struct vxpdb_user *result)
+static int vdummy_usertrav_walk(struct vxdb_state *vp, void *ptr,
+    struct vxdb_user *result)
 {
 	return 0;
 }
 
-static void vdummy_usertrav_free(struct vxpdb_state *vp, void *ptr)
+static void vdummy_usertrav_free(struct vxdb_state *vp, void *ptr)
 {
 	return;
 }
 
-static int vdummy_getgrgid(struct vxpdb_state *vp, unsigned int gid,
-    struct vxpdb_group *dest)
+static int vdummy_getgrgid(struct vxdb_state *vp, unsigned int gid,
+    struct vxdb_group *dest)
 {
 	return 0;
 }
 
-static int vdummy_getgrnam(struct vxpdb_state *vp, const char *name,
-    struct vxpdb_group *dest)
+static int vdummy_getgrnam(struct vxdb_state *vp, const char *name,
+    struct vxdb_group *dest)
 {
 	return 0;
 }
 
-static int vdummy_groupadd(struct vxpdb_state *vp, const struct vxpdb_group *u)
+static int vdummy_groupadd(struct vxdb_state *vp, const struct vxdb_group *u)
 {
 	return -EPERM;
 }
 
-static int vdummy_groupmod(struct vxpdb_state *vp, const char *name,
-    const struct vxpdb_group *newstuff)
+static int vdummy_groupmod(struct vxdb_state *vp, const char *name,
+    const struct vxdb_group *newstuff)
 {
 	return -EPERM;
 }
 
-static int vdummy_groupdel(struct vxpdb_state *vp, const char *name)
+static int vdummy_groupdel(struct vxdb_state *vp, const char *name)
 {
 	return -EPERM;
 }
 
-static void *vdummy_grouptrav_init(struct vxpdb_state *vp)
+static void *vdummy_grouptrav_init(struct vxdb_state *vp)
 {
 	return vp;
 }
 
-static int vdummy_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
-    struct vxpdb_group *result)
+static int vdummy_grouptrav_walk(struct vxdb_state *vp, void *ptr,
+    struct vxdb_group *result)
 {
 	return 0;
 }
 
-static void vdummy_grouptrav_free(struct vxpdb_state *vp, void *ptr)
+static void vdummy_grouptrav_free(struct vxdb_state *vp, void *ptr)
 {
 	return;
 }
 
 /*
- * vxpdb_fix_vtable -
+ * vxdb_fix_vtable -
  * @m:	vtable
  */
-EXPORT_SYMBOL void vxpdb_fix_vtable(struct vxpdb_driver *m)
+EXPORT_SYMBOL void vxdb_fix_vtable(struct vxdb_driver *m)
 {
 #define SET(x) if ((m->x) == NULL) (m->x) = vdummy_##x;
 	SET(init);

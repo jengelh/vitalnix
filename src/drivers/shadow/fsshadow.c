@@ -27,7 +27,7 @@
  */
 void db_read_shadow(FILE *fp, struct HXdeque *dq)
 {
-	struct vxpdb_user *u = NULL;
+	struct vxdb_user *u = NULL;
 	char *ln = NULL;
 
 	if (dq->items == 0)
@@ -44,7 +44,7 @@ void db_read_shadow(FILE *fp, struct HXdeque *dq)
 		memset(data, 0, sizeof(data));
 		HX_split5(ln, ":", ARRAY_SIZE(data), data);
 		if (*data[0] == '\0' ||
-		    (u = lookup_user(dq, data[0], PDB_NOUID)) == NULL)
+		    (u = lookup_user(dq, data[0], VXDB_NOUID)) == NULL)
 			/* orphaned entry */
 			continue;
 
@@ -65,7 +65,7 @@ void db_read_shadow(FILE *fp, struct HXdeque *dq)
 	return;
 }
 
-void db_write_shadow(FILE *fp, const struct vxpdb_user *u)
+void db_write_shadow(FILE *fp, const struct vxdb_user *u)
 {
 	const char *password = (u->sp_passwd != NULL) ? u->sp_passwd : "!";
 	const char **priv = u->be_priv;
@@ -73,10 +73,10 @@ void db_write_shadow(FILE *fp, const struct vxpdb_user *u)
 	fprintf(fp, "%s:%s:%ld:%ld:%ld:%ld:", u->pw_name, password,
 	        u->sp_lastchg, u->sp_min, u->sp_max, u->sp_warn);
 
-	if (u->sp_expire != PDB_NO_EXPIRE)
+	if (u->sp_expire != VXDB_NO_EXPIRE)
 		fprintf(fp, "%ld", u->sp_expire);
 	fprintf(fp, ":");
-	if (u->sp_inact != PDB_NO_INACTIVE)
+	if (u->sp_inact != VXDB_NO_INACTIVE)
 		fprintf(fp, "%ld", u->sp_inact);
 	fprintf(fp, ":");
 	if (priv != NULL && priv[1] != NULL)

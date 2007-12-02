@@ -31,7 +31,7 @@ enum open_state {
 struct module_handle {
 	char *mh_name;
 	enum open_state mh_state;
-	struct vxpdb_state *mh_instance;
+	struct vxdb_state *mh_instance;
 };
 
 struct multi_state {
@@ -53,8 +53,8 @@ struct vxmmd_trav {
 };
 
 /* Functions */
-static unsigned int vxmmd_autouid(struct vxpdb_state *, unsigned int);
-static unsigned int vxmmd_autogid(struct vxpdb_state *, unsigned int);
+static unsigned int vxmmd_autouid(struct vxdb_state *, unsigned int);
+static unsigned int vxmmd_autogid(struct vxdb_state *, unsigned int);
 
 static int modules_construct(struct multi_state *);
 static int modules_open(struct multi_state *, unsigned int);
@@ -63,7 +63,7 @@ static void modules_destruct(struct multi_state *);
 static void read_config(struct multi_state *, const char *);
 
 //-----------------------------------------------------------------------------
-static int vxmmd_init(struct vxpdb_state *vp, const char *config_file)
+static int vxmmd_init(struct vxdb_state *vp, const char *config_file)
 {
 	struct multi_state *state;
 
@@ -81,7 +81,7 @@ static int vxmmd_init(struct vxpdb_state *vp, const char *config_file)
 	return -EINVAL;
 }
 
-static int vxmmd_open(struct vxpdb_state *vp, unsigned int flags)
+static int vxmmd_open(struct vxdb_state *vp, unsigned int flags)
 {
 	struct multi_state *state = vp->state;
 	int ret;
@@ -92,14 +92,14 @@ static int vxmmd_open(struct vxpdb_state *vp, unsigned int flags)
 	return 1;
 }
 
-static void vxmmd_close(struct vxpdb_state *vp)
+static void vxmmd_close(struct vxdb_state *vp)
 {
 	struct multi_state *state = vp->state;
 	modules_close(state);
 	return;
 }
 
-static void vxmmd_exit(struct vxpdb_state *vp)
+static void vxmmd_exit(struct vxdb_state *vp)
 {
 	struct multi_state *state = vp->state;
 	modules_destruct(state);
@@ -115,14 +115,14 @@ static unsigned int vxmmd_modctl_count(const struct multi_state *state,
 	int ret;
 
 	if (WR_OPEN(state)) {
-		ret = vxpdb_modctl(WR_MOD(state), command);
+		ret = vxdb_modctl(WR_MOD(state), command);
 		if (ret >= 0)
 			number += ret;
 	}
 
 	for (trav = state->rd_mod->first; trav != NULL; trav = trav->next) {
 		const struct module_handle *mh = trav->ptr;
-		ret = vxpdb_modctl(mh->mh_instance, command);
+		ret = vxdb_modctl(mh->mh_instance, command);
 		if (ret >= 0)
 			number += ret;
 	}
@@ -130,100 +130,100 @@ static unsigned int vxmmd_modctl_count(const struct multi_state *state,
 	return number;
 }
 
-static long vxmmd_modctl(struct vxpdb_state *vp, unsigned int command, ...)
+static long vxmmd_modctl(struct vxdb_state *vp, unsigned int command, ...)
 {
 	const struct multi_state *state = vp->state;
 	errno = 0;
 
 	switch (command) {
-		case PDB_FLUSH:
+		case VXDB_FLUSH:
 			if (WR_OPEN(state))
-				return vxpdb_modctl(WR_MOD(state), command);
+				return vxdb_modctl(WR_MOD(state), command);
 			return 1;
-		case PDB_COUNT_USERS:
+		case VXDB_COUNT_USERS:
 			return vxmmd_modctl_count(state, command);
-		case PDB_COUNT_GROUPS:
+		case VXDB_COUNT_GROUPS:
 			return vxmmd_modctl_count(state, command);
-		case PDB_NEXTUID_SYS:
-			return vxmmd_autouid(vp, PDB_AUTOUID_SYS);
-		case PDB_NEXTUID:
-			return vxmmd_autouid(vp, PDB_AUTOUID);
-		case PDB_NEXTGID_SYS:
-			return vxmmd_autogid(vp, PDB_AUTOGID_SYS);
-		case PDB_NEXTGID:
-			return vxmmd_autogid(vp, PDB_AUTOGID);
+		case VXDB_NEXTUID_SYS:
+			return vxmmd_autouid(vp, VXDB_AUTOUID_SYS);
+		case VXDB_NEXTUID:
+			return vxmmd_autouid(vp, VXDB_AUTOUID);
+		case VXDB_NEXTGID_SYS:
+			return vxmmd_autogid(vp, VXDB_AUTOGID_SYS);
+		case VXDB_NEXTGID:
+			return vxmmd_autogid(vp, VXDB_AUTOGID);
 	}
 
 	return -ENOSYS;
 }
 
-static int vxmmd_lock(struct vxpdb_state *vp)
+static int vxmmd_lock(struct vxdb_state *vp)
 {
 	const struct multi_state *state = vp->state;
 	if (WR_OPEN(state))
-		return vxpdb_lock(WR_MOD(state));
+		return vxdb_lock(WR_MOD(state));
 	return 1;
 }
 
-static int vxmmd_unlock(struct vxpdb_state *vp)
+static int vxmmd_unlock(struct vxdb_state *vp)
 {
 	const struct multi_state *state = vp->state;
 	if (WR_OPEN(state))
-		return vxpdb_unlock(WR_MOD(state));
+		return vxdb_unlock(WR_MOD(state));
 	return 1;
 }
 
 //-----------------------------------------------------------------------------
-static int vxmmd_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
+static int vxmmd_useradd(struct vxdb_state *vp, const struct vxdb_user *rq)
 {
 	const struct multi_state *state = vp->state;
-	struct vxpdb_user rq2 = {};
+	struct vxdb_user rq2 = {};
 	long uid;
 	int ret;
 
 	if (!WR_OPEN(state))
 		return -EROFS;
 
-	if (rq->pw_uid != PDB_AUTOUID && rq->pw_uid != PDB_AUTOUID_SYS)
-		return vxpdb_useradd(WR_MOD(state), rq);
+	if (rq->pw_uid != VXDB_AUTOUID && rq->pw_uid != VXDB_AUTOUID_SYS)
+		return vxdb_useradd(WR_MOD(state), rq);
 
 	uid = vxmmd_autouid(vp, rq->pw_uid);
 	if (uid == -ENOSPC)
 		return -ENOSPC;
 
-	vxpdb_user_copy(&rq2, rq);
+	vxdb_user_copy(&rq2, rq);
 	rq2.pw_uid = uid;
-	ret = vxpdb_useradd(WR_MOD(state), &rq2);
-	vxpdb_user_free(&rq2, false);
+	ret = vxdb_useradd(WR_MOD(state), &rq2);
+	vxdb_user_free(&rq2, false);
 	return ret;
 }
 
-static int vxmmd_usermod(struct vxpdb_state *vp, const char *name,
-    const struct vxpdb_user *newstuff)
+static int vxmmd_usermod(struct vxdb_state *vp, const char *name,
+    const struct vxdb_user *newstuff)
 {
 	const struct multi_state *state = vp->state;
 	if (WR_OPEN(state))
-		return vxpdb_usermod(WR_MOD(state), name, newstuff);
+		return vxdb_usermod(WR_MOD(state), name, newstuff);
 	return -EROFS;
 }
 
-static int vxmmd_userdel(struct vxpdb_state *vp, const char *name)
+static int vxmmd_userdel(struct vxdb_state *vp, const char *name)
 {
 	const struct multi_state *state = vp->state;
 	if (WR_OPEN(state))
-		return vxpdb_userdel(WR_MOD(state), name);
+		return vxdb_userdel(WR_MOD(state), name);
 	return -EROFS;
 }
 
-static int vxmmd_getpwuid(struct vxpdb_state *vp, unsigned int uid,
-    struct vxpdb_user *dest)
+static int vxmmd_getpwuid(struct vxdb_state *vp, unsigned int uid,
+    struct vxdb_user *dest)
 {
 	const struct HXdeque_node *rd_node;
 	const struct multi_state *state = vp->state;
 	int ret;
 
 	if (WR_OPEN(state)) {
-		ret = vxpdb_getpwuid(WR_MOD(state), uid, dest);
+		ret = vxdb_getpwuid(WR_MOD(state), uid, dest);
 		if (ret > 0)
 			return ret;
 	}
@@ -232,7 +232,7 @@ static int vxmmd_getpwuid(struct vxpdb_state *vp, unsigned int uid,
 	    rd_node = rd_node->next)
 	{
 		const struct module_handle *mh = rd_node->ptr;
-		ret = vxpdb_getpwuid(mh->mh_instance, uid, dest);
+		ret = vxdb_getpwuid(mh->mh_instance, uid, dest);
 		if (ret > 0)
 			return ret;
 	}
@@ -240,15 +240,15 @@ static int vxmmd_getpwuid(struct vxpdb_state *vp, unsigned int uid,
 	return 0;
 }
 
-static int vxmmd_getpwnam(struct vxpdb_state *vp, const char *user,
-    struct vxpdb_user *dest)
+static int vxmmd_getpwnam(struct vxdb_state *vp, const char *user,
+    struct vxdb_user *dest)
 {
 	const struct HXdeque_node *rd_node;
 	const struct multi_state *state = vp->state;
 	int ret;
 
 	if (WR_OPEN(state)) {
-		ret = vxpdb_getpwnam(WR_MOD(state), user, dest);
+		ret = vxdb_getpwnam(WR_MOD(state), user, dest);
 		if (ret > 0)
 			return ret;
 	}
@@ -257,7 +257,7 @@ static int vxmmd_getpwnam(struct vxpdb_state *vp, const char *user,
 	    rd_node = rd_node->next)
 	{
 		const struct module_handle *mh = rd_node->ptr;
-		ret = vxpdb_getpwnam(mh->mh_instance, user, dest);
+		ret = vxdb_getpwnam(mh->mh_instance, user, dest);
 		if (ret > 0)
 			return ret;
 	}
@@ -265,7 +265,7 @@ static int vxmmd_getpwnam(struct vxpdb_state *vp, const char *user,
 	return 0;
 }
 
-static void *vxmmd_usertrav_init(struct vxpdb_state *vp)
+static void *vxmmd_usertrav_init(struct vxdb_state *vp)
 {
 	const struct multi_state *state = vp->state;
 	struct vxmmd_trav trav = {};
@@ -273,7 +273,7 @@ static void *vxmmd_usertrav_init(struct vxpdb_state *vp)
 	trav.rd_mod = state->rd_mod->first;
 	if (WR_OPEN(state)) {
 		trav.wr_mod = true;
-		trav.itrav  = vxpdb_usertrav_init(WR_MOD(state));
+		trav.itrav  = vxdb_usertrav_init(WR_MOD(state));
 		if (trav.itrav == NULL)
 			trav.wr_mod = false;
 	}
@@ -281,18 +281,18 @@ static void *vxmmd_usertrav_init(struct vxpdb_state *vp)
 	return HX_memdup(&trav, sizeof(trav));
 }
 
-static int vxmmd_usertrav_walk(struct vxpdb_state *vp, void *ptr,
-    struct vxpdb_user *dest)
+static int vxmmd_usertrav_walk(struct vxdb_state *vp, void *ptr,
+    struct vxdb_user *dest)
 {
 	const struct multi_state *state = vp->state;
 	struct vxmmd_trav *trav = ptr;
 	int ret;
 
 	if (trav->wr_mod) {
-		ret = vxpdb_usertrav_walk(WR_MOD(state), trav->itrav, dest);
+		ret = vxdb_usertrav_walk(WR_MOD(state), trav->itrav, dest);
 		if (ret != 0)
 			return ret;
-		vxpdb_usertrav_free(WR_MOD(state), trav->itrav);
+		vxdb_usertrav_free(WR_MOD(state), trav->itrav);
 		trav->wr_mod = false;
 		trav->itrav  = NULL;
 	}
@@ -301,77 +301,77 @@ static int vxmmd_usertrav_walk(struct vxpdb_state *vp, void *ptr,
 		const struct module_handle *mh = trav->rd_mod->ptr;
 
 		if (trav->itrav == NULL) {
-			trav->itrav = vxpdb_usertrav_init(mh->mh_instance);
+			trav->itrav = vxdb_usertrav_init(mh->mh_instance);
 			if (trav->itrav == NULL)
 				continue;
 		}
 
-		ret = vxpdb_usertrav_walk(mh->mh_instance, trav->itrav, dest);
+		ret = vxdb_usertrav_walk(mh->mh_instance, trav->itrav, dest);
 		if (ret != 0)
 			return ret;
-		vxpdb_usertrav_free(mh->mh_instance, trav->itrav);
+		vxdb_usertrav_free(mh->mh_instance, trav->itrav);
 	}
 
 	return 0;
 }
 
-static void vxmmd_usertrav_free(struct vxpdb_state *vp, void *ptr)
+static void vxmmd_usertrav_free(struct vxdb_state *vp, void *ptr)
 {
 	free(ptr);
 	return;
 }
 
 //-----------------------------------------------------------------------------
-static int vxmmd_groupadd(struct vxpdb_state *vp, const struct vxpdb_group *rq)
+static int vxmmd_groupadd(struct vxdb_state *vp, const struct vxdb_group *rq)
 {
 	const struct multi_state *state = vp->state;
-	struct vxpdb_group rq2 = {};
+	struct vxdb_group rq2 = {};
 	long gid;
 	int ret;
 
 	if (!WR_OPEN(state))
 		return -EROFS;
 
-	if (rq->gr_gid != PDB_AUTOGID && rq->gr_gid != PDB_AUTOGID_SYS)
-		return vxpdb_groupadd(WR_MOD(state), rq);
+	if (rq->gr_gid != VXDB_AUTOGID && rq->gr_gid != VXDB_AUTOGID_SYS)
+		return vxdb_groupadd(WR_MOD(state), rq);
 
 	gid = vxmmd_autogid(vp, rq->gr_gid);
 	if (gid == -ENOSPC)
 		return -ENOSPC;
 
-	vxpdb_group_copy(&rq2, rq);
+	vxdb_group_copy(&rq2, rq);
 	rq2.gr_gid = gid;
-	ret = vxpdb_groupadd(WR_MOD(state), &rq2);
-	vxpdb_group_free(&rq2, false);
+	ret = vxdb_groupadd(WR_MOD(state), &rq2);
+	vxdb_group_free(&rq2, false);
 	return ret;
 }
 
-static int vxmmd_groupmod(struct vxpdb_state *vp, const char *name,
-    const struct vxpdb_group *newstuff)
+static int vxmmd_groupmod(struct vxdb_state *vp, const char *name,
+    const struct vxdb_group *newstuff)
 {
 	const struct multi_state *state = vp->state;
 	if (WR_OPEN(state))
-		return vxpdb_groupmod(WR_MOD(state), name, newstuff);
+		return vxdb_groupmod(WR_MOD(state), name, newstuff);
 	return -EROFS;
 }
 
-static int vxmmd_groupdel(struct vxpdb_state *vp, const char *name)
+static int vxmmd_groupdel(struct vxdb_state *vp, const char *name)
 {
 	const struct multi_state *state = vp->state;
 	if (WR_OPEN(state))
-		return vxpdb_groupdel(WR_MOD(state), name);
+		return vxdb_groupdel(WR_MOD(state), name);
 	return -EROFS;
 }
 
-static int vxmmd_getgrgid(struct vxpdb_state *vp, unsigned int gid,
-    struct vxpdb_group *dest)
+static int vxmmd_getgrgid(struct vxdb_state *vp, unsigned int gid,
+    struct vxdb_group *dest)
 {
 	const struct HXdeque_node *rd_node;
 	const struct multi_state *state = vp->state;
 	int ret;
 
 	if (WR_OPEN(state)) {
-		ret = vxpdb_getgrgid(WR_MOD(state), gid, dest);
+		ret = vxdb_getgrgid(WR_MOD(state), gid, dest);
 		if (ret > 0)
 			return ret;
 	}
@@ -380,7 +380,7 @@ static int vxmmd_getgrgid(struct vxpdb_state *vp, unsigned int gid,
 	    rd_node = rd_node->next)
 	{
 		const struct module_handle *mh = rd_node->ptr;
-		ret = vxpdb_getgrgid(mh->mh_instance, gid, dest);
+		ret = vxdb_getgrgid(mh->mh_instance, gid, dest);
 		if (ret > 0)
 			return ret;
 	}
@@ -388,15 +388,15 @@ static int vxmmd_getgrgid(struct vxpdb_state *vp, unsigned int gid,
 	return 0;
 }
 
-static int vxmmd_getgrnam(struct vxpdb_state *vp, const char *group,
-    struct vxpdb_group *dest)
+static int vxmmd_getgrnam(struct vxdb_state *vp, const char *group,
+    struct vxdb_group *dest)
 {
 	const struct HXdeque_node *rd_node;
 	const struct multi_state *state = vp->state;
 	int ret;
 
 	if (WR_OPEN(state)) {
-		ret = vxpdb_getgrnam(WR_MOD(state), group, dest);
+		ret = vxdb_getgrnam(WR_MOD(state), group, dest);
 		if (ret > 0)
 			return ret;
 	}
@@ -405,7 +405,7 @@ static int vxmmd_getgrnam(struct vxpdb_state *vp, const char *group,
 	    rd_node = rd_node->next)
 	{
 		const struct module_handle *mh = rd_node->ptr;
-		ret = vxpdb_getgrnam(mh->mh_instance, group, dest);
+		ret = vxdb_getgrnam(mh->mh_instance, group, dest);
 		if (ret > 0)
 			return ret;
 	}
@@ -413,7 +413,7 @@ static int vxmmd_getgrnam(struct vxpdb_state *vp, const char *group,
 	return 0;
 }
 
-static void *vxmmd_grouptrav_init(struct vxpdb_state *vp)
+static void *vxmmd_grouptrav_init(struct vxdb_state *vp)
 {
 	const struct multi_state *state = vp->state;
 	struct vxmmd_trav trav = {};
@@ -421,7 +421,7 @@ static void *vxmmd_grouptrav_init(struct vxpdb_state *vp)
 	trav.rd_mod = state->rd_mod->first;
 	if (WR_OPEN(state)) {
 		trav.wr_mod = true;
-		trav.itrav  = vxpdb_grouptrav_init(WR_MOD(state));
+		trav.itrav  = vxdb_grouptrav_init(WR_MOD(state));
 		if (trav.itrav == NULL)
 			trav.wr_mod = false;
 	}
@@ -429,18 +429,18 @@ static void *vxmmd_grouptrav_init(struct vxpdb_state *vp)
 	return HX_memdup(&trav, sizeof(trav));
 }
 
-static int vxmmd_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
-    struct vxpdb_group *dest)
+static int vxmmd_grouptrav_walk(struct vxdb_state *vp, void *ptr,
+    struct vxdb_group *dest)
 {
 	const struct multi_state *state = vp->state;
 	struct vxmmd_trav *trav = ptr;
 	int ret;
 
 	if (trav->wr_mod) {
-		ret = vxpdb_grouptrav_walk(WR_MOD(state), trav->itrav, dest);
+		ret = vxdb_grouptrav_walk(WR_MOD(state), trav->itrav, dest);
 		if (ret != 0)
 			return ret;
-		vxpdb_grouptrav_free(WR_MOD(state), trav->itrav);
+		vxdb_grouptrav_free(WR_MOD(state), trav->itrav);
 		trav->wr_mod = false;
 		trav->itrav  = NULL;
 	}
@@ -449,39 +449,39 @@ static int vxmmd_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
 		const struct module_handle *mh = trav->rd_mod->ptr;
 
 		if (trav->itrav == NULL) {
-			trav->itrav = vxpdb_grouptrav_init(mh->mh_instance);
+			trav->itrav = vxdb_grouptrav_init(mh->mh_instance);
 			if (trav->itrav == NULL)
 				continue;
 		}
 
-		ret = vxpdb_grouptrav_walk(mh->mh_instance, trav->itrav, dest);
+		ret = vxdb_grouptrav_walk(mh->mh_instance, trav->itrav, dest);
 		if (ret != 0)
 			return ret;
-		vxpdb_grouptrav_free(mh->mh_instance, trav->itrav);
+		vxdb_grouptrav_free(mh->mh_instance, trav->itrav);
 	}
 
 	return 0;
 }
 
-static void vxmmd_grouptrav_free(struct vxpdb_state *vp, void *ptr)
+static void vxmmd_grouptrav_free(struct vxdb_state *vp, void *ptr)
 {
 	free(ptr);
 	return;
 }
 
 //-----------------------------------------------------------------------------
-static unsigned int vxmmd_autouid(struct vxpdb_state *vp, unsigned int wanted)
+static unsigned int vxmmd_autouid(struct vxdb_state *vp, unsigned int wanted)
 {
 	const struct multi_state *state = vp->state;
 	unsigned int accept, min, max;
-	struct vxpdb_user dest = {};
+	struct vxdb_user dest = {};
 	int high = -1;
 	void *trav;
 
-	if (wanted == PDB_AUTOUID_SYS) {
+	if (wanted == VXDB_AUTOUID_SYS) {
 		min = accept = 1;
 		max = state->uid_min - 1;
-	} else if (wanted == PDB_AUTOUID) {
+	} else if (wanted == VXDB_AUTOUID) {
 		min = accept = state->uid_min;
 		max = state->uid_max;
 	} else {
@@ -500,7 +500,7 @@ static unsigned int vxmmd_autouid(struct vxpdb_state *vp, unsigned int wanted)
 
 	/* If the successor id is not outside the boundaries, take it. */
 	if (high >= 0 && high < max) {
-		vxpdb_user_free(&dest, false);
+		vxdb_user_free(&dest, false);
 		return high + 1;
 	}
 
@@ -517,27 +517,27 @@ static unsigned int vxmmd_autouid(struct vxpdb_state *vp, unsigned int wanted)
 		}
 		vxmmd_usertrav_free(vp, trav);
 		if (!used) {
-			vxpdb_user_free(&dest, false);
+			vxdb_user_free(&dest, false);
 			return accept;
 		}
 		++accept;
 	}
-	vxpdb_user_free(&dest, false);
+	vxdb_user_free(&dest, false);
 	return -ENOSPC;
 }
 
-static unsigned int vxmmd_autogid(struct vxpdb_state *vp, unsigned int wanted)
+static unsigned int vxmmd_autogid(struct vxdb_state *vp, unsigned int wanted)
 {
 	const struct multi_state *state = vp->state;
 	unsigned int accept, min, max;
-	struct vxpdb_group dest = {};
+	struct vxdb_group dest = {};
 	int high = -1;
 	void *trav;
 
-	if (wanted == PDB_AUTOGID_SYS) {
+	if (wanted == VXDB_AUTOGID_SYS) {
 		min = accept = 1;
 		max = state->gid_min - 1;
-	} else if (wanted == PDB_AUTOGID) {
+	} else if (wanted == VXDB_AUTOGID) {
 		min = accept = state->gid_min;
 		max = state->gid_max;
 	} else {
@@ -556,7 +556,7 @@ static unsigned int vxmmd_autogid(struct vxpdb_state *vp, unsigned int wanted)
 
 	/* If the successor id is not outside the boundaries, take it. */
 	if (high >= 0 && high < max) {
-		vxpdb_group_free(&dest, false);
+		vxdb_group_free(&dest, false);
 		return high + 1;
 	}
 
@@ -573,12 +573,12 @@ static unsigned int vxmmd_autogid(struct vxpdb_state *vp, unsigned int wanted)
 		}
 		vxmmd_grouptrav_free(vp, trav);
 		if (!used) {
-			vxpdb_group_free(&dest, false);
+			vxdb_group_free(&dest, false);
 			return accept;
 		}
 		++accept;
 	}
-	vxpdb_group_free(&dest, false);
+	vxdb_group_free(&dest, false);
 	return -ENOSPC;
 }
 
@@ -594,7 +594,7 @@ static int modules_construct(struct multi_state *state)
 		struct module_handle mh;
 
 		mh.mh_name = *name;
-		if ((mh.mh_instance = vxpdb_load(*name)) == NULL)
+		if ((mh.mh_instance = vxdb_load(*name)) == NULL)
 			goto out;
 
 		mh.mh_state = STATE_LOADED;
@@ -604,7 +604,7 @@ static int modules_construct(struct multi_state *state)
 
 	state->wr_mod.mh_name     = state->wrmod_str;
 	state->wr_mod.mh_state    = STATE_OUT;
-	state->wr_mod.mh_instance = vxpdb_load(state->wr_mod.mh_name);
+	state->wr_mod.mh_instance = vxdb_load(state->wr_mod.mh_name);
 	state->wrmod_str          = NULL;
 	if (state->wr_mod.mh_instance == NULL) {
 		ret = 0;
@@ -625,14 +625,14 @@ static int modules_open(struct multi_state *state, unsigned int flags)
 	const struct HXdeque_node *node;
 	int ret;
 
-	ret = vxpdb_open(state->wr_mod.mh_instance, flags);
+	ret = vxdb_open(state->wr_mod.mh_instance, flags);
 	if (ret <= 0)
 		return ret;
 	state->wr_mod.mh_state = STATE_OPEN;
 
 	for (node = state->rd_mod->first; node != NULL; node = node->next) {
 		struct module_handle *mh = node->ptr;
-		ret = vxpdb_open(mh->mh_instance, flags & ~PDB_WRLOCK);
+		ret = vxdb_open(mh->mh_instance, flags & ~VXDB_WRLOCK);
 		if (ret <= 0) {
 			modules_close(state);
 			return ret;
@@ -650,12 +650,12 @@ static void modules_close(struct multi_state *state)
 	for (node = state->rd_mod->first; node != NULL; node = node->next) {
 		struct module_handle *mod = node->ptr;
 		if (mod->mh_state == STATE_OPEN)
-			vxpdb_close(mod->mh_instance);
+			vxdb_close(mod->mh_instance);
 		mod->mh_state = STATE_LOADED;
 	}
 
 	if (WR_OPEN(state)) {
-		vxpdb_close(WR_MOD(state));
+		vxdb_close(WR_MOD(state));
 		state->wr_mod.mh_state = STATE_LOADED;
 	}
 
@@ -669,13 +669,13 @@ static void modules_destruct(struct multi_state *state)
 	for (node = state->rd_mod->first; node != NULL; node = node->next) {
 		struct module_handle *mod = node->ptr;
 		if (mod->mh_state == STATE_LOADED) {
-			vxpdb_unload(mod->mh_instance);
+			vxdb_unload(mod->mh_instance);
 			mod->mh_state = STATE_OUT;
 		}
 	}
 
 	if (state->wr_mod.mh_state == STATE_LOADED) {
-		vxpdb_unload(WR_MOD(state));
+		vxdb_unload(WR_MOD(state));
 		state->wr_mod.mh_state = STATE_OUT;
 		free(state->wr_mod.mh_name);
 	}
@@ -705,7 +705,7 @@ static void read_config(struct multi_state *state, const char *file)
 	return;
 }
 
-EXPORT_SYMBOL struct vxpdb_driver THIS_MODULE = {
+EXPORT_SYMBOL struct vxdb_driver THIS_MODULE = {
 	.name           = "Multiple Module driver",
 	.desc           = "Logically combines databases",
 	.init           = vxmmd_init,

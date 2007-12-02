@@ -46,7 +46,7 @@ struct ldap_trav {
 };
 
 /* Functions */
-static void vxldap_close(struct vxpdb_state *);
+static void vxldap_close(struct vxdb_state *);
 
 /* Variables */
 static const char *const no_attrs[] = {"", NULL};
@@ -95,7 +95,7 @@ static void vxldap_read_config(struct ldap_state *state, const char *file,
 	return;
 }
 
-static int vxldap_init(struct vxpdb_state *vp, const char *config_file)
+static int vxldap_init(struct vxdb_state *vp, const char *config_file)
 {
 	struct ldap_state *state;
 
@@ -156,7 +156,7 @@ static int vxldap_get_rid(struct ldap_state *state)
 	return state->domain_sid != NULL && state->domain_algoridbase != 0;
 }
 
-static int vxldap_open(struct vxpdb_state *vp, unsigned int flags)
+static int vxldap_open(struct vxdb_state *vp, unsigned int flags)
 {
 	struct ldap_state *state = vp->state;
 	int ret;
@@ -173,7 +173,7 @@ static int vxldap_open(struct vxpdb_state *vp, unsigned int flags)
 	ret = LDAP_MAXINT;
 	ret = ldap_set_option(state->conn, LDAP_OPT_SIZELIMIT, &ret);
 
-	if (flags & PDB_WRLOCK) {
+	if (flags & VXDB_WRLOCK) {
 		if (ret != LDAP_SUCCESS) {
 			fprintf(stderr, "Could not raise search limit to maximum, but we need it!\n");
 			vxldap_close(vp);
@@ -195,14 +195,14 @@ static int vxldap_open(struct vxpdb_state *vp, unsigned int flags)
 	return 1;
 }
 
-static void vxldap_close(struct vxpdb_state *vp)
+static void vxldap_close(struct vxdb_state *vp)
 {
 	struct ldap_state *state = vp->state;
 	ldap_unbind_ext(state->conn, NULL, NULL);
 	return;
 }
 
-static void vxldap_exit(struct vxpdb_state *vp)
+static void vxldap_exit(struct vxdb_state *vp)
 {
 	struct ldap_state *state = vp->state;
 	vxldap_read_config(state, NULL, true);
@@ -232,15 +232,15 @@ static unsigned int vxldap_count(LDAP *conn, const char *base,
 	return count;
 }
 
-static long vxldap_modctl(struct vxpdb_state *vp, unsigned int command, ...)
+static long vxldap_modctl(struct vxdb_state *vp, unsigned int command, ...)
 {
 	struct ldap_state *state = vp->state;
 	errno = 0;
 	switch (command) {
-		case PDB_COUNT_USERS:
+		case VXDB_COUNT_USERS:
 			return vxldap_count(state->conn, state->user_suffix,
 			       F_POSIXACCOUNT);
-		case PDB_COUNT_GROUPS:
+		case VXDB_COUNT_GROUPS:
 			return vxldap_count(state->conn, state->group_suffix,
 			       F_POSIXGROUP);
 	}
@@ -272,7 +272,7 @@ static inline int vxldap_uid_to_sid(struct ldap_state *state, char *sid,
 	       USER_RID_TYPE);
 }
 
-static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
+static int vxldap_useradd(struct vxdb_state *vp, const struct vxdb_user *rq)
 {
 	struct ldap_state *state = vp->state;
 	char s_pw_uid[ZU_32], s_pw_gid[ZU_32], s_sp_last[ZU_32];
@@ -290,9 +290,9 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 
 	object_classes[o++] = "account";
 	object_classes[o++] = "posixAccount";
-	if (rq->sp_lastchg > 0 || rq->sp_min != PDB_DFL_KEEPMIN ||
-	    rq->sp_max != PDB_DFL_KEEPMAX || rq->sp_warn != PDB_DFL_WARNAGE ||
-	    rq->sp_expire != PDB_NO_EXPIRE || rq->sp_inact != PDB_NO_INACTIVE)
+	if (rq->sp_lastchg > 0 || rq->sp_min != VXDB_DFL_KEEPMIN ||
+	    rq->sp_max != VXDB_DFL_KEEPMAX || rq->sp_warn != VXDB_DFL_WARNAGE ||
+	    rq->sp_expire != VXDB_NO_EXPIRE || rq->sp_inact != VXDB_NO_INACTIVE)
 		object_classes[o++] = "shadowAccount";
 	if (rq->vs_uuid != NULL || rq->vs_pvgrp != NULL || rq->vs_defer != 0)
 		object_classes[o++] = "vitalnixManagedAccount";
@@ -312,7 +312,7 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 	};
 
 	/* posixAccount */
-	/* FIXME: Handle PDB_AUTOUID */
+	/* FIXME: Handle VXDB_AUTOUID */
 	snprintf(s_pw_uid, sizeof(s_pw_uid), "%u",
 	         static_cast(unsigned int, rq->pw_uid));
 	attr[a++] = (LDAPMod){
@@ -375,7 +375,7 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 			.mod_values = (char *[]){s_sp_last, NULL},
 		};
 	}
-	if (rq->sp_min != PDB_DFL_KEEPMIN) {
+	if (rq->sp_min != VXDB_DFL_KEEPMIN) {
 		snprintf(s_sp_min, sizeof(s_sp_min), "%lu", rq->sp_min);
 		attr[a++] = (LDAPMod){
 			.mod_op     = LDAP_MOD_ADD,
@@ -383,7 +383,7 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 			.mod_values = (char *[]){s_sp_min, NULL},
 		};
 	}
-	if (rq->sp_max != PDB_DFL_KEEPMAX) {
+	if (rq->sp_max != VXDB_DFL_KEEPMAX) {
 		snprintf(s_sp_max, sizeof(s_sp_max), "%lu", rq->sp_max);
 		attr[a++] = (LDAPMod){
 			.mod_op     = LDAP_MOD_ADD,
@@ -391,7 +391,7 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 			.mod_values = (char *[]){s_sp_max, NULL},
 		};
 	}
-	if (rq->sp_warn != PDB_DFL_WARNAGE) {
+	if (rq->sp_warn != VXDB_DFL_WARNAGE) {
 		snprintf(s_sp_warn, sizeof(s_sp_warn), "%lu", rq->sp_warn);
 		attr[a++] = (LDAPMod){
 			.mod_op     = LDAP_MOD_ADD,
@@ -399,7 +399,7 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 			.mod_values = (char *[]){s_sp_warn, NULL},
 		};
 	}
-	if (rq->sp_expire != PDB_NO_EXPIRE) {
+	if (rq->sp_expire != VXDB_NO_EXPIRE) {
 		snprintf(s_sp_expire, sizeof(s_sp_expire), "%lu", rq->sp_expire);
 		attr[a++] = (LDAPMod){
 			.mod_op     = LDAP_MOD_ADD,
@@ -407,7 +407,7 @@ static int vxldap_useradd(struct vxpdb_state *vp, const struct vxpdb_user *rq)
 			.mod_values = (char *[]){s_sp_expire, NULL},
 		};
 	}
-	if (rq->sp_inact != PDB_NO_INACTIVE) {
+	if (rq->sp_inact != VXDB_NO_INACTIVE) {
 		snprintf(s_sp_inact, sizeof(s_sp_inact), "%lu", rq->sp_inact);
 		attr[a++] = (LDAPMod){
 			.mod_op     = LDAP_MOD_ADD,
@@ -587,8 +587,8 @@ static int vxldap_usermod2(struct ldap_state *state, hmc_t *old_dn,
 
 #define repl_add(x) ((x) ? LDAP_MOD_REPLACE : LDAP_MOD_ADD)
 
-static int vxldap_usermod(struct vxpdb_state *vp, const char *name,
-    const struct vxpdb_user *param)
+static int vxldap_usermod(struct vxdb_state *vp, const char *name,
+    const struct vxdb_user *param)
 {
 	struct ldap_state *state = vp->state;
 	char s_pw_uid[ZU_32], s_pw_gid[ZU_32], s_sp_last[ZU_32];
@@ -608,7 +608,7 @@ static int vxldap_usermod(struct vxpdb_state *vp, const char *name,
 		return -ENOENT;
 
 	/* posixAccount */
-	if (param->pw_uid != PDB_NO_CHANGE) {
+	if (param->pw_uid != VXDB_NO_CHANGE) {
 		snprintf(s_pw_uid, sizeof(s_pw_uid), "%u", param->pw_uid);
 		attr[a++] = (LDAPMod){
 			.mod_op     = LDAP_MOD_REPLACE,
@@ -616,7 +616,7 @@ static int vxldap_usermod(struct vxpdb_state *vp, const char *name,
 			.mod_values = (char *[]){s_pw_uid, NULL},
 		};
 	}
-	if (param->pw_gid != PDB_NO_CHANGE) {
+	if (param->pw_gid != VXDB_NO_CHANGE) {
 		snprintf(s_pw_gid, sizeof(s_pw_gid), "%u", param->pw_gid);
 		attr[a++] = (LDAPMod){
 			.mod_op     = LDAP_MOD_REPLACE,
@@ -659,17 +659,18 @@ static int vxldap_usermod(struct vxpdb_state *vp, const char *name,
 	}
 
 	/* shadowAccount */
-	if (!attr_map.shadowAccount && (param->sp_lastchg != PDB_NO_CHANGE ||
-	    param->sp_min != PDB_NO_CHANGE || param->sp_max != PDB_NO_CHANGE ||
-	    param->sp_warn != PDB_NO_CHANGE ||
-	    param->sp_expire != PDB_NO_CHANGE ||
-	    param->sp_inact != PDB_NO_CHANGE))
+	if (!attr_map.shadowAccount && (param->sp_lastchg != VXDB_NO_CHANGE ||
+	    param->sp_min != VXDB_NO_CHANGE ||
+	    param->sp_max != VXDB_NO_CHANGE ||
+	    param->sp_warn != VXDB_NO_CHANGE ||
+	    param->sp_expire != VXDB_NO_CHANGE ||
+	    param->sp_inact != VXDB_NO_CHANGE))
 		attr[a++] = (LDAPMod){
 			.mod_op     = LDAP_MOD_ADD,
 			.mod_type   = "objectClass",
 			.mod_values = (char *[]){"shadowAccount", NULL},
 		};
-	if (param->sp_lastchg != PDB_NO_CHANGE) {
+	if (param->sp_lastchg != VXDB_NO_CHANGE) {
 		snprintf(s_sp_last, sizeof(s_sp_last), "%lu", param->sp_lastchg);
 		attr[a++] = (LDAPMod){
 			.mod_op     = repl_add(attr_map.shadowLastChange),
@@ -677,7 +678,7 @@ static int vxldap_usermod(struct vxpdb_state *vp, const char *name,
 			.mod_values = (char *[]){s_sp_last, NULL},
 		};
 	}
-	if (param->sp_min != PDB_NO_CHANGE) {
+	if (param->sp_min != VXDB_NO_CHANGE) {
 		snprintf(s_sp_min, sizeof(s_sp_min), "%lu", param->sp_min);
 		attr[a++] = (LDAPMod){
 			.mod_op     = repl_add(attr_map.shadowMin),
@@ -685,7 +686,7 @@ static int vxldap_usermod(struct vxpdb_state *vp, const char *name,
 			.mod_values = (char *[]){s_sp_min, NULL},
 		};
 	}
-	if (param->sp_max != PDB_NO_CHANGE) {
+	if (param->sp_max != VXDB_NO_CHANGE) {
 		snprintf(s_sp_max, sizeof(s_sp_max), "%lu", param->sp_max);
 		attr[a++] = (LDAPMod){
 			.mod_op     = repl_add(attr_map.shadowMax),
@@ -693,7 +694,7 @@ static int vxldap_usermod(struct vxpdb_state *vp, const char *name,
 			.mod_values = (char *[]){s_sp_max, NULL},
 		};
 	}
-	if (param->sp_warn != PDB_NO_CHANGE) {
+	if (param->sp_warn != VXDB_NO_CHANGE) {
 		snprintf(s_sp_warn, sizeof(s_sp_warn), "%lu", param->sp_warn);
 		attr[a++] = (LDAPMod){
 			.mod_op     = repl_add(attr_map.shadowWarning),
@@ -701,7 +702,7 @@ static int vxldap_usermod(struct vxpdb_state *vp, const char *name,
 			.mod_values = (char *[]){s_sp_warn, NULL},
 		};
 	}
-	if (param->sp_expire != PDB_NO_CHANGE) {
+	if (param->sp_expire != VXDB_NO_CHANGE) {
 		snprintf(s_sp_expire, sizeof(s_sp_expire),
 		         "%lu", param->sp_expire);
 		attr[a++] = (LDAPMod){
@@ -710,7 +711,7 @@ static int vxldap_usermod(struct vxpdb_state *vp, const char *name,
 			.mod_values = (char *[]){s_sp_expire, NULL},
 		};
 	}
-	if (param->sp_inact != PDB_NO_CHANGE) {
+	if (param->sp_inact != VXDB_NO_CHANGE) {
 		snprintf(s_sp_inact, sizeof(s_sp_inact),
 		         "%lu", param->sp_inact);
 		attr[a++] = (LDAPMod){
@@ -736,7 +737,7 @@ static int vxldap_usermod(struct vxpdb_state *vp, const char *name,
 
 	/* vitalnixManagedAccount */
 	if (!attr_map.vitalnixManagedAccount && (param->vs_uuid != NULL ||
-	    param->vs_pvgrp != NULL || param->vs_defer != PDB_NO_CHANGE))
+	    param->vs_pvgrp != NULL || param->vs_defer != VXDB_NO_CHANGE))
 		attr[a++] = (LDAPMod){
 			.mod_op     = LDAP_MOD_ADD,
 			.mod_type   = "objectClass",
@@ -754,7 +755,7 @@ static int vxldap_usermod(struct vxpdb_state *vp, const char *name,
 			.mod_type   = "vitalnixGroup",
 			.mod_values = (char *[]){param->vs_pvgrp, NULL},
 		};
-	if (param->vs_defer != PDB_NO_CHANGE) {
+	if (param->vs_defer != VXDB_NO_CHANGE) {
 		snprintf(s_vs_defer, sizeof(s_vs_defer),
 		         "%u", param->vs_defer);
 		attr[a++] = (LDAPMod){
@@ -783,7 +784,7 @@ static int vxldap_usermod(struct vxpdb_state *vp, const char *name,
 	return vxldap_usermod2(state, dn, param->pw_name);
 }
 
-static int vxldap_userdel(struct vxpdb_state *vp, const char *name)
+static int vxldap_userdel(struct vxdb_state *vp, const char *name)
 {
 	struct ldap_state *state = vp->state;
 	hmc_t *dn;
@@ -800,13 +801,13 @@ static int vxldap_userdel(struct vxpdb_state *vp, const char *name)
 	return 1;
 }
 
-static void vxldap_copy_user(struct vxpdb_user *dest, LDAP *conn,
+static void vxldap_copy_user(struct vxdb_user *dest, LDAP *conn,
     LDAPMessage *entry)
 {
 	char *attr, **val;
 	BerElement *ber;
 
-	vxpdb_user_clean(dest);
+	vxdb_user_clean(dest);
 	for (attr = ldap_first_attribute(conn, entry, &ber); attr != NULL;
 	    attr = ldap_next_attribute(conn, entry, ber))
 	{
@@ -860,7 +861,7 @@ static void vxldap_copy_user(struct vxpdb_user *dest, LDAP *conn,
 }
 
 static int vxldap_getpwx(struct ldap_state *state, const char *filter,
-    struct vxpdb_user *dest)
+    struct vxdb_user *dest)
 {
 	LDAPMessage *result, *entry;
 	int ret;
@@ -881,8 +882,8 @@ static int vxldap_getpwx(struct ldap_state *state, const char *filter,
 	return 1;
 }
 
-static int vxldap_getpwuid(struct vxpdb_state *vp, unsigned int uid,
-    struct vxpdb_user *dest)
+static int vxldap_getpwuid(struct vxdb_state *vp, unsigned int uid,
+    struct vxdb_user *dest)
 {
 	char filter[48+ZU_32];
 	snprintf(filter, sizeof(filter),
@@ -890,8 +891,8 @@ static int vxldap_getpwuid(struct vxpdb_state *vp, unsigned int uid,
 	return vxldap_getpwx(vp->state, filter, dest);
 }
 
-static int vxldap_getpwnam(struct vxpdb_state *vp, const char *user,
-    struct vxpdb_user *dest)
+static int vxldap_getpwnam(struct vxdb_state *vp, const char *user,
+    struct vxdb_user *dest)
 {
 	hmc_t *filter;
 	int ret;
@@ -904,7 +905,7 @@ static int vxldap_getpwnam(struct vxpdb_state *vp, const char *user,
 	return ret;
 }
 
-static void *vxldap_usertrav_init(struct vxpdb_state *vp)
+static void *vxldap_usertrav_init(struct vxdb_state *vp)
 {
 	static const char *const attrs[] = {
 		"uid", "uidNumber", "gidNumber", "gecos", "homeDirectory",
@@ -929,8 +930,8 @@ static void *vxldap_usertrav_init(struct vxpdb_state *vp)
 	return HX_memdup(&trav, sizeof(trav));
 }
 
-static int vxldap_usertrav_walk(struct vxpdb_state *vp, void *ptr,
-    struct vxpdb_user *dest)
+static int vxldap_usertrav_walk(struct vxdb_state *vp, void *ptr,
+    struct vxdb_user *dest)
 {
 	struct ldap_state *state = vp->state;
 	struct ldap_trav *trav   = ptr;
@@ -943,7 +944,7 @@ static int vxldap_usertrav_walk(struct vxpdb_state *vp, void *ptr,
 	return 1;
 }
 
-static void vxldap_usertrav_free(struct vxpdb_state *vp, void *ptr)
+static void vxldap_usertrav_free(struct vxdb_state *vp, void *ptr)
 {
 	struct ldap_trav *trav = ptr;
 	ldap_msgfree(trav->base);
@@ -962,7 +963,7 @@ static hmc_t *dn_group(const struct ldap_state *state, const char *name)
 	return ret;
 }
 
-static int vxldap_groupadd(struct vxpdb_state *vp, const struct vxpdb_group *rq)
+static int vxldap_groupadd(struct vxdb_state *vp, const struct vxdb_group *rq)
 {
 	struct ldap_state *state = vp->state;
 	LDAPMod attr[4], *attr_ptrs[5];
@@ -985,7 +986,7 @@ static int vxldap_groupadd(struct vxpdb_state *vp, const struct vxpdb_group *rq)
 		.mod_values = (char *[]){rq->gr_name, NULL},
 	};
 
-	/* FIXME: Handle PDB_AUTOGID */
+	/* FIXME: Handle VXDB_AUTOGID */
 	snprintf(s_gr_gid, sizeof(s_gr_gid), "%u",
 	         static_cast(unsigned int, rq->gr_gid));
 	attr[a++] = (LDAPMod){
@@ -1019,13 +1020,13 @@ static int vxldap_groupadd(struct vxpdb_state *vp, const struct vxpdb_group *rq)
 	return 1;
 }
 
-static int vxldap_groupmod(struct vxpdb_state *vp, const char *name,
-    const struct vxpdb_group *param)
+static int vxldap_groupmod(struct vxdb_state *vp, const char *name,
+    const struct vxdb_group *param)
 {
 	return 0;
 }
 
-static int vxldap_groupdel(struct vxpdb_state *vp, const char *name)
+static int vxldap_groupdel(struct vxdb_state *vp, const char *name)
 {
 	struct ldap_state *state = vp->state;
 	hmc_t *dn;
@@ -1041,13 +1042,13 @@ static int vxldap_groupdel(struct vxpdb_state *vp, const char *name)
 	return 1;
 }
 
-static void vxldap_copy_group(struct vxpdb_group *dest, LDAP *conn,
+static void vxldap_copy_group(struct vxdb_group *dest, LDAP *conn,
     LDAPMessage *entry)
 {
 	char *attr, **val;
 	BerElement *ber;
 
-	vxpdb_group_clean(dest);
+	vxdb_group_clean(dest);
 	for (attr = ldap_first_attribute(conn, entry, &ber); attr != NULL;
 	    attr = ldap_next_attribute(conn, entry, ber))
 	{
@@ -1073,7 +1074,7 @@ static void vxldap_copy_group(struct vxpdb_group *dest, LDAP *conn,
 }
 
 static int vxldap_getgrx(struct ldap_state *state, const char *filter,
-    struct vxpdb_group *dest)
+    struct vxdb_group *dest)
 {
 	LDAPMessage *result, *entry;
 	int ret;
@@ -1094,8 +1095,8 @@ static int vxldap_getgrx(struct ldap_state *state, const char *filter,
 	return 1;
 }
 
-static int vxldap_getgrgid(struct vxpdb_state *vp, unsigned int gid,
-    struct vxpdb_group *dest)
+static int vxldap_getgrgid(struct vxdb_state *vp, unsigned int gid,
+    struct vxdb_group *dest)
 {
 	char filter[48+ZU_32];
 	snprintf(filter, sizeof(filter),
@@ -1103,8 +1104,8 @@ static int vxldap_getgrgid(struct vxpdb_state *vp, unsigned int gid,
 	return vxldap_getgrx(vp->state, filter, dest);
 }
 
-static int vxldap_getgrnam(struct vxpdb_state *vp, const char *user,
-    struct vxpdb_group *dest)
+static int vxldap_getgrnam(struct vxdb_state *vp, const char *user,
+    struct vxdb_group *dest)
 {
 	hmc_t *filter;
 	int ret;
@@ -1117,7 +1118,7 @@ static int vxldap_getgrnam(struct vxpdb_state *vp, const char *user,
 	return ret;
 }
 
-static void *vxldap_grouptrav_init(struct vxpdb_state *vp)
+static void *vxldap_grouptrav_init(struct vxdb_state *vp)
 {
 	static const char *const attrs[] = {
 		"cn", "gidNumber", "member", "memberUid", NULL,
@@ -1138,8 +1139,8 @@ static void *vxldap_grouptrav_init(struct vxpdb_state *vp)
 	return HX_memdup(&trav, sizeof(trav));
 }
 
-static int vxldap_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
-    struct vxpdb_group *dest)
+static int vxldap_grouptrav_walk(struct vxdb_state *vp, void *ptr,
+    struct vxdb_group *dest)
 {
 	struct ldap_state *state = vp->state;
 	struct ldap_trav *trav   = ptr;
@@ -1152,7 +1153,7 @@ static int vxldap_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
 	return 1;
 }
 
-static void vxldap_grouptrav_free(struct vxpdb_state *vp, void *ptr)
+static void vxldap_grouptrav_free(struct vxdb_state *vp, void *ptr)
 {
 	struct ldap_trav *trav = ptr;
 	ldap_msgfree(trav->base);
@@ -1160,7 +1161,7 @@ static void vxldap_grouptrav_free(struct vxpdb_state *vp, void *ptr)
 	return;
 }
 
-EXPORT_SYMBOL struct vxpdb_driver THIS_MODULE = {
+EXPORT_SYMBOL struct vxdb_driver THIS_MODULE = {
 	.name           = "LDAP back-end module",
 	.init           = vxldap_init,
 	.open           = vxldap_open,

@@ -7,7 +7,7 @@
 <h1>Description</h1>
 
 <p class="block"><i>tryauth</i> is a helper utility for programs and/or scripts
-which do not have intermediate access to the libvxpdb C API, but still want to
+which do not have intermediate access to the libvxdb C API, but still want to
 authenticate a user. <i>tryauth</i> accepts the username and password on
 standard input and the exit status contains the result of the authentication.
 <code>0</code> is returned on success, <code>127</code> if there was a problem

@@ -3,15 +3,15 @@
 <h1>Module definition</h1>
 
 <p class="block">Each module must define a structure <code>struct
-vxpdb_driver</code> in which they set the function pointers to the respective
+vxdb_driver</code> in which they set the function pointers to the respective
 functions. The module structure also includes space for name, author and
-description of the module for display with the <i>pdbinfo</i> utility. A
+description of the module for display with the <i>vxdbinfo</i> utility. A
 reduced example definition could look like this:</p>
 
 <p class="code"><code><b>#</b>include "drivers/static-build.h"<br />
-<b>#</b>include &lt;vitalnix/libvxpdb/libvxpdb.h&gt;<br />
+<b>#</b>include &lt;vitalnix/libvxdb/libvxdb.h&gt;<br />
 <br />
-<b>static struct</b> vxpdb_driver THIS_MODULE <b>=</b> {<br />
+<b>static struct</b> vxdb_driver THIS_MODULE <b>=</b> {<br />
 &nbsp; &nbsp; .name &nbsp; &nbsp; &nbsp;<b>=</b> "Our sample module",<br />
 &nbsp; &nbsp; .userinfo &nbsp;<b>=</b> our_userinfo,<br />
 &nbsp; &nbsp; .groupinfo <b>=</b> our_groupinfo,<br />
@@ -25,18 +25,18 @@ initializion.</p>
 
 <p class="block">Then of course, the module needs to provide the functions we
 have just specified in the sturct. They can then be called from user
-applications using the <code>vxpdb_*()</code> functions and the respective
-instance as obtained from <code>vxpdb_load()</code>. Note that the struct must
+applications using the <code>vxdb_*()</code> functions and the respective
+instance as obtained from <code>vxdb_load()</code>. Note that the struct must
 be writable since it will be modified.</p>
 
 <h1>Implementable functions</h1>
 
 <h2>-&gt;init</h2>
 
-<p class="code"><code><b>int (*</b>init<b>)</b>(<b>struct</b> vxpdb_state <b>*</b>mip, const char <b>*</b>config_file);</code></p>
+<p class="code"><code><b>int (*</b>init<b>)</b>(<b>struct</b> vxdb_state <b>*</b>mip, const char <b>*</b>config_file);</code></p>
 
 <p class="block">The <code>init</code> function gets called after the shared
-library has been opened through <code>vxpdb_load()</code> from the caller
+library has been opened through <code>vxdb_load()</code> from the caller
 program. The driver loader passes the <code>config_file</code> argument which
 indicates the location of the configuration file that is used.</p>
 
@@ -44,7 +44,7 @@ indicates the location of the configuration file that is used.</p>
 read configuration files. The allocation of a state might look like below, and
 must be done correctly to support reentrancy:</p>
 
-<p class="code"><code><b>static int</b> our_init(<b>struct</b> vxpdb_state <b>*</b>mip, <b>void *</b>priv) {<br />
+<p class="code"><code><b>static int</b> our_init(<b>struct</b> vxdb_state <b>*</b>mip, <b>void *</b>priv) {<br />
 &nbsp; &nbsp; <b>struct</b> our_state <b>*</b>state;<br />
 &nbsp; &nbsp; state <b>=</b> mip-&gt;state <b>=</b> malloc(sizeof(struct our_state));<br />
 &nbsp; &nbsp; state-&gt;config <b>=</b> read_some_config("bla.conf");<br />
@@ -57,14 +57,14 @@ already existing modules to see what they do, and possibly how they do it.</p>
 
 <h2>-&gt;open</h2>
 
-<p class="code"><code><b>int (*</b>open<b>)</b>(<b>struct</b> vxpdb_state <b>*</b>mip, <b>long</b> flags);</code></p>
+<p class="code"><code><b>int (*</b>open<b>)</b>(<b>struct</b> vxdb_state <b>*</b>mip, <b>long</b> flags);</code></p>
 
 <p class="block">The <code>open</code> function should open a connection to the
 password database (if applicable), or do whatever is equivalent to prepare
 further actions. The <code>flags</code> parameter is explained in <a
-href="api-libvxpdb.html">the libvxpdb API</a>. Some sample code:</p>
+href="api-libvxpdb.html">the libvxdb API</a>. Some sample code:</p>
 
-<p class="code"><code><b>int</b> our_open(<b>struct</b> vxpdb_state <b>*</b>mip, <b>long</b> flags) {<br />
+<p class="code"><code><b>int</b> our_open(<b>struct</b> vxdb_state <b>*</b>mip, <b>long</b> flags) {<br />
 &nbsp; &nbsp; <b>struct</b> our_state <b>*</b>state <b>=</b> mip-&gt;state;<br />
 &nbsp; &nbsp; if((state-&gt;fp <b>=</b> fopen("/etc/passwd", "r")) <b>==</b> NULL)<br />
 &nbsp; &nbsp; &nbsp; &nbsp; return -errno;<br />
@@ -73,30 +73,30 @@ href="api-libvxpdb.html">the libvxpdb API</a>. Some sample code:</p>
 
 <h2>-&gt;close</h2>
 
-<p class="code"><code><b>void (*</b>close<b>)</b>(<b>struct</b> vxpdb_state <b>*</b>mip);</code></p>
+<p class="code"><code><b>void (*</b>close<b>)</b>(<b>struct</b> vxdb_state <b>*</b>mip);</code></p>
 
 <h2>-&gt;exit</h2>
 
-<p class="code"><code><b>void (*</b>exit<b>)</b>(<b>struct</b> vxpdb_state <b>*</b>mip);</code></p>
+<p class="code"><code><b>void (*</b>exit<b>)</b>(<b>struct</b> vxdb_state <b>*</b>mip);</code></p>
 
 <h2>-&gt;modctl</h2>
 
-<p class="code"><code><b>long (*</b>modctl<b>)</b>(<b>struct</b> vxpdb_state <b>*</b>mip, <b>long</b> command, <b>...</b>);</code></p>
+<p class="code"><code><b>long (*</b>modctl<b>)</b>(<b>struct</b> vxdb_state <b>*</b>mip, <b>long</b> command, <b>...</b>);</code></p>
 
 <p class="block">The driver can be controlled via the
-<code>vxpdb_modctl()</code> function. (The idea is analogous to a device
+<code>vxdb_modctl()</code> function. (The idea is analogous to a device
 driver's <code>ioctl()</code>.) There are some requests defined in
-<code>libvxpdb.h</code>.</p>
+<code>libvxdb.h</code>.</p>
 
 <div class="pleft">
 <table>
   <tr>
     <td class="code"><code>
-vxpdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_FLUSH);<br />
-vxpdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_NEXTUID_SYS);<br />
-vxpdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_NEXTUID);<br />
-vxpdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_NEXTGID_SYS);<br />
-vxpdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_NEXTGID);</code></td>
+vxdb_modctl(<b>struct</b> vxdb_state <b>*</b>mp, VXDB_FLUSH);<br />
+vxdb_modctl(<b>struct</b> vxdb_state <b>*</b>mp, VXDB_NEXTUID_SYS);<br />
+vxdb_modctl(<b>struct</b> vxdb_state <b>*</b>mp, VXDB_NEXTUID);<br />
+vxdb_modctl(<b>struct</b> vxdb_state <b>*</b>mp, VXDB_NEXTGID_SYS);<br />
+vxdb_modctl(<b>struct</b> vxdb_state <b>*</b>mp, VXDB_NEXTGID);</code></td>
   </tr>
 </table>
 </div>
@@ -104,25 +104,25 @@ vxpdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_NEXTGID);</code></td>
 <div class="pleft">
 <table border="1" class="bordered">
   <tr>
-    <td class="t1"><code>PDB_FLUSH</code></td>
+    <td class="t1"><code>VXDB_FLUSH</code></td>
     <td class="t1">Causes any changes to be committed to the underlying
       layer.</td>
   </tr>
   <tr>
-    <td class="t2"><code>PDB_NEXTUID_SYS</code></td>
+    <td class="t2"><code>VXDB_NEXTUID_SYS</code></td>
     <td class="t2">Returns the next free auto-UID below <code>UID_MIN</code></td>
   </tr>
   <tr>
-    <td class="t1"><code>PDB_NEXTUID</code></td>
+    <td class="t1"><code>VXDB_NEXTUID</code></td>
     <td class="t1">Returns the next free auto-UID within <code>UID_MIN</code> and
       <code>UID_MAX</code></td>
   </tr>
   <tr>
-    <td class="t2"><code>PDB_NEXTGID_SYS</code></td>
+    <td class="t2"><code>VXDB_NEXTGID_SYS</code></td>
     <td class="t2">Returns the next free auto-GID below <code>GID_MIN</code></td>
   </tr>
   <tr>
-    <td class="t1"><code>PDB_NEXTGID</code></td>
+    <td class="t1"><code>VXDB_NEXTGID</code></td>
     <td class="t1">Returns the next free auto-GID within <code>GID_MIN</code> and
       <code>GID_MAX</code></td>
   </tr>
@@ -131,23 +131,23 @@ vxpdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_NEXTGID);</code></td>
 
 <h2>-&gt;lock</h2>
 
-<p class="code"><code><b>int (*</b>lock<b>)</b>(<b>struct</b> vxpdb_state <b>*</b>mip);</code></p>
+<p class="code"><code><b>int (*</b>lock<b>)</b>(<b>struct</b> vxdb_state <b>*</b>mip);</code></p>
 
 <p class="block">
 
 <h2>-&gt;unlock</h2>
 
-<p class="code"><code><b>int (*</b>unlock<b>)</b>(<b>struct</b> vxpdb_state <b>*</b>mip);</code></p>
+<p class="code"><code><b>int (*</b>unlock<b>)</b>(<b>struct</b> vxdb_state <b>*</b>mip);</code></p>
 
 <h1></h1>
 
 <h1>Description</h1>
 
-<p class="block">libvxpdb Since there is a great variety of user databases, the
-Unified Account Database provides a generic API to any application. Some user
-databases are for example the Shadow Password System (<code>/etc/passwd</code>
-and friends). Another could be the Samba userdb in <code>/var/lib/samba</code>,
-or OpenLDAP (libldap).</p>
+<p class="block">Since there is a great variety of user databases, the Vitalnix
+Unified Account Database (VXDB) provides a generic API to any application. Some
+user databases are for example the Shadow Password System
+(<code>/etc/passwd</code> and friends). Another could be the Samba userdb in
+<code>/var/lib/samba</code>, or OpenLDAP (libldap).</p>
 
 <h1>Notes</h1>
 
@@ -187,31 +187,31 @@ function also does not necessarily need to exist either.</p>
 
 <h1>Traversing the user and group lists</h1>
 
-<p class="code"><code><b>int</b> pdb_usertrav(<b>void *</b>state, <b>struct</b> vxpdb_user <b>*</b>result);<br />
-<b>int</b> pdb_grouptrav(<b>void *</b>state, <b>struct</b> vxpdb_group <b>*</b>result);</code></p>
+<p class="code"><code><b>int</b> vxdb_usertrav(<b>void *</b>state, <b>struct</b> vxdb_user <b>*</b>result);<br />
+<b>int</b> vxdb_grouptrav(<b>void *</b>state, <b>struct</b> vxdb_group <b>*</b>result);</code></p>
 
 <p class="block">The <code>accdb_[ug]entry <b>struct</b></code>s are as
 follows:</p>
 
-<p class="code"><code><b>struct</b> vxpdb_user {<br />
-&nbsp; &nbsp; // passwd part<br />
+<p class="code"><code><b>struct</b> vxdb_user {<br />
+&nbsp; &nbsp; /* passwd part */<br />
 &nbsp; &nbsp; <b>char *</b>lname;<br />
 &nbsp; &nbsp; <b>long</b> uid, gid;<br />
 &nbsp; &nbsp; <b>char *</b>gecos, <b>*</b>home, <b>*</b>shell, <b>*</b>igrp, <b>*</b>sgrp;<br />
 <br />
-&nbsp; &nbsp; // shadow part<br />
+&nbsp; &nbsp; /* shadow part */<br />
 &nbsp; &nbsp; <b>char *</b>pass, <b>*</b>pass_cryp;<br />
 &nbsp; &nbsp; <b>long</b> last_change, keep_min, keep_max, warn_age, expire, inactive;<br />
 };<br />
 <br />
-<b>struct</b> vxpdb_group {<br />
+<b>struct</b> vxdb_group {<br />
 &nbsp; &nbsp; <b>long</b> gid;<br />
 &nbsp; &nbsp; <b>char *</b>gname;<br />
 };</code></p>
 
 <p class="block">Analogous to <code>getpwent()</code>, just a bit more
 organized, is the <code>b_usertrav()</code> function. It takes the usual state
-pointer and a <code><b>struct</b> vxpdb_user <b>*</b></code> pointer. When
+pointer and a <code><b>struct</b> vxdb_user <b>*</b></code> pointer. When
 calling <code>b_usertrav()</code>, it takes the next user found in the database
 and fills in the struct.</p>
 
@@ -242,8 +242,8 @@ state.</p>
 <div class="pleft2">
 <table>
   <tr>
-    <td class="code"><code><b>int</b> pdb_userinfo(<b>void *</b>state, <b>struct</b> vxpdb_user <b>*</b>req, <b>struct</b> vxpdb_user <b>*</b>dest, <b>size_t</b> s);<br />
-<b>int</b> pdb_groupinfo(<b>void *</b>state, <b>struct</b> vxpdb_group <b>*</b>req, <b>struct</b> vxpdb_group <b>*</b>dest, <b>size_t</b> s);<br /></code></td>
+    <td class="code"><code><b>int</b> vxdb_userinfo(<b>void *</b>state, <b>struct</b> vxdb_user <b>*</b>req, <b>struct</b> vxdb_user <b>*</b>dest, <b>size_t</b> s);<br />
+<b>int</b> vxdb_groupinfo(<b>void *</b>state, <b>struct</b> vxdb_group <b>*</b>req, <b>struct</b> vxdb_group <b>*</b>dest, <b>size_t</b> s);<br /></code></td>
   </tr>
 </table>
 </div>
@@ -285,8 +285,8 @@ not interrupt the traversion with <code>b_usertrav()</code> /
 <div class="pleft2">
 <table>
   <tr>
-    <td class="code"><code><b>int</b> pdb_useradd(<b>void *</b>state, <b>struct</b> vxpdb_user <b>*</b>user);<br />
-<b>int</b> pdb_groupadd(<b>void *</b>state, <b>struct</b> vxpdb_group <b>*</b>group);<br /></code></td>
+    <td class="code"><code><b>int</b> vxdb_useradd(<b>void *</b>state, <b>struct</b> vxdb_user <b>*</b>user);<br />
+<b>int</b> vxdb_groupadd(<b>void *</b>state, <b>struct</b> vxdb_group <b>*</b>group);<br /></code></td>
   </tr>
 </table>
 </div>
@@ -306,7 +306,7 @@ the database.</p>
 
 <p class="block">If the <code>.uid</code> or <code>.gid</code> field is
 <code>-1</code>, automatic GID selection has to be done. The struct needs to be
-updated to reflect this. (However, we can not update <code>struct vxpdb_user
+updated to reflect this. (However, we can not update <code>struct vxdb_user
 .group</code> as it is a string, so the application needs to re-lookup the user
 with the new UID.)</p>
 
@@ -315,8 +315,8 @@ with the new UID.)</p>
 <div class="pleft2">
 <table>
   <tr>
-    <td class="code"><code><b>int</b> pdb_usermod(<b>void *</b>state, <b>struct</b> vxpdb_user <b>*</b>user, <b>struct</b> vxpdb_user <b>*</b>mask);<br />
-<b>int</b> pdb_groupmod(<b>void *</b>state, <b>struct</b> vxpdb_group <b>*</b>user, <b>struct</b> vxpdb_group <b>*</b>mask);</code></td>
+    <td class="code"><code><b>int</b> vxdb_usermod(<b>void *</b>state, <b>struct</b> vxdb_user <b>*</b>user, <b>struct</b> vxdb_user <b>*</b>mask);<br />
+<b>int</b> vxdb_groupmod(<b>void *</b>state, <b>struct</b> vxdb_group <b>*</b>user, <b>struct</b> vxdb_group <b>*</b>mask);</code></td>
   </tr>
 </table>
 </div>
@@ -335,8 +335,8 @@ modified.</p>
 <div class="pleft2">
 <table>
   <tr>
-    <td class="code"><code><b>int</b> pdb_userdel(<b>void *</b>state, <b>struct</b> vxpdb_user <b>*</b>user);<br />
-<b>int</b> pdb_groupdel(<b>void *</b>state, <b>struct</b> vxpdb_group <b>*</b>group);</code></td>
+    <td class="code"><code><b>int</b> vxdb_userdel(<b>void *</b>state, <b>struct</b> vxdb_user <b>*</b>user);<br />
+<b>int</b> vxdb_groupdel(<b>void *</b>state, <b>struct</b> vxdb_group <b>*</b>group);</code></td>
   </tr>
 </table>
 </div>
@@ -349,27 +349,27 @@ modified.</p>
 <p class="block">Beautify the module by using the macros
 <code>MODULE_NAME(string)</code>, <code>MODLUE_DESC(string)</code> and/or
 <code>MODULE_INFO(string)</code>. This is not mandatory, and applications must
-handle this situation if <code>((<b>struct</b> vxpdb_state
+handle this situation if <code>((<b>struct</b> vxdb_state
 <b>*</b>)m)<b>-&gt;</b>desc</code> is <code>NULL</code>.</p>
 
 <h1>Module control interface</h1>
 
-<p class="code"><code><b>int</b> pdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, <b>long</b> request, <b>...</b>)</code></p>
+<p class="code"><code><b>int</b> vxdb_modctl(<b>struct</b> vxdb_state <b>*</b>mp, <b>long</b> request, <b>...</b>)</code></p>
 
 <p class="block">The back-end can be controlled via the
-<code>pdb_modctl()</code> call. (The idea is analogous to a device driver's
+<code>vxdb_modctl()</code> call. (The idea is analogous to a device driver's
 <code>ioctl()</code>.) There are some requests defined in
-<code>libvxpdb.h</code>.</p>
+<code>libvxdb.h</code>.</p>
 
 <div class="pleft">
 <table>
   <tr>
     <td class="code"><code>
-pdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_FLUSH);<br />
-pdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_NEXTUID_SYS);<br />
-pdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_NEXTUID);<br />
-pdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_NEXTGID_SYS);<br />
-pdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_NEXTGID);</code></td>
+vxdb_modctl(<b>struct</b> vxdb_state <b>*</b>mp, VXDB_FLUSH);<br />
+vxdb_modctl(<b>struct</b> vxdb_state <b>*</b>mp, VXDB_NEXTUID_SYS);<br />
+vxdb_modctl(<b>struct</b> vxdb_state <b>*</b>mp, VXDB_NEXTUID);<br />
+vxdb_modctl(<b>struct</b> vxdb_state <b>*</b>mp, VXDB_NEXTGID_SYS);<br />
+vxdb_modctl(<b>struct</b> vxdb_state <b>*</b>mp, VXDB_NEXTGID);</code></td>
   </tr>
 </table>
 </div>
@@ -377,27 +377,27 @@ pdb_modctl(<b>struct</b> vxpdb_state <b>*</b>mp, PDB_NEXTGID);</code></td>
 <div class="pleft">
 <table border="1">
   <tr>
-    <td class="t1"><code>PDB_FLUSH</code></td>
+    <td class="t1"><code>VXDB_FLUSH</code></td>
     <td class="t1">Causes any changes to be committed to the underlying
       layer. (That might not be hard disk!)</td>
   </tr>
   <tr>
-    <td class="t2"><code>PDB_NEXTUID_SYS</code></td>
+    <td class="t2"><code>VXDB_NEXTUID_SYS</code></td>
     <td class="t2">Returns the next free auto-UID below
       <code>UID_MIN</code></td>
   </tr>
   <tr>
-    <td class="t1"><code>PDB_NEXTUID</code></td>
+    <td class="t1"><code>VXDB_NEXTUID</code></td>
     <td class="t1">Returns the next free auto-UID within <code>UID_MIN</code>
       and <code>UID_MAX</code></td>
   </tr>
   <tr>
-    <td class="t2"><code>PDB_NEXTGID_SYS</code></td>
+    <td class="t2"><code>VXDB_NEXTGID_SYS</code></td>
     <td class="t2">Returns the next free auto-GID below
       <code>GID_MIN</code></td>
   </tr>
   <tr>
-    <td class="t1"><code>PDB_NEXTGID</code></td>
+    <td class="t1"><code>VXDB_NEXTGID</code></td>
     <td class="t1">Returns the next free auto-GID within <code>GID_MIN</code>
       and <code>GID_MAX</code></td>
   </tr>

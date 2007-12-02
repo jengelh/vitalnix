@@ -176,35 +176,35 @@ GW_GroupCombo::GW_GroupCombo(wxWindow *parent, wxWindowID id,
 
 void GW_GroupCombo::switch_database(const char *db_name)
 {
-	struct vxpdb_group group = {};
-	struct vxpdb_state *db;
+	struct vxdb_group group = {};
+	struct vxdb_state *db;
 	void *trav;
 	int ret;
 
 	Clear();
 
-	if ((db = vxpdb_load(db_name)) == NULL)
+	if ((db = vxdb_load(db_name)) == NULL)
 		return;
 
-	if ((ret = vxpdb_open(db, 0)) <= 0) {
-		fprintf(stderr, "%s: vxpdb_open: %s\n", __PRETTY_FUNCTION__,
+	if ((ret = vxdb_open(db, 0)) <= 0) {
+		fprintf(stderr, "%s: vxdb_open: %s\n", __PRETTY_FUNCTION__,
 		        strerror(ret));
 		goto out_unload;
 	}
 
-	if ((trav = vxpdb_grouptrav_init(db)) == NULL)
+	if ((trav = vxdb_grouptrav_init(db)) == NULL)
 		goto out_close;
 
-	while (vxpdb_grouptrav_walk(db, trav, &group) > 0)
+	while (vxdb_grouptrav_walk(db, trav, &group) > 0)
 		if (group.gr_gid > 0)
 			Append(fU8(group.gr_name));
 
-	vxpdb_grouptrav_free(db, trav);
-	vxpdb_group_free(&group, false);
+	vxdb_grouptrav_free(db, trav);
+	vxdb_group_free(&group, false);
  out_close:
-	vxpdb_close(db);
+	vxdb_close(db);
  out_unload:
-	vxpdb_unload(db);
+	vxdb_unload(db);
 	return;
 }
 
@@ -390,33 +390,33 @@ GW_UserCombo::GW_UserCombo(wxWindow *parent, wxWindowID id, const char *db) :
 
 void GW_UserCombo::switch_database(const char *db_name)
 {
-	struct vxpdb_user user = {};
-	struct vxpdb_state *db;
+	struct vxdb_user user = {};
+	struct vxdb_state *db;
 	void *trav;
 	int ret;
 
 	Clear();
 
-	if ((db = vxpdb_load(db_name)) == NULL)
+	if ((db = vxdb_load(db_name)) == NULL)
 	    return;
 
-	if ((ret = vxpdb_open(db, 0)) <= 0) {
-	    fprintf(stderr, "%s: vxpdb_open: %s\n", __PRETTY_FUNCTION__,
+	if ((ret = vxdb_open(db, 0)) <= 0) {
+	    fprintf(stderr, "%s: vxdb_open: %s\n", __PRETTY_FUNCTION__,
 	            strerror(ret));
 	    goto out_unload;
 	}
 
-	if ((trav = vxpdb_usertrav_init(db)) == NULL)
+	if ((trav = vxdb_usertrav_init(db)) == NULL)
 	    goto out_close;
-	while (vxpdb_usertrav_walk(db, trav, &user) > 0)
+	while (vxdb_usertrav_walk(db, trav, &user) > 0)
 	    Append(fU8(user.pw_name));
 
-	vxpdb_usertrav_free(db, trav);
-	vxpdb_user_free(&user, false);
+	vxdb_usertrav_free(db, trav);
+	vxdb_user_free(&user, false);
  out_close:
-	vxpdb_close(db);
+	vxdb_close(db);
  out_unload:
-	vxpdb_unload(db);
+	vxdb_unload(db);
 	return;
 }
 

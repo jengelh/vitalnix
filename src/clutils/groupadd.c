@@ -35,14 +35,14 @@ enum {
 };
 
 /* Functions */
-static int groupadd_main2(struct vxpdb_state *);
-static int groupadd_main3(struct vxpdb_state *, struct HXbtree *);
+static int groupadd_main2(struct vxdb_state *);
+static int groupadd_main3(struct vxdb_state *, struct HXbtree *);
 static bool groupadd_get_options(int *, const char ***);
 static bool groupadd_read_config(void);
 static void groupadd_show_version(const struct HXoptcb *);
 
 /* Variables */
-static unsigned int group_id     = PDB_NOGID;
+static unsigned int group_id     = VXDB_NOGID;
 static unsigned int allow_dup    = false;
 static unsigned int request_sys  = false;
 static const char *action_before = NULL;
@@ -53,7 +53,7 @@ static const char *group_name;
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv)
 {
-	struct vxpdb_state *db;
+	struct vxdb_state *db;
 	int ret;
 
 	if (!groupadd_read_config() || !groupadd_get_options(&argc, &argv))
@@ -71,22 +71,22 @@ int main(int argc, const char **argv)
 		return E_OTHER;
 	}
 
-	if ((db = vxpdb_load(database_name)) == NULL) {
+	if ((db = vxdb_load(database_name)) == NULL) {
 		perror("Error loading database");
 		return E_OPEN;
 	}
 
 	ret = groupadd_main2(db);
-	vxpdb_unload(db);
+	vxdb_unload(db);
 	return ret;
 }
 
-static int groupadd_main2(struct vxpdb_state *db)
+static int groupadd_main2(struct vxdb_state *db)
 {
 	struct HXbtree *ext_catalog;
 	int ret;
 
-	if ((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0) {
+	if ((ret = vxdb_open(db, VXDB_WRLOCK)) <= 0) {
 		fprintf(stderr, "Error opening database: %s\n",
 		        strerror(-ret));
 		return E_OPEN;
@@ -95,16 +95,16 @@ static int groupadd_main2(struct vxpdb_state *db)
 	ext_catalog = HXformat_init();
 	ret = groupadd_main3(db, ext_catalog);
 	HXformat_free(ext_catalog);
-	vxpdb_close(db);
+	vxdb_close(db);
 	return ret;
 }
 
-static int groupadd_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
+static int groupadd_main3(struct vxdb_state *db, struct HXbtree *ext_catalog)
 {
-	struct vxpdb_group group_info;
+	struct vxdb_group group_info;
 	int ret;
 
-	if ((ret = vxpdb_getgrnam(db, group_name, NULL)) < 0) {
+	if ((ret = vxdb_getgrnam(db, group_name, NULL)) < 0) {
 		fprintf(stderr, "Error querying database: %s\n",
 		        strerror(-ret));
 		return E_OTHER;
@@ -113,9 +113,9 @@ static int groupadd_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
 		return E_NAME_USED;
 	}
 
-	if (group_id != PDB_NOGID) {
+	if (group_id != VXDB_NOGID) {
 		/* -g (explicit GID) was passed */
-		if (!allow_dup && vxpdb_getgrgid(db, group_id, NULL) > 0) {
+		if (!allow_dup && vxdb_getgrgid(db, group_id, NULL) > 0) {
 			/*
 			 * The -o flag (allow creating group with duplicate
 			 * GID) was not passed.
@@ -126,9 +126,9 @@ static int groupadd_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
 		}
 	} else if (request_sys) {
 		/* -r flag passed */
-		group_id = PDB_AUTOGID_SYS;
+		group_id = VXDB_AUTOGID_SYS;
 	} else {
-		group_id = PDB_AUTOGID;
+		group_id = VXDB_AUTOGID;
 	}
 
 	HXformat_add(ext_catalog, "GROUP", group_name, HXTYPE_STRING);
@@ -140,7 +140,7 @@ static int groupadd_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
 	group_info.gr_name = const_cast(char *, group_name);
 	group_info.gr_gid  = group_id;
 
-	if ((ret = vxpdb_groupadd(db, &group_info)) <= 0) {
+	if ((ret = vxdb_groupadd(db, &group_info)) <= 0) {
 		fprintf(stderr, "Warning: Group addition failed: %s\n",
 		        strerror(-ret));
 		return E_UPDATE;

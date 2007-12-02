@@ -1,5 +1,5 @@
 /*
- *	libvxpdb/aux.c - Auxiliary functions
+ *	libvxdb/aux.c - Auxiliary functions
  *	Copyright © CC Computer Consultants GmbH, 2005 - 2007
  *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
  *
@@ -21,21 +21,21 @@
 #define NDSTRLEN(s) (((s) != NULL) ? strlen(s) + 1 : 0)
 
 //-----------------------------------------------------------------------------
-EXPORT_SYMBOL void vxpdb_user_clean(struct vxpdb_user *u)
+EXPORT_SYMBOL void vxdb_user_clean(struct vxdb_user *u)
 {
-	memset(u, 0, sizeof(struct vxpdb_user));
-	u->pw_uid    = PDB_NOUID;
-	u->pw_gid    = PDB_NOGID;
-	u->sp_min    = PDB_DFL_KEEPMIN;
-	u->sp_max    = PDB_DFL_KEEPMAX;
-	u->sp_warn   = PDB_DFL_WARNAGE;
-	u->sp_expire = PDB_NO_EXPIRE;
-	u->sp_inact  = PDB_NO_INACTIVE;
+	memset(u, 0, sizeof(struct vxdb_user));
+	u->pw_uid    = VXDB_NOUID;
+	u->pw_gid    = VXDB_NOGID;
+	u->sp_min    = VXDB_DFL_KEEPMIN;
+	u->sp_max    = VXDB_DFL_KEEPMAX;
+	u->sp_warn   = VXDB_DFL_WARNAGE;
+	u->sp_expire = VXDB_NO_EXPIRE;
+	u->sp_inact  = VXDB_NO_INACTIVE;
 	return;
 }
 
-EXPORT_SYMBOL void vxpdb_user_copy(struct vxpdb_user *dest,
-    const struct vxpdb_user *src)
+EXPORT_SYMBOL void vxdb_user_copy(struct vxdb_user *dest,
+    const struct vxdb_user *src)
 {
 	hmc_strasg(&dest->pw_name, src->pw_name);
 	dest->pw_uid     = src->pw_uid;
@@ -59,16 +59,16 @@ EXPORT_SYMBOL void vxpdb_user_copy(struct vxpdb_user *dest,
 	return;
 }
 
-EXPORT_SYMBOL struct vxpdb_user *vxpdb_user_dup(const struct vxpdb_user *src)
+EXPORT_SYMBOL struct vxdb_user *vxdb_user_dup(const struct vxdb_user *src)
 {
-	struct vxpdb_user *dest;
-	if ((dest = calloc(1, sizeof(struct vxpdb_user))) == NULL)
+	struct vxdb_user *dest;
+	if ((dest = calloc(1, sizeof(struct vxdb_user))) == NULL)
 		return NULL;
-	vxpdb_user_copy(dest, src);
+	vxdb_user_copy(dest, src);
 	return dest;
 }
 
-EXPORT_SYMBOL void vxpdb_user_free(struct vxpdb_user *user, bool heap)
+EXPORT_SYMBOL void vxdb_user_free(struct vxdb_user *user, bool heap)
 {
 	hmc_free(user->pw_name);
 	hmc_free(user->pw_igrp);
@@ -84,31 +84,31 @@ EXPORT_SYMBOL void vxpdb_user_free(struct vxpdb_user *user, bool heap)
 	return;
 }
 
-EXPORT_SYMBOL void vxpdb_user_nomodify(struct vxpdb_user *u)
+EXPORT_SYMBOL void vxdb_user_nomodify(struct vxdb_user *u)
 {
-	memset(u, 0, sizeof(struct vxpdb_user));
-	u->pw_uid     = PDB_NO_CHANGE;
-	u->pw_gid     = PDB_NO_CHANGE;
-	u->sp_lastchg = PDB_NO_CHANGE;
-	u->sp_min     = PDB_NO_CHANGE;
-	u->sp_max     = PDB_NO_CHANGE;
-	u->sp_warn    = PDB_NO_CHANGE;
-	u->sp_expire  = PDB_NO_CHANGE;
-	u->sp_inact   = PDB_NO_CHANGE;
-	u->vs_defer   = PDB_NO_CHANGE;
+	memset(u, 0, sizeof(struct vxdb_user));
+	u->pw_uid     = VXDB_NO_CHANGE;
+	u->pw_gid     = VXDB_NO_CHANGE;
+	u->sp_lastchg = VXDB_NO_CHANGE;
+	u->sp_min     = VXDB_NO_CHANGE;
+	u->sp_max     = VXDB_NO_CHANGE;
+	u->sp_warn    = VXDB_NO_CHANGE;
+	u->sp_expire  = VXDB_NO_CHANGE;
+	u->sp_inact   = VXDB_NO_CHANGE;
+	u->vs_defer   = VXDB_NO_CHANGE;
 	return;
 }
 
-EXPORT_SYMBOL void vxpdb_group_clean(struct vxpdb_group *group)
+EXPORT_SYMBOL void vxdb_group_clean(struct vxdb_group *group)
 {
 	group->gr_name = NULL;
-	group->gr_gid  = PDB_NOGID;
+	group->gr_gid  = VXDB_NOGID;
 	group->be_priv = NULL;
 	return;
 }
 
-EXPORT_SYMBOL void vxpdb_group_copy(struct vxpdb_group *dest,
-    const struct vxpdb_group *src)
+EXPORT_SYMBOL void vxdb_group_copy(struct vxdb_group *dest,
+    const struct vxdb_group *src)
 {
 	hmc_strasg(&dest->gr_name, src->gr_name);
 	dest->gr_gid  = src->gr_gid;
@@ -116,16 +116,16 @@ EXPORT_SYMBOL void vxpdb_group_copy(struct vxpdb_group *dest,
 	return;
 }
 
-EXPORT_SYMBOL struct vxpdb_group *vxpdb_group_dup(const struct vxpdb_group *src)
+EXPORT_SYMBOL struct vxdb_group *vxdb_group_dup(const struct vxdb_group *src)
 {
-	struct vxpdb_group *dest;
-	if ((dest = calloc(1, sizeof(struct vxpdb_group))) == NULL)
+	struct vxdb_group *dest;
+	if ((dest = calloc(1, sizeof(struct vxdb_group))) == NULL)
 		return NULL;
-	vxpdb_group_copy(dest, src);
+	vxdb_group_copy(dest, src);
 	return dest;
 }
 
-EXPORT_SYMBOL void vxpdb_group_free(struct vxpdb_group *group, bool heap)
+EXPORT_SYMBOL void vxdb_group_free(struct vxdb_group *group, bool heap)
 {
 	hmc_free(group->gr_name);
 	if (heap)
@@ -133,10 +133,10 @@ EXPORT_SYMBOL void vxpdb_group_free(struct vxpdb_group *group, bool heap)
 	return;
 }
 
-EXPORT_SYMBOL void vxpdb_group_nomodify(struct vxpdb_group *group)
+EXPORT_SYMBOL void vxdb_group_nomodify(struct vxdb_group *group)
 {
 	group->gr_name = NULL;
-	group->gr_gid  = PDB_NO_CHANGE;
+	group->gr_gid  = VXDB_NO_CHANGE;
 	group->be_priv = NULL;
 	return;
 }

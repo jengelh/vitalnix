@@ -41,7 +41,7 @@
 
 /* Functions */
 static bool get_options(int *, const char ***);
-static void finger_grep(struct vxpdb_state *, const char *);
+static void finger_grep(struct vxdb_state *, const char *);
 static bool check_utmp(const char *);
 static void check_lastlog(long);
 static void check_mail(const char *);
@@ -56,7 +56,7 @@ static const char *stop_color = "0";
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv)
 {
-	struct vxpdb_state *db;
+	struct vxdb_state *db;
 	char *s;
 	int ret;
 
@@ -67,13 +67,13 @@ int main(int argc, const char **argv)
 	if (s != NULL)
 		grep_color = s;
 
-	if ((db = vxpdb_load(Database)) == NULL) {
+	if ((db = vxdb_load(Database)) == NULL) {
 		perror("Error loading database");
 		return EXIT_FAILURE;
 	}
 
-	if ((ret = vxpdb_open(db, 0)) <= 0) {
-		vxpdb_unload(db);
+	if ((ret = vxdb_open(db, 0)) <= 0) {
+		vxdb_unload(db);
 		fprintf(stderr, "Error opening database: %s\n",
 		        strerror(-ret));
 		return EXIT_FAILURE;
@@ -90,8 +90,8 @@ int main(int argc, const char **argv)
 		free(s);
 	}
 
-	vxpdb_close(db);
-	vxpdb_unload(db);
+	vxdb_close(db);
+	vxdb_unload(db);
 	return EXIT_SUCCESS;
 }
 
@@ -110,18 +110,18 @@ static bool get_options(int *argc, const char ***argv)
 	return HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) > 0;
 }
 
-static void finger_grep(struct vxpdb_state *db, const char *keyword)
+static void finger_grep(struct vxdb_state *db, const char *keyword)
 {
 	const unsigned int keyword_len = strlen(keyword);
 	const char *name_ptr, *real_ptr;
-	struct vxpdb_group group = {};
-	struct vxpdb_user user = {};
+	struct vxdb_group group = {};
+	struct vxdb_user user = {};
 	hmc_t *lc_name, *lc_real;
 	void *trav;
 	char *p;
 
-	if ((trav = vxpdb_usertrav_init(db)) == NULL) {
-		fprintf(stderr, "vxpdb_usertrav_init: %s\n", strerror(errno));
+	if ((trav = vxdb_usertrav_init(db)) == NULL) {
+		fprintf(stderr, "vxdb_usertrav_init: %s\n", strerror(errno));
 		return;
 	}
 
@@ -130,7 +130,7 @@ static void finger_grep(struct vxpdb_state *db, const char *keyword)
 	hmc_trunc(&lc_name, 0);
 	hmc_trunc(&lc_real, 0);
 
-	while (vxpdb_usertrav_walk(db, trav, &user) > 0) {
+	while (vxdb_usertrav_walk(db, trav, &user) > 0) {
 		if (!Fullgecos && user.pw_real != NULL &&
 		    (p = strchr(user.pw_real, ',')) != NULL)
 			*p = '\0';
@@ -191,7 +191,7 @@ static void finger_grep(struct vxpdb_state *db, const char *keyword)
 		printf(
 			"Group: %-24s  Private Group: %s\n"
 			"Shell: %-24s  Directory: %s\n",
-			(vxpdb_getgrgid(db, user.pw_gid, &group) < 0) ?
+			(vxdb_getgrgid(db, user.pw_gid, &group) < 0) ?
 			"-" : group.gr_name,
 			(user.vs_pvgrp == NULL) ? "-" : user.vs_pvgrp,
 			user.pw_shell, user.pw_home
@@ -205,8 +205,8 @@ static void finger_grep(struct vxpdb_state *db, const char *keyword)
 
 	hmc_free(lc_name);
 	hmc_free(lc_real);
-	vxpdb_user_free(&user, false);
-	vxpdb_usertrav_free(db, trav);
+	vxdb_user_free(&user, false);
+	vxdb_usertrav_free(db, trav);
 	return;
 }
 

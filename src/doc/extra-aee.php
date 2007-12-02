@@ -80,15 +80,15 @@ Class B apply.</p>
 <h2>zero or positive non-zero</h3>
 
 <p class="block">Zero or positive non-zero indicates the result of the
-function. For example, asking <i>libvxpdb</i> how many groups there are can
+function. For example, asking <i>libvxdb</i> how many groups there are can
 legitimately return zero:</p>
 
 <p class="code"><code>
 <b>long</b> ret;<br />
-if((ret <b>=</b> pdb_modctl(my_db, PDB_COUNT_GROUPS)) <b>&gt;=</b> 0)<br />
+if((ret <b>=</b> vxdb_modctl(my_db, VXDB_COUNT_GROUPS)) <b>&gt;=</b> 0)<br />
 &nbsp; &nbsp; printf("Number of groups: %ld\n", ret);<br />
 else<br />
-&nbsp; &nbsp; printf("pdb_modctl() returned error %d: %s\n", ret, strerror(-ret));
+&nbsp; &nbsp; printf("vxdb_modctl() returned error %d: %s\n", ret, strerror(-ret));
 </code></p>
 
 <h1>Class D&nbsp;-- pointer or error code</h2>

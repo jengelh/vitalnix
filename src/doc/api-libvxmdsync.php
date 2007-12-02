@@ -11,7 +11,7 @@ user list to the system user database.</p>
 <b>#</b>include &lt;libvxmdsync/libvxmdsync.h&gt;<br />
 <br />
 <b>struct</b> mdsync_config {<br />
-&nbsp; &nbsp; <b>struct</b> vxpdb_user user_defaults;<br />
+&nbsp; &nbsp; <b>struct</b> vxdb_user user_defaults;<br />
 &nbsp; &nbsp; <b>int</b> new_pw_length, genpw_type, crypw_type;<br />
 &nbsp; &nbsp; <b>int</b> db_force_flush;<br />
 &nbsp; &nbsp; <b>long</b> home_umask;<br />
@@ -28,7 +28,7 @@ user list to the system user database.</p>
 <br />
 <b>struct</b> mdsync_workspace {<br />
 &nbsp; &nbsp; <b>struct</b> mdsync_config config;<br />
-&nbsp; &nbsp; <b>struct</b> vxpdb_state <b>*</b>database;<br />
+&nbsp; &nbsp; <b>struct</b> vxdb_state <b>*</b>database;<br />
 &nbsp; &nbsp; ...<br />
 };
 </code></p>
@@ -54,11 +54,11 @@ user list to the system user database.</p>
 <h2>mdsync_compare</h2>
 
 <p class="block">Compares <code>ws-&gt;add_req</code> to the system user
-database.</p> Users which are both in <code>ws-&gt;add_req</code> and the PDB
+database.</p> Users which are both in <code>ws-&gt;add_req</code> and the VXDB
 are moved from <code>ws-&gt;add_req</code> to <code>ws-&gt;keep_req</code>.</p>
 
 <p class="block">If deferred deletion is not configured, puts users, which have
-been removed from the EDS, but still exist in the PDB, into
+been removed from the EDS, but still exist in the VXDB, into
 <code>ws-&gt;delete_now</code>.</p>
 
 <p class="block">If deferred deletion is active, puts users, which do not exist
@@ -71,7 +71,7 @@ do not get reused right away.</p>
 
 <h2>mdsync_compare_simple</h2>
 
-<p class="bock">Puts all usernames from the PDB into
+<p class="bock">Puts all usernames from the VXDB into
 <code>ws-&gt;lnlist</code>. This is used for single-user adds, where deletion
 lists are not needed at all.</p>
 

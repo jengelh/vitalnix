@@ -37,9 +37,9 @@ enum {
 };
 
 /* Functions */
-static int groupdel_main2(struct vxpdb_state *);
-static int groupdel_main3(struct vxpdb_state *, struct HXbtree *);
-static bool groupdel_check_pri_group(struct vxpdb_state *, struct vxpdb_group *);
+static int groupdel_main2(struct vxdb_state *);
+static int groupdel_main3(struct vxdb_state *, struct HXbtree *);
+static bool groupdel_check_pri_group(struct vxdb_state *, struct vxdb_group *);
 static bool groupdel_get_options(int *, const char ***);
 static bool groupdel_read_config(void);
 static void groupdel_show_version(const struct HXoptcb *);
@@ -54,7 +54,7 @@ static const char *group_name;
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv)
 {
-	struct vxpdb_state *db;
+	struct vxdb_state *db;
 	int ret;
 
 	if (!groupdel_read_config() || !groupdel_get_options(&argc, &argv))
@@ -72,23 +72,23 @@ int main(int argc, const char **argv)
 		return E_OTHER;
 	}
 
-	if ((db = vxpdb_load(database_name)) == NULL) {
+	if ((db = vxdb_load(database_name)) == NULL) {
 		fprintf(stderr, "Could not load database \"%s\": %s\n",
 		        database_name, strerror(errno));
 		return E_OPEN;
 	}
 
 	ret = groupdel_main2(db);
-	vxpdb_unload(db);
+	vxdb_unload(db);
 	return ret;
 }
 
-static int groupdel_main2(struct vxpdb_state *db)
+static int groupdel_main2(struct vxdb_state *db)
 {
 	struct HXbtree *ext_catalog;
 	int ret;
 
-	if ((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0) {
+	if ((ret = vxdb_open(db, VXDB_WRLOCK)) <= 0) {
 		fprintf(stderr, "Could not open database: %s\n",
 		        strerror(-ret));
 		return E_OPEN;
@@ -97,16 +97,16 @@ static int groupdel_main2(struct vxpdb_state *db)
 	ext_catalog = HXformat_init();
 	ret = groupdel_main3(db, ext_catalog);
 	HXformat_free(ext_catalog);
-	vxpdb_close(db);
+	vxdb_close(db);
 	return ret;
 }
 
-static int groupdel_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
+static int groupdel_main3(struct vxdb_state *db, struct HXbtree *ext_catalog)
 {
-	struct vxpdb_group group_info = {};
+	struct vxdb_group group_info = {};
 	int ret;
 
-	if ((ret = vxpdb_getgrnam(db, group_name, &group_info)) < 0) {
+	if ((ret = vxdb_getgrnam(db, group_name, &group_info)) < 0) {
 		fprintf(stderr, "Error querying database: %s\n",
 		        strerror(-ret));
 		return E_OTHER;
@@ -125,7 +125,7 @@ static int groupdel_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
 	if (action_before != NULL)
 		vxutil_replace_run(action_before, ext_catalog);
 
-	if ((ret = vxpdb_groupdel(db, group_name)) <= 0) {
+	if ((ret = vxdb_groupdel(db, group_name)) <= 0) {
 		fprintf(stderr, "Error: Deleting group failed: %s\n",
 		        strerror(-ret));
 		return E_UPDATE;
@@ -137,25 +137,25 @@ static int groupdel_main3(struct vxpdb_state *db, struct HXbtree *ext_catalog)
 }
 
 //-----------------------------------------------------------------------------
-static bool groupdel_check_pri_group(struct vxpdb_state *db,
-    struct vxpdb_group *mm)
+static bool groupdel_check_pri_group(struct vxdb_state *db,
+    struct vxdb_group *mm)
 {
-	struct vxpdb_user user;
+	struct vxdb_user user;
 	bool pg = false; /* some user has this as primary group */
 	void *travp;
 
-	if ((travp = vxpdb_usertrav_init(db)) == NULL)
+	if ((travp = vxdb_usertrav_init(db)) == NULL)
 		return false;
 
-	while (vxpdb_usertrav_walk(db, travp, &user) > 0)
-		if ((user.pw_gid != PDB_NOGID && user.pw_gid == mm->gr_gid) ||
+	while (vxdb_usertrav_walk(db, travp, &user) > 0)
+		if ((user.pw_gid != VXDB_NOGID && user.pw_gid == mm->gr_gid) ||
 		    (user.pw_igrp != NULL && mm->gr_name != NULL &&
 		    strcmp(user.pw_igrp, mm->gr_name) == 0)) {
 			pg = true;
 			break;
 		}
 
-	vxpdb_usertrav_free(db, travp);
+	vxdb_usertrav_free(db, travp);
 	return pg;
 }
 

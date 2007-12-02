@@ -35,13 +35,13 @@ enum dump_what_e {
 };
 
 /* Functions */
-static void d_ldif(struct vxpdb_state *);
-static void d_ldif_users(struct vxpdb_state *);
-static void d_ldif_groups(struct vxpdb_state *);
-static void d_mysql(struct vxpdb_state *);
-static void d_mysql_users(struct vxpdb_state *);
-static void d_mysql_groups(struct vxpdb_state *);
-static void d_shadow(struct vxpdb_state *);
+static void d_ldif(struct vxdb_state *);
+static void d_ldif_users(struct vxdb_state *);
+static void d_ldif_groups(struct vxdb_state *);
+static void d_mysql(struct vxdb_state *);
+static void d_mysql_users(struct vxdb_state *);
+static void d_mysql_groups(struct vxdb_state *);
+static void d_shadow(struct vxdb_state *);
 
 static bool get_options(int *, const char ***);
 static void getopt_t(const struct HXoptcb *);
@@ -56,7 +56,7 @@ enum output_type_e Output_type = OUTPUT_SHADOW;
 static char *Database    = "*";
 static long Uid_range[2] = {0, LONG_MAX};
 static bool Dump_what[4]  = {true, true, true, true};
-static void (*Dump_functions[])(struct vxpdb_state *) = {
+static void (*Dump_functions[])(struct vxdb_state *) = {
 	[OUTPUT_LDIF]   = d_ldif,
 	[OUTPUT_MYSQL]  = d_mysql,
 	[OUTPUT_SHADOW] = d_shadow,
@@ -65,18 +65,18 @@ static void (*Dump_functions[])(struct vxpdb_state *) = {
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv)
 {
-	struct vxpdb_state *db;
+	struct vxdb_state *db;
 	int ret;
 
 	if (!get_options(&argc, &argv))
 		return EXIT_FAILURE;
 
-	if ((db = vxpdb_load(Database)) == NULL) {
+	if ((db = vxdb_load(Database)) == NULL) {
 		perror("Error loading database");
 		return EXIT_FAILURE;
 	}
-	if ((ret = vxpdb_open(db, 0)) <= 0) {
-		vxpdb_unload(db);
+	if ((ret = vxdb_open(db, 0)) <= 0) {
+		vxdb_unload(db);
 		fprintf(stderr, "Error opening database: %s\n",
 		        strerror(-ret));
 		return EXIT_FAILURE;
@@ -84,13 +84,13 @@ int main(int argc, const char **argv)
 
 	/* Walk users */
 	Dump_functions[Output_type](db);
-	vxpdb_close(db);
-	vxpdb_unload(db);
+	vxdb_close(db);
+	vxdb_unload(db);
 	return EXIT_SUCCESS;
 }
 
 //-----------------------------------------------------------------------------
-static void d_ldif(struct vxpdb_state *db)
+static void d_ldif(struct vxdb_state *db)
 {
 	if (Dump_what[DUMP_PASSWD])
 		d_ldif_users(db);
@@ -99,18 +99,18 @@ static void d_ldif(struct vxpdb_state *db)
 	return;
 }
 
-static void d_ldif_groups(struct vxpdb_state *db)
+static void d_ldif_groups(struct vxdb_state *db)
 {
-	struct vxpdb_group group = {};
+	struct vxdb_group group = {};
 	void *trav;
 
-	if ((trav = vxpdb_grouptrav_init(db)) == NULL) {
-		fprintf(stderr, "# vxpdb_grouptrav_init: %s\n",
+	if ((trav = vxdb_grouptrav_init(db)) == NULL) {
+		fprintf(stderr, "# vxdb_grouptrav_init: %s\n",
 		        strerror(errno));
 		return;
 	}
 
-	while (vxpdb_grouptrav_walk(db, trav, &group) > 0) {
+	while (vxdb_grouptrav_walk(db, trav, &group) > 0) {
 		printf(
 			"dn: cn=%s,ou=groups,dc=site\n"
 			"objectClass: posixGroup\n"
@@ -119,24 +119,24 @@ static void d_ldif_groups(struct vxpdb_state *db)
 			group.gr_name, group.gr_name, group.gr_gid);
 	}
 
-	vxpdb_grouptrav_free(db, trav);
-	vxpdb_group_free(&group, false);
+	vxdb_grouptrav_free(db, trav);
+	vxdb_group_free(&group, false);
 	return;
 }
 
-static void d_ldif_users(struct vxpdb_state *db) 
+static void d_ldif_users(struct vxdb_state *db) 
 {
-	struct vxpdb_user user = {};
+	struct vxdb_user user = {};
 	char *freeme = NULL;
 	void *trav;
 
-	if ((trav = vxpdb_usertrav_init(db)) == NULL) {
-		fprintf(stderr, "# vxpdb_usertrav_init: %s\n",
+	if ((trav = vxdb_usertrav_init(db)) == NULL) {
+		fprintf(stderr, "# vxdb_usertrav_init: %s\n",
 		        strerror(errno));
 		return;
 	}
 
-	while (vxpdb_usertrav_walk(db, trav, &user) > 0) {
+	while (vxdb_usertrav_walk(db, trav, &user) > 0) {
 		if (!(user.pw_uid >= Uid_range[0] &&
 		    user.pw_uid <= Uid_range[1]))
 			continue;
@@ -214,13 +214,13 @@ static void d_ldif_users(struct vxpdb_state *db)
 		printf("\n");
 	}
 
-	vxpdb_usertrav_free(db, trav);
-	vxpdb_user_free(&user, false);
+	vxdb_usertrav_free(db, trav);
+	vxdb_user_free(&user, false);
 	free(freeme);
 	return;
 }
 
-static void d_mysql(struct vxpdb_state *db)
+static void d_mysql(struct vxdb_state *db)
 {
 	printf(
 		"drop table if exists users;\n"
@@ -273,8 +273,8 @@ static void d_mysql(struct vxpdb_state *db)
 		"	user_name varchar(64) not null default '',\n"
 		"	group_name varchar(64) not null default ''\n"
 		") default charset=utf8;\n",
-		PDB_NOUID, PDB_NOGID, PDB_DFL_KEEPMIN, PDB_DFL_KEEPMAX,
-		PDB_DFL_WARNAGE, PDB_NO_EXPIRE, PDB_NO_INACTIVE, PDB_NOGID
+		VXDB_NOUID, VXDB_NOGID, VXDB_DFL_KEEPMIN, VXDB_DFL_KEEPMAX,
+		VXDB_DFL_WARNAGE, VXDB_NO_EXPIRE, VXDB_NO_INACTIVE, VXDB_NOGID
 	);
 	printf("lock tables users write, shadow write, vxshadow write, "
 	       "groups write, groupmap write;\n");
@@ -285,15 +285,15 @@ static void d_mysql(struct vxpdb_state *db)
 	return;
 }
 
-static void d_mysql_users(struct vxpdb_state *db)
+static void d_mysql_users(struct vxdb_state *db)
 {
-	struct vxpdb_user user;
+	struct vxdb_user user;
 	void *trav;
 
-	if ((trav = vxpdb_usertrav_init(db)) == NULL)
+	if ((trav = vxdb_usertrav_init(db)) == NULL)
 		return;
 	memset(&user, 0, sizeof(user));
-	while (vxpdb_usertrav_walk(db, trav, &user) > 0) {
+	while (vxdb_usertrav_walk(db, trav, &user) > 0) {
 		if (!(user.pw_uid >= Uid_range[0] &&
 		    user.pw_uid <= Uid_range[1]))
 			continue;
@@ -317,42 +317,42 @@ static void d_mysql_users(struct vxpdb_state *db)
 			       user.vs_defer);
 	}
 
-	vxpdb_usertrav_free(db, trav);
-	vxpdb_user_free(&user, false);
-	printf("# Number of users: %ld\n", vxpdb_modctl(db, PDB_COUNT_USERS));
+	vxdb_usertrav_free(db, trav);
+	vxdb_user_free(&user, false);
+	printf("# Number of users: %ld\n", vxdb_modctl(db, VXDB_COUNT_USERS));
 	return;
 }
 
-static void d_mysql_groups(struct vxpdb_state *db)
+static void d_mysql_groups(struct vxdb_state *db)
 {
-	struct vxpdb_group group;
+	struct vxdb_group group;
 	void *trav;
 
-	if ((trav = vxpdb_grouptrav_init(db)) == NULL)
+	if ((trav = vxdb_grouptrav_init(db)) == NULL)
 		return;
 	memset(&group, 0, sizeof(group));
-	while (vxpdb_grouptrav_walk(db, trav, &group) > 0)
+	while (vxdb_grouptrav_walk(db, trav, &group) > 0)
 		printf("insert into groups values ('%s',%u);\n",
 		       group.gr_name, group.gr_gid);
 
-	vxpdb_grouptrav_free(db, trav);
-	vxpdb_group_free(&group, false);
-	printf("# Number of groups: %ld\n", vxpdb_modctl(db, PDB_COUNT_GROUPS));
+	vxdb_grouptrav_free(db, trav);
+	vxdb_group_free(&group, false);
+	printf("# Number of groups: %ld\n", vxdb_modctl(db, VXDB_COUNT_GROUPS));
 	return;
 }
 
-static void d_shadow(struct vxpdb_state *db)
+static void d_shadow(struct vxdb_state *db)
 {
-	struct vxpdb_group group = {};
-	struct vxpdb_user user   = {};
+	struct vxdb_group group = {};
+	struct vxdb_user user   = {};
 	void *trav;
 
 	/* Users */
 	if (Dump_what[DUMP_PASSWD]) {
 		printf("#---/etc/passwd---\n");
-		if ((trav = vxpdb_usertrav_init(db)) == NULL)
+		if ((trav = vxdb_usertrav_init(db)) == NULL)
 			return;
-		while (vxpdb_usertrav_walk(db, trav, &user) > 0) {
+		while (vxdb_usertrav_walk(db, trav, &user) > 0) {
 			if (!(user.pw_uid >= Uid_range[0] &&
 			    user.pw_uid <= Uid_range[1]))
 				continue;
@@ -360,15 +360,15 @@ static void d_shadow(struct vxpdb_state *db)
 			       user.pw_uid, user.pw_gid, user.pw_real,
 			       user.pw_home, user.pw_shell);
 		}
-		vxpdb_usertrav_free(db, trav);
+		vxdb_usertrav_free(db, trav);
 	}
 
 	/* Shadow */
 	if (Dump_what[DUMP_SHADOW]) {
 		printf("#---/etc/shadow---\n");
-		if ((trav = vxpdb_usertrav_init(db)) == NULL)
+		if ((trav = vxdb_usertrav_init(db)) == NULL)
 			return;
-		while (vxpdb_usertrav_walk(db, trav, &user) > 0) {
+		while (vxdb_usertrav_walk(db, trav, &user) > 0) {
 			if (!(user.pw_uid >= Uid_range[0] &&
 			    user.pw_uid <= Uid_range[1]))
 				continue;
@@ -380,15 +380,15 @@ static void d_shadow(struct vxpdb_state *db)
 			       user.sp_max, user.sp_warn,
 			       user.sp_expire, user.sp_inact);
 		}
-		vxpdb_usertrav_free(db, trav);
+		vxdb_usertrav_free(db, trav);
 	}
 
 	/* vxShadow */
 	if (Dump_what[DUMP_VXSHADOW]) {
 		printf("#---/etc/vxshadow---\n");
-		if ((trav = vxpdb_usertrav_init(db)) == NULL)
+		if ((trav = vxdb_usertrav_init(db)) == NULL)
 			return;
-		while (vxpdb_usertrav_walk(db, trav, &user) > 0) {
+		while (vxdb_usertrav_walk(db, trav, &user) > 0) {
 			if (!(user.pw_uid >= Uid_range[0] &&
 			    user.pw_uid <= Uid_range[1]))
 				continue;
@@ -398,26 +398,26 @@ static void d_shadow(struct vxpdb_state *db)
 				       user.vs_uuid, user.vs_pvgrp,
 				       user.vs_defer);
 		}
-		vxpdb_usertrav_free(db, trav);
+		vxdb_usertrav_free(db, trav);
 	}
 
 	/* Group */
 	if (Dump_what[DUMP_GROUP]) {
 		printf("#---/etc/group---\n");
-		if ((trav = vxpdb_grouptrav_init(db)) == NULL)
+		if ((trav = vxdb_grouptrav_init(db)) == NULL)
 			return;
-		while (vxpdb_grouptrav_walk(db, trav, &group) > 0)
+		while (vxdb_grouptrav_walk(db, trav, &group) > 0)
 			printf("%s:*:%u:\n", group.gr_name, group.gr_gid);
-		vxpdb_grouptrav_free(db, trav);
+		vxdb_grouptrav_free(db, trav);
 	}
 
-	vxpdb_user_free(&user, false);
-	vxpdb_group_free(&group, false);
+	vxdb_user_free(&user, false);
+	vxdb_group_free(&group, false);
 
 	/* Info */
 	printf("#---INFO---\n");
-	printf("# Number of users: %ld\n", vxpdb_modctl(db, PDB_COUNT_USERS));
-	printf("# Number of groups: %ld\n", vxpdb_modctl(db, PDB_COUNT_GROUPS));
+	printf("# Number of users: %ld\n", vxdb_modctl(db, VXDB_COUNT_USERS));
+	printf("# Number of groups: %ld\n", vxdb_modctl(db, VXDB_COUNT_GROUPS));
 	return;
 }
 

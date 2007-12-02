@@ -35,7 +35,7 @@
   <tr>
     <td class="t2n"><code>-M <i>database</i></code></td>
     <td class="t2">Uses the specified database rather than the default one
-      listed in the VXPDB configuration file</td>
+      listed in the VXDB configuration file</td>
   </tr>
 </table>
 

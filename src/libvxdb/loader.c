@@ -1,5 +1,5 @@
 /*
- *	libvxpdb/loader.c - Back-end module loader
+ *	libvxdb/loader.c - Back-end module loader
  *	Copyright © CC Computer Consultants GmbH, 2003 - 2007
  *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
  *
@@ -33,29 +33,29 @@ struct opt {
 };
 
 /* Functions */
-static int vxpdb_cleanup(struct vxpdb_state *, int, struct opt *);
-static int vxpdb_config(struct opt *, unsigned int, const char *);
-static void *vxpdb_get_handle(const struct opt *);
+static int vxdb_cleanup(struct vxdb_state *, int, struct opt *);
+static int vxdb_config(struct opt *, unsigned int, const char *);
+static void *vxdb_get_handle(const struct opt *);
 
 //-----------------------------------------------------------------------------
-EXPORT_SYMBOL struct vxpdb_state *vxpdb_load(const char *name)
+EXPORT_SYMBOL struct vxdb_state *vxdb_load(const char *name)
 {
-	struct vxpdb_state *new = NULL;
-	struct vxpdb_driver *vtable;
+	struct vxdb_state *new = NULL;
+	struct vxdb_driver *vtable;
 	struct opt cf = {};
 	int ret;
 
-	if (!vxpdb_config(&cf, CONFIG_READ, name) || cf.driver_name == NULL ||
+	if (!vxdb_config(&cf, CONFIG_READ, name) || cf.driver_name == NULL ||
 	    *cf.driver_name == '\0') {
 		errno = EINVAL;
 		goto out;
 	}
 
-	if ((new = malloc(sizeof(struct vxpdb_state))) == NULL)
+	if ((new = malloc(sizeof(struct vxdb_state))) == NULL)
 		goto out;
 
 	/* Try to load the .SO and look for THIS_MODULE */
-	new->handle = vxpdb_get_handle(&cf);
+	new->handle = vxdb_get_handle(&cf);
 	if (new->handle == NULL)
 		goto fail;
 	vtable = HX_dlsym(new->handle, "THIS_MODULE");
@@ -63,36 +63,36 @@ EXPORT_SYMBOL struct vxpdb_state *vxpdb_load(const char *name)
 		goto fail;
 
 	new->vtable = vtable;
-	vxpdb_fix_vtable(vtable);
+	vxdb_fix_vtable(vtable);
 	if (vtable->init != NULL && (ret = vtable->init(new, cf.driver_file)) <= 0) {
 		errno = -ret;
 		goto out;
 	}
 
-	vxpdb_cleanup(NULL, 0, &cf);
+	vxdb_cleanup(NULL, 0, &cf);
 	return new;
 
  fail:
 	if (errno == 0)
 		errno = EINVAL;
  out:
-	errno = vxpdb_cleanup(new, errno, &cf);
+	errno = vxdb_cleanup(new, errno, &cf);
 	return NULL;
 }
 
-EXPORT_SYMBOL void vxpdb_unload(struct vxpdb_state *thx)
+EXPORT_SYMBOL void vxdb_unload(struct vxdb_state *thx)
 {
 	if (thx->vtable->exit != NULL)
 		thx->vtable->exit(thx);
-	vxpdb_cleanup(thx, 0, NULL);
+	vxdb_cleanup(thx, 0, NULL);
 	return;
 }
 
 //-----------------------------------------------------------------------------
-static int vxpdb_cleanup(struct vxpdb_state *thx, int err, struct opt *cf)
+static int vxdb_cleanup(struct vxdb_state *thx, int err, struct opt *cf)
 {
 	if (cf != NULL)
-		vxpdb_config(cf, CONFIG_FREE, NULL);
+		vxdb_config(cf, CONFIG_FREE, NULL);
 	if (thx != NULL) {
 		if (thx->handle != NULL)
 			HX_dlclose(thx->handle);
@@ -102,7 +102,7 @@ static int vxpdb_cleanup(struct vxpdb_state *thx, int err, struct opt *cf)
 }
 
 /*
- * vxpdb_config -
+ * vxdb_config -
  * @cf:		pointer to config structure
  * @action:	%CONFIG_READ or %CONFIG_FREE
  * @L1_name:	level-1 name
@@ -110,7 +110,7 @@ static int vxpdb_cleanup(struct vxpdb_state *thx, int err, struct opt *cf)
  * %CONFIG_READ: Resolve the standard database ("*") into a real database,
  * and resolve into its configuration file.
  */
-static int vxpdb_config(struct opt *cf, unsigned int action,
+static int vxdb_config(struct opt *cf, unsigned int action,
     const char *L1_name)
 {
 	const char *L2_name = NULL;
@@ -159,19 +159,19 @@ static int vxpdb_config(struct opt *cf, unsigned int action,
 }
 
 /*
- * vxpdb_get_handle -
+ * vxdb_get_handle -
  * @filename:	Shared library to open
  *
  * Opens @filename or a construction of "drv_", @filename and an extension
  * and returns the handle on success, or %NULL on failure.
  */
-static void *vxpdb_get_handle(const struct opt *cf)
+static void *vxdb_get_handle(const struct opt *cf)
 {
 	static const char *const ext[] = {".so", ".dll", "", NULL};
 	const char *const *extp = ext;
 	void *handle;
 
-	/* Try plain filename first (as does pdbinfo) */
+	/* Try plain filename first (as does vxdbinfo) */
 	if (cf->driver_lib != NULL &&
 	    (handle = HX_dlopen(cf->driver_lib)) != NULL)
 		return handle;

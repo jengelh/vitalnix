@@ -50,9 +50,9 @@ static void useradd_getopt_preadd(const struct HXoptcb *);
 static void useradd_getopt_postadd(const struct HXoptcb *);
 static int useradd_read_config(struct useradd_state *);
 static int useradd_run(struct useradd_state *);
-static int useradd_run2(struct vxpdb_state *, struct useradd_state *);
-static int useradd_run3(struct vxpdb_state *, struct useradd_state *,
-	struct vxpdb_user *);
+static int useradd_run2(struct vxdb_state *, struct useradd_state *);
+static int useradd_run3(struct vxdb_state *, struct useradd_state *,
+	struct vxdb_user *);
 static void useradd_show_version(const struct HXoptcb *);
 static const char *useradd_strerror(int);
 
@@ -60,7 +60,7 @@ static const char *useradd_strerror(int);
 int main(int argc, const char **argv)
 {
 	struct useradd_state state;
-	struct vxpdb_user *user = &state.config.defaults;
+	struct vxdb_user *user = &state.config.defaults;
 	int ret;
 
 	useradd_fill_defaults(&state);
@@ -95,11 +95,11 @@ int main(int argc, const char **argv)
 static int useradd_fill_defaults(struct useradd_state *state)
 {
 	struct vxconfig_useradd *conf = &state->config;
-	struct vxpdb_user *user	   = &conf->defaults;
+	struct vxdb_user *user        = &conf->defaults;
 	int ret;
 
 	memset(state, 0, sizeof(struct useradd_state));
-	vxpdb_user_clean(user);
+	vxdb_user_clean(user);
 	user->pw_shell    = "/bin/bash";
 	user->sp_lastchg  = vxutil_now_iday();
 	state->database   = "*";
@@ -123,7 +123,7 @@ static int useradd_fill_defaults(struct useradd_state *state)
 static char *useradd_genhome(struct useradd_state *state)
 {
 	struct vxconfig_useradd *conf = &state->config;
-	struct vxpdb_user *user       = &conf->defaults;
+	struct vxdb_user *user        = &conf->defaults;
 	char buf[MAXFNLEN];
 
 	if (user->pw_name == NULL || conf->home_base == NULL)
@@ -137,7 +137,7 @@ static bool useradd_get_options(int *argc, const char ***argv,
     struct useradd_state *state)
 {
 	struct vxconfig_useradd *conf = &state->config;
-	struct vxpdb_user *user	   = &conf->defaults;
+	struct vxdb_user *user        = &conf->defaults;
 	struct HXoption options_table[] = {
 		/* New, Vitalnix-useradd options */
 		{.sh = 'A', .type = HXTYPE_STRING | HXOPT_OPTIONAL,
@@ -196,16 +196,16 @@ static bool useradd_get_options(int *argc, const char ***argv,
 
 static int useradd_run(struct useradd_state *state)
 {
-	struct vxpdb_state *db;
+	struct vxdb_state *db;
 	int err, ret;
 
-	if ((db = vxpdb_load(state->database)) == NULL)
+	if ((db = vxdb_load(state->database)) == NULL)
 		return E_OPEN;
 
 	ret = useradd_run2(db, state);
 	if (ret != 0)
 		err = errno;
-	vxpdb_unload(db);
+	vxdb_unload(db);
 	if (ret != 0)
 		errno = err;
 	return ret;
@@ -232,7 +232,7 @@ static const char *useradd_strerror(int e)
 
 static void useradd_getopt_expire(const struct HXoptcb *cbi)
 {
-	struct vxpdb_user *user = cbi->current->ptr;
+	struct vxdb_user *user = cbi->current->ptr;
 	user->sp_expire = vxutil_string_iday(cbi->data);
 	return;
 }
@@ -276,13 +276,13 @@ static int useradd_read_config(struct useradd_state *state)
 	return ret;
 }
 
-static int useradd_run2(struct vxpdb_state *db, struct useradd_state *state)
+static int useradd_run2(struct vxdb_state *db, struct useradd_state *state)
 {
 	struct vxconfig_useradd *conf = &state->config;
-	struct vxpdb_user *user;
+	struct vxdb_user *user;
 	int err, ret;
 
-	if ((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0)
+	if ((ret = vxdb_open(db, VXDB_WRLOCK)) <= 0)
 		return E_OPEN;
 
 	user = HX_memdup(&conf->defaults, sizeof(conf->defaults));
@@ -295,27 +295,27 @@ static int useradd_run2(struct vxpdb_state *db, struct useradd_state *state)
 		err = errno;
 	HXformat_free(state->sr_map);
 	free(user);
-	vxpdb_close(db);
+	vxdb_close(db);
 	if (ret != 0)
 		errno = err;
 	return ret;
 }
 
-static int useradd_run3(struct vxpdb_state *db, struct useradd_state *state,
-    struct vxpdb_user *user)
+static int useradd_run3(struct vxdb_state *db, struct useradd_state *state,
+    struct vxdb_user *user)
 {
 	struct vxconfig_useradd *conf = &state->config;
 	int ret;
 
-	if ((ret = vxpdb_getpwnam(db, user->pw_name, NULL)) < 0)
+	if ((ret = vxdb_getpwnam(db, user->pw_name, NULL)) < 0)
 		return E_OTHER;
 	else if (ret > 0)
 		return E_NAME_USED;
 
-	if (user->pw_uid != PDB_NOUID) {
+	if (user->pw_uid != VXDB_NOUID) {
 		/* -u is provided */
 		if (!state->allow_dup &&
-		    vxpdb_getpwuid(db, user->pw_uid, NULL) > 0)
+		    vxdb_getpwuid(db, user->pw_uid, NULL) > 0)
 			/*
 			 * The -o flag (allow creating user with duplicate UID)
 			 * was not passed.
@@ -323,9 +323,9 @@ static int useradd_run3(struct vxpdb_state *db, struct useradd_state *state,
 			return E_UID_USED;
 	} else if (state->sys_uid) {
 		/* -r flag passed */
-		user->pw_uid = PDB_AUTOUID_SYS;
+		user->pw_uid = VXDB_AUTOUID_SYS;
 	} else {
-		user->pw_uid = PDB_AUTOUID;
+		user->pw_uid = VXDB_AUTOUID;
 	}
 
 	HXformat_add(state->sr_map, "USERNAME", user->pw_name, HXTYPE_STRING);
@@ -334,7 +334,7 @@ static int useradd_run3(struct vxpdb_state *db, struct useradd_state *state,
 	if (conf->master_preadd != NULL)
 		vxutil_replace_run(conf->master_preadd, state->sr_map);
 
-	if ((ret = vxpdb_useradd(db, user)) <= 0)
+	if ((ret = vxdb_useradd(db, user)) <= 0)
 		return E_UPDATE;
 
 	if (conf->create_home) {

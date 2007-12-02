@@ -24,10 +24,10 @@ unsigned int automatic_uid(struct shadow_state *state, unsigned int wanted)
 	unsigned int accept, min, max;
 	int high = -1;
 
-	if (wanted == PDB_AUTOUID_SYS) {
+	if (wanted == VXDB_AUTOUID_SYS) {
 		min = accept = 1;
 		max = state->uid_min - 1;
-	} else if (wanted == PDB_AUTOUID) {
+	} else if (wanted == VXDB_AUTOUID) {
 		min = accept = state->uid_min;
 		max = state->uid_max;
 	} else {
@@ -36,7 +36,7 @@ unsigned int automatic_uid(struct shadow_state *state, unsigned int wanted)
 
 	/* Find the highest ID */
 	while (travp != NULL) {
-		const struct vxpdb_user *user = travp->ptr;
+		const struct vxdb_user *user = travp->ptr;
 		unsigned int uid = user->pw_uid;
 		if (uid >= min && uid <= max && uid > high)
 			high = uid;
@@ -52,7 +52,7 @@ unsigned int automatic_uid(struct shadow_state *state, unsigned int wanted)
 		bool used = false;
 		for (travp = state->dq_user->first; travp != NULL;
 		    travp = travp->next) {
-			const struct vxpdb_user *user = travp->ptr;
+			const struct vxdb_user *user = travp->ptr;
 			if (user->pw_uid == accept) {
 				used = true;
 				break;
@@ -71,10 +71,10 @@ unsigned int automatic_gid(struct shadow_state *state, unsigned int wanted)
 	unsigned int accept, min, max;
 	int high = -1;
 
-	if (wanted == PDB_AUTOGID_SYS) {
+	if (wanted == VXDB_AUTOGID_SYS) {
 		min = accept = 1;
 		max = state->gid_min - 1;
-	} else if (wanted == PDB_AUTOGID) {
+	} else if (wanted == VXDB_AUTOGID) {
 		min = accept = state->gid_min;
 		max = state->gid_max;
 	} else {
@@ -83,7 +83,7 @@ unsigned int automatic_gid(struct shadow_state *state, unsigned int wanted)
 
 	/* Find the highest GID */
 	while (travp != NULL) {
-		const struct vxpdb_group *group = travp->ptr;
+		const struct vxdb_group *group = travp->ptr;
 		unsigned int gid = group->gr_gid;
 		if (gid >= min && gid <= max && gid > high)
 			high = gid;
@@ -102,7 +102,7 @@ unsigned int automatic_gid(struct shadow_state *state, unsigned int wanted)
 		bool used = false;
 		for (travp = state->dq_group->first; travp != NULL;
 		    travp = travp->next) {
-			const struct vxpdb_group *group = travp->ptr;
+			const struct vxdb_group *group = travp->ptr;
 			if (group->gr_gid == accept) {
 				used = true;
 				break;
@@ -137,7 +137,7 @@ void free_data(struct shadow_state *state)
 	return;
 }
 
-void free_single_user(struct vxpdb_user *u)
+void free_single_user(struct vxdb_user *u)
 {
 	char **p = u->be_priv;
 
@@ -157,7 +157,7 @@ void free_single_user(struct vxpdb_user *u)
 	return;
 }
 
-void free_single_group(struct vxpdb_group *g)
+void free_single_group(struct vxdb_group *g)
 {
 	char **p = g->be_priv;
 	free(g->gr_name);
@@ -174,24 +174,24 @@ void free_single_group(struct vxpdb_group *g)
  * lookup_group -
  * @dq:		list to search
  * @gname:	group name to search on, or %NULL if don't-care
- * @gid:	group id to search on, or %PDB_NOGID if don't-care
+ * @gid:	group id to search on, or %VXDB_NOGID if don't-care
  *
  * Searches the group and returns a pointer to vxdb_shadow's internal data
  * structure if found, or %NULL if not found. If @gname is %NULL and @gid is
- * %PDB_NOGID, which would usually match any user, %NULL is returned too.
+ * %VXDB_NOGID, which would usually match any user, %NULL is returned too.
  */
-struct vxpdb_group *lookup_group(const struct HXdeque *dq,
+struct vxdb_group *lookup_group(const struct HXdeque *dq,
     const char *gname, unsigned int gid)
 {
 	const struct HXdeque_node *travp;
 
-	if (gname == NULL && gid == PDB_NOGID)
+	if (gname == NULL && gid == VXDB_NOGID)
 		return NULL;
 
 	for (travp = dq->first; travp != NULL; travp = travp->next) {
-		struct vxpdb_group *g = travp->ptr;
+		struct vxdb_group *g = travp->ptr;
 		if ((gname == NULL || strcmp(g->gr_name, gname) == 0) &&
-		    (gid == PDB_NOGID || g->gr_gid == gid))
+		    (gid == VXDB_NOGID || g->gr_gid == gid))
 			return g;
 	}
 
@@ -202,24 +202,24 @@ struct vxpdb_group *lookup_group(const struct HXdeque *dq,
  * lookup_user -
  * @dq:	list to search on
  * @lname:	user login name to match on, or %NULL if don't-care
- * @uid:	user uid to match o, or %PDB_NOUID if don't-care
+ * @uid:	user uid to match o, or %VXDB_NOUID if don't-care
  *
  * Searches the user and returns a pointer to vxdb_shadow's internal data
  * structure if found, or %NULL if not found. If @lname is %NULL and @uid is
- * %PDB_NOUID, which would usually match any user, %NULL is returned too.
+ * %VXDB_NOUID, which would usually match any user, %NULL is returned too.
  */
-struct vxpdb_user *lookup_user(const struct HXdeque *dq,
+struct vxdb_user *lookup_user(const struct HXdeque *dq,
     const char *lname, unsigned int uid)
 {
 	const struct HXdeque_node *travp;
 
-	if (lname == NULL && uid == PDB_NOUID)
+	if (lname == NULL && uid == VXDB_NOUID)
 		return NULL;
 
 	for (travp = dq->first; travp != NULL; travp = travp->next) {
-		struct vxpdb_user *u = travp->ptr;
+		struct vxdb_user *u = travp->ptr;
 		if ((lname == NULL || strcmp(u->pw_name, lname) == 0) &&
-		    (uid == PDB_NOUID || uid == u->pw_uid))
+		    (uid == VXDB_NOUID || uid == u->pw_uid))
 			return u;
 	}
 
@@ -258,7 +258,7 @@ void read_config(struct shadow_state *state, unsigned int action,
 
 struct HXdeque_node *skip_nis_users(struct HXdeque_node *node)
 {
-	const struct vxpdb_user *user;
+	const struct vxdb_user *user;
 	for (; node != NULL; node = node->next) {
 		user = node->ptr;
 		if (*user->pw_name != '+' && *user->pw_name != '-')
@@ -269,7 +269,7 @@ struct HXdeque_node *skip_nis_users(struct HXdeque_node *node)
 
 struct HXdeque_node *skip_nis_groups(struct HXdeque_node *node)
 {
-	const struct vxpdb_group *group;
+	const struct vxdb_group *group;
 	for (; node != NULL; node = node->next) {
 		group = node->ptr;
 		if (*group->gr_name != '+' && *group->gr_name != '-')

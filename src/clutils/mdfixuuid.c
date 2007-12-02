@@ -24,53 +24,53 @@ struct mdf_priv {
 };
 
 /* Functions */
-static char *rebuild_uuid(const struct mdf_priv *, struct vxpdb_state *);
+static char *rebuild_uuid(const struct mdf_priv *, struct vxdb_state *);
 static bool get_options(int *, const char ***, struct mdf_priv *);
 
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv)
 {
-	struct vxpdb_user mod_mask;
-	struct vxpdb_state *db;
+	struct vxdb_user mod_mask;
+	struct vxdb_state *db;
 	struct mdf_priv p = {};
 	int ret;
 
 	p.database = "*";
 	if (!get_options(&argc, &argv, &p))
 		return EXIT_FAILURE;
-	if ((db = vxpdb_load(p.database)) == NULL) {
+	if ((db = vxdb_load(p.database)) == NULL) {
 		fprintf(stderr, "Error loading database: %s\n", strerror(errno));
 		return EXIT_FAILURE;
 	}
-	if ((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0) {
+	if ((ret = vxdb_open(db, VXDB_WRLOCK)) <= 0) {
 		fprintf(stderr, "Error opening database: %s\n", strerror(-ret));
 		return EXIT_FAILURE;
 	}
 
-	vxpdb_user_nomodify(&mod_mask);
+	vxdb_user_nomodify(&mod_mask);
 	mod_mask.pw_real = p.realname;
 	mod_mask.vs_uuid = rebuild_uuid(&p, db);
 	if (mod_mask.vs_uuid == NULL)
 		return EXIT_FAILURE;
 
-	if ((ret = vxpdb_usermod(db, p.username, &mod_mask)) <= 0) {
+	if ((ret = vxdb_usermod(db, p.username, &mod_mask)) <= 0) {
 		fprintf(stderr, "User update unsuccessful: %s\n",
 		        strerror(-ret));
 		return EXIT_FAILURE;
 	}
 
-	vxpdb_close(db);
-	vxpdb_unload(db);
+	vxdb_close(db);
+	vxdb_unload(db);
 	return EXIT_SUCCESS;
 }
 
-static char *rebuild_uuid(const struct mdf_priv *p, struct vxpdb_state *db)
+static char *rebuild_uuid(const struct mdf_priv *p, struct vxdb_state *db)
 {
-	struct vxpdb_user info = {};
+	struct vxdb_user info = {};
 	char *res = NULL, *name;
 	int ret, xday = 0;
 
-	if ((ret = vxpdb_getpwnam(db, p->username, &info)) < 0) {
+	if ((ret = vxdb_getpwnam(db, p->username, &info)) < 0) {
 		fprintf(stderr, "Error querying database: %s\n",
 		        strerror(-ret));
 		return NULL;
@@ -96,7 +96,7 @@ static char *rebuild_uuid(const struct mdf_priv *p, struct vxpdb_state *db)
 		res = vxuuid_vx3(name, xday);
 
  out:
-	vxpdb_user_free(&info, false);
+	vxdb_user_free(&info, false);
 	return res;
 }
 

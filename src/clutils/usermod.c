@@ -34,7 +34,7 @@ enum {
 
 struct usermod_state {
 	char *username;
-	struct vxpdb_user newstuff;
+	struct vxdb_user newstuff;
 	struct vxconfig_usermod config;
 	const char *database;
 	unsigned int allow_dup, lock_account, move_home;
@@ -49,8 +49,8 @@ static void usermod_getopt_premod(const struct HXoptcb *);
 static void usermod_getopt_postmod(const struct HXoptcb *);
 static int usermod_read_config(struct usermod_state *);
 static int usermod_run(struct usermod_state *);
-static int usermod_run2(struct vxpdb_state *, struct usermod_state *);
-static int usermod_run3(struct vxpdb_state *, struct usermod_state *);
+static int usermod_run2(struct vxdb_state *, struct usermod_state *);
+static int usermod_run3(struct vxdb_state *, struct usermod_state *);
 static void usermod_show_version(const struct HXoptcb *);
 static const char *usermod_strerror(int);
 
@@ -78,10 +78,10 @@ int main(int argc, const char **argv)
 
 static int usermod_fill_defaults(struct usermod_state *sp)
 {
-	struct vxpdb_user *u = &sp->newstuff;
+	struct vxdb_user *u = &sp->newstuff;
 	int ret;
 
-	vxpdb_user_nomodify(u);
+	vxdb_user_nomodify(u);
 	sp->database = "*";
 	if ((ret = usermod_read_config(sp)) <= 0)
 		return ret;
@@ -93,7 +93,7 @@ static bool usermod_get_options(int *argc, const char ***argv,
     struct usermod_state *sp)
 {
 	struct vxconfig_usermod *conf = &sp->config;
-	struct vxpdb_user *nu = &sp->newstuff;
+	struct vxdb_user *nu          = &sp->newstuff;
 	struct HXoption options_table[] = {
 		/* New, Vitalnix-usermod options */
 		{.sh = 'A', .type = HXTYPE_STRING | HXOPT_OPTIONAL,
@@ -154,14 +154,14 @@ static bool usermod_get_options(int *argc, const char ***argv,
 
 static int usermod_run(struct usermod_state *state)
 {
-	struct vxpdb_state *db;
+	struct vxdb_state *db;
 	int ret;
 
-	if ((db = vxpdb_load(state->database)) == NULL)
+	if ((db = vxdb_load(state->database)) == NULL)
 		return E_OPEN;
 
 	ret = usermod_run2(db, state);
-	vxpdb_unload(db);
+	vxdb_unload(db);
 	return ret;
 }
 
@@ -184,7 +184,7 @@ static const char *usermod_strerror(int e)
 
 static void usermod_getopt_expire(const struct HXoptcb *cbi)
 {
-	struct vxpdb_user *user = cbi->current->ptr;
+	struct vxdb_user *user = cbi->current->ptr;
 	user->sp_expire = vxutil_string_iday(cbi->data);
 	return;
 }
@@ -221,26 +221,26 @@ static int usermod_read_config(struct usermod_state *sp)
 	return ret;
 }
 
-static int usermod_run2(struct vxpdb_state *db, struct usermod_state *state)
+static int usermod_run2(struct vxdb_state *db, struct usermod_state *state)
 {
 	int ret;
-	if ((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0)
+	if ((ret = vxdb_open(db, VXDB_WRLOCK)) <= 0)
 		return E_OPEN;
 
 	state->sr_map = HXformat_init();
 	ret = usermod_run3(db, state);
 	HXformat_free(state->sr_map);
-	vxpdb_close(db);
+	vxdb_close(db);
 	return ret;
 }
 
-static int usermod_run3(struct vxpdb_state *db, struct usermod_state *state)
+static int usermod_run3(struct vxdb_state *db, struct usermod_state *state)
 {
 	struct vxconfig_usermod *conf = &state->config;
-	struct vxpdb_user modify_mask = {};
+	struct vxdb_user modify_mask  = {};
 	int ret;
 
-	if ((ret = vxpdb_getpwnam(db, state->username, NULL)) < 0)
+	if ((ret = vxdb_getpwnam(db, state->username, NULL)) < 0)
 		return E_OTHER;
 	else if (ret == 0)
 		return E_NO_EXIST;
@@ -250,7 +250,7 @@ static int usermod_run3(struct vxpdb_state *db, struct usermod_state *state)
 	if (conf->user_premod != NULL)
 		vxutil_replace_run(conf->user_premod, state->sr_map);
 
-	if ((ret = vxpdb_usermod(db, state->username, &modify_mask)) <= 0)
+	if ((ret = vxdb_usermod(db, state->username, &modify_mask)) <= 0)
 		return E_UPDATE;
 
 	if (conf->user_postmod != NULL)

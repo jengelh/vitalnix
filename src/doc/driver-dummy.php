@@ -18,8 +18,8 @@ failure. The exact table is:</p>
     <td class="t2">void</td>
   </tr>
   <tr>
-    <td class="t1"><code>-&gt;modctl(</code>PDB_COUNT_USERS<code>)<br />
-      -&gt;modctl(</code>PDB_COUNT_GROUPS<code>)</td>
+    <td class="t1"><code>-&gt;modctl(</code>VXDB_COUNT_USERS<code>)<br />
+      -&gt;modctl(</code>VXDB_COUNT_GROUPS<code>)</td>
     <td class="t1"><code>0</code> (no users/groups)</td>
   </tr>
   <tr>
@@ -58,7 +58,7 @@ failure. The exact table is:</p>
 </table>
 
 <p class="block">To be precise, the dummy code is contained within
-<i>libvxpdb</i>, the <i>drv_dummy</i> file just allows direct access to it.
+<i>libvxdb</i>, the <i>drv_dummy</i> file just allows direct access to it.
 Every module that does not provide its own functions will get a respective
 dummy substitute in its vtable upon loading, as is for example the case with
 <i>drv_mysql</i> which does not provide its own <code>-&gt;lock</code>.</p>

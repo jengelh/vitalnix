@@ -34,7 +34,7 @@ struct private_info {
 	unsigned int debug, no_add, no_update, no_delete, yestoall;
 
 	bool open_status;
-	struct vxpdb_state *db_handle;
+	struct vxdb_state *db_handle;
 	struct mdsync_workspace *mdsw;
 	time_t last_print;
 };
@@ -90,12 +90,12 @@ static bool sync_init(struct private_info *priv)
 	if (strcmp(priv->output_file, "-") == 0)
 		HX_strclone(&priv->output_file, "/dev/stdout");
 
-	if ((priv->db_handle = vxpdb_load(priv->db_name)) == NULL) {
+	if ((priv->db_handle = vxdb_load(priv->db_name)) == NULL) {
 		perror("Could not load database");
 		return false;
 	}
 
-	if ((ret = vxpdb_open(priv->db_handle, PDB_WRLOCK)) <= 0) {
+	if ((ret = vxdb_open(priv->db_handle, VXDB_WRLOCK)) <= 0) {
 		fprintf(stderr, "Could not open database: %s\n",
 		        strerror(-ret));
 		return false;
@@ -245,8 +245,8 @@ static void sync_cleanup(struct private_info *priv)
 		mdsync_free(priv->mdsw);
 	if (priv->db_handle != NULL) {
 		if (priv->open_status)
-			vxpdb_close(priv->db_handle);
-		vxpdb_unload(priv->db_handle);
+			vxdb_close(priv->db_handle);
+		vxdb_unload(priv->db_handle);
 	}
 	free(priv->db_name);
 	free(priv->group_name);
@@ -299,7 +299,7 @@ static void cb_report(unsigned int type, const struct mdsync_workspace *mdsw,
 
 static void print_compare_input(const struct mdsync_workspace *mdsw)
 {
-	printf("Comparing EDS to PDB\n");
+	printf("Comparing EDS to VXDB\n");
 	printf("%u user(s) in EDS list\n", mdsw->add_req->items);
 	return;
 }
@@ -307,7 +307,7 @@ static void print_compare_input(const struct mdsync_workspace *mdsw)
 static void print_compare_output(const struct mdsync_workspace *mdsw)
 {
 	printf(
-		"%u group member(s) found in PDB\n"
+		"%u group member(s) found in VXDB\n"
 		"	%u to keep and update group descriptors\n"
 		"	%u to start deferred deletion timer\n"
 		"	%u to wait for deletion\n"
@@ -341,7 +341,7 @@ static void print_compare_output2(const struct mdsync_workspace *mdsw)
 
 	if ((travp = HXbtrav_init(mdsw->update_req)) != NULL) {
 		while ((b = HXbtraverse(travp)) != NULL) {
-			const struct vxpdb_user *user = b->data;
+			const struct vxdb_user *user = b->data;
 			printf("U   %s (%s)\n", user->pw_name, user->pw_real);
 		}
 		HXbtrav_free(travp);

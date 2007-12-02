@@ -35,7 +35,7 @@ int db_open(struct shadow_state *state, unsigned int flags)
 {
 #define open_fd(n) ((state->n.fd = open(state->n.path, flags)) >= 0)
 #define open_fp(n) ((state->n.fp = fdopen(state->n.fd, fpmode)) != NULL)
-	const char *fpmode = (flags & PDB_WRLOCK) ? "r+" : "r";
+	const char *fpmode = (flags & VXDB_WRLOCK) ? "r+" : "r";
 	int ret;
 
 	if (!open_fd(fpasswd) || !open_fd(fgroup))
@@ -130,7 +130,7 @@ void db_close(struct shadow_state *state)
  */
 void db_flush(struct shadow_state *state, bool force)
 {
-	if (!force && !(state->flags & PDB_SYNC))
+	if (!force && !(state->flags & VXDB_SYNC))
 		return;
 
 	if (state->fpasswd.is_chg || state->fshadow.is_chg ||
@@ -159,7 +159,7 @@ static void db_flush_users(struct shadow_state *state)
 	}
 
 	while (travp != NULL) {
-		const struct vxpdb_user *u = travp->ptr;
+		const struct vxdb_user *u = travp->ptr;
 		db_write_passwd(state->fpasswd.fp, u);
 		db_write_shadow(state->fshadow.fp, u);
 		if (has_vx)

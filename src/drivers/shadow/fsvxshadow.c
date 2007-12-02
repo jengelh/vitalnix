@@ -27,7 +27,7 @@ static inline char *xmlGetProp_2s(xmlNode *, const char *);
 void db_read_vxshadow(const char *file, struct HXdeque *dq)
 {
 	char *name, *defer;
-	struct vxpdb_user *u;
+	struct vxdb_user *u;
 	xmlNode *ptr;
 	xmlDoc *doc;
 
@@ -45,7 +45,7 @@ void db_read_vxshadow(const char *file, struct HXdeque *dq)
 			continue;
 		if ((name = xmlGetProp_2s(ptr, "lname")) == NULL)
 			continue;
-		if ((u = lookup_user(dq, name, PDB_NOUID)) == NULL)
+		if ((u = lookup_user(dq, name, VXDB_NOUID)) == NULL)
 			continue;
 		u->vs_uuid  = xmlGetProp_2s(ptr, "uuid");
 		u->vs_pvgrp = xmlGetProp_2s(ptr, "pvgrp");
@@ -60,7 +60,7 @@ void db_read_vxshadow(const char *file, struct HXdeque *dq)
 	return;
 }
 
-void db_write_vxshadow(FILE *fp, const struct vxpdb_user *u)
+void db_write_vxshadow(FILE *fp, const struct vxdb_user *u)
 {
 	char *fm = NULL;
 	if (u->vs_uuid == NULL && u->vs_pvgrp == NULL && u->vs_defer == 0)

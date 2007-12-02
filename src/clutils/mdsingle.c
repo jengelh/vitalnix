@@ -33,7 +33,7 @@ struct private_info {
 	unsigned int interactive, run_master;
 
 	bool open_status;
-	struct vxpdb_state *db_handle;
+	struct vxdb_state *db_handle;
 	struct mdsync_workspace *mdsw;
 };
 
@@ -84,12 +84,12 @@ static int single_init(struct private_info *priv)
 		return 0;
 	}
 
-	if ((priv->db_handle = vxpdb_load(priv->db_name)) == NULL) {
+	if ((priv->db_handle = vxdb_load(priv->db_name)) == NULL) {
 		perror("Error loading database");
 		return 0;
 	}
 
-	if ((ret = vxpdb_open(priv->db_handle, PDB_WRLOCK)) <= 0) {
+	if ((ret = vxdb_open(priv->db_handle, VXDB_WRLOCK)) <= 0) {
 		fprintf(stderr, "Error opening database: %s\n",
 		        strerror(-ret));
 		return 0;
@@ -171,8 +171,8 @@ static void single_cleanup(struct private_info *priv)
 		mdsync_free(priv->mdsw);
 	if (priv->db_handle != NULL) {
 		if (priv->open_status)
-			vxpdb_close(priv->db_handle);
-		vxpdb_unload(priv->db_handle);
+			vxdb_close(priv->db_handle);
+		vxdb_unload(priv->db_handle);
 	}
 	free(priv->db_name);
 	free(priv->bday);
@@ -293,26 +293,26 @@ static void single_interactive(struct private_info *priv)
 
 static int validate_group(const struct vxcq_entry *e)
 {
-	struct vxpdb_group group = {};
-	struct vxpdb_state *mh;
+	struct vxdb_group group = {};
+	struct vxdb_state *mh;
 	const char *group_name = *static_cast(const char **, e->ptr);
 	int ret;
 
-	if ((mh = vxpdb_load(e->uptr)) == NULL) {
+	if ((mh = vxdb_load(e->uptr)) == NULL) {
 		fprintf(stderr, "Could not load database for group "
 		        "validation: %s\n", strerror(errno));
 		return 0;
 	}
-	if ((ret = vxpdb_open(mh, 0)) <= 0) {
+	if ((ret = vxdb_open(mh, 0)) <= 0) {
 		fprintf(stderr, "Could not open database for group "
 		        "validation: %s\n", strerror(-ret));
 		goto out_open;
 	}
 
 	if (vxutil_only_digits(group_name))
-		ret = vxpdb_getgrgid(mh, strtol(group_name, NULL, 0), &group);
+		ret = vxdb_getgrgid(mh, strtol(group_name, NULL, 0), &group);
 	else
-		ret = vxpdb_getgrnam(mh, group_name, &group);
+		ret = vxdb_getgrnam(mh, group_name, &group);
 
 	if (ret < 0)
 		fprintf(stderr, "Error querying database for group "
@@ -320,10 +320,10 @@ static int validate_group(const struct vxcq_entry *e)
 	else if (ret == 0)
 		fprintf(stderr, "Group \"%s\" does not exist\n", group_name);
 
-	vxpdb_group_free(&group, false);
+	vxdb_group_free(&group, false);
 
  out_open:
-	vxpdb_unload(mh);
+	vxdb_unload(mh);
 	return ret > 0;
 }
 

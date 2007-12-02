@@ -113,19 +113,19 @@ static void read_eds(struct HXdeque *workspace)
 	return;
 }
 
-static void read_pdb(struct HXdeque *workspace, struct vxpdb_state *dbh)
+static void read_vxdb(struct HXdeque *workspace, struct vxdb_state *dbh)
 {
-	struct vxpdb_user user = {};
+	struct vxdb_user user = {};
 	struct ckentry *obj;
 	void *trav;
 
-	trav = vxpdb_usertrav_init(dbh);
+	trav = vxdb_usertrav_init(dbh);
 	if (trav == NULL) {
-		perror("vxpdb_usertrav_init");
+		perror("vxdb_usertrav_init");
 		return;
 	}
 
-	while (vxpdb_usertrav_walk(dbh, trav, &user) > 0) {
+	while (vxdb_usertrav_walk(dbh, trav, &user) > 0) {
 		if (user.vs_uuid == NULL)
 			continue;
 		obj = malloc(sizeof(*obj));
@@ -139,11 +139,11 @@ static void read_pdb(struct HXdeque *workspace, struct vxpdb_state *dbh)
 		user.vs_uuid         = NULL;
 		user.pw_real         = NULL;
 		HXdeque_push(workspace, obj);
-		vxpdb_user_free(&user, false);
-		vxpdb_user_clean(&user);
+		vxdb_user_free(&user, false);
+		vxdb_user_clean(&user);
 	}
 
-	vxpdb_usertrav_free(dbh, trav);
+	vxdb_usertrav_free(dbh, trav);
 	return;
 }
 
@@ -208,35 +208,35 @@ static unsigned int levd(const char *s, unsigned int width,
 }
 
 /*
- * levd_p - compare a pdb with an eds entry
+ * levd_p -
  * @pair:	pair structure
- * @pdb:	PDB entry
+ * @vxdb:	VXDB entry
  * @eds:	EDS entry
  *
- * Compares a PDB with an EDS entry, calculates their distances,
+ * Compares a VXDB with an EDS entry, calculates their distances,
  * add weighting and make a final distance for sorting.
  */
-static void levd_p(struct levd_pair *pair, const struct ckentry *pdb,
+static void levd_p(struct levd_pair *pair, const struct ckentry *vxdb,
     const struct ckentry *eds)
 {
-	unsigned int pdb_len, eds_len, w;
-	char *pdb_uuid, *eds_uuid, *ptr;
+	unsigned int vxdb_len, eds_len, w;
+	char *vxdb_uuid, *eds_uuid, *ptr;
 
 	/*
 	 * Do not compare the whole UUID if it is VX3A. It contains
 	 * an MD5 sum of the full name, which is not helpful at all
 	 * for Levenshtein distance. Also skip the {type} specifier.
 	 */
-	if (strncmp(pdb->entry.uuid, "{VX3A}", sizeof_s("{VX3A}")) == 0) {
-		pdb_uuid = pdb->entry.uuid + sizeof_s("{VX3A}");
-		pdb_len  = 6;
-	} else if (*pdb->entry.uuid == '{' &&
-	    (ptr = strchr(pdb->entry.uuid, '}')) != NULL) {
-		pdb_uuid = ptr + 1;
-		pdb_len  = strlen(pdb_uuid);
+	if (strncmp(vxdb->entry.uuid, "{VX3A}", sizeof_s("{VX3A}")) == 0) {
+		vxdb_uuid = vxdb->entry.uuid + sizeof_s("{VX3A}");
+		vxdb_len  = 6;
+	} else if (*vxdb->entry.uuid == '{' &&
+	    (ptr = strchr(vxdb->entry.uuid, '}')) != NULL) {
+		vxdb_uuid = ptr + 1;
+		vxdb_len  = strlen(vxdb_uuid);
 	} else {
-		pdb_uuid = pdb->entry.uuid;
-		pdb_len  = strlen(pdb_uuid);
+		vxdb_uuid = vxdb->entry.uuid;
+		vxdb_len  = strlen(vxdb_uuid);
 	}
 
 	if (strncmp(eds->entry.uuid, "{VX3A}", sizeof_s("{VX3A}")) == 0) {
@@ -251,9 +251,9 @@ static void levd_p(struct levd_pair *pair, const struct ckentry *pdb,
 		eds_len  = strlen(eds_uuid);
 	}
 
-	pair->x = pdb;
+	pair->x = vxdb;
 	pair->y = eds;
-	pair->uuid_dist = levd(pdb_uuid, pdb_len, eds_uuid, eds_len);
+	pair->uuid_dist = levd(vxdb_uuid, vxdb_len, eds_uuid, eds_len);
 
 	/*
 	 * Tests have shown that in medium-scale environments (testcase:
@@ -266,7 +266,7 @@ static void levd_p(struct levd_pair *pair, const struct ckentry *pdb,
 	 * actually incur an extra distance of up to 12 (I think);
 	 * usually it is 2 to 4 in the normal case (Latin characters).
 	 */
-	w = levd(pdb->entry.full_name, strlen(pdb->entry.full_name),
+	w = levd(vxdb->entry.full_name, strlen(vxdb->entry.full_name),
 	         eds->entry.full_name, strlen(eds->entry.full_name));
 	pair->name_dist = w * w;
 
@@ -291,7 +291,7 @@ static int sort_by_distance(const void *va, const void *vb)
 	return (*a)->combined_dist - (*b)->combined_dist;
 }
 
-static void output(const struct HXdeque *pdb, const struct HXdeque *eds)
+static void output(const struct HXdeque *vxdb, const struct HXdeque *eds)
 {
 	const struct HXdeque_node *y, *x;
 	struct HXdeque *pair_list = HXdeque_init();
@@ -299,7 +299,7 @@ static void output(const struct HXdeque *pdb, const struct HXdeque *eds)
 	unsigned int i = 0;
 	void **pair_flat;
 
-	for (y = pdb->first; y != NULL; y = y->next) {
+	for (y = vxdb->first; y != NULL; y = y->next) {
 		struct levd_pair p;
 
 		for (x = eds->first; x != NULL; x = x->next) {
@@ -311,7 +311,7 @@ static void output(const struct HXdeque *pdb, const struct HXdeque *eds)
 		}
 		++i;
 		if (tty && timebolt())
-			fprintf(stderr, "\r\e[2K" "%u/%u", i, pdb->items);
+			fprintf(stderr, "\r\e[2K" "%u/%u", i, vxdb->items);
 	}
 
 	if (tty)
@@ -350,22 +350,22 @@ static void output(const struct HXdeque *pdb, const struct HXdeque *eds)
 
 static int run1(void)
 {
-	struct HXdeque *workspace_pdb, *workspace_eds;
-	struct vxpdb_state *dbh;
+	struct HXdeque *workspace_vxdb, *workspace_eds;
+	struct vxdb_state *dbh;
 	int ret;
 
-	if ((dbh = vxpdb_load(ck_db_name)) == NULL) {
+	if ((dbh = vxdb_load(ck_db_name)) == NULL) {
 		perror("Could not load database");
 		return EXIT_FAILURE;
 	}
 
-	if ((ret = vxpdb_open(dbh, 0)) <= 0) {
+	if ((ret = vxdb_open(dbh, 0)) <= 0) {
 		fprintf(stderr, "Could not open database: %s\n",
 		        strerror(-ret));
 		goto out;
 	}
 
-	if ((workspace_pdb = HXdeque_init()) == NULL) {
+	if ((workspace_vxdb = HXdeque_init()) == NULL) {
 		perror("malloc");
 		goto out2;
 	}
@@ -375,15 +375,15 @@ static int run1(void)
 	}
 
 	read_eds(workspace_eds);
-	read_pdb(workspace_pdb, dbh);
-	output(workspace_pdb, workspace_eds);
+	read_vxdb(workspace_vxdb, dbh);
+	output(workspace_vxdb, workspace_eds);
 	HXdeque_genocide(workspace_eds);
  out3:
-	HXdeque_genocide(workspace_pdb);
+	HXdeque_genocide(workspace_vxdb);
  out2:
-	vxpdb_close(dbh);
+	vxdb_close(dbh);
  out:
-	vxpdb_unload(dbh);
+	vxdb_unload(dbh);
 	return ret;
 }
 

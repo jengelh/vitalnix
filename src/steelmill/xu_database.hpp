@@ -17,8 +17,8 @@
 #endif
 #include "steelmill/xu_common.hpp"
 
-struct vxpdb_state;
+struct vxdb_state;
 
-extern struct vxpdb_state *database_open(long, wxWindow *);
+extern struct vxdb_state *database_open(long, wxWindow *);
 
 #endif /* STEELMILL_XU_DATABASE_HPP */

@@ -26,8 +26,8 @@
       <li><a href="clutils-mdpwlfmt.php">mdpwlfmt</a></li>
       <li><a href="clutils-mdsingle.php">mdsingle</a></li>
       <li><a href="clutils-mdsync.php">mdsync</a></li>
-      <li><a href="clutils-pdbdump.php">pdbdump</a></li>
-      <li><a href="clutils-pdbinfo.php">pdbinfo</a></li>
+      <li><a href="clutils-pdbdump.php">vxdbdump</a></li>
+      <li><a href="clutils-pdbinfo.php">vxdbinfo</a></li>
       <li><a href="clutils-randpw.php">randpw</a></li>
       <li><a href="clutils-tryauth.php">tryauth</a></li>
     </ul></li>
@@ -73,10 +73,10 @@
   <li><a href="api-libvxcgi.php">libvxcgi</a></li>
   <li><a href="api-libvxcli.php">libvxcli</a></li>
   <li><a href="api-libvxcore.php">libvxcore</a></li>
+  <li><a href="api-libvxpdb.php">libvxdb</a></li>
   <li><a href="api-libvxeds.php">libvxeds</a></li>
   <li><a href="api-libvxmdfmt.php">libvxmdfmt</a></li>
   <li><a href="api-libvxmdsync.php">libvxmdsync</a></li>
-  <li><a href="api-libvxpdb.php">libvxpdb</a></li>
   <li><a href="api-libvxutil.php">libvxutil</a></li>
 </ul>
 

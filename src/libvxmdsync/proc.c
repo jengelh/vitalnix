@@ -46,23 +46,23 @@ static inline char *now_in_ymdhms(char *, size_t);
 //-----------------------------------------------------------------------------
 EXPORT_SYMBOL void mdsync_compare(struct mdsync_workspace *w)
 {
-	const struct vxpdb_group *grp = &w->dest_group;
+	const struct vxdb_group *grp = &w->dest_group;
 	const struct HXbtree_node *ln_node;
 	unsigned int users_proc, users_max, decision;
-	struct vxpdb_user pwd = {};
+	struct vxdb_user pwd = {};
 	struct vxeds_entry *eds;
 	bool analyze;
 	const unsigned int defer = w->config.add_opts.defaults.vs_defer;
 	void *travp;
 
 	users_proc = 0;
-	users_max  = vxpdb_modctl(w->database, PDB_COUNT_USERS);
-	travp      = vxpdb_usertrav_init(w->database);
+	users_max  = vxdb_modctl(w->database, VXDB_COUNT_USERS);
+	travp      = vxdb_usertrav_init(w->database);
 
-	while (vxpdb_usertrav_walk(w->database, travp, &pwd)) {
+	while (vxdb_usertrav_walk(w->database, travp, &pwd)) {
 		/* Record username in @lnlist */
 		ln_node = HXbtree_add(w->lnlist, pwd.pw_name);
-		analyze = (grp->gr_gid != PDB_NOGID && grp->gr_gid == pwd.pw_gid) ||
+		analyze = (grp->gr_gid != VXDB_NOGID && grp->gr_gid == pwd.pw_gid) ||
 		          (grp->gr_name != NULL && pwd.pw_igrp != NULL &&
 		          strcmp(grp->gr_name, pwd.pw_igrp) == 0);
 
@@ -77,12 +77,13 @@ EXPORT_SYMBOL void mdsync_compare(struct mdsync_workspace *w)
 		if (pwd.vs_uuid != NULL &&
 		    (eds = HXbtree_get(w->add_req, pwd.vs_uuid)) != NULL) {
 			/*
-			 * PDB user found in EDS: Keep, and remove from add_req
+			 * VXDB user found in EDS:
+			 * Keep, and remove from add_req
 			 */
 			decision = ACTION_UPDATE | ((pwd.vs_defer != 0) ?
 			           ACTION_DEFER_STOP : 0);
 		} else if (defer != 0) {
-			/* PDB user not found in EDS */
+			/* VXDB user not found in EDS */
 			if (pwd.vs_defer == 0)
 				decision = ACTION_DEFER_START;
 			else if (vxutil_now_iday() >= pwd.vs_defer + defer)
@@ -102,7 +103,7 @@ EXPORT_SYMBOL void mdsync_compare(struct mdsync_workspace *w)
 		 */
 		if (decision & ACTION_UPDATE) {
 			if (strcmp(eds->pvgrp, pwd.vs_uuid) != 0) {
-				struct vxpdb_user *copy = vxpdb_user_dup(&pwd);
+				struct vxdb_user *copy = vxdb_user_dup(&pwd);
 				hmc_strasg(&copy->vs_pvgrp, eds->pvgrp);
 				HXbtree_add(w->update_req, copy->vs_uuid, copy);
 			}
@@ -125,8 +126,8 @@ EXPORT_SYMBOL void mdsync_compare(struct mdsync_workspace *w)
 		 */
 	}
 
-	vxpdb_usertrav_free(w->database, travp);
-	vxpdb_user_free(&pwd, false);
+	vxdb_usertrav_free(w->database, travp);
+	vxdb_user_free(&pwd, false);
 	if (w->report != NULL)
 		w->report(MDREP_COMPARE, w, users_max, users_max);
 	return;
@@ -134,23 +135,23 @@ EXPORT_SYMBOL void mdsync_compare(struct mdsync_workspace *w)
 
 EXPORT_SYMBOL void mdsync_compare_simple(struct mdsync_workspace *w)
 {
-	void *travp = vxpdb_usertrav_init(w->database);
-	struct vxpdb_user pwd = {};
+	void *travp = vxdb_usertrav_init(w->database);
+	struct vxdb_user pwd = {};
 	int count, count_max;
 
 	count     = 0;
-	count_max = vxpdb_modctl(w->database, PDB_COUNT_USERS);
+	count_max = vxdb_modctl(w->database, VXDB_COUNT_USERS);
 
 	if (travp != NULL)
-		while (vxpdb_usertrav_walk(w->database, travp, &pwd)) {
+		while (vxdb_usertrav_walk(w->database, travp, &pwd)) {
 			/* No invalid references later, thanks to %HXBT_CDATA */
 			HXbtree_add(w->lnlist, pwd.pw_name);
 			if (w->report != NULL)
 				w->report(MDREP_COMPARE, w, ++count, count_max);
 		}
 
-	vxpdb_usertrav_free(w->database, travp);
-	vxpdb_user_free(&pwd, false);
+	vxdb_usertrav_free(w->database, travp);
+	vxdb_user_free(&pwd, false);
 	return;
 }
 
@@ -161,8 +162,8 @@ EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
 	char home_path[MAXFNLEN], plain_pw[64];
 	unsigned int users_proc, users_max;
 	const struct HXbtree_node *node;
-	struct vxpdb_user chk = {};
-	struct vxpdb_user out;
+	struct vxdb_user chk = {};
+	struct vxdb_user out;
 	void *travp;
 	int ret = 1;
 
@@ -199,9 +200,9 @@ EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
 	while ((node = HXbtraverse(travp)) != NULL) {
 		struct vxeds_entry *in = node->data;
 
-		vxpdb_user_clean(&out);
+		vxdb_user_clean(&out);
 		out.pw_name  = in->username;
-		out.pw_uid   = PDB_AUTOUID;
+		out.pw_uid   = VXDB_AUTOUID;
 		out.pw_gid   = w->dest_group.gr_gid;
 		out.pw_igrp  = w->dest_group.gr_name;
 		out.pw_real  = in->full_name;
@@ -239,12 +240,12 @@ EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
 			vxutil_replace_run(c->add_opts.user_preadd,
 			                   user_catalog);
 
-		if ((ret = vxpdb_useradd(w->database, &out)) <= 0 ||
-		    (ret = vxpdb_getpwnam(w->database, out.pw_name, &chk)) <= 0)
+		if ((ret = vxdb_useradd(w->database, &out)) <= 0 ||
+		    (ret = vxdb_getpwnam(w->database, out.pw_name, &chk)) <= 0)
 			break;
 
 		if (c->postadd_flush && c->add_opts.user_postadd != NULL)
-			vxpdb_modctl(w->database, PDB_FLUSH);
+			vxdb_modctl(w->database, VXDB_FLUSH);
 
 		if (w->logfile == NULL) {
 			hmc_strcat(&w->output_data, out.pw_name);
@@ -276,8 +277,8 @@ EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
 
 	memset(plain_pw, 0, sizeof(plain_pw));
 	HXbtrav_free(travp);
-	vxpdb_modctl(w->database, PDB_FLUSH);
-	vxpdb_user_free(&chk, false);
+	vxdb_modctl(w->database, VXDB_FLUSH);
+	vxdb_user_free(&chk, false);
 
 	if (ret > 0 && c->add_opts.master_postadd != NULL)
 		vxutil_replace_run(c->add_opts.master_postadd, master_catalog);
@@ -315,7 +316,7 @@ EXPORT_SYMBOL int mdsync_del(struct mdsync_workspace *w)
 	unsigned int users_proc, users_max;
 	char current_date[MAXSNLEN];
 	struct HXdeque_node *travp;
-	struct vxpdb_user res = {};
+	struct vxdb_user res = {};
 	int ret;
 
 	users_proc = 0;
@@ -352,8 +353,8 @@ EXPORT_SYMBOL int mdsync_del(struct mdsync_workspace *w)
 
 	for (travp = w->delete_now->first;
 	    travp != NULL; travp = travp->next) {
-		if ((ret = vxpdb_getpwnam(w->database, travp->ptr, &res)) < 0) {
-			fprintf(stderr, "%s()+pdb_getpwnam(): %s\n",
+		if ((ret = vxdb_getpwnam(w->database, travp->ptr, &res)) < 0) {
+			fprintf(stderr, "%s()+vxdb_getpwnam(): %s\n",
 			        __func__, strerror(errno));
 			return ret;
 		} else if (ret == 0) {
@@ -367,8 +368,8 @@ EXPORT_SYMBOL int mdsync_del(struct mdsync_workspace *w)
 
 		HX_rrmdir(res.pw_home);
 
-		if ((ret = vxpdb_userdel(w->database, res.pw_name)) < 0) {
-			fprintf(stderr, "%s()+pdb_userdel(): %s\n",
+		if ((ret = vxdb_userdel(w->database, res.pw_name)) < 0) {
+			fprintf(stderr, "%s()+vxdb_userdel(): %s\n",
 			        __func__, strerror(errno));
 			return ret;
 		}
@@ -389,7 +390,7 @@ EXPORT_SYMBOL int mdsync_del(struct mdsync_workspace *w)
 	if (user_catalog != NULL)
 		HXformat_free(user_catalog);
 
-	vxpdb_user_free(&res, false);
+	vxdb_user_free(&res, false);
 	return 1;
 }
 
@@ -398,17 +399,17 @@ static int mdsync_update(struct mdsync_workspace *w)
 {
 	unsigned int users_proc = 0, users_max = w->update_req->items;
 	void *travp = HXbtrav_init(w->update_req);
-	struct vxpdb_user mod_rq;
+	struct vxdb_user mod_rq;
 	const struct HXbtree_node *node;
-	const struct vxpdb_user *act;
+	const struct vxdb_user *act;
 	int ret;
 
 	while ((node = HXbtraverse(travp)) != NULL) {
-		vxpdb_user_nomodify(&mod_rq);
+		vxdb_user_nomodify(&mod_rq);
 		act = node->data;
 		mod_rq.vs_pvgrp   = act->vs_pvgrp;
 
-		ret = vxpdb_usermod(w->database, act->pw_name, &mod_rq);
+		ret = vxdb_usermod(w->database, act->pw_name, &mod_rq);
 		if (ret <= 0)
 			return ret;
 		if (w->report != NULL)
@@ -421,16 +422,16 @@ static int mdsync_update(struct mdsync_workspace *w)
 static int mdsync_defer_start(struct mdsync_workspace *w)
 {
 	unsigned int users_proc = 0, users_max = w->defer_start->items;
-	struct vxpdb_user mod_rq;
+	struct vxdb_user mod_rq;
 	const struct HXdeque_node *node;
 	long today = vxutil_now_iday();
 	int ret;
 
 	for (node = w->defer_start->first; node != NULL; node = node->next) {
-		vxpdb_user_nomodify(&mod_rq);
+		vxdb_user_nomodify(&mod_rq);
 		mod_rq.vs_defer   = today;
 
-		ret = vxpdb_usermod(w->database, node->ptr, &mod_rq);
+		ret = vxdb_usermod(w->database, node->ptr, &mod_rq);
 		if (ret <= 0)
 			return ret;
 		if (w->report != NULL)
@@ -443,15 +444,15 @@ static int mdsync_defer_start(struct mdsync_workspace *w)
 static int mdsync_defer_stop(struct mdsync_workspace *w)
 {
 	unsigned int users_proc = 0, users_max = w->defer_stop->items;
-	struct vxpdb_user mod_rq;
+	struct vxdb_user mod_rq;
 	const struct HXdeque_node *node;
 	int ret;
 
 	for (node = w->defer_stop->first; node != NULL; node = node->next) {
-		vxpdb_user_nomodify(&mod_rq);
+		vxdb_user_nomodify(&mod_rq);
 		mod_rq.vs_defer   = 0;
 
-		ret = vxpdb_usermod(w->database, node->ptr, &mod_rq);
+		ret = vxdb_usermod(w->database, node->ptr, &mod_rq);
 		if (ret <= 0)
 			return ret;
 		if (w->report != NULL)

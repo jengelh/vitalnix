@@ -66,7 +66,7 @@ const struct time_period timetable_sek2[] = {
 #define PAM_DENY PAM_PERM_DENIED
 
 //-----------------------------------------------------------------------------
-static inline bool is_schueler(const struct vxpdb_user *u)
+static inline bool is_schueler(const struct vxdb_user *u)
 {
 	return u->pw_gid == 600 /* schueler */ || u->pw_gid == 604 /* extsc */;
 /*	return g != NULL && (strcmp(g, "schueler") == 0 ||
@@ -103,7 +103,7 @@ static time_t ourtime(void)
 	return n.tm_hour * 3600 + n.tm_min * 60 + n.tm_sec;
 }
 
-static unsigned int get_vitalnixgroup(const struct vxpdb_user *user)
+static unsigned int get_vitalnixgroup(const struct vxdb_user *user)
 {
 	if (user->vs_pvgrp != NULL)
 		return strtoul(user->vs_pvgrp, NULL, 0);
@@ -130,15 +130,15 @@ static bool ts_allowed(time_t now, const struct time_period *tbp)
 	return allow;
 }
 
-static int ihlogon(const char *user, const char *rhost,
-    struct vxpdb_user *info, struct vxpdb_state *db, unsigned int mask)
+static int ihlogon(const char *user, const char *rhost, struct vxdb_user *info,
+    struct vxdb_state *db, unsigned int mask)
 {
 	time_t now = ourtime();
 	unsigned int pgrp;
 	int ret;
 
-	if ((ret = vxpdb_getpwnam(db, user, info)) < 0) {
-		syslog(LOG_INFO, "vxpdb_userinfo(): %s\n", strerror(ret));
+	if ((ret = vxdb_getpwnam(db, user, info)) < 0) {
+		syslog(LOG_INFO, "vxdb_userinfo(): %s\n", strerror(ret));
 		return PAM_IGNORE;
 	} else if (ret == 0) {
 		syslog(LOG_INFO, "User \"%s\" does not exist\n", user);
@@ -173,25 +173,25 @@ static int ihlogon(const char *user, const char *rhost,
 
 static int ihlogon_init(const char *user, const char *rhost, unsigned int mask)
 {
-	struct vxpdb_user uinfo = {};
-	struct vxpdb_state *db;
+	struct vxdb_user uinfo = {};
+	struct vxdb_state *db;
 	int ret;
 
-	if ((db = vxpdb_load("*")) == NULL) {
-		syslog(LOG_INFO, "vxpdb_load() failed: %s\n", strerror(errno));
+	if ((db = vxdb_load("*")) == NULL) {
+		syslog(LOG_INFO, "vxdb_load() failed: %s\n", strerror(errno));
 		return PAM_SUCCESS;
 	}
 
-	if ((ret = vxpdb_open(db, 0)) <= 0) {
-		syslog(LOG_INFO, "vxpdb_open(): %s\n", strerror(ret));
-		vxpdb_unload(db);
+	if ((ret = vxdb_open(db, 0)) <= 0) {
+		syslog(LOG_INFO, "vxdb_open(): %s\n", strerror(ret));
+		vxdb_unload(db);
 		return PAM_SUCCESS;
 	}
 
 	ret = ihlogon(user, rhost, &uinfo, db, mask);
-	vxpdb_close(db);
-	vxpdb_unload(db);
-	vxpdb_user_free(&uinfo, false);
+	vxdb_close(db);
+	vxdb_unload(db);
+	vxdb_user_free(&uinfo, false);
 	return ret;
 }
 

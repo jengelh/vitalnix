@@ -90,10 +90,10 @@ EXPORT_SYMBOL int mdsync_prepare_group(struct mdsync_workspace *w,
     const char *name)
 {
 	if (vxutil_only_digits(name))
-		return vxpdb_getgrgid(w->database, strtol(name, NULL, 0),
+		return vxdb_getgrgid(w->database, strtol(name, NULL, 0),
 		       &w->dest_group);
 	else
-		return vxpdb_getgrnam(w->database, name, &w->dest_group);
+		return vxdb_getgrnam(w->database, name, &w->dest_group);
 }
 
 EXPORT_SYMBOL int mdsync_open_log(struct mdsync_workspace *w,
@@ -146,7 +146,7 @@ EXPORT_SYMBOL void mdsync_free(struct mdsync_workspace *w)
 	}
 
 	/* mdsync_prepare_group() */
-	vxpdb_group_free(&w->dest_group, false);
+	vxdb_group_free(&w->dest_group, false);
 	return;
 }
 
@@ -176,7 +176,7 @@ static void kill_eds(const struct HXbtree_node *node)
  */
 static void kill_pwd(const struct HXbtree_node *node)
 {
-	vxpdb_user_free(node->data, true);
+	vxdb_user_free(node->data, true);
 	if (node->sub[0] != NULL)
 		kill_pwd(node->sub[0]);
 	if (node->sub[1] != NULL)

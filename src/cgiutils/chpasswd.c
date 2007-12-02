@@ -151,7 +151,7 @@ static bool change_password(const char *user, const char *pass)
 	 * chpasswd seems to check UID rather than EUID, that's why there is
 	 * the call to setuid(0);
 	 */
-	/* FIXME: Better do this with libvxpdb */
+	/* FIXME: Better do this with libvxdb */
 	cf = popen("/usr/sbin/chpasswd -cblowfish", "w");
 	setuid(uid);
 	seteuid(uid);

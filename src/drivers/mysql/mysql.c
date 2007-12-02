@@ -81,10 +81,10 @@ static inline void vmysql_xunlock(struct mysql_state *);
 static int vmysql_userdel_unlocked(struct mysql_state *, const char *);
 
 static unsigned int count_rows(struct mysql_state *, const char *);
-static void export_passwd(struct vxpdb_user *, const MYSQL_ROW);
-static void export_shadow(struct vxpdb_user *, const MYSQL_ROW);
-static inline void export_vxshadow(struct vxpdb_user *, const MYSQL_ROW);
-static inline void export_group(struct vxpdb_group *, const MYSQL_ROW);
+static void export_passwd(struct vxdb_user *, const MYSQL_ROW);
+static void export_shadow(struct vxdb_user *, const MYSQL_ROW);
+static inline void export_vxshadow(struct vxdb_user *, const MYSQL_ROW);
+static inline void export_group(struct vxdb_group *, const MYSQL_ROW);
 static unsigned int find_next_id(struct mysql_state *, unsigned int);
 static inline long ito_expire(long);
 static inline long ito_inact(long);
@@ -93,12 +93,12 @@ static void read_config(struct mysql_state *, unsigned int, const char *);
 static void read_config_cb(const struct HXoptcb *);
 static char *s_join(const char *, ...);
 static hmc_t *sql_groupmask(hmc_t **, const struct mysql_state *,
-	const struct vxpdb_group *, unsigned int);
+	const struct vxdb_group *, unsigned int);
 static hmc_t *sql_usermask(hmc_t **, const struct mysql_state *,
-	const struct vxpdb_user *, unsigned int);
+	const struct vxdb_user *, unsigned int);
 
 //-----------------------------------------------------------------------------
-static int vmysql_init(struct vxpdb_state *vp, const char *config_file)
+static int vmysql_init(struct vxdb_state *vp, const char *config_file)
 {
 	struct mysql_state *st;
 	struct mq_names *nm;
@@ -153,7 +153,7 @@ static int vmysql_init(struct vxpdb_state *vp, const char *config_file)
 	return 1;
 }
 
-static void vmysql_exit(struct vxpdb_state *vp)
+static void vmysql_exit(struct vxdb_state *vp)
 {
 	struct mysql_state *state = vp->state;
 	read_config(state, CONFIG_FREE, NULL);
@@ -161,7 +161,7 @@ static void vmysql_exit(struct vxpdb_state *vp)
 	return;
 }
 
-static int vmysql_open(struct vxpdb_state *vp, unsigned int flags)
+static int vmysql_open(struct vxdb_state *vp, unsigned int flags)
 {
 	struct mysql_state *state  = vp->state;
 	const struct mq_conn *conn = &state->cn;
@@ -224,7 +224,7 @@ static int vmysql_open(struct vxpdb_state *vp, unsigned int flags)
 	return 1;
 }
 
-static void vmysql_close(struct vxpdb_state *vp)
+static void vmysql_close(struct vxdb_state *vp)
 {
 	struct mysql_state *state = vp->state;
 	mysql_close(state->cn.handle);
@@ -268,20 +268,20 @@ static inline void vmysql_xunlock(struct mysql_state *state)
 	return;
 }
 
-static long vmysql_modctl(struct vxpdb_state *vp, unsigned int command, ...)
+static long vmysql_modctl(struct vxdb_state *vp, unsigned int command, ...)
 {
 	struct mysql_state *state = vp->state;
 
 	errno = 0;
 	switch (command) {
-		case PDB_COUNT_USERS:
+		case VXDB_COUNT_USERS:
 			return count_rows(state, state->names.pw_table);
-		case PDB_COUNT_GROUPS:
+		case VXDB_COUNT_GROUPS:
 			return count_rows(state, state->names.gr_table);
-		case PDB_NEXTUID_SYS:
-		case PDB_NEXTUID:
-		case PDB_NEXTGID_SYS:
-		case PDB_NEXTGID:
+		case VXDB_NEXTUID_SYS:
+		case VXDB_NEXTUID:
+		case VXDB_NEXTGID_SYS:
+		case VXDB_NEXTGID:
 			return find_next_id(state, command);
 	}
 
@@ -289,8 +289,8 @@ static long vmysql_modctl(struct vxpdb_state *vp, unsigned int command, ...)
 }
 
 //-----------------------------------------------------------------------------
-static int vmysql_useradd(struct vxpdb_state *vp,
-    const struct vxpdb_user *rq)
+static int vmysql_useradd(struct vxdb_state *vp,
+    const struct vxdb_user *rq)
 {
 	struct mysql_state *state    = vp->state;
 	const struct mq_names *names = &state->names;
@@ -356,8 +356,8 @@ static int vmysql_useradd(struct vxpdb_state *vp,
 	return -ret;
 }
 
-static int vmysql_usermod(struct vxpdb_state *vp, const char *name,
-    const struct vxpdb_user *param)
+static int vmysql_usermod(struct vxdb_state *vp, const char *name,
+    const struct vxdb_user *param)
 {
 	/*
 	struct mysql_state *state = vp->state;
@@ -371,7 +371,7 @@ static int vmysql_usermod(struct vxpdb_state *vp, const char *name,
 	return 0;
 }
 
-static int vmysql_userdel(struct vxpdb_state *vp, const char *name)
+static int vmysql_userdel(struct vxdb_state *vp, const char *name)
 {
 	struct mysql_state *state = vp->state;
 	int ret;
@@ -426,7 +426,7 @@ static int vmysql_userdel_unlocked(struct mysql_state *state, const char *name)
 	return -E2BIG;
 }
 
-static void *vmysql_usertrav_init(struct vxpdb_state *vp)
+static void *vmysql_usertrav_init(struct vxdb_state *vp)
 {
 	struct mysql_state *state    = vp->state;
 	const struct mq_names *names = &state->names;
@@ -465,8 +465,8 @@ static void *vmysql_usertrav_init(struct vxpdb_state *vp)
 	return HX_memdup(&trav, sizeof(struct traverser_state));
 }
 
-static int vmysql_usertrav_walk(struct vxpdb_state *vp, void *ptr,
-    struct vxpdb_user *res)
+static int vmysql_usertrav_walk(struct vxdb_state *vp, void *ptr,
+    struct vxdb_user *res)
 {
 	struct mysql_state *state = vp->state;
 	struct traverser_state *trav = ptr;
@@ -480,7 +480,7 @@ static int vmysql_usertrav_walk(struct vxpdb_state *vp, void *ptr,
 	if ((ret = mysql_errno(state->cn.handle)) != 0)
 		return -ret;
 	columns = mysql_num_fields(trav->res);
-	vxpdb_user_clean(res);
+	vxdb_user_clean(res);
 
 	/* -- part 1 -- */
 	if (columns < 6)
@@ -512,7 +512,7 @@ static int vmysql_usertrav_walk(struct vxpdb_state *vp, void *ptr,
 	return 1;
 }
 
-static void vmysql_usertrav_free(struct vxpdb_state *vp, void *ptr)
+static void vmysql_usertrav_free(struct vxdb_state *vp, void *ptr)
 {
 	struct traverser_state *trav = ptr;
 	mysql_free_result(trav->res);
@@ -520,8 +520,8 @@ static void vmysql_usertrav_free(struct vxpdb_state *vp, void *ptr)
 	return;
 }
 
-static int vmysql_groupadd(struct vxpdb_state *vp,
-    const struct vxpdb_group *rq)
+static int vmysql_groupadd(struct vxdb_state *vp,
+    const struct vxdb_group *rq)
 {
 	struct mysql_state *state = vp->state;
 	int ret;
@@ -532,13 +532,13 @@ static int vmysql_groupadd(struct vxpdb_state *vp,
 	return 0;
 }
 
-static int vmysql_groupmod(struct vxpdb_state *vp, const char *name,
-    const struct vxpdb_group *param)
+static int vmysql_groupmod(struct vxdb_state *vp, const char *name,
+    const struct vxdb_group *param)
 {
 	return 0;
 }
 
-static int vmysql_groupdel(struct vxpdb_state *vp, const char *name)
+static int vmysql_groupdel(struct vxdb_state *vp, const char *name)
 {
 	/*
 	struct mysql_state *state = vp->state;
@@ -548,7 +548,7 @@ static int vmysql_groupdel(struct vxpdb_state *vp, const char *name)
 
 	if (!state->have_shadow)
 		return -EACCES;
-	if (sr_mask->gr_name == NULL && sr_mask->gr_gid == PDB_NOGID)
+	if (sr_mask->gr_name == NULL && sr_mask->gr_gid == VXDB_NOGID)
 		return -EINVAL;
 	if ((ret = vmysql_xlock_group(state)) <= 0)
 		return ret;
@@ -565,7 +565,7 @@ static int vmysql_groupdel(struct vxpdb_state *vp, const char *name)
 	return 0; /* (ret == 0) ? 1 : ret; */
 }
 
-static void *vmysql_grouptrav_init(struct vxpdb_state *vp)
+static void *vmysql_grouptrav_init(struct vxdb_state *vp)
 {
 	struct mysql_state *state    = vp->state;
 	const struct mq_names *names = &state->names;
@@ -584,8 +584,8 @@ static void *vmysql_grouptrav_init(struct vxpdb_state *vp)
 	return HX_memdup(&trav, sizeof(struct traverser_state));
 }
 
-static int vmysql_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
-    struct vxpdb_group *res)
+static int vmysql_grouptrav_walk(struct vxdb_state *vp, void *ptr,
+    struct vxdb_group *res)
 {
 	struct mysql_state *st = vp->state;
 	struct traverser_state *trav = ptr;
@@ -604,7 +604,7 @@ static int vmysql_grouptrav_walk(struct vxpdb_state *vp, void *ptr,
 	return 1;
 }
 
-static void vmysql_grouptrav_free(struct vxpdb_state *vp, void *ptr)
+static void vmysql_grouptrav_free(struct vxdb_state *vp, void *ptr)
 {
 	struct traverser_state *trav = ptr;
 	mysql_free_result(trav->res);
@@ -634,7 +634,7 @@ static unsigned int count_rows(struct mysql_state *state, const char *table)
 	return ret;
 }
 
-static void export_passwd(struct vxpdb_user *dest, const MYSQL_ROW in)
+static void export_passwd(struct vxdb_user *dest, const MYSQL_ROW in)
 {
 	hmc_strasg(&dest->pw_name, in[0]);
 	if (in[1] != NULL)
@@ -647,7 +647,7 @@ static void export_passwd(struct vxpdb_user *dest, const MYSQL_ROW in)
 	return;
 }
 
-static void export_shadow(struct vxpdb_user *dest, const MYSQL_ROW in)
+static void export_shadow(struct vxdb_user *dest, const MYSQL_ROW in)
 {
 	/* in[0] is username, we do not to copy it again */
 	hmc_strasg(&dest->sp_passwd, in[1]);
@@ -666,7 +666,7 @@ static void export_shadow(struct vxpdb_user *dest, const MYSQL_ROW in)
 	return;
 }
 
-static inline void export_vxshadow(struct vxpdb_user *dest,
+static inline void export_vxshadow(struct vxdb_user *dest,
     const MYSQL_ROW in)
 {
 	hmc_strasg(&dest->vs_uuid, in[1]);
@@ -676,7 +676,7 @@ static inline void export_vxshadow(struct vxpdb_user *dest,
 	return;
 }
 
-static inline void export_group(struct vxpdb_group *dest, const MYSQL_ROW in)
+static inline void export_group(struct vxdb_group *dest, const MYSQL_ROW in)
 {
 	hmc_strasg(&dest->gr_name, in[0]);
 	if (in[1] != NULL)
@@ -692,7 +692,7 @@ static unsigned int find_next_id(struct mysql_state *state,
 	unsigned int start, end;
 	char query[256];
 
-	if (command == PDB_NEXTGID_SYS || command == PDB_NEXTGID) {
+	if (command == VXDB_NEXTGID_SYS || command == VXDB_NEXTGID) {
 		field = names->gr_gid;
 		table = names->gr_table;
 		start = state->gid_min;
@@ -703,7 +703,7 @@ static unsigned int find_next_id(struct mysql_state *state,
 		start = state->uid_min;
 		end   = state->uid_max;
 	}
-	if (command == PDB_NEXTGID_SYS || command == PDB_NEXTUID_SYS) {
+	if (command == VXDB_NEXTGID_SYS || command == VXDB_NEXTUID_SYS) {
 		end   = start - 1;
 		start = 1;
 	}
@@ -732,12 +732,12 @@ uid between 1500 and 1509;
 
 static inline long ito_expire(long d)
 {
-	return (d == -1) ? PDB_NO_EXPIRE : d;
+	return (d == -1) ? VXDB_NO_EXPIRE : d;
 }
 
 static inline long ito_inact(long d)
 {
-	return (d == -1) ? PDB_NO_INACTIVE : d;
+	return (d == -1) ? VXDB_NO_INACTIVE : d;
 }
 
 static int queryf(MYSQL *handle, const char *fmt, ...)
@@ -949,7 +949,7 @@ static char *s_join(const char *delim, ...)
 		n = 1; \
 	} while (0)
 static hmc_t *sql_groupmask(hmc_t **s, const struct mysql_state *state,
-    const struct vxpdb_group *mask, unsigned int flags)
+    const struct vxdb_group *mask, unsigned int flags)
 {
 	const struct mq_names *names = &state->names;
 	char tmp[ZU_32];
@@ -959,7 +959,7 @@ static hmc_t *sql_groupmask(hmc_t **s, const struct mysql_state *state,
 		fprintf(stderr, "Error: %s called with *s == NULL\n", __func__);
 	if (mask->gr_name != NULL)
 		PUT_S(names->gr_name, mask->gr_name);
-	if (mask->gr_gid != PDB_NOGID)
+	if (mask->gr_gid != VXDB_NOGID)
 		PUT_I(names->gr_gid, mask->gr_gid);
 	return *s;
 }
@@ -971,7 +971,7 @@ flags can contain:
 */
 
 static hmc_t *sql_usermask(hmc_t **s, const struct mysql_state *state,
-    const struct vxpdb_user *mask, unsigned int flags)
+    const struct vxdb_user *mask, unsigned int flags)
 {
 	const struct mq_names *names = &state->names;
 	char tmp[ZU_32];
@@ -987,11 +987,11 @@ static hmc_t *sql_usermask(hmc_t **s, const struct mysql_state *state,
 		if ((flags & MASK_SET) && state->perm_vxshadow)
 			PUT_S(names->vs_user, mask->pw_name);
 	}
-	if (mask->pw_uid != PDB_NOUID)
+	if (mask->pw_uid != VXDB_NOUID)
 		PUT_I(names->pw_uid, mask->pw_uid);
 	if (flags & MASK_DELETE)
 		return *s;
-	if (mask->pw_gid   != PDB_NOGID)
+	if (mask->pw_gid   != VXDB_NOGID)
 		PUT_I(names->pw_gid,   mask->pw_gid);
 	if (mask->pw_real  != NULL)
 		PUT_S(names->pw_real,  mask->pw_real);
@@ -1004,7 +1004,7 @@ static hmc_t *sql_usermask(hmc_t **s, const struct mysql_state *state,
 #undef PUT_I
 #undef PUT_S
 
-EXPORT_SYMBOL struct vxpdb_driver THIS_MODULE = {
+EXPORT_SYMBOL struct vxdb_driver THIS_MODULE = {
 	.name           = "MYSQL back-end module",
 	.init           = vmysql_init,
 	.open           = vmysql_open,

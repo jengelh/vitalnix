@@ -21,24 +21,24 @@
 /* Functions */
 static unsigned int count_users(void);
 static unsigned int count_groups(void);
-static void nssuser_copy(struct vxpdb_user *, const struct passwd *, const struct spwd *);
-static void nssgroup_copy(struct vxpdb_group *, const struct group *);
+static void nssuser_copy(struct vxdb_user *, const struct passwd *, const struct spwd *);
+static void nssgroup_copy(struct vxdb_group *, const struct group *);
 
 //-----------------------------------------------------------------------------
-static long vnss1_modctl(struct vxpdb_state *this, unsigned int command, ...)
+static long vnss1_modctl(struct vxdb_state *this, unsigned int command, ...)
 {
 	errno = 0;
 	switch (command) {
-		case PDB_COUNT_USERS:
+		case VXDB_COUNT_USERS:
 			return count_users();
-		case PDB_COUNT_GROUPS:
+		case VXDB_COUNT_GROUPS:
 			return count_groups();
 	}
 	return -ENOSYS;
 }
 
-static int vnss1_getpwuid(struct vxpdb_state *this, unsigned int uid,
-    struct vxpdb_user *dest)
+static int vnss1_getpwuid(struct vxdb_state *this, unsigned int uid,
+    struct vxdb_user *dest)
 {
 	struct passwd *p;
 
@@ -51,8 +51,8 @@ static int vnss1_getpwuid(struct vxpdb_state *this, unsigned int uid,
 	return 1;
 }
 
-static int vnss1_getpwnam(struct vxpdb_state *this, const char *name,
-    struct vxpdb_user *dest)
+static int vnss1_getpwnam(struct vxdb_state *this, const char *name,
+    struct vxdb_user *dest)
 {
 	struct passwd *p;
 
@@ -65,14 +65,14 @@ static int vnss1_getpwnam(struct vxpdb_state *this, const char *name,
 	return 1;
 }
 
-static void *vnss1_usertrav_init(struct vxpdb_state *this)
+static void *vnss1_usertrav_init(struct vxdb_state *this)
 {
 	setpwent();
 	return this;
 }
 
-static int vnss1_usertrav_walk(struct vxpdb_state *this, void *priv_data,
-    struct vxpdb_user *dest)
+static int vnss1_usertrav_walk(struct vxdb_state *this, void *priv_data,
+    struct vxdb_user *dest)
 {
 	struct passwd *pe;
 	struct spwd *se;
@@ -82,7 +82,7 @@ static int vnss1_usertrav_walk(struct vxpdb_state *this, void *priv_data,
 		/* if errno=0, we return 0, which is fine */
 		return -errno;
 
-	vxpdb_user_clean(dest);
+	vxdb_user_clean(dest);
 	if (*pe->pw_name == '+' || *pe->pw_name == '-')
 		++pe->pw_name;
 
@@ -91,14 +91,14 @@ static int vnss1_usertrav_walk(struct vxpdb_state *this, void *priv_data,
 	return 1;
 }
 
-static void vnss1_usertrav_free(struct vxpdb_state *this, void *priv_data)
+static void vnss1_usertrav_free(struct vxdb_state *this, void *priv_data)
 {
 	endpwent();
 	return;
 }
 
-static int vnss1_getgrgid(struct vxpdb_state *this, unsigned int gid,
-    struct vxpdb_group *dest)
+static int vnss1_getgrgid(struct vxdb_state *this, unsigned int gid,
+    struct vxdb_group *dest)
 {
 	struct group *g;
 
@@ -111,8 +111,8 @@ static int vnss1_getgrgid(struct vxpdb_state *this, unsigned int gid,
 	return 1;
 }
 
-static int vnss1_getgrnam(struct vxpdb_state *this, const char *name,
-    struct vxpdb_group *dest)
+static int vnss1_getgrnam(struct vxdb_state *this, const char *name,
+    struct vxdb_group *dest)
 {
 	struct group *g;
 
@@ -125,14 +125,14 @@ static int vnss1_getgrnam(struct vxpdb_state *this, const char *name,
 	return 1;
 }
 
-static void *vnss1_grouptrav_init(struct vxpdb_state *this)
+static void *vnss1_grouptrav_init(struct vxdb_state *this)
 {
 	setgrent();
 	return this;
 }
 
-static int vnss1_grouptrav_walk(struct vxpdb_state *this, void *priv_data,
-    struct vxpdb_group *dest)
+static int vnss1_grouptrav_walk(struct vxdb_state *this, void *priv_data,
+    struct vxdb_group *dest)
 {
 	struct group *gr;
 
@@ -144,7 +144,7 @@ static int vnss1_grouptrav_walk(struct vxpdb_state *this, void *priv_data,
 	return 1;
 }
 
-static void vnss1_grouptrav_free(struct vxpdb_state *this, void *priv_data)
+static void vnss1_grouptrav_free(struct vxdb_state *this, void *priv_data)
 {
 	endgrent();
 	return;
@@ -171,7 +171,7 @@ static unsigned int count_groups(void)
 	return n;
 }
 
-static void nssuser_copy(struct vxpdb_user *dest, const struct passwd *pe,
+static void nssuser_copy(struct vxdb_user *dest, const struct passwd *pe,
     const struct spwd *se)
 {
 	HX_strclone(&dest->pw_name, pe->pw_name);
@@ -198,7 +198,7 @@ static void nssuser_copy(struct vxpdb_user *dest, const struct passwd *pe,
 	return;
 }
 
-static void nssgroup_copy(struct vxpdb_group *dest, const struct group *src)
+static void nssgroup_copy(struct vxdb_group *dest, const struct group *src)
 {
 	HX_strclone(&dest->gr_name, src->gr_name);
 	dest->gr_gid  = src->gr_gid;
@@ -206,7 +206,7 @@ static void nssgroup_copy(struct vxpdb_group *dest, const struct group *src)
 	return;
 }
 
-EXPORT_SYMBOL struct vxpdb_driver THIS_MODULE = {
+EXPORT_SYMBOL struct vxdb_driver THIS_MODULE = {
 	.name           = "NSS back-end module (not MU/MT-safe)",
 	.desc           = "API demonstration",
 	.modctl         = vnss1_modctl,

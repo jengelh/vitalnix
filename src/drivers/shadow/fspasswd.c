@@ -26,12 +26,12 @@
  * as seeking and scanning in userinfo() / groupinfo() would take long
  * otherwise. We also have it handy in a struct. Doing so also allows us to
  * commit all changes to the user database at once (the usual case with no
- * PDB_SYNC flag set).
+ * VXDB_SYNC flag set).
  */
 struct HXdeque *db_read_passwd(FILE *fp)
 {
 	struct HXdeque *dq;
-	struct vxpdb_user *u;
+	struct vxdb_user *u;
 	char *ln = NULL;
 
 	if ((dq = HXdeque_init()) == NULL)
@@ -51,10 +51,10 @@ struct HXdeque *db_read_passwd(FILE *fp)
 			continue;
 		}
 
-		if ((u = malloc(sizeof(struct vxpdb_user))) == NULL)
+		if ((u = malloc(sizeof(struct vxdb_user))) == NULL)
 			break;
 
-		vxpdb_user_clean(u);
+		vxdb_user_clean(u);
 		u->pw_name  = HX_strdup(data[0]);
 		u->pw_uid   = strtoul(data[2], NULL, 0);
 		u->pw_gid   = strtoul(data[3], NULL, 0);
@@ -72,7 +72,7 @@ struct HXdeque *db_read_passwd(FILE *fp)
 
 		/*
 		 * In case there is no shadow entry, we need some recovery
-		 * values. This is already done by vxpdb_clean_user().
+		 * values. This is already done by vxdb_clean_user().
 		 */
 
 		/*
@@ -87,7 +87,7 @@ struct HXdeque *db_read_passwd(FILE *fp)
 	return dq;
 }
 
-void db_write_passwd(FILE *fp, const struct vxpdb_user *u)
+void db_write_passwd(FILE *fp, const struct vxdb_user *u)
 {
 	const char **priv = u->be_priv;
 

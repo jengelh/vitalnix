@@ -1,5 +1,5 @@
 /*
- *	pdbinfo - Print database driver information
+ *	vxdbinfo - Print database driver information
  *	Copyright © CC Computer Consultants GmbH, 2003 - 2007
  *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
  *
@@ -91,10 +91,10 @@ int main(int argc, const char **argv)
  */
 static void driver_info(const char *fn)
 {
-	struct vxpdb_state *md;
+	struct vxdb_state *md;
 	char sepl = '<', sepr = '>';
 
-	if ((md = vxpdb_load(fn)) == NULL && strcmp(fn, "*") == 0)
+	if ((md = vxdb_load(fn)) == NULL && strcmp(fn, "*") == 0)
 		return;
 
 	printf(
@@ -118,14 +118,14 @@ static void driver_info(const char *fn)
 	);
 
 	if (OP_open) {
-		vxpdb_open(md, 0);
+		vxdb_open(md, 0);
 		printf("	Number of users/groups: %ld/%ld\n",
-		       vxpdb_modctl(md, PDB_COUNT_USERS),
-		       vxpdb_modctl(md, PDB_COUNT_GROUPS));
-		vxpdb_close(md);
+		       vxdb_modctl(md, VXDB_COUNT_USERS),
+		       vxdb_modctl(md, VXDB_COUNT_GROUPS));
+		vxdb_close(md);
 	}
 
-	vxpdb_unload(md);
+	vxdb_unload(md);
 	++mcount;
 	return;
 }
@@ -208,7 +208,7 @@ static bool get_options(int *argc, const char ***argv)
 		{.sh = 'L', .type = HXTYPE_STRDQ, .ptr = Dirs,
 		 .help = "Additional search directory", .htyp = "dir"},
 		{.sh = 'O', .type = HXTYPE_NONE, .ptr = &OP_open,
-		 .help = "Open the database driver (vxpdb_open function)"},
+		 .help = "Open the database driver (vxdb_open function)"},
 		{.sh = 'V', .type = HXTYPE_NONE, .cb = show_version,
 		 .help = "Show version information"},
 		HXOPT_AUTOHELP,
@@ -219,7 +219,7 @@ static bool get_options(int *argc, const char ***argv)
 
 static void show_version(const struct HXoptcb *cbi)
 {
-	printf("Vitalnix " PACKAGE_VERSION " pdbinfo\n");
+	printf("Vitalnix " PACKAGE_VERSION " vxdbinfo\n");
 	exit(EXIT_SUCCESS);
 }
 

@@ -136,9 +136,9 @@ is also composed of newlines and colons:</p>
 <h2>vxshadow</h2>
 
 <p class="block"><code>/etc/vxshadow</code> contains data specific to Vitalnix
-and is also not essential for the Shadow PDB driver to function properly. It is
-also composed like the other files (i.e. plain-text with newlines and colons);
-the fields are:</p>
+and is also not essential for the Shadow VXDB driver to function properly. It
+is also composed like the other files (i.e. plain-text with newlines and
+colons); the fields are:</p>
 
 <ul>
   <li>username</li>

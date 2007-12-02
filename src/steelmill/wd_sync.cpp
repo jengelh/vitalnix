@@ -69,8 +69,8 @@ enum {
 };
 
 struct pv_sync {
-	struct vxpdb_state *module_handle;
-	struct vxpdb_group group;
+	struct vxdb_state *module_handle;
+	struct vxdb_group group;
 	struct mdsync_workspace *mdsw;
 	bool prompt;
 	int open_status;
@@ -206,15 +206,15 @@ void WD_SyncParam::Compare(wxCommandEvent &event)
 		priv = new struct pv_sync;
 		memset(priv, 0, sizeof(*priv));
 
-		priv->module_handle = vxpdb_load(tU8(ct_module->GetValue()));
+		priv->module_handle = vxdb_load(tU8(ct_module->GetValue()));
 		if (priv->module_handle == NULL) {
-			str.Printf(wxT("Could not load PDB backend module: %s\n"),
+			str.Printf(wxT("Could not load VXDB backend module: %s\n"),
 			           fV8(strerror(errno)));
 			throw UserException();
 		}
 
-		if ((ret = vxpdb_open(priv->module_handle, PDB_WRLOCK)) <= 0) {
-			str.Printf(wxT("Could not open PDB module: %s\n"),
+		if ((ret = vxdb_open(priv->module_handle, VXDB_WRLOCK)) <= 0) {
+			str.Printf(wxT("Could not open VXDB module: %s\n"),
 			           fV8(strerror(-ret)));
 			throw UserException();
 		}
@@ -300,7 +300,7 @@ WD_SyncCompare::WD_SyncCompare(wxWindow *parent, struct pv_sync *priv) :
 	st->Add(new wxGauge(this, ID_GG_FIXUP, 1, wxDPOS, wxDSIZE, wxGA_SMOOTH), 0, wxGROW | wxACV | wxALL, 3);
 	st->Add(new wxStaticText(this, ID_PT_FIXUP, wxT("0%")), 0, wxALIGN_RIGHT | wxACV | wxALL, 0);
 
-	vp->Add(new wxStaticText(this, wxID_ANY, wxT("Comparing EDS to PDB... Please wait.")), 0, wxALIGN_LEFT | wxALL, 10);
+	vp->Add(new wxStaticText(this, wxID_ANY, wxT("Comparing EDS to VXDB... Please wait.")), 0, wxALIGN_LEFT | wxALL, 10);
 	vp->Add(st, 0, wxGROW | wxLEFT | wxRIGHT | wxBOTTOM, 10);
 	vp->Add(new wxStaticLine(this, wxID_ANY), 0, wxGROW | wxTOP | wxBOTTOM, 5);
 
@@ -343,7 +343,7 @@ WD_SyncProg::WD_SyncProg(wxWindow *parent, struct pv_sync *priv) :
 		0, wxACV | wxALIGN_LEFT | wxALL, 5);
 
 	st->Add(new wxStaticText(this, wxID_ANY, wxString_int(mdsw->num_grp)), 0, wxALIGN_RIGHT | wxALL, 3);
-	st->Add(new wxStaticText(this, wxID_ANY, wxT("group member(s) found in PDB")), 0, wxALIGN_LEFT | wxACV | wxALL, 3);
+	st->Add(new wxStaticText(this, wxID_ANY, wxT("group member(s) found in VXDB")), 0, wxALIGN_LEFT | wxACV | wxALL, 3);
 	st->Add(-1, -1);
 	st->Add(-1, -1);
 	st->Add(-1, -1);
@@ -563,14 +563,14 @@ static void listbox_fill_eds(wxListBox *lb, const void *user_ptr)
 static void listbox_fill_user(wxListBox *lb, const void *user_ptr)
 {
 	const struct HXbtree_node *node;
-	const struct vxpdb_user *u;
+	const struct vxdb_user *u;
 	wxString s;
 
 	node = static_cast<const struct HXbtree_node *>(user_ptr);
 	if (node == NULL)
 		return;
 
-	u = static_cast<const struct vxpdb_user *>(node->data);
+	u = static_cast<const struct vxdb_user *>(node->data);
 	s.Printf(wxT("%s (%s)"), fV8(u->pw_name), fV8(u->pw_real));
 	lb->Append(s);
 
@@ -586,11 +586,11 @@ static void release_priv(struct pv_sync *priv)
 	if (priv == NULL)
 		return;
 
-	vxpdb_group_free(&priv->group, false);
+	vxdb_group_free(&priv->group, false);
 	if (priv->open_status)
-		vxpdb_close(priv->module_handle);
+		vxdb_close(priv->module_handle);
 	if (priv->module_handle != NULL)
-		vxpdb_unload(priv->module_handle);
+		vxdb_unload(priv->module_handle);
 	delete priv;
 	return;
 }

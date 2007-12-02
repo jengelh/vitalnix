@@ -1,5 +1,5 @@
 /*
- *	libvxpdb/config.c - Common config interface for CLUTILS
+ *	libvxdb/config.c - Common config interface for CLUTILS
  *	Copyright © CC Computer Consultants GmbH, 2006 - 2007
  *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
  *
@@ -75,7 +75,7 @@ EXPORT_SYMBOL int vxconfig_read_userdel(const char *file,
 //-----------------------------------------------------------------------------
 static void parse_group(const struct HXoptcb *info)
 {
-	struct vxpdb_user *user = info->current->uptr;
+	struct vxdb_user *user = info->current->uptr;
 	if (vxutil_only_digits(info->data))
 		user->pw_gid = strtoul(info->data, NULL, 0);
 	else

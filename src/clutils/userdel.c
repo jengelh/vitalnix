@@ -49,8 +49,8 @@ static void userdel_getopt_predel(const struct HXoptcb *);
 static void userdel_getopt_postdel(const struct HXoptcb *);
 static int userdel_read_config(struct userdel_state *);
 static int userdel_run(struct userdel_state *);
-static int userdel_run2(struct vxpdb_state *, struct userdel_state *);
-static int userdel_run3(struct vxpdb_state *, struct userdel_state *);
+static int userdel_run2(struct vxdb_state *, struct userdel_state *);
+static int userdel_run3(struct vxdb_state *, struct userdel_state *);
 static void userdel_show_version(const struct HXoptcb *);
 static unsigned int userdel_slash_count(const char *);
 static const char *userdel_strerror(int);
@@ -123,12 +123,13 @@ static bool userdel_get_options(int *argc, const char ***argv,
 
 static int userdel_run(struct userdel_state *state)
 {
-	struct vxpdb_state *db;
+	struct vxdb_state *db;
 	int ret;
-	if ((db = vxpdb_load(state->database)) == NULL)
+
+	if ((db = vxdb_load(state->database)) == NULL)
 		return E_OPEN;
 	ret = userdel_run2(db, state);
-	vxpdb_unload(db);
+	vxdb_unload(db);
 	return ret;
 }
 
@@ -186,26 +187,28 @@ static int userdel_read_config(struct userdel_state *state)
 	return ret;
 }
 
-static int userdel_run2(struct vxpdb_state *db, struct userdel_state *state)
+static int userdel_run2(struct vxdb_state *db, struct userdel_state *state)
 {
 	int ret;
-	if ((ret = vxpdb_open(db, PDB_WRLOCK)) <= 0)
+
+	if ((ret = vxdb_open(db, VXDB_WRLOCK)) <= 0)
 		return E_OPEN;
+
 	state->sr_map = HXformat_init();
 	ret = userdel_run3(db, state);
 	HXformat_free(state->sr_map);
-	vxpdb_close(db);
+	vxdb_close(db);
 	return ret;
 }
 
-static int userdel_run3(struct vxpdb_state *db, struct userdel_state *state)
+static int userdel_run3(struct vxdb_state *db, struct userdel_state *state)
 {
 	struct vxconfig_userdel *conf = &state->config;
-	struct vxpdb_user result = {};
+	struct vxdb_user result = {};
 	char *home, *username;
 	int ret;
 
-	if ((ret = vxpdb_getpwnam(db, state->username, &result)) < 0)
+	if ((ret = vxdb_getpwnam(db, state->username, &result)) < 0)
 		return E_OTHER;
 	else if (ret == 0)
 		return E_OTHER;
@@ -222,7 +225,7 @@ static int userdel_run3(struct vxpdb_state *db, struct userdel_state *state)
 	username = HX_strdup(result.pw_name);
 	home     = HX_strdup(result.pw_home);
 
-	if ((ret = vxpdb_userdel(db, username)) <= 0) {
+	if ((ret = vxdb_userdel(db, username)) <= 0) {
 		free(username);
 		free(home);
 		return E_UPDATE;

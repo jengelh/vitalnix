@@ -28,8 +28,8 @@ enum {
 };
 
 struct HXdeque;
-struct vxpdb_group;
-struct vxpdb_user;
+struct vxdb_group;
+struct vxdb_user;
 
 struct spdb_file {
 	char *path;
@@ -51,10 +51,10 @@ struct shadow_state {
 extern unsigned int automatic_uid(struct shadow_state *, unsigned int);
 extern unsigned int automatic_gid(struct shadow_state *, unsigned int);
 extern void free_data(struct shadow_state *);
-extern void free_single_group(struct vxpdb_group *);
-extern void free_single_user(struct vxpdb_user *);
-extern struct vxpdb_group *lookup_group(const struct HXdeque *, const char *, unsigned int);
-extern struct vxpdb_user *lookup_user(const struct HXdeque *, const char *, unsigned int);
+extern void free_single_group(struct vxdb_group *);
+extern void free_single_user(struct vxdb_user *);
+extern struct vxdb_group *lookup_group(const struct HXdeque *, const char *, unsigned int);
+extern struct vxdb_user *lookup_user(const struct HXdeque *, const char *, unsigned int);
 extern void read_config(struct shadow_state *, unsigned int, const char *);
 extern struct HXdeque_node *skip_nis_users(struct HXdeque_node *);
 extern struct HXdeque_node *skip_nis_groups(struct HXdeque_node *);
@@ -77,18 +77,18 @@ extern void db_flush_groups(struct shadow_state *);
  *	FSPASSWD.C
  */
 extern struct HXdeque *db_read_passwd(FILE *);
-extern void db_write_passwd(FILE *, const struct vxpdb_user *);
+extern void db_write_passwd(FILE *, const struct vxdb_user *);
 
 /*
  *	FSSHADOW.C
  */
 extern void db_read_shadow(FILE *, struct HXdeque *);
-extern void db_write_shadow(FILE *, const struct vxpdb_user *);
+extern void db_write_shadow(FILE *, const struct vxdb_user *);
 
 /*
  *	FSVXSHADOW.C
  */
 extern void db_read_vxshadow(const char *, struct HXdeque *);
-extern void db_write_vxshadow(FILE *, const struct vxpdb_user *);
+extern void db_write_vxshadow(FILE *, const struct vxdb_user *);
 
 #endif /* VITALNIX_DRIVERS_SHADOW_SHADOW_H */
