@@ -15,6 +15,7 @@ software. */
 
 #include <errno.h>
 #include <iconv.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -177,7 +178,7 @@ static hmc_t *utf8_to_rtfuni(const char *ip)
 static const struct pwlstyle_vtable THIS_STYLE = {
 	.name             = "pg_rtf",
 	.desc             = "pvgrp-sorted text/rtf",
-	.require_template = 1,
+	.require_template = true,
 
 	.init             = pgrtf_construct,
 	.exit             = pgrtf_destruct,

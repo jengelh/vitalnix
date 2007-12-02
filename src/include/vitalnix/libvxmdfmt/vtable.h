@@ -1,6 +1,10 @@
 #ifndef _VITALNIX_LIBVXMDFMT_VTABLE_H
 #define _VITALNIX_LIBVXMDFMT_VTABLE_H 1
 
+#ifndef __cplusplus
+#	include <stdbool.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -10,7 +14,7 @@ struct pwlfmt_workspace;
 
 struct pwlstyle_vtable {
 	const char *name, *desc;
-	int require_template;
+	bool require_template;
 	int (*init)(struct pwlfmt_workspace *);
 	void (*exit)(struct pwlfmt_workspace *);
 

@@ -10,6 +10,7 @@
  *	Foundation; either version 2.1 or 3 of the License.
  */
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <libHX.h>
@@ -76,7 +77,7 @@ static void sb_file_footer(const struct pwlfmt_workspace *state)
 static const struct pwlstyle_vtable THIS_STYLE = {
 	.name             = "sb",
 	.desc             = "per-user application/x-latex",
-	.require_template = 1,
+	.require_template = true,
 
 	.init             = sb_construct,
 	.exit             = sb_destruct,
