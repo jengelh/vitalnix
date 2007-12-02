@@ -17,8 +17,9 @@ struct HXbtree;
 struct HXdeque;
 
 struct mdsync_config {
-	int new_pw_length, genpw_type, crypw_type;
-	unsigned int postadd_flush;
+	int new_pw_length;
+	unsigned int genpw_type, crypw_type;
+	unsigned int postadd_flush; /* used by HXoption, so no bool */
 	struct vxconfig_useradd add_opts;
 	struct vxconfig_usermod mod_opts;
 	struct vxconfig_userdel del_opts;
