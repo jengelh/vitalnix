@@ -41,7 +41,7 @@ sbin_PROGRAMS   := \
 if BUILD_STEELMILL
 sbin_PROGRAMS   += steelmill
 endif
-EXTRA_PROGRAMS  := ihlogon testcase
+EXTRA_PROGRAMS  := ihlogon testcase tcrypt
 level1_libs     := libvxcgi.la libvxcli.la libvxcore.la libvxutil.la
 level2_libs     := libvxdb.la libvxeds.la libvxmdfmt.la
 lib_LTLIBRARIES := \
@@ -131,6 +131,8 @@ pam_ihlogon_la_LDFLAGS := ${regular_SOLDFLAGS} -module -avoid-version
 #
 testcase_SOURCES := src/devutil/testcase.c
 testcase_LDADD   := libvxeds.la libvxutil.la
+tcrypt_SOURCES    := src/devutil/tcrypt.c
+tcrypt_LDADD      := libvxutil.la
 vxcconfig_SOURCES := src/devutil/vxcconfig.c
 
 #
