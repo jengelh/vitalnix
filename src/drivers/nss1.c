@@ -15,7 +15,7 @@
 #include <pwd.h>
 #include <shadow.h>
 #include <vitalnix/compiler.h>
-#include <vitalnix/libvxpdb/libvxpdb.h>
+#include <vitalnix/libvxdb/libvxpdb.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
 /* Functions */

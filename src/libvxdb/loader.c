@@ -18,7 +18,7 @@
 #include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
 #include <vitalnix/libvxcore/loader.h>
-#include <vitalnix/libvxpdb/libvxpdb.h>
+#include <vitalnix/libvxdb/libvxpdb.h>
 #include <vitalnix/libvxutil/defines.h>
 
 /* Definitions */

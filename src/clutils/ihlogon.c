@@ -23,8 +23,8 @@
 #include <security/pam_appl.h>
 #include <security/pam_modules.h>
 #include <vitalnix/compiler.h>
-#include <vitalnix/libvxpdb/libvxpdb.h>
-#include <vitalnix/libvxpdb/xafunc.h>
+#include <vitalnix/libvxdb/libvxpdb.h>
+#include <vitalnix/libvxdb/xafunc.h>
 #define MAXLNLEN 1024
 
 enum slice_type {

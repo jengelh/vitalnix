@@ -15,7 +15,7 @@
 #include <libHX.h>
 #include <vitalnix/compiler.h>
 #include "drivers/shadow/shadow.h"
-#include <vitalnix/libvxpdb/libvxpdb.h>
+#include <vitalnix/libvxdb/libvxpdb.h>
 #include <vitalnix/libvxutil/defines.h>
 
 struct HXdeque *db_read_groups(FILE *fp)

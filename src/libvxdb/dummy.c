@@ -11,7 +11,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <vitalnix/compiler.h>
-#include <vitalnix/libvxpdb/libvxpdb.h>
+#include <vitalnix/libvxdb/libvxpdb.h>
 
 #define ALIAS(orig, new) static typeof(orig) new __attribute__((alias(#orig)))
 

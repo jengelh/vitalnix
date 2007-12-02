@@ -10,8 +10,8 @@
  */
 #include <libHX.h>
 #include <vitalnix/compiler.h>
-#include <vitalnix/libvxpdb/config.h>
-#include <vitalnix/libvxpdb/libvxpdb.h>
+#include <vitalnix/libvxdb/config.h>
+#include <vitalnix/libvxdb/libvxpdb.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
 /* Functions */

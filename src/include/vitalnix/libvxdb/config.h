@@ -1,7 +1,7 @@
 #ifndef _VITALNIX_LIBVXPDB_CONFIG_H
 #define _VITALNIX_LIBVXPDB_CONFIG_H 1
 
-#include <vitalnix/libvxpdb/libvxpdb.h>
+#include <vitalnix/libvxdb/libvxpdb.h>
 
 #ifdef __cplusplus
 extern "C" {

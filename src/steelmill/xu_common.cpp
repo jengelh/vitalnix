@@ -15,8 +15,8 @@
 #	include <wx/wx.h>
 #endif
 #include <wx/statline.h>
-#include <vitalnix/libvxpdb/libvxpdb.h>
-#include <vitalnix/libvxpdb/xafunc.h>
+#include <vitalnix/libvxdb/libvxpdb.h>
+#include <vitalnix/libvxdb/xafunc.h>
 #include "steelmill/images.hpp"
 #include "steelmill/xu_common.hpp"
 #define MAX_BUTTONS 8

@@ -6,8 +6,8 @@
 #else
 #	include <cstdio>
 #endif
-#include <vitalnix/libvxpdb/config.h>
-#include <vitalnix/libvxpdb/libvxpdb.h>
+#include <vitalnix/libvxdb/config.h>
+#include <vitalnix/libvxdb/libvxpdb.h>
 
 #ifdef __cplusplus
 extern "C" {

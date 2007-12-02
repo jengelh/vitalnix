@@ -15,8 +15,8 @@
 #include <libHX.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
-#include <vitalnix/libvxpdb/libvxpdb.h>
-#include <vitalnix/libvxpdb/xafunc.h>
+#include <vitalnix/libvxdb/libvxpdb.h>
+#include <vitalnix/libvxdb/xafunc.h>
 #include <vitalnix/libvxutil/defines.h>
 
 /* Functions */

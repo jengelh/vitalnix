@@ -1,5 +1,5 @@
 #include <vitalnix/compiler.h>
-#include <vitalnix/libvxpdb/libvxpdb.h>
+#include <vitalnix/libvxdb/libvxpdb.h>
 
 /* Variables */
 EXPORT_SYMBOL struct vxpdb_driver THIS_MODULE = {

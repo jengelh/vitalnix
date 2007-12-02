@@ -21,8 +21,8 @@
 #include <vitalnix/libvxcli/libvxcli.h>
 #include <vitalnix/libvxeds/libvxeds.h>
 #include <vitalnix/libvxmdsync/libvxmdsync.h>
-#include <vitalnix/libvxpdb/libvxpdb.h>
-#include <vitalnix/libvxpdb/xafunc.h>
+#include <vitalnix/libvxdb/libvxpdb.h>
+#include <vitalnix/libvxdb/xafunc.h>
 
 /* Definitions */
 #define NOTICE_REDO \

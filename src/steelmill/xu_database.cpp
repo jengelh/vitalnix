@@ -15,8 +15,8 @@
 #ifndef WX_PRECOMP
 #	include <wx/wx.h>
 #endif
-#include <vitalnix/libvxpdb/libvxpdb.h>
-#include <vitalnix/libvxpdb/xafunc.h>
+#include <vitalnix/libvxdb/libvxpdb.h>
+#include <vitalnix/libvxdb/xafunc.h>
 #include "steelmill/xu_common.hpp"
 #include "steelmill/xu_database.hpp"
 

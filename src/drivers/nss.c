@@ -24,7 +24,7 @@
 #include <shadow.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
-#include <vitalnix/libvxpdb/libvxpdb.h>
+#include <vitalnix/libvxdb/libvxpdb.h>
 
 /* Definitions */
 enum {

@@ -18,8 +18,8 @@
 #include <vitalnix/config.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxeds/libvxeds.h>
-#include <vitalnix/libvxpdb/libvxpdb.h>
-#include <vitalnix/libvxpdb/xafunc.h>
+#include <vitalnix/libvxdb/libvxpdb.h>
+#include <vitalnix/libvxdb/xafunc.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 #define sizeof_s(x) (sizeof(x) - 1)
 
