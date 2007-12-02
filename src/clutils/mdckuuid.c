@@ -50,12 +50,12 @@ static bool get_options(int *argc, const char ***argv)
 		{.sh = 'T', .type = HXTYPE_UINT, .ptr = &ck_threshold,
 		 .help = "Omit all entries with a greater distance "
 		 "(default: 100)", .htyp = "dist"},
-		{.sh = 'V', .type = HXTYPE_STRING, .cb = show_version,
+		{.sh = 'V', .type = HXTYPE_NONE, .cb = show_version,
 		 .help = "Show version information"},
 		{.sh = 'i', .type = HXTYPE_STRING, .ptr = &ck_input_file,
 		 .help = "External Data Source", .htyp = "file"},
 		{.sh = 't', .type = HXTYPE_STRING, .ptr = &ck_input_fmt,
-		 .help = "EDS type", .htyp = "TYPE"},
+		 .help = "EDS type", .htyp = "type"},
 		HXOPT_AUTOHELP,
 		HXOPT_TABLEEND,
 	};
