@@ -251,10 +251,10 @@ libvxmdsync_la_SOURCES := \
 libvxpdb_la_LIBADD  := -lHX libvxcore.la libvxutil.la
 libvxpdb_la_LDFLAGS := ${regular_SOLDFLAGS}
 libvxpdb_la_SOURCES := \
-	src/libvxpdb/aux.c \
-	src/libvxpdb/config.c \
-	src/libvxpdb/dummy.c \
-	src/libvxpdb/loader.c
+	src/libvxdb/aux.c \
+	src/libvxdb/config.c \
+	src/libvxdb/dummy.c \
+	src/libvxdb/loader.c
 
 #
 #	src/libvxutil
