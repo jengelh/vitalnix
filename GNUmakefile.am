@@ -1,3 +1,4 @@
+# -*- Makefile -*-
 
 AUTOMAKE_OPTIONS := foreign subdir-objects
 CLEANFILES       :=
@@ -33,21 +34,29 @@ bin_PROGRAMS    := \
 	vxcconfig vxfinger vxrandpw
 sbin_PROGRAMS   := \
 	cgi_chpasswd cgi_ntactiv cgi_vwquota \
-	lpacct_filter lpacct_scv \
 	mdckuuid mdfixuuid mdpwlfmt mdsingle \
 	vxdbdump vxdbinfo vxtryauth \
 	vxuseradd vxusermod vxuserdel vxusersync \
 	vxgroupadd vxgroupmod vxgroupdel
-if BUILD_STEELMILL
+if HAVE_CUPS
+if HAVE_MYSQL
+sbin_PROGRAMS   += lpacct_filter lpacct_scv
+endif
+endif
+if HAVE_WXWIDGETS
 sbin_PROGRAMS   += steelmill
 endif
+
 EXTRA_PROGRAMS  := ihlogon testcase tcrypt
 level1_libs     := libvxcgi.la libvxcli.la libvxcore.la libvxutil.la
 level2_libs     := libvxdb.la libvxeds.la libvxmdfmt.la
 lib_LTLIBRARIES := \
 	${level1_libs} ${level2_libs} libvxmdsync.la \
-	drv_dummy.la drv_ldap.la drv_mmd.la drv_mysql.la drv_nss.la \
+	drv_dummy.la drv_ldap.la drv_mmd.la drv_nss.la \
 	drv_nss1.la drv_shadow.la pam_ihlogon.la
+if HAVE_MYSQL
+lib_LTLIBRARIES += drv_mysql.la
+endif
 
 if GOT_TOOLS_FOR_DOC
 doc_subdir := src/doc

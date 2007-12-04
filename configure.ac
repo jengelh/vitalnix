@@ -36,6 +36,12 @@ esac;
 AM_CONDITIONAL(X86_32, test $x86_32 -eq 1)
 
 #
+#	cups
+#
+AC_CHECK_HEADER([cups/backend.h])
+AM_CONDITIONAL([HAVE_CUPS], [test "$ac_cv_header_cups_backend_h" == "yes"])
+
+#
 #	doc
 #
 AC_PATH_PROGS([PERL], [perl perl5])
@@ -68,21 +74,22 @@ PKG_CHECK_MODULES([libxml], [libxml-2.0])
 #
 AC_MSG_CHECKING([for mysql])
 libmysql_CFLAGS_INSANE=`mysql_config --cflags 2>/dev/null`;
+ret=$?;
+AM_CONDITIONAL([HAVE_MYSQL], [test "$ret" -eq 0])
 if [[ "$?" -eq 0 ]]; then
 	AC_MSG_RESULT([yes])
+	libmysql_LIBS_INSANE=`mysql_config --libs_r`;
 else
 	AC_MSG_RESULT([no])
-	AC_MSG_ERROR([mysql is mandatory])
 fi;
-libmysql_LIBS_INSANE=`mysql_config --libs_r`;
 
 #
 #	wxWidgets
 #
 AC_MSG_CHECKING([for wxWidgets])
 libwx_CFLAGS=`wx-config --cflags 2>/dev/null`;
-ret=$?
-AM_CONDITIONAL(BUILD_STEELMILL, test "$ret" -eq 0)
+ret=$?;
+AM_CONDITIONAL([HAVE_WXWIDGETS], [test "$ret" -eq 0])
 if [[ "$ret" -eq 0 ]]; then
 	AC_MSG_RESULT([yes])
 	libwx_LIBS=`wx-config --libs`;
