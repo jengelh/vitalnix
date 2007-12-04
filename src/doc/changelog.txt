@@ -3,7 +3,7 @@ SVN /trunk
 ==========
 
 - renamed tools: pdbdump->vxdbdump, pdbinfo->vxdbdump, mdsync->vxusersync
-- added tools: vxfinger, userwebpages.cgi
+- added tools: vxfinger, vxid, userwebpages.cgi
 
 Usual slew of fixes:
 - [r551]: calling -V in various tools did not terminate the program
