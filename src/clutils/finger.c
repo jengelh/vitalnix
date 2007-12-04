@@ -100,6 +100,8 @@ static bool get_options(int *argc, const char ***argv)
 	static struct HXoption options_table[] = {
 		{.sh = 'I', .type = HXTYPE_VAL, .val = false, .ptr = &Icase,
 		 .help = "Use case-sensitive matching"},
+		{.sh = 'M', .type = HXTYPE_STRING, .ptr = &Database,
+		 .help = "Use specified database", .htyp = "name"},
 		{.sh = 'g', .type = HXTYPE_NONE, .ptr = &Fullgecos,
 		 .help = "Display and match the full GECOS field"},
 		{.sh = 'i', .type = HXTYPE_VAL, .val = true, .ptr = &Icase,
