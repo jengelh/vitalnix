@@ -1,12 +1,12 @@
 
 SVN /trunk
 ==========
-- [r533]: rename pdbdump, pdbinfo -> vxdbdump, vxdbinfo
-- [r536]: added new vxfinger utility
-- [r547]: added new userwebpages.cgi to the Vitalnix tree
-- [r548]: rename mdsync -> vxusersync
-- [r551]: add missing exit() calls for various show_version() functions
-- [r552]: fix mdckuuid segfault when -i parameter is missing
-- [r553]: fix argument presence checking in vxgroup{add,mod,del}
-- [r554]: made vxldap_groupadd() work (was missing gidNumber attribute,
-  and called ldap_add_ext_s() twice erroneously)
+
+- renamed tools: pdbdump->vxdbdump, pdbinfo->vxdbdump, mdsync->vxusersync
+- added tools: vxfinger, userwebpages.cgi
+
+Usual slew of fixes:
+- [r551]: calling -V in various tools did not terminate the program
+- [r552]: mdckuuid forgot to check for -i parameter
+- [r553]: vxgroup{add,mod,del} forgot to check for first argument presence
+- [r554]: vxdb_groupadd() for vxldap was incomplete
