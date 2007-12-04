@@ -705,6 +705,33 @@ static void read_config(struct multi_state *state, const char *file)
 	return;
 }
 
+static int vxmmd_sgmapadd(struct vxdb_state *vp, const char *user,
+    const char *group)
+{
+	const struct multi_state *state = vp->state;
+	if (WR_OPEN(state))
+		return vxdb_sgmapadd(WR_MOD(state), user, group);
+	return -EROFS;
+}
+
+static int vxmmd_sgmapget(struct vxdb_state *vp, const char *user,
+    char ***result)
+{
+	const struct multi_state *state = vp->state;
+	if (WR_OPEN(state))
+		return vxdb_sgmapget(WR_MOD(state), user, result);
+	return -ENOENT;
+}
+
+static int vxmmd_sgmapdel(struct vxdb_state *vp, const char *user,
+    const char *group)
+{
+	const struct multi_state *state = vp->state;
+	if (WR_OPEN(state))
+		return vxdb_sgmapdel(WR_MOD(state), user, group);
+	return -EROFS;
+}
+
 EXPORT_SYMBOL struct vxdb_driver THIS_MODULE = {
 	.name           = "Multiple Module driver",
 	.desc           = "Logically combines databases",
@@ -731,4 +758,7 @@ EXPORT_SYMBOL struct vxdb_driver THIS_MODULE = {
 	.grouptrav_init = vxmmd_grouptrav_init,
 	.grouptrav_walk = vxmmd_grouptrav_walk,
 	.grouptrav_free = vxmmd_grouptrav_free,
+	.sgmapadd       = vxmmd_sgmapadd,
+	.sgmapget       = vxmmd_sgmapget,
+	.sgmapdel       = vxmmd_sgmapdel,
 };
