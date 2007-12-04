@@ -113,6 +113,10 @@ struct vxdb_driver {
 	void *(*grouptrav_init)(struct vxdb_state *);
 	int (*grouptrav_walk)(struct vxdb_state *, void *, struct vxdb_group *);
 	void (*grouptrav_free)(struct vxdb_state *, void *);
+
+	int (*sgmapadd)(struct vxdb_state *, const char *, const char *);
+	int (*sgmapget)(struct vxdb_state *, const char *, char ***);
+	int (*sgmapdel)(struct vxdb_state *, const char *, const char *);
 };
 
 /*

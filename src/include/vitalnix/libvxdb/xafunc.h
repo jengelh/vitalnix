@@ -125,6 +125,24 @@ static inline int vxdb_getgrgid(struct vxdb_state *state, unsigned int gid,
 	return state->vtable->getgrgid(state, gid, result);
 }
 
+static inline int vxdb_sgmapadd(struct vxdb_state *state, const char *user,
+    const char *group)
+{
+	return state->vtable->sgmapadd(state, user, group);
+}
+
+static inline int vxdb_sgmapget(struct vxdb_state *state, const char *user,
+    char ***result)
+{
+	return state->vtable->sgmapget(state, user, result);
+}
+
+static inline int vxdb_sgmapdel(struct vxdb_state *state, const char *user,
+    const char *group)
+{
+	return state->vtable->sgmapdel(state, user, group);
+}
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

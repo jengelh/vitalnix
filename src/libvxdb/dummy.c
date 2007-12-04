@@ -143,6 +143,24 @@ static void vxdummy_grouptrav_free(struct vxdb_state *vp, void *ptr)
 	return;
 }
 
+static int vxdummy_sgmapadd(struct vxdb_state *vp, const char *user,
+    const char *group)
+{
+	return -EPERM;
+}
+
+static int vxdummy_sgmapget(struct vxdb_state *vp, const char *user,
+    char ***result)
+{
+	return -ENOENT;
+}
+
+static int vxdummy_sgmapdel(struct vxdb_state *vp, const char *user,
+    const char *group)
+{
+	return 0;
+}
+
 /*
  * vxdb_fix_vtable -
  * @m:	vtable
@@ -181,6 +199,9 @@ EXPORT_SYMBOL void vxdb_fix_vtable(struct vxdb_driver *m)
 		m->grouptrav_walk = vxdummy_grouptrav_walk;
 		m->grouptrav_free = vxdummy_grouptrav_free;
 	}
+	SET(sgmapadd);
+	SET(sgmapget);
+	SET(sgmapdel);
 	return;
 #undef SET
 }
