@@ -101,7 +101,10 @@ static void id_current(struct vxdb_state *db)
 		perror("- vxdb_getgrgid");
 	else if (ret > 0)
 		printf("(%s)", group.gr_name);
+
 	printf("\n");
+	vxdb_user_free(&user, false);
+	vxdb_group_free(&group, false);
 	return;
 }
 
