@@ -25,7 +25,7 @@ static void nssuser_copy(struct vxdb_user *, const struct passwd *, const struct
 static void nssgroup_copy(struct vxdb_group *, const struct group *);
 
 //-----------------------------------------------------------------------------
-static long vnss1_modctl(struct vxdb_state *this, unsigned int command, ...)
+static long vxnss1_modctl(struct vxdb_state *this, unsigned int command, ...)
 {
 	errno = 0;
 	switch (command) {
@@ -37,7 +37,7 @@ static long vnss1_modctl(struct vxdb_state *this, unsigned int command, ...)
 	return -ENOSYS;
 }
 
-static int vnss1_getpwuid(struct vxdb_state *this, unsigned int uid,
+static int vxnss1_getpwuid(struct vxdb_state *this, unsigned int uid,
     struct vxdb_user *dest)
 {
 	struct passwd *p;
@@ -51,7 +51,7 @@ static int vnss1_getpwuid(struct vxdb_state *this, unsigned int uid,
 	return 1;
 }
 
-static int vnss1_getpwnam(struct vxdb_state *this, const char *name,
+static int vxnss1_getpwnam(struct vxdb_state *this, const char *name,
     struct vxdb_user *dest)
 {
 	struct passwd *p;
@@ -65,13 +65,13 @@ static int vnss1_getpwnam(struct vxdb_state *this, const char *name,
 	return 1;
 }
 
-static void *vnss1_usertrav_init(struct vxdb_state *this)
+static void *vxnss1_usertrav_init(struct vxdb_state *this)
 {
 	setpwent();
 	return this;
 }
 
-static int vnss1_usertrav_walk(struct vxdb_state *this, void *priv_data,
+static int vxnss1_usertrav_walk(struct vxdb_state *this, void *priv_data,
     struct vxdb_user *dest)
 {
 	struct passwd *pe;
@@ -91,13 +91,13 @@ static int vnss1_usertrav_walk(struct vxdb_state *this, void *priv_data,
 	return 1;
 }
 
-static void vnss1_usertrav_free(struct vxdb_state *this, void *priv_data)
+static void vxnss1_usertrav_free(struct vxdb_state *this, void *priv_data)
 {
 	endpwent();
 	return;
 }
 
-static int vnss1_getgrgid(struct vxdb_state *this, unsigned int gid,
+static int vxnss1_getgrgid(struct vxdb_state *this, unsigned int gid,
     struct vxdb_group *dest)
 {
 	struct group *g;
@@ -111,7 +111,7 @@ static int vnss1_getgrgid(struct vxdb_state *this, unsigned int gid,
 	return 1;
 }
 
-static int vnss1_getgrnam(struct vxdb_state *this, const char *name,
+static int vxnss1_getgrnam(struct vxdb_state *this, const char *name,
     struct vxdb_group *dest)
 {
 	struct group *g;
@@ -125,13 +125,13 @@ static int vnss1_getgrnam(struct vxdb_state *this, const char *name,
 	return 1;
 }
 
-static void *vnss1_grouptrav_init(struct vxdb_state *this)
+static void *vxnss1_grouptrav_init(struct vxdb_state *this)
 {
 	setgrent();
 	return this;
 }
 
-static int vnss1_grouptrav_walk(struct vxdb_state *this, void *priv_data,
+static int vxnss1_grouptrav_walk(struct vxdb_state *this, void *priv_data,
     struct vxdb_group *dest)
 {
 	struct group *gr;
@@ -144,7 +144,7 @@ static int vnss1_grouptrav_walk(struct vxdb_state *this, void *priv_data,
 	return 1;
 }
 
-static void vnss1_grouptrav_free(struct vxdb_state *this, void *priv_data)
+static void vxnss1_grouptrav_free(struct vxdb_state *this, void *priv_data)
 {
 	endgrent();
 	return;
@@ -209,15 +209,15 @@ static void nssgroup_copy(struct vxdb_group *dest, const struct group *src)
 EXPORT_SYMBOL struct vxdb_driver THIS_MODULE = {
 	.name           = "NSS back-end module (not MU/MT-safe)",
 	.desc           = "API demonstration",
-	.modctl         = vnss1_modctl,
-	.getpwuid       = vnss1_getpwuid,
-	.getpwnam       = vnss1_getpwnam,
-	.usertrav_init  = vnss1_usertrav_init,
-	.usertrav_walk  = vnss1_usertrav_walk,
-	.usertrav_free  = vnss1_usertrav_free,
-	.getgrgid       = vnss1_getgrgid,
-	.getgrnam       = vnss1_getgrnam,
-	.grouptrav_init = vnss1_grouptrav_init,
-	.grouptrav_walk = vnss1_grouptrav_walk,
-	.grouptrav_free = vnss1_grouptrav_free,
+	.modctl         = vxnss1_modctl,
+	.getpwuid       = vxnss1_getpwuid,
+	.getpwnam       = vxnss1_getpwnam,
+	.usertrav_init  = vxnss1_usertrav_init,
+	.usertrav_walk  = vxnss1_usertrav_walk,
+	.usertrav_free  = vxnss1_usertrav_free,
+	.getgrgid       = vxnss1_getgrgid,
+	.getgrnam       = vxnss1_getgrnam,
+	.grouptrav_init = vxnss1_grouptrav_init,
+	.grouptrav_walk = vxnss1_grouptrav_walk,
+	.grouptrav_free = vxnss1_grouptrav_free,
 };

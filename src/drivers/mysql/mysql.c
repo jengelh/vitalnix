@@ -75,10 +75,10 @@ struct traverser_state {
 };
 
 /* Functions */
-static int vmysql_xlock_user(struct mysql_state *);
-static int vmysql_xlock_group(struct mysql_state *);
-static inline void vmysql_xunlock(struct mysql_state *);
-static int vmysql_userdel_unlocked(struct mysql_state *, const char *);
+static int vxmysql_xlock_user(struct mysql_state *);
+static int vxmysql_xlock_group(struct mysql_state *);
+static inline void vxmysql_xunlock(struct mysql_state *);
+static int vxmysql_userdel_unlocked(struct mysql_state *, const char *);
 
 static unsigned int count_rows(struct mysql_state *, const char *);
 static void export_passwd(struct vxdb_user *, const MYSQL_ROW);
@@ -98,7 +98,7 @@ static hmc_t *sql_usermask(hmc_t **, const struct mysql_state *,
 	const struct vxdb_user *, unsigned int);
 
 //-----------------------------------------------------------------------------
-static int vmysql_init(struct vxdb_state *vp, const char *config_file)
+static int vxmysql_init(struct vxdb_state *vp, const char *config_file)
 {
 	struct mysql_state *st;
 	struct mq_names *nm;
@@ -107,7 +107,7 @@ static int vmysql_init(struct vxdb_state *vp, const char *config_file)
 	if (st == NULL)
 		return -errno;
 
-	/* ->cn.handle is already freed on mysql_close() in vmysql_close() */
+	/* ->cn.handle is already freed on mysql_close() in vxmysql_close() */
 	if ((st->cn.handle = mysql_init(NULL)) == NULL) {
 		free(st);
 		return -errno;
@@ -153,7 +153,7 @@ static int vmysql_init(struct vxdb_state *vp, const char *config_file)
 	return 1;
 }
 
-static void vmysql_exit(struct vxdb_state *vp)
+static void vxmysql_exit(struct vxdb_state *vp)
 {
 	struct mysql_state *state = vp->state;
 	read_config(state, CONFIG_FREE, NULL);
@@ -161,7 +161,7 @@ static void vmysql_exit(struct vxdb_state *vp)
 	return;
 }
 
-static int vmysql_open(struct vxdb_state *vp, unsigned int flags)
+static int vxmysql_open(struct vxdb_state *vp, unsigned int flags)
 {
 	struct mysql_state *state  = vp->state;
 	const struct mq_conn *conn = &state->cn;
@@ -224,7 +224,7 @@ static int vmysql_open(struct vxdb_state *vp, unsigned int flags)
 	return 1;
 }
 
-static void vmysql_close(struct vxdb_state *vp)
+static void vxmysql_close(struct vxdb_state *vp)
 {
 	struct mysql_state *state = vp->state;
 	mysql_close(state->cn.handle);
@@ -232,7 +232,7 @@ static void vmysql_close(struct vxdb_state *vp)
 	return;
 }
 
-static int vmysql_xlock_user(struct mysql_state *state)
+static int vxmysql_xlock_user(struct mysql_state *state)
 {
 	const struct mq_names *names = &state->names;
 	MYSQL *c = state->cn.handle;
@@ -251,14 +251,14 @@ static int vmysql_xlock_user(struct mysql_state *state)
 	return ret;
 }
 
-static int vmysql_xlock_group(struct mysql_state *state)
+static int vxmysql_xlock_group(struct mysql_state *state)
 {
 	return (queryf(state->cn.handle, "lock tables %s write",
 	       state->names.gr_table) == 0) ? 1 :
 	       -mysql_errno(state->cn.handle);
 }
 
-static inline void vmysql_xunlock(struct mysql_state *state)
+static inline void vxmysql_xunlock(struct mysql_state *state)
 {
 	mysql_query(state->cn.handle, "unlock tables");
 	/* FIXME: does it require fetch_result? */
@@ -268,7 +268,7 @@ static inline void vmysql_xunlock(struct mysql_state *state)
 	return;
 }
 
-static long vmysql_modctl(struct vxdb_state *vp, unsigned int command, ...)
+static long vxmysql_modctl(struct vxdb_state *vp, unsigned int command, ...)
 {
 	struct mysql_state *state = vp->state;
 
@@ -289,7 +289,7 @@ static long vmysql_modctl(struct vxdb_state *vp, unsigned int command, ...)
 }
 
 //-----------------------------------------------------------------------------
-static int vmysql_useradd(struct vxdb_state *vp,
+static int vxmysql_useradd(struct vxdb_state *vp,
     const struct vxdb_user *rq)
 {
 	struct mysql_state *state    = vp->state;
@@ -299,7 +299,7 @@ static int vmysql_useradd(struct vxdb_state *vp,
 	if (rq->pw_name == NULL)
 		return -EINVAL;
 	CHECK_ACCESS();
-	if ((ret = vmysql_xlock_user(state)) <= 0)
+	if ((ret = vxmysql_xlock_user(state)) <= 0)
 		return ret;
 
 	/* shadow part */
@@ -347,16 +347,16 @@ static int vmysql_useradd(struct vxdb_state *vp,
 		goto out;
 	}
 
-	vmysql_xunlock(state);
+	vxmysql_xunlock(state);
 	return 1;
 
  out:
-	vmysql_userdel_unlocked(state, rq->pw_name);
-	vmysql_xunlock(state);
+	vxmysql_userdel_unlocked(state, rq->pw_name);
+	vxmysql_xunlock(state);
 	return -ret;
 }
 
-static int vmysql_usermod(struct vxdb_state *vp, const char *name,
+static int vxmysql_usermod(struct vxdb_state *vp, const char *name,
     const struct vxdb_user *param)
 {
 	/*
@@ -371,7 +371,7 @@ static int vmysql_usermod(struct vxdb_state *vp, const char *name,
 	return 0;
 }
 
-static int vmysql_userdel(struct vxdb_state *vp, const char *name)
+static int vxmysql_userdel(struct vxdb_state *vp, const char *name)
 {
 	struct mysql_state *state = vp->state;
 	int ret;
@@ -379,14 +379,14 @@ static int vmysql_userdel(struct vxdb_state *vp, const char *name)
 	CHECK_ACCESS();
 	if (name == NULL)
 		return -EINVAL;
-	if ((ret = vmysql_xlock_user(state)) <= 0)
+	if ((ret = vxmysql_xlock_user(state)) <= 0)
 		return ret;
-	ret = vmysql_userdel_unlocked(state, name);
-	vmysql_xunlock(state);
+	ret = vxmysql_userdel_unlocked(state, name);
+	vxmysql_xunlock(state);
 	return ret;
 }
 
-static int vmysql_userdel_unlocked(struct mysql_state *state, const char *name)
+static int vxmysql_userdel_unlocked(struct mysql_state *state, const char *name)
 {
 	/*
 	hmc_t *wtable_pw = where_pw_u(state, sr_mask, WHERE_PW_NAME | WHERE_PW_UID);
@@ -426,7 +426,7 @@ static int vmysql_userdel_unlocked(struct mysql_state *state, const char *name)
 	return -E2BIG;
 }
 
-static void *vmysql_usertrav_init(struct vxdb_state *vp)
+static void *vxmysql_usertrav_init(struct vxdb_state *vp)
 {
 	struct mysql_state *state    = vp->state;
 	const struct mq_names *names = &state->names;
@@ -465,7 +465,7 @@ static void *vmysql_usertrav_init(struct vxdb_state *vp)
 	return HX_memdup(&trav, sizeof(struct traverser_state));
 }
 
-static int vmysql_usertrav_walk(struct vxdb_state *vp, void *ptr,
+static int vxmysql_usertrav_walk(struct vxdb_state *vp, void *ptr,
     struct vxdb_user *res)
 {
 	struct mysql_state *state = vp->state;
@@ -512,7 +512,7 @@ static int vmysql_usertrav_walk(struct vxdb_state *vp, void *ptr,
 	return 1;
 }
 
-static void vmysql_usertrav_free(struct vxdb_state *vp, void *ptr)
+static void vxmysql_usertrav_free(struct vxdb_state *vp, void *ptr)
 {
 	struct traverser_state *trav = ptr;
 	mysql_free_result(trav->res);
@@ -520,25 +520,25 @@ static void vmysql_usertrav_free(struct vxdb_state *vp, void *ptr)
 	return;
 }
 
-static int vmysql_groupadd(struct vxdb_state *vp,
+static int vxmysql_groupadd(struct vxdb_state *vp,
     const struct vxdb_group *rq)
 {
 	struct mysql_state *state = vp->state;
 	int ret;
 
 	CHECK_ACCESS();
-	if ((ret = vmysql_xlock_group(vp->state)) <= 0)
+	if ((ret = vxmysql_xlock_group(vp->state)) <= 0)
 		return ret;
 	return 0;
 }
 
-static int vmysql_groupmod(struct vxdb_state *vp, const char *name,
+static int vxmysql_groupmod(struct vxdb_state *vp, const char *name,
     const struct vxdb_group *param)
 {
 	return 0;
 }
 
-static int vmysql_groupdel(struct vxdb_state *vp, const char *name)
+static int vxmysql_groupdel(struct vxdb_state *vp, const char *name)
 {
 	/*
 	struct mysql_state *state = vp->state;
@@ -550,7 +550,7 @@ static int vmysql_groupdel(struct vxdb_state *vp, const char *name)
 		return -EACCES;
 	if (sr_mask->gr_name == NULL && sr_mask->gr_gid == VXDB_NOGID)
 		return -EINVAL;
-	if ((ret = vmysql_xlock_group(state)) <= 0)
+	if ((ret = vxmysql_xlock_group(state)) <= 0)
 		return ret;
 
 	where = where_groupmask(state, sr_mask, WHERE_GR_NAME | WHERE_GR_GID);
@@ -559,13 +559,13 @@ static int vmysql_groupdel(struct vxdb_state *vp, const char *name)
 	if (mysql_query(state->cn.handle, query) != 0)
 		ret = -mysql_errno(state->cn.handle);
 
-	vmysql_xunlock(state);
+	vxmysql_xunlock(state);
 	hmc_free(where);
 	*/
 	return 0; /* (ret == 0) ? 1 : ret; */
 }
 
-static void *vmysql_grouptrav_init(struct vxdb_state *vp)
+static void *vxmysql_grouptrav_init(struct vxdb_state *vp)
 {
 	struct mysql_state *state    = vp->state;
 	const struct mq_names *names = &state->names;
@@ -584,7 +584,7 @@ static void *vmysql_grouptrav_init(struct vxdb_state *vp)
 	return HX_memdup(&trav, sizeof(struct traverser_state));
 }
 
-static int vmysql_grouptrav_walk(struct vxdb_state *vp, void *ptr,
+static int vxmysql_grouptrav_walk(struct vxdb_state *vp, void *ptr,
     struct vxdb_group *res)
 {
 	struct mysql_state *st = vp->state;
@@ -604,7 +604,7 @@ static int vmysql_grouptrav_walk(struct vxdb_state *vp, void *ptr,
 	return 1;
 }
 
-static void vmysql_grouptrav_free(struct vxdb_state *vp, void *ptr)
+static void vxmysql_grouptrav_free(struct vxdb_state *vp, void *ptr)
 {
 	struct traverser_state *trav = ptr;
 	mysql_free_result(trav->res);
@@ -1006,21 +1006,21 @@ static hmc_t *sql_usermask(hmc_t **s, const struct mysql_state *state,
 
 EXPORT_SYMBOL struct vxdb_driver THIS_MODULE = {
 	.name           = "MYSQL back-end module",
-	.init           = vmysql_init,
-	.open           = vmysql_open,
-	.close          = vmysql_close,
-	.exit           = vmysql_exit,
-	.modctl         = vmysql_modctl,
-	.useradd        = vmysql_useradd,
-	.usermod        = vmysql_usermod,
-	.userdel        = vmysql_userdel,
-	.usertrav_init  = vmysql_usertrav_init,
-	.usertrav_walk  = vmysql_usertrav_walk,
-	.usertrav_free  = vmysql_usertrav_free,
-	.groupadd       = vmysql_groupadd,
-	.groupmod       = vmysql_groupmod,
-	.groupdel       = vmysql_groupdel,
-	.grouptrav_init = vmysql_grouptrav_init,
-	.grouptrav_walk = vmysql_grouptrav_walk,
-	.grouptrav_free = vmysql_grouptrav_free,
+	.init           = vxmysql_init,
+	.open           = vxmysql_open,
+	.close          = vxmysql_close,
+	.exit           = vxmysql_exit,
+	.modctl         = vxmysql_modctl,
+	.useradd        = vxmysql_useradd,
+	.usermod        = vxmysql_usermod,
+	.userdel        = vxmysql_userdel,
+	.usertrav_init  = vxmysql_usertrav_init,
+	.usertrav_walk  = vxmysql_usertrav_walk,
+	.usertrav_free  = vxmysql_usertrav_free,
+	.groupadd       = vxmysql_groupadd,
+	.groupmod       = vxmysql_groupmod,
+	.groupdel       = vxmysql_groupdel,
+	.grouptrav_init = vxmysql_grouptrav_init,
+	.grouptrav_walk = vxmysql_grouptrav_walk,
+	.grouptrav_free = vxmysql_grouptrav_free,
 };

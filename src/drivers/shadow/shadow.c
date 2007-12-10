@@ -37,7 +37,7 @@ struct traverser_state {
 };
 
 /* Functions */
-static void vshadow_close(struct vxdb_state *);
+static void vxshadow_close(struct vxdb_state *);
 
 /* Variables */
 static char *Path_passwd   = "/etc/passwd";
@@ -47,7 +47,7 @@ static char *Path_vxpasswd = "/etc/vxpasswd";
 static char *Path_vxshadow = "/etc/vxshadow";
 
 //-----------------------------------------------------------------------------
-static int vshadow_init(struct vxdb_state *vp, const char *config_file)
+static int vxshadow_init(struct vxdb_state *vp, const char *config_file)
 {
 	struct shadow_state *state;
 
@@ -69,19 +69,19 @@ static int vshadow_init(struct vxdb_state *vp, const char *config_file)
 	return 1;
 }
 
-static int vshadow_open(struct vxdb_state *vp, unsigned int flags)
+static int vxshadow_open(struct vxdb_state *vp, unsigned int flags)
 {
 	struct shadow_state *state = vp->state;
 	int ret;
 
 	if ((ret = db_open(state, flags & VXDB_WRLOCK)) <= 0) {
-		vshadow_close(vp);
+		vxshadow_close(vp);
 		return ret;
 	}
 	return 1;
 }
 
-static void vshadow_close(struct vxdb_state *vp)
+static void vxshadow_close(struct vxdb_state *vp)
 {
 	struct shadow_state *state = vp->state;
 	db_close(state);
@@ -89,7 +89,7 @@ static void vshadow_close(struct vxdb_state *vp)
 	return;
 }
 
-static void vshadow_exit(struct vxdb_state *vp)
+static void vxshadow_exit(struct vxdb_state *vp)
 {
 	struct shadow_state *state = vp->state;
 	read_config(state, CONFIG_FREE, NULL);
@@ -97,7 +97,7 @@ static void vshadow_exit(struct vxdb_state *vp)
 	return;
 }
 
-static long vshadow_modctl(struct vxdb_state *vp, unsigned int command, ...)
+static long vxshadow_modctl(struct vxdb_state *vp, unsigned int command, ...)
 {
 	struct shadow_state *state = vp->state;
 	errno = 0;
@@ -125,7 +125,7 @@ static long vshadow_modctl(struct vxdb_state *vp, unsigned int command, ...)
 	return -ENOSYS;
 }
 
-static int vshadow_lock(struct vxdb_state *vp)
+static int vxshadow_lock(struct vxdb_state *vp)
 {
 	struct shadow_state *state = vp->state;
 	if (RWLOCKED(state))
@@ -135,7 +135,7 @@ static int vshadow_lock(struct vxdb_state *vp)
 	return db_open(state, state->flags | VXDB_WRLOCK);
 }
 
-static int vshadow_unlock(struct vxdb_state *vp)
+static int vxshadow_unlock(struct vxdb_state *vp)
 {
 	struct shadow_state *state = vp->state;
 	struct flock lockinfo = {
@@ -152,7 +152,7 @@ static int vshadow_unlock(struct vxdb_state *vp)
 	return 1;
 }
 
-static int vshadow_useradd(struct vxdb_state *vp,
+static int vxshadow_useradd(struct vxdb_state *vp,
     const struct vxdb_user *rq)
 {
 	struct shadow_state *state = vp->state;
@@ -202,7 +202,7 @@ static int vshadow_useradd(struct vxdb_state *vp,
 	return 1;
 }
 
-static int vshadow_usermod(struct vxdb_state *vp, const char *name,
+static int vxshadow_usermod(struct vxdb_state *vp, const char *name,
     const struct vxdb_user *mod_mask)
 {
 #define UP_INT(__field) \
@@ -249,7 +249,7 @@ static int vshadow_usermod(struct vxdb_state *vp, const char *name,
 #undef UP_STR
 }
 
-static int vshadow_userdel(struct vxdb_state *vp, const char *name)
+static int vxshadow_userdel(struct vxdb_state *vp, const char *name)
 {
 	struct shadow_state *state = vp->state;
 	struct vxdb_user *user;
@@ -269,7 +269,7 @@ static int vshadow_userdel(struct vxdb_state *vp, const char *name)
 	return 1;
 }
 
-static int vshadow_getpwuid(struct vxdb_state *vp, unsigned int uid,
+static int vxshadow_getpwuid(struct vxdb_state *vp, unsigned int uid,
     struct vxdb_user *dest)
 {
 	const struct shadow_state *state = vp->state;
@@ -282,7 +282,7 @@ static int vshadow_getpwuid(struct vxdb_state *vp, unsigned int uid,
 	return 1;
 }
 
-static int vshadow_getpwnam(struct vxdb_state *vp, const char *name,
+static int vxshadow_getpwnam(struct vxdb_state *vp, const char *name,
     struct vxdb_user *dest)
 {
 	const struct shadow_state *state = vp->state;
@@ -295,7 +295,7 @@ static int vshadow_getpwnam(struct vxdb_state *vp, const char *name,
 	return 1;
 }
 
-static void *vshadow_usertrav_init(struct vxdb_state *vp)
+static void *vxshadow_usertrav_init(struct vxdb_state *vp)
 {
 	struct shadow_state *state = vp->state;
 	struct traverser_state trav;
@@ -304,7 +304,7 @@ static void *vshadow_usertrav_init(struct vxdb_state *vp)
 	return HX_memdup(&trav, sizeof(trav));
 }
 
-static int vshadow_usertrav_walk(struct vxdb_state *vp, void *ptr,
+static int vxshadow_usertrav_walk(struct vxdb_state *vp, void *ptr,
     struct vxdb_user *dest)
 {
 	struct traverser_state *trav = ptr;
@@ -315,13 +315,13 @@ static int vshadow_usertrav_walk(struct vxdb_state *vp, void *ptr,
 	return 1;
 }
 
-static void vshadow_usertrav_free(struct vxdb_state *vp, void *ptr)
+static void vxshadow_usertrav_free(struct vxdb_state *vp, void *ptr)
 {
 	free(ptr);
 	return;
 }
 
-static int vshadow_groupadd(struct vxdb_state *vp,
+static int vxshadow_groupadd(struct vxdb_state *vp,
     const struct vxdb_group *rq)
 {
 	struct shadow_state *state = vp->state;
@@ -350,7 +350,7 @@ static int vshadow_groupadd(struct vxdb_state *vp,
 	return 1;
 }
 
-static int vshadow_groupmod(struct vxdb_state *vp, const char *name,
+static int vxshadow_groupmod(struct vxdb_state *vp, const char *name,
     const struct vxdb_group *mod_mask)
 {
 	struct shadow_state *state = vp->state;
@@ -371,7 +371,7 @@ static int vshadow_groupmod(struct vxdb_state *vp, const char *name,
 	return 1;
 }
 
-static int vshadow_groupdel(struct vxdb_state *vp, const char *name)
+static int vxshadow_groupdel(struct vxdb_state *vp, const char *name)
 {
 	struct shadow_state *state = vp->state;
 	struct vxdb_group *grp;
@@ -388,7 +388,7 @@ static int vshadow_groupdel(struct vxdb_state *vp, const char *name)
 	return 1;
 }
 
-static int vshadow_getgrgid(struct vxdb_state *vp, unsigned int gid,
+static int vxshadow_getgrgid(struct vxdb_state *vp, unsigned int gid,
     struct vxdb_group *dest)
 {
 	const struct shadow_state *state = vp->state;
@@ -401,7 +401,7 @@ static int vshadow_getgrgid(struct vxdb_state *vp, unsigned int gid,
 	return 1;
 }
 
-static int vshadow_getgrnam(struct vxdb_state *vp, const char *name,
+static int vxshadow_getgrnam(struct vxdb_state *vp, const char *name,
     struct vxdb_group *dest)
 {
 	const struct shadow_state *state = vp->state;
@@ -414,7 +414,7 @@ static int vshadow_getgrnam(struct vxdb_state *vp, const char *name,
 	return 1;
 }
 
-static void *vshadow_grouptrav_init(struct vxdb_state *vp)
+static void *vxshadow_grouptrav_init(struct vxdb_state *vp)
 {
 	struct shadow_state *state = vp->state;
 	struct traverser_state trav;
@@ -423,7 +423,7 @@ static void *vshadow_grouptrav_init(struct vxdb_state *vp)
 	return HX_memdup(&trav, sizeof(trav));
 }
 
-static int vshadow_grouptrav_walk(struct vxdb_state *vp, void *ptr,
+static int vxshadow_grouptrav_walk(struct vxdb_state *vp, void *ptr,
     struct vxdb_group *dest)
 {
 	struct traverser_state *trav = ptr;
@@ -434,7 +434,7 @@ static int vshadow_grouptrav_walk(struct vxdb_state *vp, void *ptr,
 	return 1;
 }
 
-static void vshadow_grouptrav_free(struct vxdb_state *vp, void *ptr)
+static void vxshadow_grouptrav_free(struct vxdb_state *vp, void *ptr)
 {
 	free(ptr);
 	return;
@@ -443,27 +443,27 @@ static void vshadow_grouptrav_free(struct vxdb_state *vp, void *ptr)
 EXPORT_SYMBOL struct vxdb_driver THIS_MODULE = {
 	.name           = "vxShadow back-end module",
 	.desc           = "for shadow suite (and vxshadow extension)",
-	.init           = vshadow_init,
-	.open           = vshadow_open,
-	.close          = vshadow_close,
-	.exit           = vshadow_exit,
-	.modctl         = vshadow_modctl,
-	.lock           = vshadow_lock,
-	.unlock         = vshadow_unlock,
-	.useradd        = vshadow_useradd,
-	.usermod        = vshadow_usermod,
-	.userdel        = vshadow_userdel,
-	.getpwuid       = vshadow_getpwuid,
-	.getpwnam       = vshadow_getpwnam,
-	.usertrav_init  = vshadow_usertrav_init,
-	.usertrav_walk  = vshadow_usertrav_walk,
-	.usertrav_free  = vshadow_usertrav_free,
-	.groupadd       = vshadow_groupadd,
-	.groupmod       = vshadow_groupmod,
-	.groupdel       = vshadow_groupdel,
-	.getgrgid       = vshadow_getgrgid,
-	.getgrnam       = vshadow_getgrnam,
-	.grouptrav_init = vshadow_grouptrav_init,
-	.grouptrav_walk = vshadow_grouptrav_walk,
-	.grouptrav_free = vshadow_grouptrav_free,
+	.init           = vxshadow_init,
+	.open           = vxshadow_open,
+	.close          = vxshadow_close,
+	.exit           = vxshadow_exit,
+	.modctl         = vxshadow_modctl,
+	.lock           = vxshadow_lock,
+	.unlock         = vxshadow_unlock,
+	.useradd        = vxshadow_useradd,
+	.usermod        = vxshadow_usermod,
+	.userdel        = vxshadow_userdel,
+	.getpwuid       = vxshadow_getpwuid,
+	.getpwnam       = vxshadow_getpwnam,
+	.usertrav_init  = vxshadow_usertrav_init,
+	.usertrav_walk  = vxshadow_usertrav_walk,
+	.usertrav_free  = vxshadow_usertrav_free,
+	.groupadd       = vxshadow_groupadd,
+	.groupmod       = vxshadow_groupmod,
+	.groupdel       = vxshadow_groupdel,
+	.getgrgid       = vxshadow_getgrgid,
+	.getgrnam       = vxshadow_getgrnam,
+	.grouptrav_init = vxshadow_grouptrav_init,
+	.grouptrav_walk = vxshadow_grouptrav_walk,
+	.grouptrav_free = vxshadow_grouptrav_free,
 };
