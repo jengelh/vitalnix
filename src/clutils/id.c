@@ -76,7 +76,9 @@ static void id_current(struct vxdb_state *db)
 	unsigned int euid = geteuid(), egid = getegid();
 	struct vxdb_user user = {};
 	struct vxdb_group group = {};
-	int ret;
+	gid_t sgrp[128];
+	unsigned int i;
+	int ret, sgnum;
 
 	printf("ruid=%u", uid);
 	if ((ret = vxdb_getpwuid(db, uid, &user)) < 0)
@@ -101,6 +103,21 @@ static void id_current(struct vxdb_state *db)
 		perror("- vxdb_getgrgid");
 	else if (ret > 0)
 		printf("(%s)", group.gr_name);
+
+	if ((sgnum = getgroups(ARRAY_SIZE(sgrp), sgrp)) < 0) {
+		perror("- getgroups");
+	} else {
+		printf(" groups=");
+		for (i = 0; i < sgnum; ++i) {
+			printf("%u", sgrp[i]);
+			if ((ret = vxdb_getgrgid(db, sgrp[i], &group)) < 0)
+				perror("- vxdb_getgrgid");
+			else if (ret > 0)
+				printf("(%s)", group.gr_name);
+			if (i != sgnum - 1)
+				printf(",");
+		}
+	}
 
 	printf("\n");
 	vxdb_user_free(&user, false);
