@@ -1,8 +1,9 @@
 # -*- Makefile -*-
 
-targets = $(patsubst ${srcdir}/%.php,%.html,$(wildcard ${srcdir}/*.php)) \
-          $(patsubst ${srcdir}/%.php,%.txt,$(wildcard ${srcdir}/*.php)) \
-          $(patsubst ${srcdir}/%.icss,%.css,$(wildcard ${srcdir}/*.icss))
+targets = \
+	$(patsubst ${srcdir}/%.php,%.html,$(wildcard ${srcdir}/[a-z]*.php)) \
+	$(patsubst ${srcdir}/%.php,%.txt,$(wildcard ${srcdir}/[a-z]*.php)) \
+	$(patsubst ${srcdir}/%.icss,%.css,$(wildcard ${srcdir}/*.icss))
 
 CLEANFILES = ${targets}
 
