@@ -41,7 +41,7 @@ Various flags control the generation and encryption behavior.</p>
     <td class="t2">Possibly have an uppercase character in the password</td>
   </tr>
   <tr>
-    <td class="t1n"><code>-l</b> <i>length</i></code></td>
+    <td class="t1n"><code>-l</code> <i>length</i></td>
     <td class="t1">Password length</td>
   </tr>
   <tr>

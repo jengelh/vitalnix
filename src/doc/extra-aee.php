@@ -1,10 +1,10 @@
 <?php include_once("Base-header.php"); ?>
 
-<h1>Name</h2>
+<h1>Name</h1>
 
 <p>AEE - Alternate Error Encoding</p>
 
-<h1>Description</h2>
+<h1>Description</h1>
 
 <p class="block">Functions from the Vitalnix API work a little different than
 the usual libc library calls when it comes to error reporting. The following
@@ -21,7 +21,7 @@ values.</p>
   <li>functions returning a pointer or an error code</li>
 </ol>
 
-<h1>Class A&nbsp;-- returning boolean</h2>
+<h1>Class A&nbsp;-- returning boolean</h1>
 
 <p class="block">This class of functions returns non-zero for success and zero
 for failure. An <code>if()</code> construct can therefore be short:</p>
@@ -34,9 +34,9 @@ if(<b>!</b>bool_function())<br />
 <p class="block">This AEE draft does not specify if and how <code>errno</code>
 is set in case of a false&nbsp;-- this is specific to a function.</p>
 
-<h1>Class B&nbsp;-- success or error code</h2>
+<h1>Class B&nbsp;-- success or error code</h1>
 
-<h2>negative, non-zero</h3>
+<h2>negative, non-zero</h2>
 
 <p class="block">In case of an error, the <code>errno</code>-style error code
 is returned as a negative number, e.g. <code>-ENOMEM</code>. This differs from
@@ -55,7 +55,7 @@ code from its <code>PWLFMT_E*</code> range, has the underlying system error
 code (e.g. <code>ENOENT</code>) in <code>errno</code> (which can/should be
 used).</p>
 
-<h2>zero</h3>
+<h2>zero</h2>
 
 <p class="block">In case of Class B functions, this value is generally unused,
 but counts as an error. A precise test for error therefore looks like:</p>
@@ -66,18 +66,18 @@ if((ret <b>=</b> function()) <b>&lt;=</b> 0)<br />
 &nbsp; &nbsp; fprintf(stderr, "function() returned %s (%d)\n", strerror(-ret), ret);
 </code></p>
 
-<h2>positive non-zero</h3>
+<h2>positive non-zero</h2>
 
 <p class="block">Any positive non-zero value indicates success.</p>
 
-<h1>Class C&nbsp;-- integral value or error code</h2>
+<h1>Class C&nbsp;-- integral value or error code</h1>
 
-<h2>negative non-zero</h3>
+<h2>negative non-zero</h2>
 
 <p class="block">For negative non-zero return values, the same rules as for
 Class B apply.</p>
 
-<h2>zero or positive non-zero</h3>
+<h2>zero or positive non-zero</h2>
 
 <p class="block">Zero or positive non-zero indicates the result of the
 function. For example, asking <i>libvxdb</i> how many groups there are can
@@ -91,7 +91,7 @@ else<br />
 &nbsp; &nbsp; printf("vxdb_modctl() returned error %d: %s\n", ret, strerror(-ret));
 </code></p>
 
-<h1>Class D&nbsp;-- pointer or error code</h2>
+<h1>Class D&nbsp;-- pointer or error code</h1>
 
 <p class="block">Since any return value is used for the pointer, the only way
 to notify of errors it to set <code>errno</code>. Therefore, if a functions

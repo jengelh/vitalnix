@@ -21,7 +21,7 @@ schematic description is a real-world example.</p>
     the pvgrp. Some SDF export programs do not provide this field at all.</li>
   <li><b>surname</b></li>
   <li><b>firstname</b></li>
-  <li><b>bday</b>&nbsp;-- birth date</li>
+  <li><b>bday</b>&nbsp;-- birth date<br />
     A UUID is built from the name and this date to uniquely identify the user
     within the Data Source. Formats accepted are DD.MM.YY, DD.MM.YYYY,
     MM/DD/YYYY and YYYY-MM-DD.</li>

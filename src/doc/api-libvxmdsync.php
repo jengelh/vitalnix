@@ -54,8 +54,8 @@ user list to the system user database.</p>
 <h2>mdsync_compare</h2>
 
 <p class="block">Compares <code>ws-&gt;add_req</code> to the system user
-database.</p> Users which are both in <code>ws-&gt;add_req</code> and the VXDB
-are moved from <code>ws-&gt;add_req</code> to <code>ws-&gt;keep_req</code>.</p>
+database. Users which are both in <code>ws-&gt;add_req</code> and the VXDB are
+moved from <code>ws-&gt;add_req</code> to <code>ws-&gt;keep_req</code>.</p>
 
 <p class="block">If deferred deletion is not configured, puts users, which have
 been removed from the EDS, but still exist in the VXDB, into
@@ -100,7 +100,7 @@ of calls to be made is:</p>
   <li><code>mdsync_prepare_group()</code></li>
   <li><code>mdsync_read_file()</code></li>
   <li><code>mdsync_open_log()</code></li>
-  <li>Exactly one of:</li>
+  <li>Exactly one of:
     <ul>
       <li><code>mdsync_compare()</code></li>
       <li><code>mdsync_compare_simple()</code></li>
