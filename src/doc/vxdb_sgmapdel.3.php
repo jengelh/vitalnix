@@ -23,11 +23,11 @@ negative value is returned, indicating the error.</p>
 
 <table border="1">
 	<tr>
-		<td><code>-ENOENT</code></td>
+		<td><code><b>-ENOENT</b></code></td>
 		<td>The mapping does not exist.</td>
 	</tr>
 	<tr>
-		<td><code>-EPERM</code></td>
+		<td><code><b>-EPERM</b></code></td>
 		<td>Not enough privileges to complete this operation.</td>
 	</tr>
 </table>
