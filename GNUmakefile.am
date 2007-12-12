@@ -34,7 +34,7 @@ bin_PROGRAMS    := \
 	vxcconfig vxfinger vxid vxrandpw
 sbin_PROGRAMS   := \
 	cgi_chpasswd cgi_ntactiv cgi_vwquota \
-	mdckuuid mdfixuuid mdpwlfmt mdsingle \
+	vxckuuid vxfixuuid vxpwlfmt vxsingle \
 	vxdbdump vxdbinfo vxtryauth \
 	vxuseradd vxusermod vxuserdel vxusersync \
 	vxgroupadd vxgroupmod vxgroupdel
@@ -102,14 +102,14 @@ html2man_LDADD     := -lHX -lxml2
 ihlogon_SOURCES    := src/clutils/ihlogon.c
 ihlogon_CFLAGS     := -DSTANDALONE_DEBUG
 ihlogon_LDADD      := -lHX -lpam libvxdb.la
-mdckuuid_SOURCES   := src/clutils/mdckuuid.c
-mdckuuid_LDADD     := -lHX libvxeds.la libvxdb.la libvxutil.la
-mdfixuuid_SOURCES  := src/clutils/mdfixuuid.c
-mdfixuuid_LDADD    := -lHX libvxdb.la libvxutil.la
-mdpwlfmt_SOURCES   := src/clutils/mdpwlfmt.c
-mdpwlfmt_LDADD     := -lHX libvxmdfmt.la
-mdsingle_SOURCES   := src/clutils/mdsingle.c
-mdsingle_LDADD     := -lHX libvxcli.la libvxmdsync.la libvxdb.la
+vxckuuid_SOURCES   := src/clutils/ckuuid.c
+vxckuuid_LDADD     := -lHX libvxeds.la libvxdb.la libvxutil.la
+vxfixuuid_SOURCES  := src/clutils/fixuuid.c
+vxfixuuid_LDADD    := -lHX libvxdb.la libvxutil.la
+vxpwlfmt_SOURCES   := src/clutils/pwlfmt.c
+vxpwlfmt_LDADD     := -lHX libvxmdfmt.la
+vxsingle_SOURCES   := src/clutils/single.c
+vxsingle_LDADD     := -lHX libvxcli.la libvxmdsync.la libvxdb.la
 vxdbdump_SOURCES   := src/clutils/dbdump.c
 vxdbdump_LDADD     := libvxdb.la libvxutil.la
 vxdbinfo_SOURCES   := src/clutils/dbinfo.c
@@ -128,7 +128,7 @@ vxusermod_SOURCES  := src/clutils/usermod.c
 vxusermod_LDADD    := -lHX libvxdb.la libvxutil.la
 vxuserdel_SOURCES  := src/clutils/userdel.c
 vxuserdel_LDADD    := -lHX libvxdb.la libvxutil.la
-vxusersync_SOURCES := src/clutils/mdsync.c
+vxusersync_SOURCES := src/clutils/usersync.c
 vxusersync_LDADD   := -lHX libvxcli.la libvxeds.la libvxmdsync.la libvxdb.la
 vxgroupadd_SOURCES := src/clutils/groupadd.c
 vxgroupadd_LDADD   := -lHX libvxdb.la libvxutil.la
