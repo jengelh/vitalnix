@@ -2,8 +2,9 @@
 SVN /trunk
 ==========
 
-- renamed tools: pdbdump->vxdbdump, pdbinfo->vxdbdump, mdsync->vxusersync
+- renamed tools to have unique prefixes
 - added tools: vxfinger, vxid, userwebpages.cgi
+- added manpages (generated from HTML)
 
 Usual slew of fixes:
 - [r551]: calling -V in various tools did not terminate the program
