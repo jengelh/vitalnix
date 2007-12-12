@@ -47,6 +47,7 @@ if HAVE_WXWIDGETS
 sbin_PROGRAMS   += steelmill
 endif
 
+noinst_PROGRAMS := html2man
 EXTRA_PROGRAMS  := ihlogon testcase tcrypt
 level1_libs     := libvxcgi.la libvxcli.la libvxcore.la libvxutil.la
 level2_libs     := libvxdb.la libvxeds.la libvxmdfmt.la
@@ -95,6 +96,9 @@ cgi_vwquota_LDADD    := -lHX libvxcgi.la libvxutil.la
 #
 #	src/clutils
 #
+html2man_SOURCES   := src/clutils/html2man.c
+html2man_CFLAGS    := ${AM_CFLAGS} ${libxml_CFLAGS}
+html2man_LDADD     := -lHX -lxml2
 ihlogon_SOURCES    := src/clutils/ihlogon.c
 ihlogon_CFLAGS     := -DSTANDALONE_DEBUG
 ihlogon_LDADD      := -lHX -lpam libvxdb.la
@@ -337,3 +341,5 @@ install-data-hook:
 	${INSTALL} -dm0755 ${DESTDIR}${pkgincludedir};
 	cp -a ${top_srcdir}/src/include/vitalnix/* ${DESTDIR}${pkgincludedir}/;
 	cp -Lp include/vitalnix/config.h ${DESTDIR}${pkgincludedir}/;
+
+src/doc/%.man: html2man

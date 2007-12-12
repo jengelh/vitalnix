@@ -1,13 +1,32 @@
 # -*- Makefile -*-
 
-targets = \
+.PHONY: all mans
+
+html_targets := \
 	$(patsubst ${srcdir}/%.php,%.html,$(wildcard ${srcdir}/[a-z]*.php)) \
 	$(patsubst ${srcdir}/%.php,%.txt,$(wildcard ${srcdir}/[a-z]*.php)) \
 	$(patsubst ${srcdir}/%.icss,%.css,$(wildcard ${srcdir}/*.icss))
+man_targets := \
+	$(patsubst ${srcdir}/%.7.php,%.7,$(wildcard ${srcdir}/*.7.php)) \
+	$(patsubst ${srcdir}/%.8.php,%.8,$(wildcard ${srcdir}/*.8.php))
 
-CLEANFILES = ${targets}
+CLEANFILES := ${html_targets} ${man_targets}
 
-all: ${targets}
+all: ${html_targets} mans
+
+mans: ${man_targets}
+
+build_man = \
+	${AM_VERBOSE_GEN}if [ -x "${top_builddir}/html2man" ]; then \
+		"${top_builddir}/html2man" \
+		-t "Vitalnix User Management Suite" -n $(1) -s $(2) $< >$@; \
+	fi;
+
+%.7: %.7.php
+	$(call build_man,$*,7)
+
+%.8: %.8.php
+	$(call build_man,$*,8)
 
 %.html: %.php
 	${AM_VERBOSE_GEN}${PHP} -q $< man | ${PERL} -pe 's{href="([^/]*?)\.php"}{href="$$1.html"}' >$@;
