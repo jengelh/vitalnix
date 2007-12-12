@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <libHX.h>
 #include <security/pam_appl.h>
+#include <vitalnix/config.h>
 #include <vitalnix/libvxcgi/libvxcgi.h>
 
 /* Functions */
@@ -45,9 +46,17 @@ int main(int argc, const char **argv)
 }
 
 //-----------------------------------------------------------------------------
+static void show_version(const struct HXoptcb *cbi)
+{
+	printf("Vitalnix " PACKAGE_VERSION " tryauth\n");
+	exit(EXIT_SUCCESS);
+}
+
 static bool get_options(int *argc, const char ***argv)
 {
 	static const struct HXoption options_table[] = {
+		{.sh = 'V', .type = HXTYPE_NONE, .cb = show_version,
+		 .help = "Show version information"},
 		{.sh = 'v', .type = HXTYPE_NONE, .ptr = &Verbose,
 		 .help = "Verbose error reporting"},
 		HXOPT_AUTOHELP,

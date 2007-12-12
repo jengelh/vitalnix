@@ -1,5 +1,5 @@
 /*
- *	mdpwlfmt - Format password lists
+ *	pwlfmt - Format password lists
  *	Copyright © CC Computer Consultants GmbH, 2003 - 2007
  *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
  *
@@ -130,7 +130,7 @@ static bool get_options(int *argc, const char ***argv,
 
 static void show_version(const struct HXoptcb *cbi)
 {
-	printf("Vitalnix " PACKAGE_VERSION " mdpwlfmt\n");
+	printf("Vitalnix " PACKAGE_VERSION " pwlfmt\n");
 	exit(EXIT_SUCCESS);
 }
 

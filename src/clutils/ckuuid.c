@@ -1,5 +1,5 @@
 /*
- *	mdckuuid - find UUID similarities
+ *	ckuuid - find UUID similarities
  *	Copyright © CC Computer Consultants GmbH, 2006 - 2007
  *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
  *
@@ -38,7 +38,7 @@ static unsigned int ck_threshold = 100;
 
 static void show_version(const struct HXoptcb *cbi)
 {
-	printf("Vitalnix " PACKAGE_VERSION " mdckuuid\n");
+	printf("Vitalnix " PACKAGE_VERSION " ckuuid\n");
 	exit(EXIT_SUCCESS);
 }
 

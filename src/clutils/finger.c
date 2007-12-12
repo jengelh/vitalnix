@@ -1,5 +1,5 @@
 /*
- *	vxfinger - Search for user and display info
+ *	finger - Search for user and display info
  *	Copyright © CC Computer Consultants GmbH, 2007
  *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
  *
@@ -95,6 +95,12 @@ int main(int argc, const char **argv)
 	return EXIT_SUCCESS;
 }
 
+static void show_version(const struct HXoptcb *cbi)
+{
+	printf("Vitalnix " PACKAGE_VERSION " finger\n");
+	exit(EXIT_SUCCESS);
+}
+
 static bool get_options(int *argc, const char ***argv)
 {
 	static struct HXoption options_table[] = {
@@ -102,6 +108,8 @@ static bool get_options(int *argc, const char ***argv)
 		 .help = "Use case-sensitive matching"},
 		{.sh = 'M', .type = HXTYPE_STRING, .ptr = &Database,
 		 .help = "Use specified database", .htyp = "name"},
+		{.sh = 'V', .type = HXTYPE_NONE, .cb = show_version,
+		 .help = "Show version information"},
 		{.sh = 'g', .type = HXTYPE_NONE, .ptr = &Fullgecos,
 		 .help = "Display and match the full GECOS field"},
 		{.sh = 'i', .type = HXTYPE_VAL, .val = true, .ptr = &Icase,

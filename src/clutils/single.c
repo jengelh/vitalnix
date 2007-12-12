@@ -1,5 +1,5 @@
 /*
- *	mdsingle - MDSYNC-compatible single user add
+ *	newuser - MDSYNC-compatible single user add
  *	Copyright © CC Computer Consultants GmbH, 2003 - 2007
  *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
  *
@@ -361,7 +361,7 @@ static bool get_options(int *argc, const char ***argv, struct private_info *p)
 
 static void show_version(const struct HXoptcb *cbi)
 {
-	printf("Vitalnix " PACKAGE_VERSION " mdsingle\n");
+	printf("Vitalnix " PACKAGE_VERSION " newuser\n");
 	if (cbi != NULL)
 		exit(EXIT_SUCCESS);
 	return;

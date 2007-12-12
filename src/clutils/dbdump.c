@@ -1,5 +1,5 @@
 /*
- *	vxdbdump - Dump database
+ *	dbdump - Dump database
  *	Copyright © CC Computer Consultants GmbH, 2004 - 2007
  *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
  *
@@ -517,7 +517,7 @@ static bool ldif_safe(const char *s)
 
 static void show_version(const struct HXoptcb *cbi)
 {
-	printf("Vitalnix " PACKAGE_VERSION " vxdbdump\n");
+	printf("Vitalnix " PACKAGE_VERSION " dbdump\n");
 	exit(EXIT_SUCCESS);
 }
 

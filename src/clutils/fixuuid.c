@@ -1,5 +1,5 @@
 /*
- *	mdfixuuid - Fix UUID of a user
+ *	fixuuid - Fix UUID of a user
  *	Copyright © CC Computer Consultants GmbH, 2006 - 2007
  *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
  *
@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <libHX.h>
+#include <vitalnix/config.h>
 #include <vitalnix/libvxdb/libvxdb.h>
 #include <vitalnix/libvxdb/xafunc.h>
 #include <vitalnix/libvxutil/libvxutil.h>
@@ -101,11 +102,19 @@ static char *rebuild_uuid(const struct mdf_priv *p, struct vxdb_state *db)
 }
 
 //-----------------------------------------------------------------------------
+static void show_version(const struct HXoptcb *cbi)
+{
+	printf("Vitalnix " PACKAGE_VERSION " fixuuid\n");
+	exit(EXIT_SUCCESS);
+}
+
 static bool get_options(int *argc, const char ***argv, struct mdf_priv *p)
 {
 	struct HXoption options_table[] = {
 		{.sh = 'M', .type = HXTYPE_STRING, .ptr = &p->database,
 		 .help = "Use specified database", .htyp = "name"},
+		{.sh = 'V', .type = HXTYPE_NONE, .cb = show_version,
+		 .help = "Show version information"},
 		{.sh = 'b', .type = HXTYPE_STRING, .ptr = &p->bday,
 		 .help = "New birthdate", .htyp = "date"},
 		{.sh = 'r', .type = HXTYPE_STRING, .ptr = &p->realname,

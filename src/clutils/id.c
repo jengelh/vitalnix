@@ -1,5 +1,5 @@
 /*
- *	vxid - Show identification
+ *	id - Show identification
  *	Copyright © CC Computer Consultants GmbH, 2007
  *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
  *
@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <vitalnix/config.h>
 #include <vitalnix/libvxdb/libvxdb.h>
 #include <vitalnix/libvxdb/xafunc.h>
 #include <vitalnix/libvxutil/defines.h>
@@ -59,11 +60,19 @@ int main(int argc, const char **argv)
 
 }
 
+static void show_version(const struct HXoptcb *cbi)
+{
+	printf("Vitalnix " PACKAGE_VERSION " id\n");
+	exit(EXIT_SUCCESS);
+}
+
 static bool get_options(int *argc, const char ***argv)
 {
 	struct HXoption options_table[] = {
 		{.sh = 'M', .type = HXTYPE_STRING, .ptr = &Database,
 		 .help = "Use specified database", .htyp = "name"},
+		{.sh = 'V', .type = HXTYPE_NONE, .cb = show_version,
+		 .help = "Show version information"},
 		HXOPT_AUTOHELP,
 		HXOPT_TABLEEND,
 	};
