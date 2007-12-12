@@ -27,6 +27,17 @@ static struct HXdeque *tag_code_stack;
 static char xlat_last;
 
 //-----------------------------------------------------------------------------
+static inline int strcmp_1u(const xmlChar *a, const char *b)
+{
+	return strcmp(reinterpret_cast(const char *, a), b);
+}
+
+static inline char *xmlGetProp_2s(xmlNode *p, const char *v)
+{
+	return reinterpret_cast(char *, xmlGetProp(p,
+	       reinterpret_cast(const xmlChar *, v)));
+}
+
 static inline void xlat_reset(void)
 {
 	xlat_last = ' ';
@@ -41,8 +52,12 @@ static void xlat_printf(const char *s)
 			xlat_last = ' ';
 			fputc(xlat_last, stdout);
 			continue;
-		} else if (*s == '-') {
-			printf("\\-");
+		} else if (*s == '\\') {
+			printf("\\e");
+		} else if (*s == '-' || *s == '`') {
+			printf("\\%c", *s);
+		} else if (*s == '\0') {
+			/* do nothing */
 		} else {
 			fputc(*s, stdout);
 		}
@@ -60,6 +75,13 @@ static void tag_b(xmlNode *ptr, bool print_text)
 		printf("\\fR");
 	else
 		printf("%s", static_cast(const char *, tag_b_i_stack->last->ptr));
+}
+
+static void tag_br(xmlNode *ptr, bool print_text)
+{
+	printf("\n.sp 0\n");
+	xlat_reset();
+	tag_generic(ptr, print_text);
 }
 
 static void tag_i(xmlNode *ptr, bool print_text)
@@ -94,9 +116,7 @@ static void tag_p(xmlNode *ptr, bool print_text)
 {
 	printf(".PP\n");
 	xlat_reset();
-	HXdeque_push(tag_code_stack, "P");
 	tag_generic(ptr, true);
-	HXdeque_pop(tag_code_stack);
 	xlat_reset();
 	printf("\n");
 }
@@ -107,13 +127,7 @@ static void tag_tr(xmlNode *ptr, bool print_text)
 	for (ptr = ptr->children; ptr != NULL; ptr = ptr->next) {
 		if (ptr->type != XML_ELEMENT_NODE)
 			continue;
-		if (strcmp(signed_cast(const char *, ptr->name), "td") == 0) {
-			HXdeque_push(tag_code_stack, "TD");
-			tag_generic(ptr, true);
-			HXdeque_pop(tag_code_stack);
-		} else {
-			tag_generic(ptr, true);
-		}
+		tag_generic(ptr, true);
 		xlat_reset();
 		printf("\n");
 	}
@@ -124,6 +138,7 @@ static const struct tag_map {
 	void (*func)(xmlNode *, bool);
 } tag_table[] = {
 	{"b",  tag_b},
+	{"br", tag_br},
 	{"h1", tag_h1},
 	{"h2", tag_h2},
 	{"i",  tag_i},
