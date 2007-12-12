@@ -22,23 +22,23 @@
 <ul>
   <li>Shell utilities (clutils)<br />
     <ul>
-      <li><a href="clutils-dbdump.php">vxdbdump</a></li>
-      <li><a href="clutils-dbinfo.php">vxdbinfo</a></li>
-      <li><a href="clutils-mdfixuuid.php">mdfixuuid</a></li>
-      <li><a href="clutils-mdpwlfmt.php">mdpwlfmt</a></li>
-      <li><a href="clutils-mdsingle.php">mdsingle</a></li>
-      <li><a href="clutils-mdsync.php">mdsync</a></li>
-      <li><a href="clutils-randpw.php">randpw</a></li>
-      <li><a href="clutils-tryauth.php">tryauth</a></li>
+      <li><a href="vxdbdump.8.php">vxdbdump</a></li>
+      <li><a href="vxdbinfo.8.php">vxdbinfo</a></li>
+      <li><a href="vxfixuuid.8.php">vxfixuuid</a></li>
+      <li><a href="vxpwlfmt.8.php">vxpwlfmt</a></li>
+      <li><a href="vxsingle.8.php">vxsingle</a></li>
+      <li><a href="vxusersync.8.php">vxusersync</a></li>
+      <li><a href="vxrandpw.1.php">vxrandpw</a></li>
+      <li><a href="vxtryauth.8.php">vxtryauth</a></li>
     </ul></li>
   <li>SYSV-style command-line utilities (pwdutils)<br />
     <ul>
-      <li><a href="clutils-useradd.php">useradd</a></li>
-      <li><a href="clutils-usermod.php">usermod</a></li>
-      <li><a href="clutils-userdel.php">userdel</a></li>
-      <li><a href="clutils-groupadd.php">groupadd</a></li>
-      <li><a href="clutils-groupmod.php">groupmod</a></li>
-      <li><a href="clutils-groupdel.php">groupdel</a></li>
+      <li><a href="vxuseradd.8.php">vxuseradd</a></li>
+      <li><a href="vxusermod.8.php">vxusermod</a></li>
+      <li><a href="vxuserdel.8.php">vxuserdel</a></li>
+      <li><a href="vxgroupadd.8.php">vxgroupadd</a></li>
+      <li><a href="vxgroupmod.8.php">vxgroupmod</a></li>
+      <li><a href="vxgroupdel.8.php">vxgroupdel</a></li>
     </ul></li>
   <li>CGI programs<br />
     <ul>
@@ -52,12 +52,12 @@
     </ul></li>
   <li>Backends<br />
     <ul>
-      <li><a href="driver-mmd.php">MMD</a></li>
-      <li><a href="driver-mysql.php">MYSQL</a></li>
-      <li><a href="driver-ldap.php">LDAP</a></li>
-      <li><a href="driver-shadow.php">Shadow</a></li>
-      <li><a href="driver-nss.php">NSS and NSS-1</a></li>
-      <li><a href="driver-dummy.php">Dummy</a></li>
+      <li><a href="vxdrv_mmd.7.php">MMD</a></li>
+      <li><a href="vxdrv_mysql.7.php">MYSQL</a></li>
+      <li><a href="vxdrv_ldap.7.php">LDAP</a></li>
+      <li><a href="vxdrv_shadow.7.php">Shadow</a></li>
+      <li><a href="vxdrv_nss.7.php">NSS and NSS-1</a></li>
+      <li><a href="vxdrv_dummy.7.php">Dummy</a></li>
     </ul></li>
   <li><a href="extra-pwlstyles.php">List of PWLFMT styles</a></li>
 </ul>
