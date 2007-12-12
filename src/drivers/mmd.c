@@ -714,13 +714,49 @@ static int vxmmd_sgmapadd(struct vxdb_state *vp, const char *user,
 	return -EROFS;
 }
 
+static void vxmmd_sgmapmerge(char ***outp, unsigned int *out_entries,
+    char **inp, unsigned int in_entries)
+{
+	char **out, **in = inp;
+
+	out = realloc(*outp, sizeof(char *) * (*out_entries + in_entries + 1));
+	if (out == NULL)
+		return;
+
+	*outp = out;
+	out = &out[*out_entries];
+	*out_entries += in_entries;
+	while (in_entries-- > 0)
+		*out++ = *in++;
+
+	*out = NULL;
+	free(inp);
+	return;
+}
+
 static int vxmmd_sgmapget(struct vxdb_state *vp, const char *user,
     char ***result)
 {
 	const struct multi_state *state = vp->state;
-	if (WR_OPEN(state))
-		return vxdb_sgmapget(WR_MOD(state), user, result);
-	return -ENOENT;
+	const struct HXdeque_node *trav;
+	unsigned int entries = 0;
+	char **out = NULL;
+	int ret;
+
+	if (WR_OPEN(state)) {
+		ret = vxdb_sgmapget(WR_MOD(state), user, &out);
+		if (ret > 0)
+			vxmmd_sgmapmerge(result, &entries, out, ret);
+	}
+
+	for (trav = state->rd_mod->first; trav != NULL; trav = trav->next) {
+		const struct module_handle *mh = trav->ptr;
+		ret = vxdb_sgmapget(mh->mh_instance, user, &out);
+		if (ret > 0)
+			vxmmd_sgmapmerge(result, &entries, out, ret);
+	}
+
+	return entries;
 }
 
 static int vxmmd_sgmapdel(struct vxdb_state *vp, const char *user,

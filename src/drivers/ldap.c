@@ -1161,6 +1161,166 @@ static void vxldap_grouptrav_free(struct vxdb_state *vp, void *ptr)
 	return;
 }
 
+static int vxldap_sgmapadd(struct vxdb_state *vp, const char *user,
+    const char *group)
+{
+	struct ldap_state *state = vp->state;
+	hmc_t *userdn = NULL, *groupdn = NULL;
+	LDAPMod attr, *attr_ptrs[2];
+	LDAPMessage *result;
+	int ret, ldret;
+
+	ret     = -ENOMEM;
+	userdn  = dn_user(state, user);
+	groupdn = dn_group(state, user);
+	if (userdn == NULL || groupdn == NULL)
+		goto out;
+
+	ret    = -ENOENT;
+	ldret  = ldap_search_ext_s(state->conn, userdn, LDAP_SCOPE_BASE,
+	         NULL, const_cast(char **, no_attrs), true, NULL, NULL,
+	         NULL, 1, &result);
+	if (ldret == LDAP_NO_SUCH_OBJECT || result == NULL)
+		goto out;
+
+	attr = (LDAPMod){
+		.mod_op     = LDAP_MOD_ADD,
+		.mod_type   = "member",
+		.mod_values = (char *[]){userdn, NULL},
+	};
+	attr_ptrs[0] = &attr;
+	attr_ptrs[1] = NULL;
+
+	ldret = ldap_add_ext_s(state->conn, groupdn, attr_ptrs, NULL, NULL);
+	if (ldret == LDAP_SUCCESS)
+		ret = 1;
+	else
+		ret = -(errno = 1600 + ldret);
+
+ out:
+	hmc_free(userdn);
+	hmc_free(groupdn);
+	return ret;
+}
+
+/*
+ * vxldap_member_filter -
+ * @state:	vxldap control structure
+ * @user:	username
+ *
+ * Builds the LDAP filter for searching @user in all groups, taking care of
+ * encoding @user as per RFC 4515.
+ */
+static hmc_t *vxldap_member_filter(const struct ldap_state *state,
+    const char *user)
+{
+	static const char *const hexmap = "0123456789ABCDEF";
+	const char *s = state->user_suffix;
+	char buf[64], *ptr;
+	hmc_t *filter;
+
+	filter = hmc_sinit("(&(" F_POSIXGROUP ")(member=uid\\3D"); /* )) */
+	hmc_strcat(&filter, user);
+	hmc_strcat(&filter, ",");
+
+	while (*s != '\0') {
+		for (ptr = buf; ptr < buf + sizeof(buf) - 1; ++s) {
+			if (*s == '\0')
+				break;
+			if (*s == '=' || *s == '(' || *s == ')' || *s == '*') {
+				if (ptr + 3 >= buf + sizeof(buf))
+					break;
+				*ptr++ = '\\';
+				*ptr++ = hexmap[*s / 16];
+				*ptr++ = hexmap[*s % 16];
+				continue;
+			}
+			*ptr++ = *s;
+		}
+		*ptr = '\0';
+		hmc_strcat(&filter, buf);
+	}
+
+	hmc_strcat(&filter, /* (( */ "))");
+	return filter;
+}
+
+static void vxldap_sgmapget2(LDAP *conn, LDAPMessage *ldres,
+    char **out, int entries)
+{
+	LDAPMessage *entry;
+	char *attr, **val;
+	BerElement *ber;
+
+	for (entry = ldap_first_entry(conn, ldres);
+	    entry != NULL && entries-- > 0;
+	    entry = ldap_next_entry(conn, ldres))
+	{
+		attr = ldap_first_attribute(conn, entry, &ber);
+		if (attr == NULL)
+			continue;
+		val = ldap_get_values(conn, entry, attr);
+		if (val == NULL)
+			continue;
+		if (strcmp(attr, "cn") == 0)
+			*out++ = HX_strdup(*val);
+		ldap_value_free(val);
+		ldap_memfree(attr);
+	}
+
+	*out = NULL;
+	ldap_msgfree(ldres);
+	return;
+}
+
+static int vxldap_sgmapget(struct vxdb_state *vp, const char *user,
+    char ***data)
+{
+	static const char *const attrs[] = {"cn", NULL};
+	struct ldap_state *state = vp->state;
+	LDAPMessage *result;
+	hmc_t *filter;
+	int ret;
+
+	filter = vxldap_member_filter(state, user);
+	ret    = ldap_search_ext_s(state->conn, state->group_suffix,
+	         LDAP_SCOPE_SUBTREE, filter, const_cast(char **, attrs),
+	         false, NULL, NULL, NULL, LDAP_MAXINT, &result);
+	hmc_free(filter);
+	if (ret != LDAP_SUCCESS) {
+		ldap_perror(state->conn, "sgmapget");
+		return -(errno = 1600 + ret);
+	}
+
+	ret = ldap_count_entries(state->conn, result);
+	if (ret < 0) {
+		ldap_perror(state->conn, "sgmapget/ldap_count_entries");
+		ldap_msgfree(result);
+		return -(errno = 1600);
+	}
+
+	if (ret == 0) {
+		ldap_msgfree(result);
+		return 0;
+	}
+
+	*data = malloc(sizeof(char *) * (ret + 1));
+	if (*data == NULL) {
+		ret = errno;
+		ldap_msgfree(result);
+		return -(errno = ret);
+	}
+
+	vxldap_sgmapget2(state->conn, result, *data, ret);
+	return ret;
+}
+
+static int vxldap_sgmapdel(struct vxdb_state *vp, const char *user,
+    const char *group)
+{
+	return 0;
+}
+
 EXPORT_SYMBOL struct vxdb_driver THIS_MODULE = {
 	.name           = "LDAP back-end module",
 	.init           = vxldap_init,
@@ -1184,4 +1344,7 @@ EXPORT_SYMBOL struct vxdb_driver THIS_MODULE = {
 	.grouptrav_init = vxldap_grouptrav_init,
 	.grouptrav_walk = vxldap_grouptrav_walk,
 	.grouptrav_free = vxldap_grouptrav_free,
+	.sgmapadd       = vxldap_sgmapadd,
+	.sgmapget       = vxldap_sgmapget,
+	.sgmapdel       = vxldap_sgmapdel,
 };

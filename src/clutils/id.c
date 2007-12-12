@@ -139,7 +139,7 @@ static void id(struct vxdb_state *db, const char *name)
 	struct vxdb_group group = {};
 	struct vxdb_user user = {};
 	unsigned int uid;
-	char *end;
+	char *end, **sgrp, **p;
 	int ret;
 
 	uid = strtoul(name, &end, 0);
@@ -161,6 +161,20 @@ static void id(struct vxdb_state *db, const char *name)
 		perror("- vxdb_getgrgid");
 	else if (ret > 0)
 		printf("(%s)", group.gr_name);
+
+	ret = vxdb_sgmapget(db, user.pw_name, &sgrp);
+	if (ret < 0) {
+		perror("- vxdb_sgmapget");
+	} else if (ret > 0) {
+		printf(" groups=");
+		for (p = sgrp; *p != NULL; ++p)
+			if ((ret = vxdb_getgrnam(db, *p, &group)) < 0)
+				perror("- vxdb_getgrnam");
+			else if (ret == 0)
+				printf("(%s)", *p);
+			else
+				printf("%u(%s)", group.gr_gid, *p);
+	}
 
 	printf("\n");
 	vxdb_user_free(&user, false);
