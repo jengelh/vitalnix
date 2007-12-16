@@ -905,7 +905,7 @@ static int vxldap_userdel(struct vxdb_state *vp, const char *name)
 	ret = ldap_delete_ext_s(state->conn, dn, NULL, NULL);
 	hmc_free(dn);
 	if (ret == LDAP_NO_SUCH_OBJECT)
-		return -ENOENT;
+		return 0;
 	else if (ret != LDAP_SUCCESS)
 		return vxldap_errno_sp(ret, "vxldap_userdel");
 	
@@ -1147,7 +1147,7 @@ static int vxldap_groupdel(struct vxdb_state *vp, const char *name)
 	ret = ldap_delete_ext_s(state->conn, dn, NULL, NULL);
 	hmc_free(dn);
 	if (ret == LDAP_NO_SUCH_OBJECT)
-		return -ENOENT;
+		return 0;
 	else if (ret != LDAP_SUCCESS)
 		return vxldap_errno_sp(ret, "vxldap_groupdel");
 	return 1;
