@@ -10,6 +10,7 @@
  */
 #include <sys/types.h>
 #include <errno.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -52,6 +53,68 @@ static void vxldap_close(struct vxdb_state *);
 static const char *const no_attrs[] = {"", NULL};
 
 //-----------------------------------------------------------------------------
+static int vxldap_errno(int ld_errno)
+{
+	switch (ld_errno) {
+		case LDAP_SUCCESS:			/* 0 */
+			return 0;
+		case LDAP_OPERATIONS_ERROR:		/* 1 */
+		case LDAP_PROTOCOL_ERROR:		/* 2 */
+		case LDAP_UNAVAILABLE:			/* 52 */
+			return EIO;
+		case LDAP_TIMELIMIT_EXCEEDED:		/* 3 */
+			return ETIMEDOUT;
+		case LDAP_SIZELIMIT_EXCEEDED:		/* 4 */
+			return ERANGE;
+		case LDAP_AUTH_METHOD_NOT_SUPPORTED:	/* 7 */
+		case LDAP_STRONG_AUTH_REQUIRED:		/* 8 */
+#ifdef LDAP_CONFIDENTALITY_REQUIRED
+		case LDAP_CONFIDENTALITY_REQUIRED:	/* 19 */
+#endif
+		case LDAP_INAPPROPRIATE_AUTH:		/* 48 */
+			return EPERM;
+		case LDAP_ADMINLIMIT_EXCEEDED:		/* 11 */
+			return EMFILE;
+		case LDAP_NO_SUCH_ATTRIBUTE:		/* 16 */
+		case LDAP_NO_SUCH_OBJECT:		/* 32 */
+			return ENOENT;
+		case LDAP_UNDEFINED_TYPE:		/* 17 */
+		case LDAP_INAPPROPRIATE_MATCHING:	/* 18 */
+		case LDAP_CONSTRAINT_VIOLATION:		/* 19 */
+		case LDAP_INVALID_DN_SYNTAX:		/* 34 */
+		case LDAP_UNWILLING_TO_PERFORM:		/* 53 */ /* EACCES */
+		case LDAP_NAMING_VIOLATION:		/* 64 */
+		case LDAP_OBJECT_CLASS_VIOLATION:	/* 65 */
+		case LDAP_NOT_ALLOWED_ON_NONLEAF:	/* 66 */
+		case LDAP_NOT_ALLOWED_ON_RDN:		/* 67 */
+		case LDAP_NO_OBJECT_CLASS_MODS:		/* 69 */
+			return EINVAL;
+		case LDAP_TYPE_OR_VALUE_EXISTS:		/* 20 */
+		case LDAP_ALREADY_EXISTS:		/* 68 */
+			return EEXIST;
+		case LDAP_ALIAS_DEREF_PROBLEM:		/* 36 */
+		case LDAP_INVALID_CREDENTIALS:		/* 49 */
+		case LDAP_INSUFFICIENT_ACCESS:		/* 50 */
+			return EACCES;
+		case LDAP_BUSY:				/* 51 */
+			return EBUSY;
+		case LDAP_LOOP_DETECT:			/* 54 */
+			return ELOOP;
+		default:
+			return 1600 + ld_errno;
+	}
+}
+
+static int vxldap_errno_sp(int ld_errno, const char *fmt, ...)
+{
+	va_list argp;
+	va_start(argp, fmt);
+	vfprintf(stderr, fmt, argp);
+	fprintf(stderr, ": %s\n", ldap_err2string(ld_errno));
+	va_end(argp);
+	return -(errno = vxldap_errno(ld_errno));
+}
+
 static void vxldap_read_ldap_secret(const struct HXoptcb *cbi)
 {
 	hmc_t **pw = cbi->current->uptr;
@@ -109,6 +172,15 @@ static int vxldap_init(struct vxdb_state *vp, const char *config_file)
 	return 1;
 }
 
+/*
+ * vxldap_get_rid - get Samba RID number
+ * @state:	vxldap internal structure
+ *
+ * Gets the domain SID and the RID base value and stores it in @state. On
+ * success, when both attributes have been retrieved, returns positive
+ * non-zero. If that is not the case, returns zero. On failure, returns the
+ * libldap error code.
+ */
 static int vxldap_get_rid(struct ldap_state *state)
 {
 	static const char *const attrs[] =
@@ -121,13 +193,15 @@ static int vxldap_get_rid(struct ldap_state *state)
 	ret = ldap_search_ext_s(state->conn, state->domain_dn,
 	      LDAP_SCOPE_BASE, NULL, const_cast(char **, attrs),
 	      false, NULL, NULL, NULL, 1, &result);
+	if (ret == LDAP_NO_SUCH_OBJECT)
+		return 0;
 	if (ret != LDAP_SUCCESS)
-		return -ret;
+		return ret;
 
 	entry = ldap_first_entry(state->conn, result);
 	if (entry == NULL) {
 		ldap_msgfree(result);
-		return -ret;
+		return 0;
 	}
 
 	for (attr = ldap_first_attribute(state->conn, entry, &ber);
@@ -151,7 +225,6 @@ static int vxldap_get_rid(struct ldap_state *state)
 
 	if (ber != NULL)
 		ber_free(ber, 0);
-
 	ldap_msgfree(result);
 	return state->domain_sid != NULL && state->domain_algoridbase != 0;
 }
@@ -162,11 +235,11 @@ static int vxldap_open(struct vxdb_state *vp, unsigned int flags)
 	int ret;
 
 	if (state->uri == NULL)
-		return -ENOTCONN;
+		return -EINVAL;
 
 	ret = ldap_initialize(&state->conn, state->uri);
 	if (ret != LDAP_SUCCESS)
-		return -ret;
+		return vxldap_errno_sp(ret, "ldap_initialize");
 
 	ret = LDAP_VERSION3;
 	ldap_set_option(state->conn, LDAP_OPT_PROTOCOL_VERSION, &ret);
@@ -175,20 +248,32 @@ static int vxldap_open(struct vxdb_state *vp, unsigned int flags)
 
 	if (flags & VXDB_WRLOCK) {
 		if (ret != LDAP_SUCCESS) {
-			fprintf(stderr, "Could not raise search limit to maximum, but we need it!\n");
+			ldap_perror(state->conn, "Could not raise LDAP search "
+			            "limit to maximum, but we need it!\n");
 			vxldap_close(vp);
-			return -(errno = 1600 + ret);
+			return vxldap_errno_sp(ret, "ldap_set_option("
+			       "LDAP_OPT_SIZELIMIT)");
 		}
 		ldap_start_tls_s(state->conn, NULL, NULL);
 		ret = ldap_simple_bind_s(state->conn, state->root_dn,
 		      state->root_pw);
 		if (ret != LDAP_SUCCESS)
-			ldap_perror(state->conn, "Simple bind failed");
+			ldap_perror(state->conn, "Simple bind to ldaproot "
+			            "account failed, continuing");
 
 		if (state->domain_dn != NULL) {
 			ret = vxldap_get_rid(state);
-			if (ret < 0)
-				ldap_perror(state->conn, "Could not retrieve RID");
+			if (ret == 0)
+				/*
+				 * Samba usually creates the sambaDomain object
+				 * with both fields.
+				 */
+				fprintf(stderr, "Warning: Not all required "
+				        "domain attributes have been found! "
+				        "Using defaults.\n");
+			else if (ret < 0)
+				ldap_perror(state->conn, "Problem retrieving "
+				            "domain attributes");
 		}
 	}
 
@@ -211,6 +296,15 @@ static void vxldap_exit(struct vxdb_state *vp)
 	return;
 }
 
+/*
+ * vxldap_count - count results of a search
+ * @conn:	libldap structure
+ * @base:	basedn to start search at
+ * @filter:	object filter
+ *
+ * Returns the number of results on success, or the libldap error code as
+ * negative value on failure.
+ */
 static unsigned int vxldap_count(LDAP *conn, const char *base,
     const char *filter)
 {
@@ -222,7 +316,7 @@ static unsigned int vxldap_count(LDAP *conn, const char *base,
 	      const_cast(char **, no_attrs), true, NULL, NULL,
 	      NULL, LDAP_MAXINT, &result);
 	if (ret != LDAP_SUCCESS || result == NULL)
-		return -(errno = 1600 + ret);
+		return -ret;
 
 	for (entry = ldap_first_entry(conn, result); entry != NULL;
 	    entry = ldap_next_entry(conn, entry))
@@ -235,16 +329,23 @@ static unsigned int vxldap_count(LDAP *conn, const char *base,
 static long vxldap_modctl(struct vxdb_state *vp, unsigned int command, ...)
 {
 	struct ldap_state *state = vp->state;
+	int ret;
 	errno = 0;
 	switch (command) {
 		case VXDB_COUNT_USERS:
-			return vxldap_count(state->conn, state->user_suffix,
-			       F_POSIXACCOUNT);
+			ret = vxldap_count(state->conn, state->user_suffix,
+			      F_POSIXACCOUNT);
+			break;
 		case VXDB_COUNT_GROUPS:
-			return vxldap_count(state->conn, state->group_suffix,
-			       F_POSIXGROUP);
+			ret = vxldap_count(state->conn, state->group_suffix,
+			      F_POSIXGROUP);
+			break;
+		default:
+			return -ENOSYS;
 	}
-	return -ENOSYS;
+	if (ret < 0)
+		return vxldap_errno_sp(-ret, "vxldap_count");
+	return ret;
 }
 
 static hmc_t *dn_user(const struct ldap_state *state, const char *name)
@@ -286,7 +387,7 @@ static int vxldap_useradd(struct vxdb_state *vp, const struct vxdb_user *rq)
 	int ret;
 
 	if ((dn = dn_user(state, rq->pw_name)) == NULL)
-		return -EINVAL;
+		return -ENOMEM;
 
 	object_classes[o++] = "account";
 	object_classes[o++] = "posixAccount";
@@ -473,10 +574,8 @@ static int vxldap_useradd(struct vxdb_state *vp, const struct vxdb_user *rq)
 
 	hmc_free(dn);
 	hmc_free(password);
-	if (ret != LDAP_SUCCESS) {
-		ldap_perror(state->conn, "The entry was not added");
-		return -(errno = 1600 + ret);
-	}
+	if (ret != LDAP_SUCCESS)
+		return vxldap_errno_sp(ret, "vxldap_useradd");
 
 	return 1;
 }
@@ -500,8 +599,10 @@ static void vxldap_getattr(struct ldap_state *state, const char *dn,
 		return;
 
 	entry = ldap_first_entry(state->conn, result);
-	if (entry == NULL)
-		goto out;
+	if (entry == NULL) {
+		ldap_msgfree(result);
+		return;
+	}
 
 	for (attr = ldap_first_attribute(state->conn, entry, &ber);
 	    attr != NULL; attr = ldap_next_attribute(state->conn, entry, ber))
@@ -561,11 +662,16 @@ static void vxldap_getattr(struct ldap_state *state, const char *dn,
 	}
 	if (ber != NULL)
 		ber_free(ber, 0);
- out:
 	ldap_msgfree(result);
 	return;
 }
 
+/*
+ * vxldap_usermod2 - handle DN rename
+ * @state:	vxldap internal structure
+ * @old_dn:	old/current DN
+ * @new_name:	new username
+ */
 static int vxldap_usermod2(struct ldap_state *state, hmc_t *old_dn,
     const char *new_name)
 {
@@ -578,8 +684,9 @@ static int vxldap_usermod2(struct ldap_state *state, hmc_t *old_dn,
 	      NULL, false, NULL, NULL);
 	hmc_free(new_rdn);
 	if (ret != LDAP_SUCCESS) {
-		ldap_perror(state->conn, "The DN was not modified");
-		return -(errno = 1600 + ret);
+		ldap_perror(state->conn, "vxldap_usermod2: The DN was not "
+		            "modified. You NEED to fix this up!\n");
+		return -(errno = vxldap_errno(ret));
 	}
 
 	return 1;
@@ -601,7 +708,7 @@ static int vxldap_usermod(struct vxdb_state *vp, const char *name,
 	int ret;
 
 	if ((dn = dn_user(state, name)) == NULL)
-		return -EINVAL;
+		return -ENOMEM;
 
 	vxldap_getattr(state, dn, &attr_map);
 	if (!attr_map.posixAccount)
@@ -770,10 +877,11 @@ static int vxldap_usermod(struct vxdb_state *vp, const char *name,
 	attr_ptrs[i] = NULL;
 
 	ret = ldap_modify_ext_s(state->conn, dn, attr_ptrs, NULL, NULL);
-	if (ret != LDAP_SUCCESS) {
-		ldap_perror(state->conn, "The entry was not modified");
+	if (ret == LDAP_NO_SUCH_OBJECT) {
+		return -ENOENT;
+	} else if (ret != LDAP_SUCCESS) {
 		hmc_free(dn);
-		return -(errno = 1600 + ret);
+		return vxldap_errno_sp(ret, "vxldap_usermod");
 	}
 
 	if (param->pw_name == NULL) {
@@ -781,6 +889,7 @@ static int vxldap_usermod(struct vxdb_state *vp, const char *name,
 		return 1;
 	}
 
+	/* Rename requested. */
 	return vxldap_usermod2(state, dn, param->pw_name);
 }
 
@@ -791,12 +900,14 @@ static int vxldap_userdel(struct vxdb_state *vp, const char *name)
 	int ret;
 
 	if ((dn = dn_user(state, name)) == NULL)
-		return -EINVAL;
+		return -ENOMEM;
 
 	ret = ldap_delete_ext_s(state->conn, dn, NULL, NULL);
 	hmc_free(dn);
-	if (ret != LDAP_SUCCESS)
-		return -(errno = 1600 + ret);
+	if (ret == LDAP_NO_SUCH_OBJECT)
+		return -ENOENT;
+	else if (ret != LDAP_SUCCESS)
+		return vxldap_errno_sp(ret, "vxldap_userdel");
 	
 	return 1;
 }
@@ -870,11 +981,11 @@ static int vxldap_getpwx(struct ldap_state *state, const char *filter,
 	      LDAP_SCOPE_SUBTREE, filter, NULL, false, NULL, NULL, NULL, 1,
 	      &result);
 	if (ret != LDAP_SUCCESS || result == NULL)
-		return -(errno = 1600 + ret);
+		return -(errno = vxldap_errno(ret));
 	entry = ldap_first_entry(state->conn, result);
 	if (entry == NULL) {
 		ldap_msgfree(result);
-		return 0;
+		return -ENOENT;
 	}
 	if (dest != NULL)
 		vxldap_copy_user(dest, state->conn, result);
@@ -886,9 +997,11 @@ static int vxldap_getpwuid(struct vxdb_state *vp, unsigned int uid,
     struct vxdb_user *dest)
 {
 	char filter[48+ZU_32];
+	int ret;
 	snprintf(filter, sizeof(filter),
 	         "(&(" F_POSIXACCOUNT ")(uidNumber=%u))", uid);
-	return vxldap_getpwx(vp->state, filter, dest);
+	ret = vxldap_getpwx(vp->state, filter, dest);
+	return (ret == -ENOENT) ? 0 : ret;
 }
 
 static int vxldap_getpwnam(struct vxdb_state *vp, const char *user,
@@ -902,7 +1015,7 @@ static int vxldap_getpwnam(struct vxdb_state *vp, const char *user,
 	hmc_strcat(&filter, /* (( */ "))");
 	ret = vxldap_getpwx(vp->state, filter, dest);
 	hmc_free(filter);
-	return ret;
+	return (ret == -ENOENT) ? 0 : ret;
 }
 
 static void *vxldap_usertrav_init(struct vxdb_state *vp)
@@ -922,7 +1035,7 @@ static void *vxldap_usertrav_init(struct vxdb_state *vp)
 	      LDAP_SCOPE_SUBTREE, F_POSIXACCOUNT, const_cast(char **, attrs),
 	      false, NULL, NULL, NULL, LDAP_MAXINT, &trav.base);
 	if (ret != LDAP_SUCCESS) {
-		errno = 1600 + ret;
+		vxldap_errno_sp(ret, "vxldap_usertrav_init");
 		return NULL;
 	}
 
@@ -1012,10 +1125,8 @@ static int vxldap_groupadd(struct vxdb_state *vp, const struct vxdb_group *rq)
 	ret = ldap_add_ext_s(state->conn, dn, attr_ptrs, NULL, NULL);
 
 	hmc_free(dn);
-	if (ret != LDAP_SUCCESS) {
-		ldap_perror(state->conn, "The entry was not added");
-		return -(errno = 1600 + ret);
-	}
+	if (ret != LDAP_SUCCESS)
+		return vxldap_errno_sp(ret, "vxldap_groupadd");
 
 	return 1;
 }
@@ -1034,11 +1145,11 @@ static int vxldap_groupdel(struct vxdb_state *vp, const char *name)
 
 	dn  = dn_group(state, name);
 	ret = ldap_delete_ext_s(state->conn, dn, NULL, NULL);
-	if (ret != LDAP_SUCCESS) {
-		hmc_free(dn);
-		return -(errno = 1600 + ret);
-	}
 	hmc_free(dn);
+	if (ret == LDAP_NO_SUCH_OBJECT)
+		return -ENOENT;
+	else if (ret != LDAP_SUCCESS)
+		return vxldap_errno_sp(ret, "vxldap_groupdel");
 	return 1;
 }
 
@@ -1083,11 +1194,11 @@ static int vxldap_getgrx(struct ldap_state *state, const char *filter,
 	      LDAP_SCOPE_SUBTREE, filter, NULL, false,
 	      NULL, NULL, NULL, 1, &result);
 	if (ret != LDAP_SUCCESS || result == NULL)
-		return -(errno = 1600 + ret);
+		return -(errno = vxldap_errno(ret));
 	entry = ldap_first_entry(state->conn, result);
 	if (entry == NULL) {
 		ldap_msgfree(result);
-		return 0;
+		return -ENOENT;
 	}
 	if (dest != NULL)
 		vxldap_copy_group(dest, state->conn, result);
@@ -1099,9 +1210,11 @@ static int vxldap_getgrgid(struct vxdb_state *vp, unsigned int gid,
     struct vxdb_group *dest)
 {
 	char filter[48+ZU_32];
+	int ret;
 	snprintf(filter, sizeof(filter),
 	         "(&(" F_POSIXGROUP ")(gidNumber=%u))", gid);
-	return vxldap_getgrx(vp->state, filter, dest);
+	ret = vxldap_getgrx(vp->state, filter, dest);
+	return (ret == -ENOENT) ? 0 : ret;
 }
 
 static int vxldap_getgrnam(struct vxdb_state *vp, const char *user,
@@ -1115,7 +1228,7 @@ static int vxldap_getgrnam(struct vxdb_state *vp, const char *user,
 	hmc_strcat(&filter, /* (( */ "))");
 	ret = vxldap_getgrx(vp->state, filter, dest);
 	hmc_free(filter);
-	return ret;
+	return (ret == -ENOENT) ? 0 : ret;
 }
 
 static void *vxldap_grouptrav_init(struct vxdb_state *vp)
@@ -1131,7 +1244,7 @@ static void *vxldap_grouptrav_init(struct vxdb_state *vp)
 	      LDAP_SCOPE_SUBTREE, F_POSIXGROUP, const_cast(char **, attrs),
 	      false, NULL, NULL, NULL, LDAP_MAXINT, &trav.base);
 	if (ret != LDAP_SUCCESS) {
-		errno = 1600 + ret;
+		vxldap_errno_sp(ret, "vxldap_grouptrav_init");
 		return NULL;
 	}
 
@@ -1195,7 +1308,7 @@ static int vxldap_sgmapadd(struct vxdb_state *vp, const char *user,
 	if (ldret == LDAP_SUCCESS)
 		ret = 1;
 	else
-		ret = -(errno = 1600 + ldret);
+		ret = vxldap_errno_sp(ret, "vxldap_sgmapadd");
 
  out:
 	hmc_free(userdn);
@@ -1287,14 +1400,14 @@ static int vxldap_sgmapget(struct vxdb_state *vp, const char *user,
 	         LDAP_SCOPE_SUBTREE, filter, const_cast(char **, attrs),
 	         false, NULL, NULL, NULL, LDAP_MAXINT, &result);
 	hmc_free(filter);
-	if (ret != LDAP_SUCCESS) {
-		ldap_perror(state->conn, "sgmapget");
-		return -(errno = 1600 + ret);
-	}
+	if (ret == LDAP_NO_SUCH_OBJECT)
+		return -ENOENT;
+	else if (ret != LDAP_SUCCESS)
+		return vxldap_errno_sp(ret, "vxldap_sgmapget");
 
 	ret = ldap_count_entries(state->conn, result);
 	if (ret < 0) {
-		ldap_perror(state->conn, "sgmapget/ldap_count_entries");
+		ldap_perror(state->conn, "vxldap_sgmapget/ldap_count_entries");
 		ldap_msgfree(result);
 		return -(errno = 1600);
 	}
@@ -1306,9 +1419,8 @@ static int vxldap_sgmapget(struct vxdb_state *vp, const char *user,
 
 	*data = malloc(sizeof(char *) * (ret + 1));
 	if (*data == NULL) {
-		ret = errno;
 		ldap_msgfree(result);
-		return -(errno = ret);
+		return -ENOMEM;
 	}
 
 	vxldap_sgmapget2(state->conn, result, *data, ret);
