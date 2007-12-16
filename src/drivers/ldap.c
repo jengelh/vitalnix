@@ -224,7 +224,7 @@ static int vxldap_get_rid(struct ldap_state *state)
 	}
 
 	if (ber != NULL)
-		ber_free(ber, true);
+		ber_free(ber, false);
 	ldap_msgfree(result);
 	return state->domain_sid != NULL && state->domain_algoridbase != 0;
 }
@@ -661,7 +661,7 @@ static void vxldap_getattr(struct ldap_state *state, const char *dn,
 		ldap_memfree(attr);
 	}
 	if (ber != NULL)
-		ber_free(ber, true);
+		ber_free(ber, false);
 	ldap_msgfree(result);
 	return;
 }
@@ -967,7 +967,7 @@ static void vxldap_copy_user(struct vxdb_user *dest, LDAP *conn,
 	}
 
 	if (ber != NULL)
-		ber_free(ber, true);
+		ber_free(ber, false);
 	return;
 }
 
@@ -1180,7 +1180,7 @@ static void vxldap_copy_group(struct vxdb_group *dest, LDAP *conn,
 	}
 
 	if (ber != NULL)
-		ber_free(ber, true);
+		ber_free(ber, false);
 	return;
 }
 
