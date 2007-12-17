@@ -116,7 +116,7 @@ static void id_current(struct vxdb_state *db)
 	if ((sgnum = getgroups(ARRAY_SIZE(sgrp), sgrp)) < 0) {
 		perror("- getgroups");
 	} else {
-		printf(" groups=");
+		printf(" kgroups=");
 		for (i = 0; i < sgnum; ++i) {
 			printf("%u", sgrp[i]);
 			if ((ret = vxdb_getgrgid(db, sgrp[i], &group)) < 0)
