@@ -42,6 +42,7 @@
 /* Functions */
 static bool get_options(int *, const char ***);
 static void finger_grep(struct vxdb_state *, const char *);
+static void finger_uid(struct vxdb_state *, unsigned int);
 static bool check_utmp(const char *);
 static void check_lastlog(long);
 static void check_mail(const char *);
@@ -57,7 +58,8 @@ static const char *stop_color = "0";
 int main(int argc, const char **argv)
 {
 	struct vxdb_state *db;
-	char *s;
+	unsigned int uid;
+	char *end, *s;
 	int ret;
 
 	if (!get_options(&argc, &argv))
@@ -80,6 +82,11 @@ int main(int argc, const char **argv)
 	}
 
 	while (*++argv != NULL) {
+		uid = strtoul(*argv, &end, 0);
+		if (end != *argv && *end == '\0') {
+			finger_uid(db, uid);
+			continue;
+		}
 		if (!Icase) {
 			finger_grep(db, *argv);
 			continue;
@@ -215,6 +222,48 @@ static void finger_grep(struct vxdb_state *db, const char *keyword)
 
 	hmc_free(lc_name);
 	hmc_free(lc_real);
+	vxdb_user_free(&user, false);
+	vxdb_usertrav_free(db, trav);
+	return;
+}
+
+static void finger_uid(struct vxdb_state *db, unsigned int uid)
+{
+	struct vxdb_group group = {};
+	struct vxdb_user user = {};
+	void *trav;
+	char *p;
+
+	if ((trav = vxdb_usertrav_init(db)) == NULL) {
+		fprintf(stderr, "vxdb_usertrav_init: %s\n", strerror(errno));
+		return;
+	}
+
+	while (vxdb_usertrav_walk(db, trav, &user) > 0) {
+		if (user.pw_uid != uid)
+			continue;
+
+		if (!Fullgecos && user.pw_real != NULL &&
+		    (p = strchr(user.pw_real, ',')) != NULL)
+			*p = '\0';
+
+		printf(
+			"Login: %-24s  Name: %s\n"
+			"Group: %-24s  Private Group: %s\n"
+			"Shell: %-24s  Directory: %s\n",
+			user.pw_name, user.pw_real,
+			(vxdb_getgrgid(db, user.pw_gid, &group) < 0) ?
+			"-" : group.gr_name,
+			(user.vs_pvgrp == NULL) ? "-" : user.vs_pvgrp,
+			user.pw_shell, user.pw_home
+		);
+
+		if (!check_utmp(user.pw_name))
+			check_lastlog(user.pw_uid);
+		check_mail(user.pw_name);
+		printf("\n");
+	}
+
 	vxdb_user_free(&user, false);
 	vxdb_usertrav_free(db, trav);
 	return;
