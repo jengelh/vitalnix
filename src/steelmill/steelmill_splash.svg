@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1000.0000px"
+   height="600.00000px"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.45.1"
+   sodipodi:docbase="/"
+   sodipodi:docname="steelmill_splash.svg"
+   inkscape:export-filename="steelmill_splash.png"
+   inkscape:export-xdpi="44.910179"
+   inkscape:export-ydpi="44.910179"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <defs
+     id="defs4">
+    <linearGradient
+       id="linearGradient2777">
+      <stop
+         style="stop-color:#4b6983;stop-opacity:1;"
+         offset="0"
+         id="stop2779" />
+      <stop
+         style="stop-color:blue;stop-opacity:1;"
+         offset="1"
+         id="stop2781" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient4318">
+      <stop
+         style="stop-color:#ff8000;stop-opacity:0.0000000;"
+         offset="0.0000000"
+         id="stop4320" />
+      <stop
+         style="stop-color:#ff8000;stop-opacity:0.50196081;"
+         offset="1.0000000"
+         id="stop4322" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4318"
+       id="linearGradient4324"
+       x1="249.50000"
+       y1="250.00000"
+       x2="750.50000"
+       y2="250.00000"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.000000,1.000000,-1.000000,0.000000,750.0000,-250.0000)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2777"
+       id="linearGradient2791"
+       x1="-0.62007874"
+       y1="675"
+       x2="1000.6201"
+       y2="675"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.5"
+     inkscape:cx="566.60923"
+     inkscape:cy="290.71798"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer5"
+     showgrid="false"
+     inkscape:grid-points="true"
+     gridspacingx="10.000000px"
+     gridspacingy="10.000000px"
+     gridtolerance="4.0000000px"
+     inkscape:window-width="1144"
+     inkscape:window-height="859"
+     inkscape:window-x="262"
+     inkscape:window-y="264"
+     inkscape:grid-bbox="true"
+     showguides="false"
+     inkscape:guide-bbox="false" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Jan Engelhardt</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:date>April 09 2006</dc:date>
+        <dc:title>Vitalnix Steelmill Splash Screen</dc:title>
+        <dc:contributor>
+          <cc:Agent>
+            <dc:title>Pierron &quot;Snoop&quot; Cedric -- the background image is a screenshot from his Unreal Tournament Map &quot;The Mines of Eldora&quot; (DM-CTC-Eldora for UT99)</dc:title>
+          </cc:Agent>
+        </dc:contributor>
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/by-nc-nd/2.0/" />
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/by-nc-nd/2.0/">
+        <cc:permits
+           rdf:resource="http://web.resource.org/cc/Reproduction" />
+        <cc:permits
+           rdf:resource="http://web.resource.org/cc/Distribution" />
+        <cc:requires
+           rdf:resource="http://web.resource.org/cc/Notice" />
+        <cc:requires
+           rdf:resource="http://web.resource.org/cc/Attribution" />
+        <cc:prohibits
+           rdf:resource="http://web.resource.org/cc/CommercialUse" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Background"
+     inkscape:groupmode="layer"
+     id="layer1"
+     style="display:inline">
+    <image
+       id="image1391"
+       height="600"
+       width="1000"
+       sodipodi:absref="mine2.png"
+       xlink:href="mine2.png"
+       x="0"
+       y="0" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer6"
+     inkscape:label="Colorizers"
+     style="display:inline">
+    <path
+       style="fill:url(#linearGradient4324);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 0,0 L 1000,0 L 1000,500 L 650,500 L 600,450 L 0,450 L 0,0 z "
+       id="path3590"
+       sodipodi:nodetypes="ccccccc" />
+    <path
+       style="fill:#bbc6d0;fill-opacity:0.75294118;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
+       d="M 0,450 L 600,450 L 650,500 L 1000,500 L 1000,600 L 0,600 L 0,450 z "
+       id="path2128"
+       sodipodi:nodetypes="ccccccc" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer5"
+     inkscape:label="Hexagons"
+     style="display:inline">
+    <g
+       id="g5869"
+       transform="translate(1.1910124,2.0000612)">
+      <use
+         height="1052.3622"
+         width="744.09448"
+         transform="translate(18.980765,32.875268)"
+         id="use3143"
+         xlink:href="#path2160"
+         y="0"
+         x="0" />
+      <path
+         transform="matrix(0.335,0,0,0.335,1.9907627,409.74436)"
+         d="M 74.769909,436.21216 L 18.111244,338.07648 L 74.769909,239.94079 L 188.08724,239.94079 L 244.7459,338.07648 L 188.08724,436.21216 L 74.769909,436.21216 z "
+         inkscape:randomized="0"
+         inkscape:rounded="0"
+         inkscape:flatsided="true"
+         sodipodi:arg2="2.6179939"
+         sodipodi:arg1="2.0943951"
+         sodipodi:r2="98.135681"
+         sodipodi:r1="113.31733"
+         sodipodi:cy="338.07648"
+         sodipodi:cx="131.42857"
+         sodipodi:sides="6"
+         id="path2160"
+         style="fill:#bbc6d0;fill-opacity:0.75294118;stroke:none;stroke-width:8;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.1254902"
+         sodipodi:type="star" />
+      <use
+         height="1052.3622"
+         width="744.09448"
+         transform="translate(37.961249,-32.87535)"
+         id="use3141"
+         xlink:href="#path2160"
+         y="0"
+         x="0" />
+    </g>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="Hexagons 2"
+     style="display:inline">
+    <g
+       id="g5874"
+       transform="translate(1.1910124,2.0001817)">
+      <path
+         sodipodi:type="star"
+         style="fill:none;fill-opacity:0.75294118;stroke:#000000;stroke-width:11.94029808;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.1254902"
+         id="path4859"
+         sodipodi:sides="6"
+         sodipodi:cx="131.42857"
+         sodipodi:cy="338.07648"
+         sodipodi:r1="113.31733"
+         sodipodi:r2="98.135681"
+         sodipodi:arg1="2.0943951"
+         sodipodi:arg2="2.6179939"
+         inkscape:flatsided="true"
+         inkscape:rounded="0"
+         inkscape:randomized="0"
+         d="M 74.769909,436.21216 L 18.111244,338.07648 L 74.769909,239.94079 L 188.08724,239.94079 L 244.7459,338.07648 L 188.08724,436.21216 L 74.769909,436.21216 z "
+         transform="matrix(0.335,0,0,0.335,1.9907207,409.7443)" />
+      <use
+         height="600"
+         width="1000"
+         transform="translate(18.980735,32.875291)"
+         id="use4863"
+         xlink:href="#path4859"
+         y="0"
+         x="0" />
+      <use
+         height="600"
+         width="1000"
+         transform="translate(37.961165,-32.875494)"
+         id="use4867"
+         xlink:href="#path4859"
+         y="0"
+         x="0" />
+    </g>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="Text"
+     style="display:inline">
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:125%;writing-mode:lr-tb;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial Narrow"
+       x="960.01367"
+       y="560.38477"
+       id="text4330"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4332"
+         x="960.01367"
+         y="560.38477">http://vitalnix.sf.net/</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:89.47596741px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial Black"
+       x="129.30333"
+       y="563.50842"
+       id="text1394"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan1396"
+         x="129.30333"
+         y="563.50842"
+         style="font-size:89.47596741px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:-5.26019716px;writing-mode:lr-tb;text-anchor:start;font-family:Arial Black">Vitalnix</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:64.55284882px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="468.1088"
+       y="563.49933"
+       id="text2956"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan2958"
+         x="468.1088"
+         y="563.49933"
+         style="letter-spacing:-4.83781767px">2008</tspan></text>
+    <rect
+       style="opacity:1;fill:#405996;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect4433"
+       width="11.954993"
+       height="11.954993"
+       x="581.42053"
+       y="500"
+       rx="2"
+       ry="2" />
+    <rect
+       ry="2"
+       rx="2"
+       y="500"
+       x="564.68359"
+       height="11.954993"
+       width="11.954993"
+       id="use4443"
+       style="opacity:1;fill:#405996;fill-opacity:0.75294118;fill-rule:evenodd;stroke:none;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    <rect
+       style="opacity:1;fill:#405996;fill-opacity:0.50196078;fill-rule:evenodd;stroke:none;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="use4445"
+       width="11.954993"
+       height="11.954993"
+       x="547.94653"
+       y="500"
+       rx="2"
+       ry="2" />
+  </g>
+</svg>
