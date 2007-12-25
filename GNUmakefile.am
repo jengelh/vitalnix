@@ -37,7 +37,7 @@ sbin_PROGRAMS   := \
 	vxckuuid vxfixuuid vxpwlfmt vxnewuser \
 	vxdbdump vxdbinfo vxtryauth \
 	vxuseradd vxusermod vxuserdel vxusersync \
-	vxgroupadd vxgroupmod vxgroupdel
+	vxgroupadd vxgroupbld vxgroupmod vxgroupdel
 if HAVE_CUPS
 if HAVE_MYSQL
 sbin_PROGRAMS   += lpacct_filter lpacct_scv
@@ -132,6 +132,8 @@ vxusersync_SOURCES := src/clutils/usersync.c
 vxusersync_LDADD   := -lHX libvxcli.la libvxeds.la libvxmdsync.la libvxdb.la
 vxgroupadd_SOURCES := src/clutils/groupadd.c
 vxgroupadd_LDADD   := -lHX libvxdb.la libvxutil.la
+vxgroupbld_SOURCES := src/clutils/groupbld.c
+vxgroupbld_LDADD   := -lHX libvxdb.la libvxutil.la
 vxgroupmod_SOURCES := src/clutils/groupmod.c
 vxgroupmod_LDADD   := -lHX libvxdb.la libvxutil.la
 vxgroupdel_SOURCES := src/clutils/groupdel.c
