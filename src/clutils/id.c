@@ -21,8 +21,8 @@
 
 /* Functions */
 static bool get_options(int *, const char ***);
-static void id_current(struct vxdb_state *);
-static void id(struct vxdb_state *, const char *);
+static bool id_current(struct vxdb_state *);
+static bool id(struct vxdb_state *, const char *);
 
 /* Variables */
 static char *Database = "*";
@@ -48,15 +48,16 @@ int main(int argc, const char **argv)
 		return EXIT_FAILURE;
 	}
 
+	ret = true;
 	if (argc == 1)
-		id_current(db);
+		ret = id_current(db);
 	else
 		while (*++argv != NULL)
-			id(db, *argv);
+			ret &= id(db, *argv);
 
 	vxdb_close(db);
 	vxdb_unload(db);
-	return EXIT_SUCCESS;
+	return ret ? EXIT_SUCCESS : EXIT_FAILURE;
 
 }
 
@@ -79,7 +80,7 @@ static bool get_options(int *argc, const char ***argv)
 	return HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) > 0;
 }
 
-static void id_current(struct vxdb_state *db)
+static bool id_current(struct vxdb_state *db)
 {
 	unsigned int uid = getuid(), gid = getgid();
 	unsigned int euid = geteuid(), egid = getegid();
@@ -131,10 +132,10 @@ static void id_current(struct vxdb_state *db)
 	printf("\n");
 	vxdb_user_free(&user, false);
 	vxdb_group_free(&group, false);
-	return;
+	return true;
 }
 
-static void id(struct vxdb_state *db, const char *name)
+static bool id(struct vxdb_state *db, const char *name)
 {
 	struct vxdb_group group = {};
 	struct vxdb_user user = {};
@@ -150,9 +151,10 @@ static void id(struct vxdb_state *db, const char *name)
 
 	if (ret < 0) {
 		perror("- vxdb_getpw*");
+		return false;
 	} else if (ret == 0) {
 		printf("id: %s: no such user\n", name);
-		return;
+		return false;
 	}
 
 	printf("uid=%u(%s) gid=%u", user.pw_uid, user.pw_name,
@@ -179,5 +181,5 @@ static void id(struct vxdb_state *db, const char *name)
 	printf("\n");
 	vxdb_user_free(&user, false);
 	vxdb_group_free(&group, false);
-	return;
+	return true;
 }
