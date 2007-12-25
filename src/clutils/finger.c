@@ -332,15 +332,19 @@ static void check_lastlog(long uid)
 		goto never;
 	}
 
-	tmp = entry.ll_time;
-	strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S",
-	         localtime(&tmp));
-	printf("Last login %s", timestamp);
-	if (*entry.ll_line != '\0')
-		printf(" on %s", entry.ll_line);
-	if (*entry.ll_host != '\0')
-		printf(" from %s", entry.ll_host);
-	printf("\n");
+	if (entry.ll_time == 0) {
+		printf("Never logged in.\n");
+	} else {
+		tmp = entry.ll_time;
+		strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S",
+		         localtime(&tmp));
+		printf("Last login %s", timestamp);
+		if (*entry.ll_line != '\0')
+			printf(" on %s", entry.ll_line);
+		if (*entry.ll_host != '\0')
+			printf(" from %s", entry.ll_host);
+		printf("\n");
+	}
 
 	close(fd);
 	return;
