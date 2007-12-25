@@ -450,8 +450,7 @@ static void getopt_t(const struct HXoptcb *cbi)
 		Output_type = OUTPUT_SHADOW;
 	else if (strcmp(cbi->data, "mysql") == 0)
 		Output_type = OUTPUT_MYSQL;
-	else if (strcmp(cbi->data, "ldap") == 0 ||
-		strcmp(cbi->data, "ldif") == 0)
+	else if (strcmp(cbi->data, "ldif") == 0)
 		Output_type = OUTPUT_LDIF;
 	return;
 }
