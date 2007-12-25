@@ -102,7 +102,7 @@ static bool usermod_get_options(int *argc, const char ***argv,
 		{.sh = 'B', .type = HXTYPE_STRING | HXOPT_OPTIONAL,
 		 .cb = usermod_getopt_postmod, .uptr = conf,
 		 .help = "Program to run before user modification", .htyp = "cmd"},
-		{.sh = 'M', .type = HXTYPE_STRING, .ptr = &sp->database,
+		{.ln = "vxdb", .type = HXTYPE_STRING, .ptr = &sp->database,
 		 .help = "Use specified database", .htyp = "name"},
 
 		/* Default options */

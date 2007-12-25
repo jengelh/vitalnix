@@ -169,11 +169,11 @@ static bool groupdel_get_options(int *argc, const char ***argv)
 		{.sh = 'B', .type = HXTYPE_STRING | HXOPT_OPTIONAL,
 		 .ptr = &action_before, .htyp = "cmd",
 		 .help = "Program to run before group deletion"},
+		{.ln = "vxdb", .type = HXTYPE_STRING, .ptr = &database_name,
+		 .help = "Use specified database", .htyp = "name"},
 		{.sh = 'F', .type = HXTYPE_NONE, .ptr = &force_deletion,
 		 .help = "Force deletion of group even if users have it "
 		 "as primary group"},
-		{.sh = 'M', .type = HXTYPE_STRING, .ptr = &database_name,
-		 .help = "Use specified database", .htyp = "name"},
 
 		/* Default options */
 		{.sh = 'v', .ln = "version", .type = HXTYPE_NONE,

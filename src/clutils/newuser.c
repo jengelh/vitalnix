@@ -333,10 +333,10 @@ static bool get_options(int *argc, const char ***argv, struct private_info *p)
 	struct HXoption options_table[] = {
 		{.ln = "master", .type = HXTYPE_NONE, .ptr = &p->run_master,
 		 .help = "Do run MASTER_* scripts"},
+		{.ln = "vxdb", .type = HXTYPE_STRING, .ptr = &p->db_name,
+		 .help = "Use specified database", .htyp = "name"},
 		{.sh = 'I', .type = HXTYPE_NONE, .ptr = &p->interactive,
 		 .help = "Run in interactive mode"},
-		{.sh = 'M', .type = HXTYPE_STRING, .ptr = &p->db_name,
-		 .help = "Use specified database", .htyp = "name"},
 		{.sh = 'V', .type = HXTYPE_NONE, .cb = show_version,
 		 .help = "Show version information"},
 		{.sh = 'b', .type = HXTYPE_STRING, .ptr = &p->bday,

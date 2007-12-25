@@ -103,10 +103,10 @@ static bool userdel_get_options(int *argc, const char ***argv,
 		{.sh = 'B', .type = HXTYPE_STRING | HXOPT_OPTIONAL,
 		 .cb = userdel_getopt_predel, .uptr = conf,
 		 .help = "Program to run before user modification", .htyp = "cmd"},
+		{.ln = "vxdb", .type = HXTYPE_STRING, .ptr = &state->database,
+		 .help = "Use specified database", .htyp = "name"},
 		{.sh = 'F', .type = HXTYPE_NONE, .ptr = &state->force,
 		 .help = "Force deletion even if UID is 0 or name is 'root'"},
-		{.sh = 'M', .type = HXTYPE_STRING, .ptr = &state->database,
-		 .help = "Use specified database", .htyp = "name"},
 
 		/* Default options */
 		{.sh = 'r', .type = HXTYPE_NONE, .ptr = &state->rm_home,

@@ -111,7 +111,7 @@ static void show_version(const struct HXoptcb *cbi)
 static bool get_options(int *argc, const char ***argv, struct mdf_priv *p)
 {
 	struct HXoption options_table[] = {
-		{.sh = 'M', .type = HXTYPE_STRING, .ptr = &p->database,
+		{.ln = "vxdb", .type = HXTYPE_STRING, .ptr = &p->database,
 		 .help = "Use specified database", .htyp = "name"},
 		{.sh = 'V', .type = HXTYPE_NONE, .cb = show_version,
 		 .help = "Show version information"},

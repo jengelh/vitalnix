@@ -45,7 +45,7 @@ static void show_version(const struct HXoptcb *cbi)
 static bool get_options(int *argc, const char ***argv)
 {
 	struct HXoption options_table[] = {
-		{.sh = 'M', .type = HXTYPE_STRING, .ptr = &ck_db_name,
+		{.ln = "vxdb", .type = HXTYPE_STRING, .ptr = &ck_db_name,
 		 .help = "Use specified database", .htyp = "name"},
 		{.sh = 'T', .type = HXTYPE_UINT, .ptr = &ck_threshold,
 		 .help = "Omit all entries with a greater distance "

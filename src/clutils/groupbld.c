@@ -82,10 +82,10 @@ int main(int argc, const char **argv)
 static bool groupbld_get_options(int *argc, const char ***argv)
 {
 	struct HXoption options_table[] = {
+		{.ln = "vxdb", .type = HXTYPE_STRING, .ptr = &Database,
+		 .help = "Use specified database", .htyp = "name"},
 		{.sh = 'G', .type = HXTYPE_STRING, .ptr = &Limit_group,
 		 .help = "Limit operation to specified group", .htyp = "group"},
-		{.sh = 'M', .type = HXTYPE_STRING, .ptr = &Database,
-		 .help = "Use specified database", .htyp = "name"},
 		{.sh = 'V', .type = HXTYPE_NONE, .cb = groupbld_show_version,
 		 .help = "Show version information"},
 		{.sh = 'p', .type = HXTYPE_STRING, .ptr = &vg_prefix,

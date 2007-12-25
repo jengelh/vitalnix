@@ -362,10 +362,10 @@ static void print_compare_output2(const struct mdsync_workspace *mdsw)
 static bool get_options(int *argc, const char ***argv, struct private_info *p)
 {
 	struct HXoption options_table[] = {
+		{.ln = "vxdb", .type = HXTYPE_STRING, .ptr = &p->db_name,
+		 .help = "Use sepcified database", .htyp = "name"},
 		{.sh = 'D', .type = HXTYPE_NONE, .ptr = &p->debug,
 		 .help = "Enable some more debugging output"},
-		{.sh = 'M', .type = HXTYPE_STRING, .ptr = &p->db_name,
-		 .help = "Use sepcified database", .htyp = "name"},
 		{.sh = 'V', .type = HXTYPE_NONE, .cb = show_version,
 		 .help = "Show version information"},
 		{.sh = 'Y', .type = HXTYPE_NONE, .ptr = &p->yestoall,

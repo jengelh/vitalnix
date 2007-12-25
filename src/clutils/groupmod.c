@@ -172,7 +172,7 @@ static bool groupmod_get_options(int *argc, const char ***argv)
 		{.sh = 'B', .type = HXTYPE_STRING | HXOPT_OPTIONAL,
 		 .ptr = &action_before, .htyp = "cmd",
 		 .help = "Program to run before group modification"},
-		{.sh = 'M', .type = HXTYPE_STRING, .ptr = &database_name,
+		{.ln = "vxdb", .type = HXTYPE_STRING, .ptr = &database_name,
 		 .help = "Use specified database", .htyp = "name"},
 
 		/* Default options */

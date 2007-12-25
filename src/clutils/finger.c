@@ -111,10 +111,10 @@ static void show_version(const struct HXoptcb *cbi)
 static bool get_options(int *argc, const char ***argv)
 {
 	static struct HXoption options_table[] = {
+		{.ln = "vxdb", .type = HXTYPE_STRING, .ptr = &Database,
+		 .help = "Use specified database", .htyp = "name"},
 		{.sh = 'I', .type = HXTYPE_VAL, .val = false, .ptr = &Icase,
 		 .help = "Use case-sensitive matching"},
-		{.sh = 'M', .type = HXTYPE_STRING, .ptr = &Database,
-		 .help = "Use specified database", .htyp = "name"},
 		{.sh = 'V', .type = HXTYPE_NONE, .cb = show_version,
 		 .help = "Show version information"},
 		{.sh = 'g', .type = HXTYPE_NONE, .ptr = &Fullgecos,
