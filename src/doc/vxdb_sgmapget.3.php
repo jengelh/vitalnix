@@ -6,7 +6,7 @@
 
 <h1>Synopsis</h1>
 
-<p class="code"><code><b>#</b>include &lt;vitalnix/libvxpdb/libvxpdb.h&gt;<br />
+<p class="code"><code><b>#</b>include &lt;vitalnix/libvxdb/libvxdb.h&gt;<br />
 <b>#</b>include &lt;vitalnix/libvxpdb/xafunc.h&gt;<br />
 <br />
 <b>int</b> vxdb_sgmapget(<b>struct vxdb_state *</b><i>handle</i>, <b>const char *</b><i>user</i>, <b>char ***</b><i>result</i>);</code></p>

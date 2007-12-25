@@ -33,10 +33,11 @@ when students move up one grade.</p>
 		<td class="t1">Only operate on users which have <i>group</i> as
 		their primary group. This can either be a group's name or its
 		GID.</td>
+	</tr>
 	<tr>
 		<td class="t2n"><code><b>-M</b> <i>database</i></code></td>
 		<td class="t2">Uses the specified database rather than the
-		default one defined in the VXPDB configuration file.</td>
+		default one defined in the VXDB configuration file.</td>
 	</tr>
 	<tr>
 		<td class="t1n"><code><b>-p</b> <i>prefix</i></code></td>
