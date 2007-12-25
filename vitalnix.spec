@@ -7,7 +7,7 @@ Summary:	Vitalnix User Management Suite and Essential Tools
 License:	LGPL
 URL:		http://vitalnix.sourceforge.net/
 
-Source:		http://heanet.dl.sourceforge.net/sourceforge/%name/%name-%version.tar.bz2
+Source:		http://downloads.sf.net/sourceforge/%name/%name-%version.tar.bz2
 BuildRoot:	%_tmppath/%name-%version-build
 BuildRequires:	cups-devel, gcc-c++
 BuildRequires:	libHX-devel >= 1.10, libxml2-devel, mysql-devel >= 5.0
@@ -62,11 +62,11 @@ ln -s "%pfx/%_lib/pam_ihlogon.so" "$b/%_lib/security/";
 ln -s "%pfx/sbin/lpacct_scv" "$b/%_libdir/cups/backend/scv";
 ln -s "%pfx/share/vitalnix/vitalnix.schema" "$b/%_sysconfdir/openldap/schema/";
 
-for i in vx{finger,randpw}; do
+for i in vx{finger,id,randpw}; do
 	ln -s "%pfx/bin/$i" "$b/%_bindir/";
 done;
-for i in md{ckuuid,fixuuid,pwlfmt,single,sync} vx{dbdump,tryauth} \
-    vx{user,group}{add,mod,del}; do
+for i in vx{ckuuid,dbdump,fixuuid,newuser,pwlfmt,tryauth} \
+    vxgroup{add,bld,mod,del} vxuser{add,mod,del,sync}; do
 	ln -s "%pfx/sbin/$i" "$b/%_sbindir/";
 done;
 
@@ -92,4 +92,5 @@ rm -Rf "%buildroot";
 %dir %pfx/share
 %dir %pfx/share/vitalnix
 %config(noreplace) %pfx/share/vitalnix/*
+%doc %_mandir/*/*
 %doc src/doc/*.html src/doc/*.css
