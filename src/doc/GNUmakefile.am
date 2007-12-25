@@ -22,26 +22,16 @@ build_man = \
 	${AM_VERBOSE_GEN}${top_builddir}/html2man \
 	-t "Vitalnix User Management Suite" -n $(1) -s $(2) $< >$@;
 
-html2man_check = \
-	if [ ! -x ${top_builddir}/html2man ]; then \
-		make -C ${top_builddir} html2man; \
-	fi;
-
-%.1: html2man
 %.1: %.1.php
-	@${html2man_check}
 	$(call build_man,$*,1)
 
 %.3: %.3.php
-	@${html2man_check}
 	$(call build_man,$*,3)
 
 %.7: %.7.php
-	@${html2man_check}
 	$(call build_man,$*,7)
 
 %.8: %.8.php
-	@${html2man_check}
 	$(call build_man,$*,8)
 
 %.html: %.php

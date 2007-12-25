@@ -62,7 +62,7 @@ endif
 if GOT_TOOLS_FOR_DOC
 doc_subdir := src/doc
 endif
-SUBDIRS := ${doc_subdir}
+SUBDIRS := . ${doc_subdir}
 
 #
 #	.
