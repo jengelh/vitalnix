@@ -1285,10 +1285,11 @@ static int vxldap_sgmapadd(struct vxdb_state *vp, const char *user,
 
 	ret     = -ENOMEM;
 	userdn  = dn_user(state, user);
-	groupdn = dn_group(state, user);
+	groupdn = dn_group(state, group);
 	if (userdn == NULL || groupdn == NULL)
 		goto out;
 
+	/* Verify user exists */
 	ret    = -ENOENT;
 	ldret  = ldap_search_ext_s(state->conn, userdn, LDAP_SCOPE_BASE,
 	         NULL, const_cast(char **, no_attrs), true, NULL, NULL,
@@ -1304,7 +1305,7 @@ static int vxldap_sgmapadd(struct vxdb_state *vp, const char *user,
 	attr_ptrs[0] = &attr;
 	attr_ptrs[1] = NULL;
 
-	ldret = ldap_add_ext_s(state->conn, groupdn, attr_ptrs, NULL, NULL);
+	ldret = ldap_modify_ext_s(state->conn, groupdn, attr_ptrs, NULL, NULL);
 	if (ldret == LDAP_SUCCESS)
 		ret = 1;
 	else
@@ -1371,13 +1372,14 @@ static void vxldap_sgmapget2(LDAP *conn, LDAPMessage *ldres,
 	{
 		attr = ldap_first_attribute(conn, entry, &ber);
 		if (attr == NULL)
+			/* should not happen, but whatever... */
 			continue;
 		val = ldap_get_values(conn, entry, attr);
-		if (val == NULL)
-			continue;
-		if (strcmp(attr, "cn") == 0)
-			*out++ = HX_strdup(*val);
-		ldap_value_free(val);
+		if (val != NULL) {
+			if (*val != NULL)
+				*out++ = HX_strdup(*val);
+			ldap_value_free(val);
+		}
 		ldap_memfree(attr);
 	}
 
@@ -1412,9 +1414,9 @@ static int vxldap_sgmapget(struct vxdb_state *vp, const char *user,
 		return -(errno = 1600);
 	}
 
-	if (ret == 0) {
+	if (ret == 0 || data == NULL) {
 		ldap_msgfree(result);
-		return 0;
+		return ret;
 	}
 
 	*data = malloc(sizeof(char *) * (ret + 1));
@@ -1430,7 +1432,37 @@ static int vxldap_sgmapget(struct vxdb_state *vp, const char *user,
 static int vxldap_sgmapdel(struct vxdb_state *vp, const char *user,
     const char *group)
 {
-	return 0;
+	struct ldap_state *state = vp->state;
+	LDAPMod attr, *attr_ptrs[2];
+	hmc_t *userdn, *groupdn;
+	int ret;
+
+	ret     = -ENOMEM;
+	userdn  = dn_user(state, user);
+	groupdn = dn_group(state, user);
+	if (userdn == NULL || groupdn == NULL)
+		goto out;
+
+	attr = (LDAPMod){
+		.mod_op     = LDAP_MOD_DELETE,
+		.mod_type   = "member",
+		.mod_values = (char *[]){userdn, NULL},
+	};
+	attr_ptrs[0] = &attr;
+	attr_ptrs[1] = NULL;
+
+	ret = ldap_modify_ext_s(state->conn, groupdn, attr_ptrs, NULL, NULL);
+	if (ret == LDAP_NO_SUCH_OBJECT || ret == LDAP_NO_SUCH_ATTRIBUTE)
+		return -ENOENT;
+	else if (ret != LDAP_SUCCESS)
+		return vxldap_errno_sp(ret, "vxldap_sgmapdel");
+	else
+		ret = 1;
+
+ out:
+	hmc_free(userdn);
+	hmc_free(groupdn);
+	return ret;
 }
 
 EXPORT_SYMBOL struct vxdb_driver THIS_MODULE = {

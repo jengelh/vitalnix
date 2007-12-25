@@ -714,14 +714,19 @@ static int vxmmd_sgmapadd(struct vxdb_state *vp, const char *user,
 	return -EROFS;
 }
 
-static void vxmmd_sgmapmerge(char ***outp, unsigned int *out_entries,
+static int vxmmd_sgmapmerge(char ***outp, unsigned int *out_entries,
     char **inp, unsigned int in_entries)
 {
 	char **out, **in = inp;
 
+	if (outp == NULL) {
+		*out_entries += in_entries;
+		return 0;
+	}
+
 	out = realloc(*outp, sizeof(char *) * (*out_entries + in_entries + 1));
 	if (out == NULL)
-		return;
+		return -ENOMEM;
 
 	*outp = out;
 	out = &out[*out_entries];
@@ -731,7 +736,7 @@ static void vxmmd_sgmapmerge(char ***outp, unsigned int *out_entries,
 
 	*out = NULL;
 	free(inp);
-	return;
+	return 0;
 }
 
 static int vxmmd_sgmapget(struct vxdb_state *vp, const char *user,
@@ -743,20 +748,34 @@ static int vxmmd_sgmapget(struct vxdb_state *vp, const char *user,
 	char **out = NULL;
 	int ret;
 
+	if (result != NULL)
+		*result = NULL;
+
 	if (WR_OPEN(state)) {
-		ret = vxdb_sgmapget(WR_MOD(state), user, &out);
+		ret = vxdb_sgmapget(WR_MOD(state), user,
+		      (result == NULL) ? NULL : &out);
 		if (ret > 0)
-			vxmmd_sgmapmerge(result, &entries, out, ret);
+			ret = vxmmd_sgmapmerge(result, &entries, out, ret);
+		if (ret == -ENOMEM)
+			goto free;
 	}
 
 	for (trav = state->rd_mod->first; trav != NULL; trav = trav->next) {
 		const struct module_handle *mh = trav->ptr;
-		ret = vxdb_sgmapget(mh->mh_instance, user, &out);
+		ret = vxdb_sgmapget(mh->mh_instance, user,
+		      (result == NULL) ? NULL : &out);
 		if (ret > 0)
-			vxmmd_sgmapmerge(result, &entries, out, ret);
+			ret = vxmmd_sgmapmerge(result, &entries, out, ret);
+		if (ret == -ENOMEM)
+			goto free;
 	}
 
 	return entries;
+
+ free:
+	if (result != NULL)
+		HX_zvecfree(*result);
+	return ret;
 }
 
 static int vxmmd_sgmapdel(struct vxdb_state *vp, const char *user,

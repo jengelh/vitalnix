@@ -16,20 +16,37 @@
 <p class="block"><code>vxdb_sgmapget()</code> will retrieve the list of
 secondary (or "supplementary") groups the user is a member of. It will allocate
 an appropriately-sized NULL-terminated array and store it in
-<code>*list</code>.</p>
+<code>*list</code> <b>if</b> the user has one or more groups. If the user has
+zero groups, or NULL is passed for <i>result</i>, nothing will be allocated.
+Always check the return value of the function.</p>
 
 <h1>Return value</h1>
 
 <p class="block">On success, the number of groups is returned, which may be
 zero or more. On error, a negative value is returned, indicating the error.</p>
 
+<table border="1">
+	<tr>
+		<td><code><b>-ENOENT</b></code></td>
+		<td>The user does not exist.</td>
+	</tr>
+	<tr>
+		<td><code><b>-ENOMEM</b></code></td>
+		<td>Out of memory.</td>
+	</tr>
+	<tr>
+		<td><code><b>-EPERM</b></code></td>
+		<td>Not enough privileges to complete this operation.</td>
+	</tr>
+</table>
+
 <h1>Example</h1>
 
 <p class="code"><code>
-<b>char **</b>groups, <b>**</b>g;<br />
-vxdb_sgmapget(dbh, "jengelh", <b>&amp;</b>groups);<br />
-<b>for</b> (g <b>=</b> groups; <b>*</b>g <b>!=</b> NULL; ++g)<br />
- &nbsp; &nbsp; printf("%s,", <b>*</b>g);</code></p>
+char **groups, **g;<br />
+if (vxdb_sgmapget(dbh, "jengelh", &amp;groups) &gt; 0)<br />
+&nbsp; &nbsp; for (g = groups; *g != NULL; ++g)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; printf("%s,", *g);</code></p>
 
 <h1>See also</h1>
 
