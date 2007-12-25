@@ -152,7 +152,7 @@ static int vxdummy_sgmapadd(struct vxdb_state *vp, const char *user,
 static int vxdummy_sgmapget(struct vxdb_state *vp, const char *user,
     char ***result)
 {
-	return -ENOENT;
+	return 0;
 }
 
 static int vxdummy_sgmapdel(struct vxdb_state *vp, const char *user,
