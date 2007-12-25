@@ -277,6 +277,7 @@ static bool groupbld_move(struct vxdb_state *db, const char *user,
 	}
 
 	if (ret > 0) {
+		ngroups = ret;
 		for (p = sgrp; ngroups > 0 && *p != NULL; ++p) {
 			if (strcmp(*p, vgname) == 0) {
 				added = true;
