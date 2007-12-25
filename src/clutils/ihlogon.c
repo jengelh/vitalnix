@@ -82,7 +82,7 @@ static unsigned int login_times(const char *user)
 		"w -h | "
 		/* filter user */
 		"grep \"^%s \" | "
-		/* only show samba sessions */
+		/* only show samba sessions (requires CCEL) */
 		"awk '{print $2}' | grep ^lgn | "
 		/* count logins */
 		"wc -l",
