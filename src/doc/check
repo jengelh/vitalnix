@@ -1,7 +1,0 @@
-#!/bin/bash
-
-if [ ! -x ../../html2man ]; then
-	make -C ../../ html2man;
-	exit $?;
-fi;
-exit 0;
