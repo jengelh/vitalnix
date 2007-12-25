@@ -1,17 +1,21 @@
 <?php include_once("Base-header.php"); ?>
 
-<h1>Usage</h1>
+<h1>Name</h1>
 
-<p class="code"><code><b>groupbld</b> [<b>-qv</b>] [<b>-G</b> <i>group</i>]
-[<b>-M</b> <i>module</i>] [<b>-p</b> <i>prefix</i>]</code></p>
+<p>vxgroupbld&nbsp;-- build system groups from VX group tags</p>
+
+<h1>Syntax</h1>
+
+<p class="code"><code><b>vxgroupbld</b> [<b>--vxdb</b> <i>database</i>]
+[<b>-qv</b>] [<b>-G</b> <i>group</i>] [<b>-p</b> <i>prefix</i>]</code></p>
 
 <h1>Description</h1>
 
-<p class="block">vxgroupbld updates the system (UNIX) group membership of all
-users that have a Vitalnix group tag, and moves them from their current
+<p class="block"><i>vxgroupbld</i> updates the system (UNIX) group membership
+of all users that have a Vitalnix group tag, and moves them from their current
 Vitalnix-UNIX-Group (VUG) to the new VUG that matches the Vitalnix group tag.
-vxgroupbld will create the new VUG if necessary. The VUGs can then be used for
-filesystem permissions, for example.</p>
+<i>vxgroupbld</i> will create the new VUG if necessary. The VUGs can then be
+used for filesystem permissions, for example.</p>
 
 <p class="block">VUGs are generally prefixed with a fixed string so as to
 distinguish them from regular UNIX groups. The default prefix is
@@ -21,23 +25,23 @@ example, if it was <code>10NK</code>, the VUG would be called
 obviously cause users to lose membership in secondary groups</b>, because
 vxgroupbld operates on all secondary groups that have this prefix.</p>
 
-<p class="block">vxgroupbld is typically used after updating the
-Vitalnix group tag; running it after vxusersync is a common case, e.g.
-when students move up one grade.</p>
+<p class="block"><i>vxgroupbld</i> is typically used after updating the
+Vitalnix group tag; running it after vxusersync is a common case, e.g. when
+students move up one grade.</p>
 
 <h1>Options</h1>
 
 <table border="1">
 	<tr>
-		<td class="t1n"><code><b>-G</b> <i>group</i></code></td>
-		<td class="t1">Only operate on users which have <i>group</i> as
-		their primary group. This can either be a group's name or its
-		GID.</td>
+		<td class="t1n"><code><b>--vxdb</b> <i>database</i></code></td>
+		<td class="t1">Uses the specified database rather than the
+		default one defined in the VXDB configuration file.</td>
 	</tr>
 	<tr>
-		<td class="t2n"><code><b>-M</b> <i>database</i></code></td>
-		<td class="t2">Uses the specified database rather than the
-		default one defined in the VXDB configuration file.</td>
+		<td class="t2n"><code><b>-G</b> <i>group</i></code></td>
+		<td class="t2">Only operate on users which have <i>group</i> as
+		their primary group. This can either be a group's name or its
+		GID.</td>
 	</tr>
 	<tr>
 		<td class="t1n"><code><b>-p</b> <i>prefix</i></code></td>
@@ -57,7 +61,7 @@ when students move up one grade.</p>
 
 <h1>Exit status</h1>
 
-<p class="block">vxgroupbld will return 0 if all operations completed
+<p class="block"><i>vxgroupbld</i> will return 0 if all operations completed
 successfully. On error, it will abort right away and returns non-zero.</p>
 
 <?php include_once("Base-footer.php"); ?>

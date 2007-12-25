@@ -23,7 +23,7 @@ static void tag_generic(xmlNode *, bool);
 static char *manpage_name, *manpage_section;
 static char *manpage_date, *manpage_author, *manpage_title;
 static struct HXdeque *tag_b_i_stack;
-static struct HXdeque *tag_code_stack;
+static struct HXdeque *tag_h_stack;
 static char xlat_last;
 
 //-----------------------------------------------------------------------------
@@ -43,12 +43,51 @@ static inline void xlat_reset(void)
 	xlat_last = ' ';
 }
 
-static void xlat_printf(const char *s)
+static inline bool is_nbsp(const unsigned char *s)
+{
+	return s[0] == 0xC2 && s[1] == 0xA0;
+}
+
+static void xlat_printf_h(const unsigned char *s)
 {
 	for (; *s != '\0'; ++s) {
 		while (xlat_last == ' ' && isspace(*s))
 			++s;
-		if (*s == '\n') {
+		if (is_nbsp(s)) {
+			fputc(' ', stdout);
+			++s;
+		} else if (*s == '\n') {
+			xlat_last = ' ';
+			fputc(xlat_last, stdout);
+			continue;
+		} else if (*s == '\\') {
+			printf("\\e");
+		} else if (*s == '-' || *s == '`') {
+			printf("\\%c", *s);
+		} else if (*s == '"') {
+			printf("\"\"");
+		} else if (*s == '\0') {
+			/* do nothing */
+		} else {
+			fputc(*s, stdout);
+		}
+		xlat_last = *s;
+	}
+}
+
+static void xlat_printf(const unsigned char *s)
+{
+	if (tag_h_stack->items > 0) {
+		xlat_printf_h(s);
+		return;
+	}
+	for (; *s != '\0'; ++s) {
+		while (xlat_last == ' ' && isspace(*s))
+			++s;
+		if (is_nbsp(s)) {
+			fputc(' ', stdout);
+			++s;
+		} else if (*s == '\n') {
 			xlat_last = ' ';
 			fputc(xlat_last, stdout);
 			continue;
@@ -79,7 +118,11 @@ static void tag_b(xmlNode *ptr, bool print_text)
 
 static void tag_br(xmlNode *ptr, bool print_text)
 {
-	printf("\n.sp 0\n");
+	if (tag_h_stack->items > 0)
+		printf("\"\n%s\"",
+		       static_cast(const char *, tag_h_stack->last->ptr));
+	else
+		printf("\n.sp 0\n");
 	xlat_reset();
 	tag_generic(ptr, print_text);
 }
@@ -98,18 +141,22 @@ static void tag_i(xmlNode *ptr, bool print_text)
 
 static void tag_h1(xmlNode *ptr, bool print_text)
 {
-	printf(".SH ");
+	printf(".SH \"");
+	HXdeque_push(tag_h_stack, ".SH ");
 	tag_generic(ptr, true);
 	xlat_reset();
-	printf("\n");
+	HXdeque_pop(tag_h_stack);
+	printf("\"\n");
 }
 
 static void tag_h2(xmlNode *ptr, bool print_text)
 {
-	printf(".SS");
+	printf(".SS \"");
+	HXdeque_push(tag_h_stack, ".SS ");
 	tag_generic(ptr, true);
 	xlat_reset();
-	printf("\n");
+	HXdeque_pop(tag_h_stack);
+	printf("\"\n");
 }
 
 static void tag_p(xmlNode *ptr, bool print_text)
@@ -153,7 +200,7 @@ static void tag_generic(xmlNode *ptr, bool print_text)
 
 	for (ptr = ptr->children; ptr != NULL; ptr = ptr->next) {
 		if (print_text && ptr->type == XML_TEXT_NODE) {
-			xlat_printf(signed_cast(const char *, ptr->content));
+			xlat_printf(ptr->content);
 			continue;
 		}
 		for (tg_lookup = tag_table; ; ++tg_lookup)
@@ -217,12 +264,12 @@ int main(int argc, const char **argv)
 	       asciiz(manpage_name), asciiz(manpage_section),
 	       asciiz(manpage_date), asciiz(manpage_author),
 	       asciiz(manpage_title));
-	tag_b_i_stack  = HXdeque_init();
-	tag_code_stack = HXdeque_init();
+	tag_b_i_stack = HXdeque_init();
+	tag_h_stack   = HXdeque_init();
 	HXdeque_push(tag_b_i_stack, "\\fR");
 	xlat_reset();
 	ret = readhtml(argv[1]) ? EXIT_SUCCESS : EXIT_FAILURE;
 	HXdeque_free(tag_b_i_stack);
-	HXdeque_free(tag_code_stack);
+	HXdeque_free(tag_h_stack);
 	return ret;
 }
