@@ -1,22 +1,15 @@
 # -*- Makefile -*-
 
-.PHONY: all mans
-
-html_targets := \
+man1_MANS := $(patsubst ${srcdir}/%.1.php,%.1,$(wildcard ${srcdir}/*.1.php))
+man3_MANS := $(patsubst ${srcdir}/%.3.php,%.3,$(wildcard ${srcdir}/*.3.php))
+man7_MANS := $(patsubst ${srcdir}/%.7.php,%.7,$(wildcard ${srcdir}/*.7.php))
+man8_MANS := $(patsubst ${srcdir}/%.8.php,%.8,$(wildcard ${srcdir}/*.8.php))
+noinst_DATA := \
 	$(patsubst ${srcdir}/%.php,%.html,$(wildcard ${srcdir}/[a-z]*.php)) \
 	$(patsubst ${srcdir}/%.php,%.txt,$(wildcard ${srcdir}/[a-z]*.php)) \
 	$(patsubst ${srcdir}/%.icss,%.css,$(wildcard ${srcdir}/*.icss))
-man_targets := \
-	$(patsubst ${srcdir}/%.1.php,%.1,$(wildcard ${srcdir}/*.1.php)) \
-	$(patsubst ${srcdir}/%.3.php,%.3,$(wildcard ${srcdir}/*.3.php)) \
-	$(patsubst ${srcdir}/%.7.php,%.7,$(wildcard ${srcdir}/*.7.php)) \
-	$(patsubst ${srcdir}/%.8.php,%.8,$(wildcard ${srcdir}/*.8.php))
 
-CLEANFILES := ${html_targets} ${man_targets}
-
-all: ${html_targets} mans
-
-mans: ${man_targets}
+CLEANFILES := ${man1_MANS} ${man3_MANS} ${man7_MANS} ${man8_MANS} ${noinst_DATA}
 
 build_man = \
 	${AM_VERBOSE_GEN}${top_builddir}/html2man \
