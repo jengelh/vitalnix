@@ -56,7 +56,7 @@ static void print_compare_output2(const struct mdsync_workspace *);
 
 static bool get_options(int *, const char ***, struct private_info *);
 static void show_version(const struct HXoptcb *);
-static bool time_limit(time_t *, time_t);
+static inline bool time_limit(time_t *, time_t);
 
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv)
@@ -397,7 +397,7 @@ static void show_version(const struct HXoptcb *cbi)
 	exit(EXIT_SUCCESS);
 }
 
-static bool time_limit(time_t *last, time_t interval)
+static inline bool time_limit(time_t *last, time_t interval)
 {
 	time_t now = time(NULL);
 	if (now - *last < interval)

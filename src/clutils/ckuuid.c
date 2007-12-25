@@ -157,7 +157,7 @@ static inline unsigned int min3(unsigned int a, unsigned int b, unsigned int c)
 		return c;
 }
 
-static bool timebolt(void)
+static inline bool timebolt(void)
 {
 	static time_t last = 0;
 	time_t now = time(NULL);
