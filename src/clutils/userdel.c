@@ -97,10 +97,10 @@ static bool userdel_get_options(int *argc, const char ***argv,
 	struct vxconfig_userdel *conf = &state->config;
 	struct HXoption options_table[] = {
 		/* New (vxuserdel) options */
-		{.sh = 'A', .type = HXTYPE_STRING | HXOPT_OPTIONAL,
+		{.ln = "after", .type = HXTYPE_STRING | HXOPT_OPTIONAL,
 		 .cb = userdel_getopt_postdel, .uptr = conf,
 		 .help = "Program to run after user modification", .htyp = "cmd"},
-		{.sh = 'B', .type = HXTYPE_STRING | HXOPT_OPTIONAL,
+		{.ln = "before", .type = HXTYPE_STRING | HXOPT_OPTIONAL,
 		 .cb = userdel_getopt_predel, .uptr = conf,
 		 .help = "Program to run before user modification", .htyp = "cmd"},
 		{.ln = "vxdb", .type = HXTYPE_STRING, .ptr = &state->database,

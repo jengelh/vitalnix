@@ -12,3 +12,5 @@ SVN /trunk
 - [r553]: vxgroup{add,mod,del} forgot to check for first argument presence
 - [r554]: vxdb_groupadd() for vxldap was incomplete
 - [r618]: programs' -M option (select database) has been renamed to --vxdb
+- [r619]: rename {user,group}{add,mod,del}'s -A and -B options to --after
+  and --before to avoid clashes with pwdutils

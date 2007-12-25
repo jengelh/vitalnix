@@ -140,10 +140,10 @@ static bool useradd_get_options(int *argc, const char ***argv,
 	struct vxdb_user *user        = &conf->defaults;
 	struct HXoption options_table[] = {
 		/* New, Vitalnix-useradd options */
-		{.sh = 'A', .type = HXTYPE_STRING | HXOPT_OPTIONAL,
+		{.ln = "after", .type = HXTYPE_STRING | HXOPT_OPTIONAL,
 		 .cb = useradd_getopt_postadd, .uptr = conf,
 		 .help = "Program to run after user addition", .htyp = "cmd"},
-		{.sh = 'B', .type = HXTYPE_STRING | HXOPT_OPTIONAL,
+		{.ln = "before", .type = HXTYPE_STRING | HXOPT_OPTIONAL,
 		 .cb = useradd_getopt_preadd, .uptr = conf,
 		 .help = "Program to run before user addition", .htyp = "cmd"},
 		{.ln = "vxdb", .type = HXTYPE_STRING, .ptr = &state->database,

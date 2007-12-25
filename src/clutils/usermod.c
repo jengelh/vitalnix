@@ -96,10 +96,10 @@ static bool usermod_get_options(int *argc, const char ***argv,
 	struct vxdb_user *nu          = &sp->newstuff;
 	struct HXoption options_table[] = {
 		/* New, Vitalnix-usermod options */
-		{.sh = 'A', .type = HXTYPE_STRING | HXOPT_OPTIONAL,
+		{.ln = "after", .type = HXTYPE_STRING | HXOPT_OPTIONAL,
 		 .cb = usermod_getopt_premod, .uptr = conf,
 		 .help = "Program to run after user modification", .htyp = "cmd"},
-		{.sh = 'B', .type = HXTYPE_STRING | HXOPT_OPTIONAL,
+		{.ln = "before", .type = HXTYPE_STRING | HXOPT_OPTIONAL,
 		 .cb = usermod_getopt_postmod, .uptr = conf,
 		 .help = "Program to run before user modification", .htyp = "cmd"},
 		{.ln = "vxdb", .type = HXTYPE_STRING, .ptr = &sp->database,

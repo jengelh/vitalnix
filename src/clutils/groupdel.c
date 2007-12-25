@@ -163,10 +163,10 @@ static bool groupdel_get_options(int *argc, const char ***argv)
 {
 	static const struct HXoption options_table[] = {
 		/* New, Vitalnix-userdel options */
-		{.sh = 'A', .type = HXTYPE_STRING | HXOPT_OPTIONAL,
+		{.ln = "after", .type = HXTYPE_STRING | HXOPT_OPTIONAL,
 		 .ptr = &action_after, .htyp = "cmd",
 		 .help = "Program to run after group deletion"},
-		{.sh = 'B', .type = HXTYPE_STRING | HXOPT_OPTIONAL,
+		{.ln = "before", .type = HXTYPE_STRING | HXOPT_OPTIONAL,
 		 .ptr = &action_before, .htyp = "cmd",
 		 .help = "Program to run before group deletion"},
 		{.ln = "vxdb", .type = HXTYPE_STRING, .ptr = &database_name,
