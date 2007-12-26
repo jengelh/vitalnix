@@ -12,7 +12,7 @@ user list to the system user database.</p>
 <br />
 <b>struct</b> mdsync_config {<br />
 &nbsp; &nbsp; <b>struct</b> vxdb_user user_defaults;<br />
-&nbsp; &nbsp; <b>int</b> new_pw_length, genpw_type, crypw_type;<br />
+&nbsp; &nbsp; <b>int</b> new_pw_length, genpw_type, phash_type;<br />
 &nbsp; &nbsp; <b>int</b> db_force_flush;<br />
 &nbsp; &nbsp; <b>long</b> home_umask;<br />
 &nbsp; &nbsp; <b>char *</b>skeleton_dir;<br />

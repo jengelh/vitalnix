@@ -6,8 +6,8 @@
 
 <h1>Syntax</h1>
 
-<p class="code"><code><b>vxgroupmod</b> [<b>--after</b> [<i>command</i>]]
-[<b>--before</b> [<i>command</i>]] [<b>--vxdb</b> <i>database</i>] [<b>-g</b>
+<p class="code"><code><b>vxgroupmod</b> [<b>--after</b> <i>command</i>]
+[<b>--before</b> <i>command</i>] [<b>--vxdb</b> <i>database</i>] [<b>-g</b>
 <i>gid</i> [<b>-o</b>]] [<b>-n</b> <i>group_name</i>] <i>group</i></code></p>
 
 <h1>Description</h1>
@@ -26,26 +26,25 @@ access to files.</p>
 
 <table border="1">
 	<tr>
-		<td class="t1n"><code><b>--after</b>
-		[<i>command</i>]</code></td>
+		<td class="t1n"><code><b>--after</b> <i>command</i></code></td>
 		<td class="t1">Runs the specified command after the group was
-		successfully added. If <code>-A</code> is given, but with a
+		successfully added. If <code>--after</code> is given, but with a
 		zero-length command string, the default command in the
 		configuration file is not run.</td>
 	</tr>
 	<tr>
 		<td class="t2n"><code><b>--before</b>
-		[<i>command</i>]</code></td>
+		<i>command</i></code></td>
 		<td class="t2">Runs the specified command before the group is
 		added. It is run always, even if adding fails. If
-		<code>-B</code> is given, but with a zero-length command
+		<code>--before</code> is given, but with a zero-length command
 		string, the default command in the configuration file is not
 		run.</td>
 	</tr>
 	<tr>
 		<td class="t1n"><code><b>--vxdb</b> <i>database</i></code></td>
 		<td class="t1">Uses the specified database rather than the
-		default one listed in the VXDB configuration file</td>
+		default one listed in the VXDB configuration file.</td>
 	</tr>
 	<tr>
 		<td class="t2n"><code><b>-g</b> <i>gid</i></code></td>

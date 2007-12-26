@@ -11,7 +11,6 @@ Vitalnix code base.</p>
 <b>#</b>include &lt;vitalnix/libvxutil/libvxutil.h&gt;<br />
 <br />
 <b>char *</b>vxutil_azstr(<b>const char *</b>string);<br />
-<b>int</b> vxutil_cryptpw(<b>const char *</b>key, <b>const char *</b>salt, <b>int</b> method, <b>char **</b>result);<br />
 <b>int</b> vxutil_genpw(<b>char *</b>dest, <b>int</b> size, <b>unsigned int</b> flags);<br />
 <b>int</b> vxutil_have_display(<b>void</b>);<br />
 <b>unsigned int</b> vxutil_now_iday(<b>void</b>);<br />
@@ -31,29 +30,6 @@ Vitalnix code base.</p>
 
 <p class="block">If <code>string</code> is <code>NULL</code>, returns a pointer
 to a constant empty string (""), otherwise returns <code>string</code>.</p>
-
-<h2>vxutil_cryptpw</h2>
-
-<p class="block">Encrypts the plaintext in <code>key</code>, possibly utilizing
-<code>salt</code> using the specified method (encryption) and puts the result
-into <code>*rp</code>, which must be freed after usage. The method can be one
-of:</p>
-
-<table border="1">
-  <tr>
-    <td class="t1"><code>CRYPW_DES</code></td>
-    <td class="t1">Use DES (56-bit, weak) (not available on Win32)</td>
-  </tr>
-  <tr>
-    <td class="t2"><code>CRYPW_MD5</code></td>
-    <td class="t2">Use MD5 (128-bit, not available on Win32)</td>
-  </tr>
-  <tr>
-    <td class="t1"><code>CRYPW_BLOWFISH</code></td>
-    <td class="t1">Use Blowfish encryption (448-bit, 5 rounds,
-      recommended)</td>
-  </tr>
-</table>
 
 <h2>vxutil_genpw</h2>
 

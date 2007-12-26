@@ -53,6 +53,8 @@ static void xlat_printf_h(const unsigned char *s)
 	for (; *s != '\0'; ++s) {
 		while (xlat_last == ' ' && isspace(*s))
 			++s;
+		if (*s == '\0')
+			break;
 		if (is_nbsp(s)) {
 			fputc(' ', stdout);
 			++s;
@@ -66,8 +68,6 @@ static void xlat_printf_h(const unsigned char *s)
 			printf("\\%c", *s);
 		} else if (*s == '"') {
 			printf("\"\"");
-		} else if (*s == '\0') {
-			/* do nothing */
 		} else {
 			fputc(*s, stdout);
 		}
@@ -84,6 +84,8 @@ static void xlat_printf(const unsigned char *s)
 	for (; *s != '\0'; ++s) {
 		while (xlat_last == ' ' && isspace(*s))
 			++s;
+		if (*s == '\0')
+			break;
 		if (is_nbsp(s)) {
 			fputc(' ', stdout);
 			++s;
@@ -95,8 +97,6 @@ static void xlat_printf(const unsigned char *s)
 			printf("\\e");
 		} else if (*s == '-' || *s == '`') {
 			printf("\\%c", *s);
-		} else if (*s == '\0') {
-			/* do nothing */
 		} else {
 			fputc(*s, stdout);
 		}
@@ -200,7 +200,7 @@ static void tag_generic(xmlNode *ptr, bool print_text)
 
 	for (ptr = ptr->children; ptr != NULL; ptr = ptr->next) {
 		if (print_text && ptr->type == XML_TEXT_NODE) {
-			xlat_printf(ptr->content);
+			xlat_printf((const unsigned char *)ptr->content);
 			continue;
 		}
 		for (tg_lookup = tag_table; ; ++tg_lookup)

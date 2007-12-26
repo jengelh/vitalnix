@@ -6,8 +6,8 @@
 
 <h1>Syntax</h1>
 
-<p class="code"><code><b>vxgroupbld</b> [<b>--vxdb</b> <i>database</i>]
-[<b>-qv</b>] [<b>-G</b> <i>group</i>] [<b>-p</b> <i>prefix</i>]</code></p>
+<p class="code"><code><b>vxgroupbld</b> [<b>-qv</b>] [<b>--vxdb</b>
+<i>database</i>] [<b>-G</b> <i>group</i>] [<b>-p</b> <i>prefix</i>]</code></p>
 
 <h1>Description</h1>
 
