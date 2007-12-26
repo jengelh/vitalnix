@@ -58,7 +58,7 @@ regular_CXXFLAGS="-D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
 #
 #	libc
 #
-AC_HAVE_HEADERS([lastlog.h paths.h utmpx.h])
+AC_HAVE_HEADERS([crypt.h lastlog.h paths.h utmpx.h])
 
 #
 #	openssl-devel, libxml-devel

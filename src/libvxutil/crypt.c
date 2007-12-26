@@ -10,7 +10,6 @@
  */
 #define _GNU_SOURCE 1
 #include <sys/types.h>
-#include <crypt.h>
 #include <iconv.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -18,10 +17,13 @@
 #include <libHX.h>
 #include <openssl/md4.h>
 #include <vitalnix/compiler.h>
+#include <vitalnix/config.h>
 #include <vitalnix/libvxutil/defines.h>
 #include <vitalnix/libvxutil/libvxutil.h>
+#ifdef HAVE_CRYPT_H
+#	include <crypt.h>
+#endif
 #include "libvxutil/blowfish.h"
-#define crypt3 1
 #define ICONV_NULL reinterpret_cast(iconv_t, -1)
 
 /* Functions */
@@ -54,7 +56,7 @@ EXPORT_SYMBOL bool vxutil_cryptpw(const char *key, const char *salt,
 //-----------------------------------------------------------------------------
 static char *vxutil_crypt_des(const char *key, const char *salt)
 {
-#ifdef crypt3
+#ifdef HAVE_CRYPT_H
 	struct crypt_data cd = {};
 	char my_salt[3], *rx;
 
@@ -104,7 +106,7 @@ static char *vxutil_crypt_smbnt(const char *key, const char *salt)
 
 static char *vxutil_crypt_md5(const char *key, const char *salt)
 {
-#ifdef crypt3
+#ifdef HAVE_CRYPT_H
 	struct crypt_data cd = {};
 	char my_salt[12], *rx;
 
