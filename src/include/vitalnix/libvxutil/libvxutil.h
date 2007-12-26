@@ -19,16 +19,16 @@ extern "C" {
 struct HXoption;
 
 /*
- *	CRYPT.C
+ *	PHASH.C
  */
 enum {
-	CRYPW_DES = 1,
-	CRYPW_MD5,
-	CRYPW_BLOWFISH,
-	CRYPW_SMBNT,
+	VXPHASH_DES = 1,
+	VXPHASH_MD5,
+	VXPHASH_BLOWFISH,
+	VXPHASH_SMBNT,
 };
 
-extern bool vxutil_cryptpw(const char *, const char *, unsigned int, char **);
+extern bool vxutil_phash(const char *, const char *, unsigned int, char **);
 
 /*
  *	GENPW.C

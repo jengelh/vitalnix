@@ -22,7 +22,7 @@ static void show_version(const struct HXoptcb *);
 /* Variables */
 static unsigned int
 	Length     = 9,
-	Cr_meth    = CRYPW_BLOWFISH,
+	Cr_meth    = VXPHASH_BLOWFISH,
 	Gen_meth   = GENPW_ZH,
 	Num_pw     = 1,
 	With_case  = 0,
@@ -43,7 +43,7 @@ int main(int argc, const char **argv)
 	while (Num_pw--) {
 		vxutil_genpw(plain_pw, Length + 1,
 		             With_case | With_digit | Gen_meth);
-		if (!vxutil_cryptpw(plain_pw, NULL, Cr_meth, &out_cr))
+		if (!vxutil_phash(plain_pw, NULL, Cr_meth, &out_cr))
 			fprintf(stderr, "ERROR: vxutil_cryptpw returned false\n");
 		printf("%s\n" "%s\n", plain_pw, out_cr);
 		free(out_cr);
@@ -62,19 +62,19 @@ static bool get_options(int *argc, const char ***argv)
 		 .ptr = &With_digit, .val = GENPW_1DIGIT,
 		 .help = "Always have a digit in the password"},
 		{.sh = 'B', .type = HXTYPE_VAL,
-		 .ptr = &Cr_meth, .val = CRYPW_BLOWFISH,
+		 .ptr = &Cr_meth, .val = VXPHASH_BLOWFISH,
 		 .help = "Use Blowfish encryption"},
 		{.sh = 'C', .type = HXTYPE_VAL,
 		 .ptr = &With_case, .val = GENPW_1CASE,
 		 .help = "Always have an uppercase character in the password"},
 		{.sh = 'D', .type = HXTYPE_VAL,
-		 .ptr = &Cr_meth, .val = CRYPW_DES,
+		 .ptr = &Cr_meth, .val = VXPHASH_DES,
 		 .help = "Use DES encryption"},
 		{.sh = 'J', .type = HXTYPE_VAL,
 		 .ptr = &Gen_meth, .val = GENPW_JP,
 		 .help = "Use \"GENPW_JP\" generation method"},
 		{.sh = 'M', .type = HXTYPE_VAL,
-		 .ptr = &Cr_meth, .val = CRYPW_MD5,
+		 .ptr = &Cr_meth, .val = VXPHASH_MD5,
 		 .help = "Use MD5 encryption"},
 		{.sh = 'V', .type = HXTYPE_NONE, .cb = show_version,
 		 .help = "Show version information"},

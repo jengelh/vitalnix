@@ -27,34 +27,33 @@
 #define ICONV_NULL reinterpret_cast(iconv_t, -1)
 
 /* Functions */
-static char *vxutil_crypt_des(const char *, const char *);
-static char *vxutil_crypt_smbnt(const char *, const char *);
-static char *vxutil_crypt_md5(const char *, const char *);
-static char *vxutil_crypt_blowfish(const char *, const char *);
+static char *vxutil_phash_des(const char *, const char *);
+static char *vxutil_phash_smbnt(const char *, const char *);
+static char *vxutil_phash_md5(const char *, const char *);
+static char *vxutil_phash_blowfish(const char *, const char *);
 static inline void gensalt_az(char *, ssize_t);
 static inline void gensalt_bin(char *, ssize_t);
 
 /* Variables */
-static char *(*const cryptor[])(const char *, const char *) = {
-	[CRYPW_DES]      = vxutil_crypt_des,
-	[CRYPW_MD5]      = vxutil_crypt_md5,
-	[CRYPW_BLOWFISH] = vxutil_crypt_blowfish,
-	[CRYPW_SMBNT]    = vxutil_crypt_smbnt,
+static char *(*const hashfn[])(const char *, const char *) = {
+	[VXPHASH_DES]      = vxutil_phash_des,
+	[VXPHASH_MD5]      = vxutil_phash_md5,
+	[VXPHASH_BLOWFISH] = vxutil_phash_blowfish,
+	[VXPHASH_SMBNT]    = vxutil_phash_smbnt,
 };
 
 //-----------------------------------------------------------------------------
-EXPORT_SYMBOL bool vxutil_cryptpw(const char *key, const char *salt,
+EXPORT_SYMBOL bool vxutil_phash(const char *key, const char *salt,
     unsigned int meth, char **result)
 {
-	if (meth >= ARRAY_SIZE(cryptor) || cryptor[meth] == NULL ||
-	    (*result = cryptor[meth](key, salt)) == NULL)
-		return 0;
-
-	return 1;
+	if (meth >= ARRAY_SIZE(hashfn) || hashfn[meth] == NULL)
+		return false;
+	*result = hashfn[meth](key, salt);
+	return *result != NULL;
 }
 
 //-----------------------------------------------------------------------------
-static char *vxutil_crypt_des(const char *key, const char *salt)
+static char *vxutil_phash_des(const char *key, const char *salt)
 {
 #ifdef HAVE_CRYPT_H
 	struct crypt_data cd = {};
@@ -72,7 +71,7 @@ static char *vxutil_crypt_des(const char *key, const char *salt)
 #endif
 }
 
-static char *vxutil_crypt_smbnt(const char *key, const char *salt)
+static char *vxutil_phash_smbnt(const char *key, const char *salt)
 {
 	unsigned char md[MD4_DIGEST_LENGTH];
 	char mdhex[2*MD4_DIGEST_LENGTH+1];
@@ -104,7 +103,7 @@ static char *vxutil_crypt_smbnt(const char *key, const char *salt)
 	return HX_strdup(mdhex);
 }
 
-static char *vxutil_crypt_md5(const char *key, const char *salt)
+static char *vxutil_phash_md5(const char *key, const char *salt)
 {
 #ifdef HAVE_CRYPT_H
 	struct crypt_data cd = {};
@@ -126,7 +125,7 @@ static char *vxutil_crypt_md5(const char *key, const char *salt)
 #endif
 }
 
-static char *vxutil_crypt_blowfish(const char *key, const char *salt)
+static char *vxutil_phash_blowfish(const char *key, const char *salt)
 {
 	char my_salt[64], res[64], *rx;
 

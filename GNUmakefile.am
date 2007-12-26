@@ -280,7 +280,7 @@ libvxdb_la_SOURCES := \
 #
 libvxutil_sources := \
 	src/libvxutil/blowfish.c \
-	src/libvxutil/crypt.c \
+	src/libvxutil/phash.c \
 	src/libvxutil/genpw.c \
 	src/libvxutil/util.c \
 	src/libvxutil/uuid.c

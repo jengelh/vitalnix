@@ -29,7 +29,7 @@
 static void kill_eds(const struct HXbtree_node *);
 static void kill_pwd(const struct HXbtree_node *);
 static int mdsync_read_config(struct mdsync_config *);
-static void pconfig_crymeth(const struct HXoptcb *);
+static void pconfig_phash(const struct HXoptcb *);
 static void pconfig_genpw(const struct HXoptcb *);
 
 //-----------------------------------------------------------------------------
@@ -67,7 +67,7 @@ EXPORT_SYMBOL struct mdsync_workspace *mdsync_init(void)
 	c = &w->config;
 	c->new_pw_length = 10;
 	c->genpw_type    = GENPW_ZH;
-	c->crypw_type    = CRYPW_BLOWFISH;
+	c->phash_type    = VXPHASH_BLOWFISH;
 	//c->home_umask    = S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
 	//c->skeleton_dir  = NULL;
 	//c->home_base     = "/home";
@@ -190,7 +190,7 @@ static int mdsync_read_config(struct mdsync_config *c)
 		{.ln = "POSTADD_FLUSH",     .type = HXTYPE_NONE, .ptr = &c->postadd_flush},
 		{.ln = "DEFERRED_DELETION", .type = HXTYPE_LONG, .ptr = &c->add_opts.defaults.vs_defer},
 		{.ln = "PSWD_LEN",          .type = HXTYPE_INT,  .ptr = &c->new_pw_length},
-		{.ln = "PSWD_METH",         .type = HXTYPE_NONE, .cb  = pconfig_crymeth, .uptr = &c->crypw_type},
+		{.ln = "PSWD_METH",         .type = HXTYPE_NONE, .cb  = pconfig_phash, .uptr = &c->phash_type},
 		{.ln = "GENPW_TYPE",        .type = HXTYPE_INT,  .cb  = pconfig_genpw, .uptr = &c->genpw_type},
 		HXOPT_TABLEEND,
 	};
@@ -200,24 +200,24 @@ static int mdsync_read_config(struct mdsync_config *c)
 	return 1;
 }
 
-static void pconfig_crymeth(const struct HXoptcb *cbi)
+static void pconfig_phash(const struct HXoptcb *cbi)
 {
 	int *ptr = cbi->current->uptr;
 
 	if (stricmp(cbi->data, "md5") == 0) {
-#ifdef _WIN32
+#ifndef HAVE_CRYPT_H
 		fprintf(stderr, "Warning: No MD5 support under Win32.\n");
 #else
-		*ptr = CRYPW_MD5;
+		*ptr = VXPHASH_MD5;
 #endif
 	} else if (stricmp(cbi->data, "des") == 0) {
-#ifdef _WIN32
+#ifndef HAVE_CRYPT_H
 		fprintf(stderr, "Warning: No DES support under Win32.\n");
 #else
-		*ptr = CRYPW_DES;
+		*ptr = VXPHASH_DES;
 #endif
 	} else {
-		*ptr = CRYPW_BLOWFISH;
+		*ptr = VXPHASH_BLOWFISH;
 	}
 	return;
 }

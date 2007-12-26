@@ -223,10 +223,10 @@ EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
 		} else {
 			vxutil_genpw(plain_pw, c->new_pw_length, GENPW_O1CASE |
 			             GENPW_O1DIGIT | c->genpw_type);
-			vxutil_cryptpw(plain_pw, NULL, c->crypw_type,
-			               &out.sp_passwd);
-			vxutil_cryptpw(plain_pw, NULL, CRYPW_SMBNT,
-			               &out.sp_ntpasswd);
+			vxutil_phash(plain_pw, NULL, c->phash_type,
+			             &out.sp_passwd);
+			vxutil_phash(plain_pw, NULL, VXPHASH_SMBNT,
+			             &out.sp_ntpasswd);
 			out.sp_lastchg = vxutil_now_iday();
 		}
 
