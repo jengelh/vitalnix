@@ -10,18 +10,31 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include <vitalnix/libvxutil/defines.h>
 #include <vitalnix/libvxutil/libvxutil.h>
+
+static const unsigned int algo_id[] = {
+	VXPHASH_DES, VXPHASH_MD5, VXPHASH_BLOWFISH, VXPHASH_SMBNT,
+};
+static const char *const algo_name[] = {
+	"VXPHASH_DES", "VXPHASH_MD5", "VXPHASH_BLOWFISH", "VXPHASH_SMBNT",
+};
 
 int main(int argc, const char **argv)
 {
-	char *bf_out, *nt_out;
+	const char *salt = NULL;
+	unsigned int i;
+	char *p;
 
-	while (*++argv != NULL) {
-		vxutil_cryptpw(*argv, NULL, CRYPW_BLOWFISH, &bf_out);
-		vxutil_cryptpw(*argv, NULL, CRYPW_SMBNT, &nt_out);
-		printf("%s\t%s\n\t%s\n", *argv, bf_out, nt_out);
-		free(bf_out);
-		free(nt_out);
+	if (argc >= 3)
+		salt = argv[2];
+
+	printf("%-16s: %s\n", "Original", argv[1]);
+
+	for (i = 0; i < ARRAY_SIZE(algo_id); ++i) {
+		vxutil_phash(*argv, salt, algo_id[i], &p);
+		printf("%-16s: %s\n", algo_name[i], p);
+		free(p);
 	}
 
 	return EXIT_SUCCESS;
