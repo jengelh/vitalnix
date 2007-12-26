@@ -29,7 +29,7 @@
 static const char base64_set[] =
 	"./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-static inline void gensalt_az(char *salt, int len)
+static inline void vxutil_gensalt_base64(char *salt, int len)
 {
 	while (--len > 0)
 		*salt++ = base64_set[HX_irand(0, sizeof(base64_set) - 1)];
@@ -44,7 +44,7 @@ static char *vxutil_phash_des(const char *key, const char *salt)
 	char my_salt[3], *rx;
 
 	if (salt == NULL) {
-		gensalt_az(my_salt, sizeof(my_salt));
+		vxutil_gensalt_base64(my_salt, sizeof(my_salt));
 		salt = my_salt;
 	}
 	rx = crypt_r(key, salt, &cd);
@@ -65,7 +65,7 @@ static char *vxutil_phash_md5(const char *key, const char *salt)
 		my_salt[0] = '$';
 		my_salt[1] = '1';
 		my_salt[2] = '$';
-		gensalt_az(&my_salt[3], 8+1);
+		vxutil_gensalt_base64(&my_salt[3], 8+1);
 		my_salt[11] = '$';
 		salt = my_salt;
 	}
@@ -83,7 +83,7 @@ static char *vxutil_phash_blowfish(const char *key, const char *salt)
 
 	if (salt == NULL) {
 		strncpy(my_salt, "$2a$05$", sizeof(my_salt));
-		gensalt_az(&my_salt[7], 22+1);
+		vxutil_gensalt_base64(&my_salt[7], 22+1);
 		salt = my_salt;
 	}
 	rx = _crypt_blowfish_rn(key, salt, res, sizeof(res));
