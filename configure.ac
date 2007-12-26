@@ -12,10 +12,7 @@
 define(_xrelease, 3.1.0)
 define(_xtmp, esyscmd(
 	# strip off esyscmd newline
-	s=`which svnversion`;
-	if [[ -n "$s" -a -x "$s" ]]; then
-		echo -en `$s`;
-	fi;
+	echo -en `svnversion 2>/dev/null`;
 ))
 AC_INIT(Vitalnix, _xrelease[]ifelse(_xtmp, exported, [], [_SVN]_xtmp))
 AC_CONFIG_HEADERS(config.h)
