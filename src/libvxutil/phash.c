@@ -26,33 +26,17 @@
 #include "libvxutil/blowfish.h"
 #define ICONV_NULL reinterpret_cast(iconv_t, -1)
 
-/* Functions */
-static char *vxutil_phash_des(const char *, const char *);
-static char *vxutil_phash_smbnt(const char *, const char *);
-static char *vxutil_phash_md5(const char *, const char *);
-static char *vxutil_phash_blowfish(const char *, const char *);
-static inline void gensalt_az(char *, ssize_t);
-static inline void gensalt_bin(char *, ssize_t);
+static const char base64_set[] =
+	"./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-/* Variables */
-static char *(*const hashfn[])(const char *, const char *) = {
-	[VXPHASH_DES]      = vxutil_phash_des,
-	[VXPHASH_MD5]      = vxutil_phash_md5,
-	[VXPHASH_BLOWFISH] = vxutil_phash_blowfish,
-	[VXPHASH_SMBNT]    = vxutil_phash_smbnt,
-};
-
-//-----------------------------------------------------------------------------
-EXPORT_SYMBOL bool vxutil_phash(const char *key, const char *salt,
-    unsigned int meth, char **result)
+static inline void gensalt_az(char *salt, int len)
 {
-	if (meth >= ARRAY_SIZE(hashfn) || hashfn[meth] == NULL)
-		return false;
-	*result = hashfn[meth](key, salt);
-	return *result != NULL;
+	while (--len > 0)
+		*salt++ = base64_set[HX_irand(0, sizeof(base64_set) - 1)];
+	*salt++ = '\0';
+	return;
 }
 
-//-----------------------------------------------------------------------------
 static char *vxutil_phash_des(const char *key, const char *salt)
 {
 #ifdef HAVE_CRYPT_H
@@ -66,9 +50,44 @@ static char *vxutil_phash_des(const char *key, const char *salt)
 	rx = crypt_r(key, salt, &cd);
 	return (rx != NULL) ? HX_strdup(rx) : NULL;
 #else
-	fprintf(stderr, "%s: DES crypt not supported on non-Glibc\n", __func__);
+	fprintf(stderr, "%s: DES crypt not supported\n", __func__);
 	return NULL;
 #endif
+}
+
+static char *vxutil_phash_md5(const char *key, const char *salt)
+{
+#ifdef HAVE_CRYPT_H
+	struct crypt_data cd = {};
+	char my_salt[12], *rx;
+
+	if (salt == NULL) {
+		my_salt[0] = '$';
+		my_salt[1] = '1';
+		my_salt[2] = '$';
+		gensalt_az(&my_salt[3], 8+1);
+		my_salt[11] = '$';
+		salt = my_salt;
+	}
+	rx = crypt_r(key, salt, &cd);
+	return (rx != NULL) ? HX_strdup(rx) : NULL;
+#else
+	fprintf(stderr, "%s: MD5 crypt not supported\n", __func__);
+	return NULL;
+#endif
+}
+
+static char *vxutil_phash_blowfish(const char *key, const char *salt)
+{
+	char my_salt[64], res[64], *rx;
+
+	if (salt == NULL) {
+		strncpy(my_salt, "$2a$05$", sizeof(my_salt));
+		gensalt_az(&my_salt[7], 22+1);
+		salt = my_salt;
+	}
+	rx = _crypt_blowfish_rn(key, salt, res, sizeof(res));
+	return (rx != NULL) ? HX_strdup(rx) : NULL;
 }
 
 static char *vxutil_phash_smbnt(const char *key, const char *salt)
@@ -103,57 +122,18 @@ static char *vxutil_phash_smbnt(const char *key, const char *salt)
 	return HX_strdup(mdhex);
 }
 
-static char *vxutil_phash_md5(const char *key, const char *salt)
+static char *(*const hashfn[])(const char *, const char *) = {
+	[VXPHASH_DES]      = vxutil_phash_des,
+	[VXPHASH_MD5]      = vxutil_phash_md5,
+	[VXPHASH_BLOWFISH] = vxutil_phash_blowfish,
+	[VXPHASH_SMBNT]    = vxutil_phash_smbnt,
+};
+
+EXPORT_SYMBOL bool vxutil_phash(const char *key, const char *salt,
+    unsigned int meth, char **result)
 {
-#ifdef HAVE_CRYPT_H
-	struct crypt_data cd = {};
-	char my_salt[12], *rx;
-
-	if (salt == NULL) {
-		my_salt[0] = '$';
-		my_salt[1] = '1';
-		my_salt[2] = '$';
-		gensalt_az(&my_salt[3], 8+1);
-		my_salt[11] = '$';
-		salt = my_salt;
-	}
-	rx = crypt_r(key, salt, &cd);
-	return (rx != NULL) ? HX_strdup(rx) : NULL;
-#else
-	fprintf(stderr, "%s: MD5 crypt not supported on non-Glibc\n", __func__);
-	return NULL;
-#endif
+	if (meth >= ARRAY_SIZE(hashfn) || hashfn[meth] == NULL)
+		return false;
+	*result = hashfn[meth](key, salt);
+	return *result != NULL;
 }
-
-static char *vxutil_phash_blowfish(const char *key, const char *salt)
-{
-	char my_salt[64], res[64], *rx;
-
-	if (salt == NULL) {
-		strncpy(my_salt, "$2a$05$", sizeof(my_salt));
-		gensalt_az(&my_salt[7], 22+1);
-		salt = my_salt;
-	}
-	rx = _crypt_blowfish_rn(key, salt, res, sizeof(res));
-	return (rx != NULL) ? HX_strdup(rx) : NULL;
-}
-
-//-----------------------------------------------------------------------------
-static inline void gensalt_az(char *salt, ssize_t len)
-{
-	static const char az_pool[] =
-		"./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-	while (--len > 0)
-		*salt++ = az_pool[HX_irand(0, sizeof(az_pool) - 1)];
-	*salt++ = '\0';
-	return;
-}
-
-static inline void gensalt_bin(char *salt, ssize_t len)
-{
-	while (len-- > 0)
-		*salt++ = HX_irand(0, 256);
-	return;
-}
-
-//=============================================================================
