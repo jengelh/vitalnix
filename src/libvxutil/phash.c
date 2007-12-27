@@ -31,7 +31,7 @@ static const char base64_set[] =
 
 static inline void vxutil_gensalt_base64(char *salt, int len)
 {
-	while (--len > 0)
+	while (len-- > 0)
 		*salt++ = base64_set[HX_irand(0, sizeof(base64_set) - 1)];
 }
 
