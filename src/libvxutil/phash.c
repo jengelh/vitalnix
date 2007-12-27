@@ -1,5 +1,5 @@
 /*
- *	libvxutil/crypt.c - Password encryption
+ *	libvxutil/phash.c - Password hashing
  *	Copyright © CC Computer Consultants GmbH, 2003 - 2007
  *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
  *
@@ -33,19 +33,18 @@ static inline void vxutil_gensalt_base64(char *salt, int len)
 {
 	while (--len > 0)
 		*salt++ = base64_set[HX_irand(0, sizeof(base64_set) - 1)];
-	*salt++ = '\0';
-	return;
 }
 
 static char *vxutil_phash_des(const char *key, const char *salt)
 {
 #ifdef HAVE_CRYPT_H
 	struct crypt_data cd = {};
-	char my_salt[3], *rx;
+	char auto_salt[3], *rx;
 
 	if (salt == NULL) {
-		vxutil_gensalt_base64(my_salt, sizeof(my_salt));
-		salt = my_salt;
+		vxutil_gensalt_base64(auto_salt, 2);
+		auto_salt[sizeof(auto_salt)-1] = '\0';
+		salt = auto_salt;
 	}
 	rx = crypt_r(key, salt, &cd);
 	return (rx != NULL) ? HX_strdup(rx) : NULL;
@@ -59,15 +58,13 @@ static char *vxutil_phash_md5(const char *key, const char *salt)
 {
 #ifdef HAVE_CRYPT_H
 	struct crypt_data cd = {};
-	char my_salt[12], *rx;
+	char auto_salt[12], *rx;
 
 	if (salt == NULL) {
-		my_salt[0] = '$';
-		my_salt[1] = '1';
-		my_salt[2] = '$';
-		vxutil_gensalt_base64(&my_salt[3], 8+1);
-		my_salt[11] = '$';
-		salt = my_salt;
+		strcpy(auto_salt, "$1$");
+		vxutil_gensalt_base64(&auto_salt[3], 8);
+		auto_salt[sizeof(auto_salt)-1] = '\0';
+		salt = auto_salt;
 	}
 	rx = crypt_r(key, salt, &cd);
 	return (rx != NULL) ? HX_strdup(rx) : NULL;
@@ -79,12 +76,13 @@ static char *vxutil_phash_md5(const char *key, const char *salt)
 
 static char *vxutil_phash_blowfish(const char *key, const char *salt)
 {
-	char my_salt[64], res[64], *rx;
+	char auto_salt[30], res[64], *rx;
 
 	if (salt == NULL) {
-		strncpy(my_salt, "$2a$05$", sizeof(my_salt));
-		vxutil_gensalt_base64(&my_salt[7], 22+1);
-		salt = my_salt;
+		strcpy(auto_salt, "$2a$05$");
+		vxutil_gensalt_base64(&auto_salt[7], 22);
+		auto_salt[sizeof(auto_salt)-1] = '\0';
+		salt = auto_salt;
 	}
 	rx = _crypt_blowfish_rn(key, salt, res, sizeof(res));
 	return (rx != NULL) ? HX_strdup(rx) : NULL;
