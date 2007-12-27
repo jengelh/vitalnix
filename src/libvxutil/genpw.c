@@ -110,13 +110,13 @@ static const char *const zh_table[] = {
 //-----------------------------------------------------------------------------
 EXPORT_SYMBOL void vxutil_genpw(char *plain, int len, unsigned int flags)
 {
-	long flad = flags & ~(GENPW_JP | GENPW_ZH);
+	unsigned int fl = flags & ~(GENPW_JP | GENPW_ZH);
 	if (flags & GENPW_ZH)
-		genpw_zh(plain, len, flad);
+		genpw_zh(plain, len, fl);
 	else if (flags & GENPW_JP)
-		genpw_jp(plain, len, flad);
+		genpw_jp(plain, len, fl);
 	else
-		genpw_random(plain, len, flad);
+		genpw_random(plain, len, fl);
 	return;
 }
 
@@ -132,11 +132,11 @@ static void genpw_jp(char *plain, int size, unsigned int flags)
 	*--plain = '\0';
 
 	while (size > 0) {
+		unsigned int ksz, knum;
 		const char *key;
-		size_t ksz;
-		int knum;
 
-		if ((flags & (GENPW_1DIGIT | GENPW_O1DIGIT)) && HX_irand(0, 5) == 0) {
+		if ((flags & (GENPW_1DIGIT | GENPW_O1DIGIT)) &&
+		    HX_irand(0, 5) == 0) {
 			*--plain = '0' + HX_irand(0, 10);
 			--size;
 			flags &= ~(GENPW_1DIGIT | GENPW_O1DIGIT);
@@ -186,9 +186,8 @@ static void genpw_zh(char *plain, int size, unsigned int flags)
 	*--plain = '\0';
 
 	while (size > 0) {
+		unsigned int ksz, knum;
 		const char *key;
-		size_t ksz;
-		int knum;
 
 		if ((flags & (GENPW_1DIGIT | GENPW_O1DIGIT)) &&
 		    HX_irand(0, 5) == 0) {
