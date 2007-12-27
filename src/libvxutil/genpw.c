@@ -36,13 +36,12 @@ static const char *const jp_table[] = {
 	/* 33 */ "na", "ni",  "nu",  "ne", "no",
 	/* 38 */ "ha", "hi",  "fu",  "he", "ho",
 	/* 43 */ "ba", "bi",  "bu",  "be", "bo",
-	/* 48 */ "va", "vi",  "vu",  "ve", "vo",
-	/* 53 */ "pa", "pi",  "pu",  "pe", "po",
-	/* 58 */ "ma", "mi",  "mu",  "me", "mo",
-	/* 63 */ "ra", "ri",  "ru",  "re", "ro",
-	/* 68 */ "ya",        "yu",        "yo",
-	/* 71 */ "wa",                     "wo",
-	/* 73 */ "n", NULL,
+	/* 48 */ "pa", "pi",  "pu",  "pe", "po",
+	/* 53 */ "ma", "mi",  "mu",  "me", "mo",
+	/* 58 */ "ra", "ri",  "ru",  "re", "ro",
+	/* 63 */ "ya",        "yu",        "yo",
+	/* 66 */ "wa",                     "wo",
+	/* 68 */ "n", NULL,
 };
 static const char *const zh_table[] = {
 	/*
@@ -123,6 +122,11 @@ EXPORT_SYMBOL void vxutil_genpw(char *plain, int len, unsigned int flags)
 }
 
 //-----------------------------------------------------------------------------
+static inline bool jp_vowel(char x)
+{
+	return x == 'a' || x == 'e' || x == 'i' || x == 'o' || x == 'u';
+}
+
 static void genpw_jp(char *plain, int size, unsigned int flags)
 {
 	unsigned int saved_flags = flags;
@@ -133,9 +137,12 @@ static void genpw_jp(char *plain, int size, unsigned int flags)
 	plain += size--;
 	*--plain = '\0';
 
+	/*
+	 * Note that we generate the password from back to front.
+	 */
 	while (size > 0) {
-		unsigned int ksz, knum;
 		const char *key;
+		int ksz, knum;
 
 		if ((flags & (GENPW_1DIGIT | GENPW_O1DIGIT)) &&
 		    HX_irand(0, 5) == 0) {
@@ -152,8 +159,8 @@ static void genpw_jp(char *plain, int size, unsigned int flags)
 		ksz = strlen(key);
 		if (ksz > size)
 			continue;
-		if (size == 1 && knum == jpt_size - 1)
-			/* no (standalone) "N" at the front */
+		if (knum == jpt_size - 1 && !jp_vowel(tolower(*plain)))
+			/* Make sure that a vowel follows an "N". */
 			continue;
 
 		plain -= ksz;
@@ -188,8 +195,8 @@ static void genpw_zh(char *plain, int size, unsigned int flags)
 	*--plain = '\0';
 
 	while (size > 0) {
-		unsigned int ksz, knum;
 		const char *key;
+		int ksz, knum;
 
 		if ((flags & (GENPW_1DIGIT | GENPW_O1DIGIT)) &&
 		    HX_irand(0, 5) == 0) {
