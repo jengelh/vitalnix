@@ -9,7 +9,9 @@
 <p class="code"><code><b>#</b>include &lt;vitalnix/libvxdb/libvxdb.h&gt;<br />
 <b>#</b>include &lt;vitalnix/libvxdb/xafunc.h&gt;<br />
 <br />
-<b>int</b> vxdb_sgmapadd(<b>struct vxdb_state *</b><i>handle</i>, <b>const char *</b><i>user</i>, <b>const char *</b><i>group</i>);</code></p>
+<b>int</b> vxdb_sgmapadd(<b>struct vxdb_state *</b><i>handle</i>, <b>const char *</b><i>user</i>, <b>const char *</b><i>group</i>);<br />
+<br />
+Link with <i>-lvxdb</i>.</code></p>
 
 <h1>Description</h1>
 

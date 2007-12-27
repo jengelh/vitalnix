@@ -9,7 +9,9 @@
 <p class="code"><code><b>#</b>include &lt;vitalnix/libvxdb/libvxdb.h&gt;<br />
 <b>#</b>include &lt;vitalnix/libvxpdb/xafunc.h&gt;<br />
 <br />
-<b>int</b> vxdb_sgmapget(<b>struct vxdb_state *</b><i>handle</i>, <b>const char *</b><i>user</i>, <b>char ***</b><i>result</i>);</code></p>
+<b>int</b> vxdb_sgmapget(<b>struct vxdb_state *</b><i>handle</i>, <b>const char *</b><i>user</i>, <b>char ***</b><i>result</i>);<br />
+<br />
+Link with <i>-lvxdb</i>.</code></p>
 
 <h1>Description</h1>
 
@@ -46,7 +48,8 @@ zero or more. On error, a negative value is returned, indicating the error.</p>
 char **groups, **g;<br />
 if (vxdb_sgmapget(dbh, "jengelh", &amp;groups) &gt; 0)<br />
 &nbsp; &nbsp; for (g = groups; *g != NULL; ++g)<br />
-&nbsp; &nbsp; &nbsp; &nbsp; printf("%s,", *g);</code></p>
+&nbsp; &nbsp; &nbsp; &nbsp; printf("%s,", *g);
+</code></p>
 
 <h1>See also</h1>
 

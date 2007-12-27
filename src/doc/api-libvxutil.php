@@ -11,7 +11,6 @@ Vitalnix code base.</p>
 <b>#</b>include &lt;vitalnix/libvxutil/libvxutil.h&gt;<br />
 <br />
 <b>char *</b>vxutil_azstr(<b>const char *</b>string);<br />
-<b>int</b> vxutil_genpw(<b>char *</b>dest, <b>int</b> size, <b>unsigned int</b> flags);<br />
 <b>int</b> vxutil_have_display(<b>void</b>);<br />
 <b>unsigned int</b> vxutil_now_iday(<b>void</b>);<br />
 <b>int</b> vxutil_only_digits(<b>const char *</b>s);<br />
@@ -30,61 +29,6 @@ Vitalnix code base.</p>
 
 <p class="block">If <code>string</code> is <code>NULL</code>, returns a pointer
 to a constant empty string (""), otherwise returns <code>string</code>.</p>
-
-<h2>vxutil_genpw</h2>
-
-<p class="block">The <code>vxutil_genpw()</code> function will generate a
-random password based on <code>flags</code> and will put the result into
-<code>dest</code>, which is of length <code>size</code> (so the generated
-password will be <code>size-1</code> long). The <code>flags</code> parameter is
-a bitfield with one or more of the following bits:</p>
-
-<table border="1">
-  <tr>
-    <td class="t1"><code>GENPW_O1DIGIT</code></td>
-    <td class="t1">If the pseudo-random number generator happens to throw a
-      number, use it for the password</td>
-  </tr>
-  <tr>
-    <td class="t2"><code>GENPW_1DIGIT</code></td>
-    <td class="t2">Always have a digit in the password</td>
-  </tr>
-  <tr>
-    <td class="t1"><code>GENPW_O1CASE</code></td>
-    <td class="t1">If the pseudo-random number generator happens to generate an
-      uppercase character, use it for the password</td>
-  </tr>
-  <tr>
-    <td class="t2"><code>GENPW_1CASE</code></td>
-    <td class="t2">Always have an uppercase character in the password</td>
-  </tr>
-  <tr>
-    <td class="t1"><code>GENPW_RAND</code></td>
-    <td class="t1">Use a standard, non-phonetic generator</td>
-  </tr>
-  <tr>
-    <td class="t2"><code>GENPW_JP</code></td>
-    <td class="t2">Use a phonetic algorithm based on the Hepburn transcription
-      of the Japanese alphabet</td>
-  </tr>
-  <tr>
-    <td class="t1"><code>GENPW_ZH</code></td>
-    <td class="t1">Use a phonetic algorithm based on (a reduced table of) the
-      Pinyin transcriptions of Chinese hanzi (漢字)</td>
-  </tr>
-</table>
-
-<p class="block">Although <code>GENPW_RAND</code>, <code>GENPW_JP</code> and
-<code>GENPW_ZH</code> are both flags here, only one can be used at a time.
-Specifying none or more than one is undefined behavior, but this implementation
-will choose one.</p>
-
-<p class="block">Vitalnix currently provides two different phonetic password
-generation algorithms which will create passwords that can be pronounced and
-(hopefully) remembered easily. The GENPW_JP and GENPW_ZH algorithms are very
-easy, as they just pick random elements from a table of predefined values and
-each currently has to obey only one extra rule to make it produce good
-results.</p>
 
 <h2>vxutil_have_display</h2>
 
