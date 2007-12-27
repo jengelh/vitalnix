@@ -15,9 +15,11 @@
 
 static const unsigned int algo_id[] = {
 	VXPHASH_DES, VXPHASH_MD5, VXPHASH_BLOWFISH, VXPHASH_SMBNT,
+	VXPHASH_SHA256, VXPHASH_SHA512,
 };
 static const char *const algo_name[] = {
 	"VXPHASH_DES", "VXPHASH_MD5", "VXPHASH_BLOWFISH", "VXPHASH_SMBNT",
+	"VXPHASH_SHA256", "VXPHASH_SHA512",
 };
 
 int main(int argc, const char **argv)

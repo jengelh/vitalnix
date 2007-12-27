@@ -32,9 +32,9 @@ will generate a suitable random salt internally and use it.</p>
 
 <p class="block">The base64 character set is [<code>./0-9A-Za-z</code>].</p>
 
-<p class="block">While non-base64 characters in the salt work in Glibc's
-implementations, you should not rely on this behavior, especially because
-database backends (such as Shadow, see <a
+<p class="block">While non-base64 characters in the salt work in Glibc's and
+Vitalnix's implementations, you should not rely on this behavior, especially
+because database backends (such as Shadow, see <a
 href="vxdrv_shadow.7.php">vxdrv_shadow</a>(7)) put restrictions on what
 characters to use. Using non-base64 characters will yield undefined results and
 possibly corrupts your database or the hash when the hash is inserted into the
@@ -54,7 +54,7 @@ discouraged.</b></p>
 
 <p class="block">MD5 hashing is selected using the <code>VXPHASH_MD5</code>
 constant. Both the key and salt (full length, unlike DES) are used to build the
-128 bit digest. Vitalnix also relies on libc/libcrypt to provide MD5.</p>
+128 bit digest.</p>
 
 <p class="block">The salt consits of a ID prefix, the salt and optionally a
 dollar sign. The ID is the three-character string "<code>$1$</code>", and the
@@ -75,12 +75,29 @@ string of exactly 22 base64 characters and an optional dollar sign.</p>
 
 <h2>NT4 hash</h2>
 
-<p class="block">Windows NT4 LM hashing is selected using
+<p class="block">Windows NT hashing is selected using
 <code>VXPHASH_SMBNT</code>. The <i>salt</i> argument is ignored. The NT4 hash
 is a simple 128-bit MD4 digest of the <i>key</i> with a few static
 transformations without any salt perturbation, and hence is susceptible to
 dictionary and rainbow attacks. I discourage its use, though unfortunately,
 Windows clients rely on this.</p>
+
+<h2>SHA-256 hash</h2>
+
+<p class="block">The SHA family of password hashing has been introduced just
+recently (September 2007) as a successor to the DES crypt and MD5 hash methods.
+It works similarly to the MD5 variant, but like Blowfish, the number of rounds
+can also be tuned.</p>
+
+<p class="block">The SHA-256 hash method can be selected using
+<code>VXPHASH_SHA256</code>. The salt string is made up of the ID
+"<code>$5$</code>", up to 16 base64 characters and an optional dollar sign.</p>
+
+<h2>SHA-512 hash</h2>
+
+<p class="block">The SHA-512 hash method can be selected using
+<code>VXPHASH_SHA512</code>. Its ID is "<code>$6$</code>" and also uses 16
+base64 characters.</p>
 
 <h1>Return value</h1>
 
@@ -97,7 +114,7 @@ are undefined.</p>
 
 <p class="code"><code>
 char *result = NULL;<br />
-if (vxutil_phash("password", "$2a$05$ABCDEFGHIJKLMNOPQRSTUV", VXPHASH_BLOWFISH, &amp;result)) {<br />
+if (vxutil_phash("password", "$2a$05$ABCDEFGHIJKLMNOPQRSTUV$", VXPHASH_BLOWFISH, &amp;result)) {<br />
 &nbsp; &nbsp; printf("%s\n", result);<br />
 &nbsp; &nbsp; free(result);<br />
 }</code></p>

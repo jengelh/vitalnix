@@ -26,6 +26,8 @@ enum {
 	VXPHASH_MD5,
 	VXPHASH_BLOWFISH,
 	VXPHASH_SMBNT,
+	VXPHASH_SHA256,
+	VXPHASH_SHA512,
 };
 
 extern bool vxutil_phash(const char *, const char *, unsigned int, char **);

@@ -204,22 +204,18 @@ static void pconfig_phash(const struct HXoptcb *cbi)
 {
 	int *ptr = cbi->current->uptr;
 
-	if (stricmp(cbi->data, "md5") == 0) {
-#ifndef HAVE_CRYPT_H
-		fprintf(stderr, "Warning: No MD5 support under Win32.\n");
-#else
-		*ptr = VXPHASH_MD5;
-#endif
-	} else if (stricmp(cbi->data, "des") == 0) {
-#ifndef HAVE_CRYPT_H
-		fprintf(stderr, "Warning: No DES support under Win32.\n");
-#else
-		*ptr = VXPHASH_DES;
-#endif
-	} else {
+	if (stricmp(cbi->data, "sha512") == 0)
+		*ptr = VXPHASH_SHA512;
+	else if (stricmp(cbi->data, "sha256") == 0)
+		*ptr = VXPHASH_SHA256;
+	else if (stricmp(cbi->data, "blowfish") == 0)
 		*ptr = VXPHASH_BLOWFISH;
-	}
-	return;
+	else if (stricmp(cbi->data, "md5") == 0)
+		*ptr = VXPHASH_MD5;
+	else if (stricmp(cbi->data, "des") == 0)
+		*ptr = VXPHASH_DES;
+	else
+		*ptr = VXPHASH_BLOWFISH;
 }
 
 static void pconfig_genpw(const struct HXoptcb *cbi)

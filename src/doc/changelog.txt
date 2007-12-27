@@ -5,7 +5,8 @@ SVN /trunk
 - renamed tools to have unique prefixes
 - added tools: vxfinger, vxid, userwebpages.cgi
 - added manpages (generated from HTML)
-- initial sgmap support (drv_ldap)
+- initial sgmap support (drv_ldap, drv_mmd)
+- added SHA-256 and SHA-512 password hashing
 
 - [r551]: calling -V in various tools did not terminate the program
 - [r552]: mdckuuid forgot to check for -i parameter
@@ -14,3 +15,4 @@ SVN /trunk
 - [r618]: programs' -M option (select database) has been renamed to --vxdb
 - [r619]: rename {user,group}{add,mod,del}'s -A and -B options to --after
   and --before to avoid clashes with pwdutils
+- [r636]: added MD5 password hashing code, not having to rely on Glibc anymore
