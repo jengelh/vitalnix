@@ -111,6 +111,8 @@ static const char *const zh_table[] = {
 EXPORT_SYMBOL void vxutil_genpw(char *plain, int len, unsigned int flags)
 {
 	unsigned int fl = flags & ~(GENPW_JP | GENPW_ZH);
+	if (len <= 1)
+		return;
 	if (flags & GENPW_ZH)
 		genpw_zh(plain, len, fl);
 	else if (flags & GENPW_JP)
