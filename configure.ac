@@ -11,10 +11,12 @@
 
 define(_xrelease, 3.1.0)
 define(_xtmp, esyscmd(
-	# strip off esyscmd newline
-	echo -en `svnversion 2>/dev/null`;
+	x=`svnversion 2>/dev/null`;
+	case "$x" in
+		([[0-9]]*) echo -en "_SVN$x";;
+	esac;
 ))
-AC_INIT(Vitalnix, _xrelease[]ifelse(_xtmp, exported, [], [_SVN]_xtmp))
+AC_INIT(Vitalnix, _xrelease[]_xtmp)
 AC_CONFIG_HEADERS(config.h)
 AC_PROG_INSTALL
 AM_INIT_AUTOMAKE
