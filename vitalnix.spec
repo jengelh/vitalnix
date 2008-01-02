@@ -1,7 +1,7 @@
 
 Name:		vitalnix
-Version:	3.1.0
-Release:	1
+Version:	3.2.0
+Release:	0
 Group:		System/Base
 Summary:	Vitalnix User Management Suite and Essential Tools
 License:	LGPL

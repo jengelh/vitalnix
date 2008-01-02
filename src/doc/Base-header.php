@@ -30,7 +30,7 @@ function h2($title)
 <p class="ident"><img src="vhex.png" /><span
 class="titleN">vitaln</span><span class="titleI">i</span><span
 class="titleX">x</span> <span class="titleS">user management
-suite</span> <span class="titleV">3.1.0</span></p>
+suite</span> <span class="titleV">3.2.0</span></p>
 
 <hr style="display: none" />
 

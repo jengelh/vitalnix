@@ -1,7 +1,7 @@
 #
 #	configure.ac - gnu cold boilerplate
-#	Copyright © CC Computer Consultants GmbH, 2007
-#	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+#	Copyright © CC Computer Consultants GmbH, 2007 - 2008
+#	Jan Engelhardt <jengelh [at] computergmbh de>
 #
 #	This file is part of Vitalnix. Vitalnix is free software; you
 #	can redistribute it and/or modify it under the terms of the GNU
@@ -9,7 +9,7 @@
 #	Foundation; either version 2.1 or 3 of the License.
 #
 
-define(_xrelease, 3.1.0)
+define(_xrelease, 3.2.0)
 define(_xtmp, esyscmd(
 	x=`svnversion 2>/dev/null`;
 	case "$x" in
