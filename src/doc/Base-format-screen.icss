@@ -24,7 +24,7 @@
 }
 .ident {
 	padding: .2em 1em;
-	background-color: #BBC6D0;
+	background-color: #E0E0E0;
 	border-bottom: 1px solid #4B6983;
 	color: #000000;
 	margin: 0;
@@ -41,9 +41,13 @@
 	font: bold italic 180% "Times New Roman", "Times", serif;
 	color: #4B6983;
 }
+.titleI {
+	font: bold italic 250% "Times New Roman", "Times", serif;
+	color: #000000;
+}
 .titleX {
 	font: bold italic 250% "Times New Roman", "Times", serif;
-	color: #FFFFFF;
+	color: #5D83A3;
 }
 a {
 	color: #002BB8;
