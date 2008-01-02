@@ -186,7 +186,7 @@ static bool sync_add(struct private_info *priv)
 		       strerror(-ret));
 		return false;
 	}
-	printf("Successfully added %u users\n", priv->mdsw->add_req->items);
+	printf("Done adding %u users.\n", priv->mdsw->add_req->items);
 	return true;
 }
 
@@ -212,7 +212,7 @@ static bool sync_mod(struct private_info *priv)
 		       strerror(-ret));
 		return false;
 	}
-	printf("Successfully modified %u timers\n", total);
+	printf("Done modifying %u timers.\n", total);
 	return true;
 }
 
@@ -235,7 +235,7 @@ static bool sync_del(struct private_info *priv)
 		       strerror(-ret));
 		return false;
 	}
-	printf("Successfully deleted %u users\n", priv->mdsw->delete_now->items);
+	printf("Done deleting %u users.\n", priv->mdsw->delete_now->items);
 	return true;
 }
 

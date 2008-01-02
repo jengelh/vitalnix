@@ -190,7 +190,7 @@ static bool groupbld_loop(struct vxdb_state *db, unsigned int gid)
 	}
 
 	if (Verbose)
-		printf("Done.\n");
+		printf("Done processing %d users.\n", nusers);
 	hmc_free(vgname);
 	vxdb_user_free(&user, false);
 	vxdb_usertrav_free(db, trav);
