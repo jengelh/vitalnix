@@ -93,4 +93,4 @@ rm -Rf "%buildroot";
 %dir %pfx/share/vitalnix
 %config(noreplace) %pfx/share/vitalnix/*
 %doc %_mandir/*/*
-%doc src/doc/*.html src/doc/*.css
+%doc src/doc/*.html src/doc/*.css src/doc/*.png
