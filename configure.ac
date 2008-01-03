@@ -45,10 +45,9 @@ AM_CONDITIONAL([HAVE_CUPS], [test "$ac_cv_header_cups_backend_h" == "yes"])
 #
 AC_PATH_PROGS([PERL], [perl perl5])
 AC_PATH_PROGS([PHP], [php php5])
-AC_PATH_PROG([W3M], [w3m])
 
 AM_CONDITIONAL([GOT_TOOLS_FOR_DOC],
-	[$am_make -v | grep -q GNU && test -n "$PERL" -a -n "$PHP" -a -n "$W3M"])
+	[$am_make -v | grep -q GNU && test -n "$PERL" -a -n "$PHP"])
 
 regular_CFLAGS="-D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
 	-D_REENTRANT -Wall -Waggregate-return -Wmissing-declarations \

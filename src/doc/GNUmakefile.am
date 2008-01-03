@@ -6,7 +6,6 @@ man7_MANS := $(patsubst ${srcdir}/%.7.php,%.7,$(wildcard ${srcdir}/*.7.php))
 man8_MANS := $(patsubst ${srcdir}/%.8.php,%.8,$(wildcard ${srcdir}/*.8.php))
 noinst_DATA := \
 	$(patsubst ${srcdir}/%.php,%.html,$(wildcard ${srcdir}/[a-z]*.php)) \
-	$(patsubst ${srcdir}/%.php,%.txt,$(wildcard ${srcdir}/[a-z]*.php)) \
 	$(patsubst ${srcdir}/%.icss,%.css,$(wildcard ${srcdir}/*.icss)) \
 	$(patsubst ${srcdir}/%.ipng,%.png,$(wildcard ${srcdir}/*.ipng))
 
@@ -30,9 +29,6 @@ build_man = \
 
 %.html: %.php
 	${AM_VERBOSE_GEN}${PHP} -q $< man | ${PERL} -pe 's{href="([^/]*?)\.php"}{href="$$1.html"}' >$@;
-
-%.txt: %.html
-	${AM_VERBOSE_GEN}${W3M} -dump $< >$@;
 
 %.css: ${srcdir}/%.icss
 	cp -f "$<" "$@";
