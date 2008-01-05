@@ -2,6 +2,9 @@
 SVN /trunk
 ==========
 
+
+v3.2.0 (2008-01-02)
+===================
 - renamed tools to have unique prefixes (please look into the
   Vitalnix bin and sbin directories for new names)
 - added tools: vxfinger, vxid, vxgroupbld, userwebpages.cgi

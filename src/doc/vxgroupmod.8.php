@@ -66,7 +66,8 @@ access to files.</p>
 
 <h1>See also</h1>
 
-<p><a href="vxgroupadd.8.php">vxgroupadd</a>(8), <a
+<p><a href="vitalnix.7.php">vitalnix</a>(7), <a
+href="vxgroupadd.8.php">vxgroupadd</a>(8), <a
 href="vxgroupdel.8.php">vxgroupdel</a>(8)</p>
 
 <?php include_once("Base-footer.php"); ?>

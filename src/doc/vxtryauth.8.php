@@ -34,4 +34,8 @@ PAM error code. If the <code>-v</code> option is specified, additional error
 messages&nbsp;-- if any&nbsp;-- will be printed to the standard error file
 descriptor (stderr).</p>
 
+<h1>See also</h1>
+
+<p><a href="vitalnix.7.php">vitalnix</a>(7)</p>
+
 <?php include_once("Base-footer.php"); ?>

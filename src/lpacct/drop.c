@@ -1,6 +1,6 @@
 /*
  *	lpacct/drop.c - Conversion and counting functions (pure math)
- *	Copyright © CC Computer Consultants GmbH, 2006 - 2007
+ *	Copyright © CC Computer Consultants GmbH, 2006 - 2008
  *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
@@ -152,6 +152,15 @@ static int pxcost_cmypk(int fd, struct image *image, struct cost *cost)
 		current = image->buffer;
 		pixels  = ret / 3;
 		while (pixels-- > 0) {
+			/*
+			 * This is a heuristic to decide whether to use
+			 * color or gray ink for this gray-looking pixel.
+			 * (In CMY+K, a pixel is either printed using CMY
+			 * or K, but not both.)
+			 *
+			 * Maximum distance of 8 roughly corresponds to a
+			 * maximum single pixel value deviation of 2*Sqrt[3].
+			 */
 			if (kdist(current[0], current[1], current[2]) <= 8) {
 				tk += mean3(current[0], current[1], current[2]);
 			} else {
@@ -225,12 +234,21 @@ static int pxcost_gray(int fd, struct image *image, struct cost *cost)
 			/*
 			 * If @r, @g and @b are 32 bit, then at most 16843009
 			 * pixels can be processed per chunk without causing
-			 * overflow.
+			 * overflow on @k.
 			 */
 			unsigned int r = 0, g = 0, b = 0;
 			current = image->buffer;
 			pixels  = ret / 3;
-			k      += 255 * pixels;
+
+			/*
+			 * Originally, it would have been
+			 * while (pixels-- > 0)
+			 * 	k += 255 - (76 * red + 151 * green +
+			 * 	     27 * blue) / 256;
+			 * since certain operands remain the same, it can be
+			 * rewritten so that each iteration involves less work:
+			 */
+			k += 255 * pixels;
 
 			while (pixels-- > 0) {
 				r += current[0];

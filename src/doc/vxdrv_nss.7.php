@@ -13,4 +13,8 @@ at least one thread).</p>
 <p class="block">The module does not support adding, modifying or deleting
 users and/or groups, and finding the next free UID/GID is not implemented.</p>
 
+<h1>See also</h1>
+
+<p><a href="vitalnix.7.php">vitalnix</a>(7)</p>
+
 <?php include_once("Base-footer.php"); ?>

@@ -43,6 +43,7 @@ and mailbox, like the original <code>finger</code>(1) utility.</p>
 
 <h1>See also</h1>
 
-<p><a href="vxid.1.php">vxid</a>(1)</p>
+<p><a href="vitalnix.7.php">vitalnix</a>(7), <a
+href="vxid.1.php">vxid</a>(1)</p>
 
 <?php include_once("Base-footer.php"); ?>

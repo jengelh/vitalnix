@@ -52,6 +52,7 @@ needs to be specified.</p>
 
 <h1>See also</h1>
 
-<p><a href="vxckuuid.8.php">vxckuuid</a>(8)</p>
+<p><a href="vitalnix.7.php">vitalnix</a>(7), <a
+href="vxckuuid.8.php">vxckuuid</a>(8)</p>
 
 <?php include_once("Base-footer.php"); ?>

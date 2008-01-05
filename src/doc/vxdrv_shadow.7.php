@@ -172,4 +172,8 @@ follows:</p>
 	</tr>
 </table>
 
+<h1>See also</h1>
+
+<p><a href="vitalnix.7.php">vitalnix</a>(7)</p>
+
 <?php include_once("Base-footer.php"); ?>

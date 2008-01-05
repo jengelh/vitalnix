@@ -106,6 +106,7 @@ vxutil_genpw(buf, sizeof(buf), GENPW_JP | GENPW_1DIGIT);</code></p>
 
 <h1>See also</h1>
 
-<p><a href="vxrandpw.1.php">vxrandpw</a>(1)</p>
+<p><a href="vitalnix.7.php">vitalnix</a>(7), <a
+href="vxrandpw.1.php">vxrandpw</a>(1)</p>
 
 <?php include_once("Base-footer.php"); ?>

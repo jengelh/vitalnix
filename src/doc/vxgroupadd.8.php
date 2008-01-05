@@ -64,7 +64,8 @@ parameters. The configuration file for <i>vxgroupadd</i> is
 
 <h1>See also</h1>
 
-<p><a href="vxgroupmod.8.php">vxgroupmod</a>(8), <a
+<p><a href="vitalnix.7.php">vitalnix</a>(7), <a
+href="vxgroupmod.8.php">vxgroupmod</a>(8), <a
 href="vxgroupdel.8.php">vxgroupdel</a>(8)</p>
 
 <?php include_once("Base-footer.php"); ?>

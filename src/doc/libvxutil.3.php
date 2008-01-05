@@ -186,4 +186,8 @@ come without an UUID, so one is generated based on the
 within the Data Source. Returns a pointer to the newly allocated string
 containing the UUID, or <code>NULL</code> on error.</p>
 
+<h1>See also</h1>
+
+<p><a href="vitalnix.7.php">vitalnix</a>(7)</p>
+
 <?php include_once("Base-footer.php"); ?>

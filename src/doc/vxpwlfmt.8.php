@@ -50,6 +50,45 @@ format.</p>
 <p class="block">The <code>-i</code>, <code>-o</code> and <code>-s</code>
 options are mandatory.</p>
 
+<h1>Available styles</h1>
+
+<h2>a1</h2>
+
+<p class="block">Prints exactly one table containing all users, in
+text/plain.</p>
+
+<h2>pg_html</h2>
+
+<p class="block">Generates one table per private group descriptor and outputs
+in text/html.</p>
+
+<h2>pg_rtf</h2>
+
+<p class="block">Generates one table per private group descriptor, with a page
+break after each table. The output format is text/rtf, which can be read by
+e.g. Microsoft Office. This style requires a template file; there are two
+templates shipped, <code>share/sg.rtf</code> (English) and
+<code>share/sg_DE.rtf</code> (German).</p>
+
+<h2>pg_txt</h2>
+
+<p class="block">Generates one table per private group descriptor, with a page
+break after each table (by ASCII fashion this is the form-feed character,
+<code>'\f'</code>). The output format is text/plain, and line endings are what
+the system outputs for <code>'\n'</code>. Under UNIX this means it is just
+<code>'\n'</code> and you will need an extra preprocessing step to convert this
+to <code>'\r\n'</code> if sending it directly to the printer over
+<code>/dev/lp*</code>.</p>
+
+<h2>sb</h2>
+
+<p class="block">Generates a nice form for each user where his/her login
+details and possibly other info is noted. The output is a TeX document.</p>
+
+<p class="block">The purpose of this style is that each user gets a letter,
+possibly wrapped into an envelope to not unnecessarily reveal the password or
+other sensitive information.</p>
+
 <h1>Examples</h1>
 
 <p class="block">Assuming <i>vxusersync</i> created a logfile called
@@ -79,5 +118,9 @@ template option <code>-t</code>:</p>
 <p class="block">A brief description of what styles are available and what they
 are intended for can be found <a href="extra-pwlstyles.php">List of PWL styles
 page</a>.</p>
+
+<h1>See also</h1>
+
+<p><a href="vitalnix.7.php">vitalnix</a>(7)</p>
 
 <?php include_once("Base-footer.php"); ?>

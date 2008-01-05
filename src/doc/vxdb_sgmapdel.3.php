@@ -36,7 +36,8 @@ negative value is returned, indicating the error.</p>
 
 <h1>See also</h1>
 
-<p class="block"><a href="vxdb_sgmapadd.3.php">vxdb_sgmapadd(3)</a>,
-<a href="vxdb_sgmapget.3.php">vxdb_sgmapget(3)</a></p>
+<p><a href="vitalnix.7.php">vitalnix</a>(7), <a
+href="vxdb_sgmapadd.3.php">vxdb_sgmapadd(3)</a>, <a
+href="vxdb_sgmapget.3.php">vxdb_sgmapget(3)</a></p>
 
 <?php include_once("Base-footer.php"); ?>

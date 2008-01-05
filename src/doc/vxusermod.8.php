@@ -132,7 +132,8 @@ are unique to Vitalnix. The configuration file for <code>usermod</code> is
 
 <h1>See also</h1>
 
-<p><a href="vxuseradd.8.php">vxuseradd</a>(8), <a
+<p><a href="vitalnix.7.php">vitalnix</a>(7), <a
+href="vxuseradd.8.php">vxuseradd</a>(8), <a
 href="vxuserdel.8.php">vxuserdel</a>(8)</p>
 
 <?php include_once("Base-footer.php"); ?>

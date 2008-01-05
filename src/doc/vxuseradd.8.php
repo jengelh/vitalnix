@@ -143,4 +143,10 @@ parameters. The configuration file for <i>vxuseradd</i> is
 	</tr>
 </table>
 
+<h1>See also</h1>
+
+<p><a href="vitalnix.7.php">vitalnix</a>(7), <a
+href="vxusermod.8.php">vxusermod</a>(8), <a
+href="vxuserdel.8.php">vxuserdel</a>(8)</p>
+
 <?php include_once("Base-footer.php"); ?>

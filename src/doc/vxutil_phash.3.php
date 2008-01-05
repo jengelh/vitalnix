@@ -123,4 +123,8 @@ if (vxutil_phash("password", "$2a$05$ABCDEFGHIJKLMNOPQRSTUV$", VXPHASH_BLOWFISH,
 &nbsp; &nbsp; free(result);<br />
 }</code></p>
 
+<h1>See also</h1>
+
+<p><a href="vitalnix.7.php">vitalnix</a>(7)</p>
+
 <?php include_once("Base-footer.php"); ?>

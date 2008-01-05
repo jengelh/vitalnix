@@ -54,7 +54,8 @@ file for <i>vxuserdel</i> is <code>/etc/vitalnix/userdel.conf</code>.</p>
 
 <h1>See also</h1>
 
-<p><a href="vxuseradd.8.php">vxuseradd</a>(8), <a
+<p><a href="vitalnix.7.php">vitalnix</a>(7), <a
+href="vxuseradd.8.php">vxuseradd</a>(8), <a
 href="vxusermod.8.php">vxusermod</a>(8)</p>
 
 <?php include_once("Base-footer.php"); ?>

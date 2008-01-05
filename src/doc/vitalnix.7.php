@@ -63,12 +63,12 @@ task.</p>
 
 <h1>Current project status</h1>
 
-<p class="block">Vitalnix provides a library, <i>libvxdb</i>, which abstracts
-away the underlying storage mechanism and provides generalized methods of basic
-operations such as "add a user", modify, delete. With regard to user/group
-information retrieval, it is mostly equivalent to NSS, but is designed with
-thread-safety and multi-use safety in mind from the beginning. I consider the
-API and code to be rather clean compared to NSS and pwdutils.</p>
+<p class="block">Vitalnix provides a library, <i>libvxdb</i>, which
+encapsulates away the underlying storage mechanism and provides generalized
+methods of basic operations such as "add a user", modify, delete. With regard
+to user/group information retrieval, it is mostly equivalent to NSS, but is
+designed with thread-safety and multi-use safety in mind from the beginning. I
+consider the API and code to be rather clean compared to NSS and pwdutils. </p>
 
 <p class="block">Vitalnix is not the solution to everything. For example, it
 does not allow you to add arbitrary attributes to a user account, even if the
@@ -77,19 +77,21 @@ providing a simple (ideally) API and tools to get a typical essential server
 system (e.g. Windows network logon with SMB) working.</p>
 
 <p class="block">The Vitalnix package is considered to be in beta stage. It
-works for what we do with it, but it has yet to be widespread usage.</p>
+works for what we do with it, but it has yet to see widespread usage.</p>
 
-<p class="block">Of course, there is more than just <i>libvxdb</i>. Various
-libraries and tools which all relate to user management somehow.</p>
+<p class="block">Of course, there is a bit more than just
+<i>libvxdb</i>. SAMBA Logon Time Restriction and Print Accounting are
+two parts for example, which are not directly related to user
+management, but they were nonetheless needed.</p>
 
 <p class="block">Refer to the following subsections and the linked manpages for
 further reading.</p>
 
-<h1>Part 0 - Basic setup of Vitalnix</h1>
+<h1>Part 1&nbsp;-- Basic setup of Vitalnix</h1>
 
 <p class="block">(To be done)</p>
 
-<h1>Part 1 - Basic user/group information</h1>
+<h1>Part 2&nbsp;-- Basic user/group information</h1>
 
 <p class="block">This group of tools are mostly equivalent to various system
 programs, except that they use the Vitalnix API for interacting with
@@ -106,7 +108,7 @@ databases.</p>
 	</tr>
 </table>
 
-<h1>Part 2 - Basic user/group administration</h1>
+<h1>Part 3&nbsp;-- Basic user/group administration</h1>
 
 <p class="block">These tools are equivalent to <code>/usr/sbin/useradd</code>
 and friends. They only operate on the common NSS fields, i.e. do not handle
@@ -120,7 +122,7 @@ href="vxgroupadd.8.php">vxgroupadd</a>(8), <a
 href="vxgroupmod.8.php">vxgroupmod</a>(8), <a
 href="vxgroupdel.8.php">vxgroupdel</a>(8)</p>
 
-<h1>Part 3 - Auxiliary tools and helpers</h1>
+<h1>Part 4&nbsp;-- Auxiliary tools and helpers</h1>
 
 <p class="block">A few helper programs which may be used from other scripts or
 programs at your option. They provide a program-based interface to the Vitalnix
@@ -137,7 +139,7 @@ C API.</p>
 	</tr>
 </table>
 
-<h1>Part 4 - Tools for user/group synchronization</h1>
+<h1>Part 5&nbsp;-- Tools for user/group synchronization</h1>
 
 <p class="block">Synchronizing parts of the user database with an External Data
 Source (EDS, usually a text file) is an essential block of the Vitalnix
@@ -178,7 +180,38 @@ Suite.</p>
 	</tr>
 </table>
 
-<h1>Part 5 - Print accounting</h1>
+<h1>Part 6&nbsp;-- Administrative library code</h1>
+
+<p class="block">(To be done)</p>
+
+<table border="1">
+	<tr>
+		<td><a href="pam_ihlogon.8.php">pam_ihlogon</a>(8)</td>
+		<td>Class-based login time restriction module for the PAM stack
+		(Pluggable Authentication Modules)</td>
+	</tr>
+</table>
+
+<h1>Part 7&nbsp;-- Vitalnix CGI programs</h1>
+
+<p class="block">(To be done)</p>
+
+<table border="1">
+	<tr>
+		<td><a href="vxcgi_chpasswd.8.php">vxcgi_chpasswd</a>(8)</td>
+		<td>Set password</td>
+	</tr>
+	<tr>
+		<td><a href="vxcgi_ntactiv.8.php">vxcgi_ntactiv</a>(8)</td>
+		<td>Reset SMBNT password to UNIX password</td>
+	</tr>
+	<tr>
+		<td><a href="vxcgi_vwquota.8.php">vxcgi_vwquota</a>(8)</td>
+		<td>Display DiskQuota</td>
+	</tr>
+</table>
+
+<h1>Part 8&nbsp;-- Print accounting</h1>
 
 <p class="block">(To be done)</p>
 
@@ -189,7 +222,7 @@ Suite.</p>
 	</tr>
 	<tr>
 		<td><a href="lpacct_scv.8.php">lpacct_scv</a>(8)</td>
-		<td>Vitalnix print job confirmator - CUPS backend</td>
+		<td>Vitalnix print job confirmator&nbsp;- CUPS backend</td>
 	</tr>
 	<tr>
 		<td><a href="lpacview.8.php">lpacview</a>(8)</td>
@@ -197,11 +230,7 @@ Suite.</p>
 	</tr>
 </table>
 
-<h1>Part 6 - Vitalnix CGI programs</h1>
-
-<p class="block">(To be done)</p>
-
-<h1>Part 7 - Database drivers</h1>
+<h1>Part 9&nbsp;-- Database drivers</h1>
 
 <p class="block">(To be done)</p>
 
@@ -224,7 +253,7 @@ Suite.</p>
 	</tr>
 </table>
 
-<h1>Part 8 - Vitalnix library API</h1>
+<h1>Part 10&nbsp;-- Vitalnix library API</h1>
 
 <p class="block">(To be done)</p>
 
@@ -265,7 +294,7 @@ Suite.</p>
 	</tr>
 </table>
 
-<h1>Part 9 - Vitalnix internal commands</h1>
+<h1>Part 11&nbsp;-- Vitalnix internal commands</h1>
 
 <p class="block">Tools for inspecting and debugging Vitalnix and the user
 database.</p>

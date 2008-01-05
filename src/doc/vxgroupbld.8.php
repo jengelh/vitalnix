@@ -64,4 +64,8 @@ students move up one grade.</p>
 <p class="block"><i>vxgroupbld</i> will return 0 if all operations completed
 successfully. On error, it will abort right away and returns non-zero.</p>
 
+<h1>See also</h1>
+
+<p><a href="vitalnix.7.php">vitalnix</a>(7)</p>
+
 <?php include_once("Base-footer.php"); ?>

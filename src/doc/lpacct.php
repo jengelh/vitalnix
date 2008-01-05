@@ -38,8 +38,8 @@ compile it. It is advised to use the distributions packaging methods, e.g.
 .src.rpm for openSUSE/SLE* or Fedora/Redhat, to keep installation and upgrade
 relatively easy. Precompiled CUPS packages for openSUSE can be found in</p>
 
-<p><a href="ftp://ftp5.gwdg.de/pub/linux/misc/suser-jengelh/SUSE-10.2/"
-target="_blank"><code>ftp://ftp5.gwdg.de/pub/linux/misc/suser-jengelh/SUSE-10.2/</code></a></p>
+<p><a href="ftp://ftp5.gwdg.de/pub/linux/misc/suser-jengelh/SUSE-10.3/"
+target="_blank"><code>ftp://ftp5.gwdg.de/pub/linux/misc/suser-jengelh/SUSE-10.3/</code></a></p>
 
 <h1>Installation - Syslog</h1>
 
@@ -65,8 +65,7 @@ database.</p>
 <p class="block"><i>lpacview</i> is a web frontend PHP program for MySQL-stored
 print accounting information that allows users to view their print jobs.
 The administrator will have a complete overview of all users and is permitted
-to delete entries.
-
+to delete entries.</p>
 
 <h2>Cleaning database</h2>
 
@@ -104,5 +103,11 @@ displayed. Detailed stats about exact CMYK ink usage can be selected.</p>
 <h2>Totals overview</h2>
 
 <p class="block"></p>
+
+<h1>Mode of operation</h1>
+
+<p class="block">vxlpacct, in its current form, is a non-enforcing system,
+which means it does not stop a job from actually being printed. With respect to
+this, vxlpacct was designed as being a post pay system.</p>
 
 <?php include_once("Base-footer.php"); ?>

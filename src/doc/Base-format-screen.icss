@@ -43,11 +43,11 @@
 }
 .titleI {
 	font: bold italic 250% "Times New Roman", "Times", serif;
-	color: #000000;
+	color: #5D83A3;
 }
 .titleX {
 	font: bold italic 250% "Times New Roman", "Times", serif;
-	color: #5D83A3;
+	color: #000000;
 }
 a {
 	color: #002BB8;
