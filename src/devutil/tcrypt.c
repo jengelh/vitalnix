@@ -34,7 +34,7 @@ int main(int argc, const char **argv)
 	printf("%-16s: %s\n", "Original", argv[1]);
 
 	for (i = 0; i < ARRAY_SIZE(algo_id); ++i) {
-		vxutil_phash(*argv, salt, algo_id[i], &p);
+		vxutil_phash(argv[1], salt, algo_id[i], &p);
 		printf("%-16s: %s\n", algo_name[i], p);
 		free(p);
 	}
