@@ -64,6 +64,7 @@ AC_HAVE_HEADERS([crypt.h lastlog.h paths.h utmpx.h])
 #
 #	openssl-devel, libxml-devel
 #
+PKG_CHECK_MODULES([libHX], [libHX >= 1.15])
 PKG_CHECK_MODULES([libcrypto], [libcrypto])
 PKG_CHECK_MODULES([libxml], [libxml-2.0])
 
