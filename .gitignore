@@ -1,7 +1,11 @@
+*.la
+*.lo
+*.o
 GNUmakefile
 GNUmakefile.in
 .deps
 .dirstamp
+.libs
 
 /aclocal.m4
 /autom4te.cache
