@@ -27,12 +27,10 @@ static int vxdummy_open(struct vxdb_state *vp, unsigned int flags)
 
 static void vxdummy_close(struct vxdb_state *vp)
 {
-	return;
 }
 
 static void vxdummy_exit(struct vxdb_state *vp)
 {
-	return;
 }
 
 static int vxdummy_lock(struct vxdb_state *vp)
@@ -96,7 +94,6 @@ static int vxdummy_usertrav_walk(struct vxdb_state *vp, void *ptr,
 
 static void vxdummy_usertrav_free(struct vxdb_state *vp, void *ptr)
 {
-	return;
 }
 
 static int vxdummy_getgrgid(struct vxdb_state *vp, unsigned int gid,
@@ -140,7 +137,6 @@ static int vxdummy_grouptrav_walk(struct vxdb_state *vp, void *ptr,
 
 static void vxdummy_grouptrav_free(struct vxdb_state *vp, void *ptr)
 {
-	return;
 }
 
 static int vxdummy_sgmapadd(struct vxdb_state *vp, const char *user,
@@ -202,6 +198,5 @@ EXPORT_SYMBOL void vxdb_fix_vtable(struct vxdb_driver *m)
 	SET(sgmapadd);
 	SET(sgmapget);
 	SET(sgmapdel);
-	return;
 #undef SET
 }

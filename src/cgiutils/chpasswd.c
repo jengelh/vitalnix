@@ -88,7 +88,6 @@ static void header(void)
 	"<p>&nbsp;</p>"
 	"<p style=\"font-size: 16pt;\"><b>Change Password</b></p>"
 	);
-	return;
 }
 
 static void form(const char *user)
@@ -127,7 +126,6 @@ static void form(const char *user)
 	"</form>",
 	user
 	);
-	return;
 }
 
 static void footer(void)
@@ -137,7 +135,6 @@ static void footer(void)
 	"</body>"
 	"</html>"
 	);
-	return;
 }
 
 static bool change_password(const char *user, const char *pass)

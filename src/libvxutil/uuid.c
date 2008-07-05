@@ -19,7 +19,6 @@
 #define CURRENT_TAG             "{VX3A}"
 #define CURRENT_TAG_SIZE        (sizeof(CURRENT_TAG) - 1)
 
-//-----------------------------------------------------------------------------
 EXPORT_SYMBOL char *vxuuid_vx3(const char *full_name, unsigned int xday)
 {
 	unsigned char md[MD5_DIGEST_LENGTH];
@@ -44,5 +43,3 @@ EXPORT_SYMBOL unsigned int vxuuid_vx3_get_xday(const char *s)
 	HX_strlcpy(tmp, s + CURRENT_TAG_SIZE, sizeof(tmp));
 	return strtoul(tmp, NULL, 16);
 }
-
-//=============================================================================

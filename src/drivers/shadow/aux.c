@@ -134,7 +134,6 @@ void free_data(struct shadow_state *state)
 		HXdeque_free(state->dq_group);
 		state->dq_group = NULL;
 	}
-	return;
 }
 
 void free_single_user(struct vxdb_user *u)
@@ -154,7 +153,6 @@ void free_single_user(struct vxdb_user *u)
 	}
 
 	free(u);
-	return;
 }
 
 void free_single_group(struct vxdb_group *g)
@@ -167,7 +165,6 @@ void free_single_group(struct vxdb_group *g)
 		free(p);
 	}
 	free(g);
-	return;
 }
 
 /*
@@ -253,7 +250,6 @@ void read_config(struct shadow_state *state, unsigned int action,
 	} else if (action == CONFIG_FREE) {
 		HX_shconfig_free(options_table);
 	}
-	return;
 }
 
 struct HXdeque_node *skip_nis_users(struct HXdeque_node *node)
@@ -286,5 +282,4 @@ void truncate_here(FILE *fp)
 	ftruncate(fileno(fp), p);
 	fflush(fp);
 	fseek(fp, p, SEEK_SET);
-	return;
 }

@@ -26,7 +26,6 @@ static void a1_file_header(const struct pwlfmt_workspace *state)
 		PACKAGE_NAME, PACKAGE_VERSION,
 		"Group", "Name", "Login", "Password"
 	);
-	return;
 }
 
 static void a1_tbl_entry(const struct pwlfmt_workspace *state,
@@ -37,7 +36,6 @@ static void a1_tbl_entry(const struct pwlfmt_workspace *state,
 	fprintf(state->output_fh, "  %-8s  %-*s  %-10s  %s\n",
 	        data->pvgrp, 35 + pwlfmt_extra_whitespace(buf), buf,
 	        data->username, data->password);
-	return;
 }
 
 static const struct pwlstyle_vtable THIS_STYLE = {

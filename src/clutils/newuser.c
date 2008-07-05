@@ -185,7 +185,6 @@ static void single_cleanup(struct private_info *priv)
 	free(priv->pvgrp);
 	free(priv->surname);
 	free(priv->uuid);
-	return;
 }
 
 static void single_interactive(struct private_info *priv)
@@ -288,7 +287,6 @@ static void single_interactive(struct private_info *priv)
 	vxcli_query_v(table_2);
 	if (priv->bday == NULL)
 		vxcli_query_v(table_3);
-	return;
 }
 
 static int validate_group(const struct vxcq_entry *e)
@@ -364,7 +362,4 @@ static void show_version(const struct HXoptcb *cbi)
 	printf("Vitalnix " PACKAGE_VERSION " newuser\n");
 	if (cbi != NULL)
 		exit(EXIT_SUCCESS);
-	return;
 }
-
-//=============================================================================

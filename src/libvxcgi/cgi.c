@@ -18,7 +18,6 @@
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxcgi/libvxcgi.h>
 
-//-----------------------------------------------------------------------------
 EXPORT_SYMBOL char *vxcgi_read_data(int argc, const char **argv)
 {
 	const char *meth = getenv("REQUEST_METHOD");
@@ -69,5 +68,3 @@ EXPORT_SYMBOL struct HXbtree *vxcgi_split(char *str)
 	free(str);
 	return h;
 }
-
-//=============================================================================

@@ -81,7 +81,4 @@ static void parse_group(const struct HXoptcb *info)
 	else
 		user->pw_igrp = HX_strdup(info->data);
 	/* FIXME: complete this */
-	return;
 }
-
-//=============================================================================

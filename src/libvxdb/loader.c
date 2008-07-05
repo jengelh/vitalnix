@@ -85,7 +85,6 @@ EXPORT_SYMBOL void vxdb_unload(struct vxdb_state *thx)
 	if (thx->vtable->exit != NULL)
 		thx->vtable->exit(thx);
 	vxdb_cleanup(thx, 0, NULL);
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -190,5 +189,3 @@ static void *vxdb_get_handle(const struct opt *cf)
 	}
 	return handle;
 }
-
-//=============================================================================

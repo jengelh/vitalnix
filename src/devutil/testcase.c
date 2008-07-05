@@ -21,7 +21,6 @@ static void test_1(void)
 	printf("--- TEST 1 --- XDAY conversion\n");
 	printf("2006-03-04 = %x (should be 7d6304)\n",
 		   vxutil_string_xday("2006-03-04"));
-	return;
 }
 
 static void test_2(void)
@@ -39,7 +38,6 @@ static void test_2(void)
 		"--- TEST 2b --- SMBNT encryption\n"
 		"Output: %s\n", r);
 	free(r);
-	return;
 }
 
 static void test_3(const char *f)
@@ -59,7 +57,6 @@ static void test_3(const char *f)
 	}
 	printf(" entries, code %d (%s)\n", ret, strerror(-ret));
 	vxeds_close(handle);
-	return;
 }
 
 static void test_4(void)
@@ -86,7 +83,6 @@ static void test_4(void)
 	printf("Unquoted:\t%s (%p)\n" "Quoted:\t\t\"%s\" (%p)\n", s, s, ret, ret);
 
 	free(fm);
-	return;
 }
 
 static void test_5(void)
@@ -108,7 +104,6 @@ static void test_5(void)
 	CHK("Ji Go-Ku", "Ojiisan");
 	CHK("Ji-Go Ku", "ōtōsan");
 	CHK("Ji go Ku", "@erv");
-	return;
 #undef CHK
 }
 
@@ -134,7 +129,6 @@ static void test_6(void)
 			   vxutil_quote(table[i], VXQUOTE_BASE64, &s), table[i+1]);
 
 	free(s);
-	return;
 }
 
 int main(int argc, const char **argv)

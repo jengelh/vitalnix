@@ -232,7 +232,6 @@ static void useradd_getopt_expire(const struct HXoptcb *cbi)
 {
 	struct vxdb_user *user = cbi->current->ptr;
 	user->sp_expire = vxutil_string_iday(cbi->data);
-	return;
 }
 
 static void useradd_getopt_preadd(const struct HXoptcb *cbi)
@@ -240,7 +239,6 @@ static void useradd_getopt_preadd(const struct HXoptcb *cbi)
 	struct vxconfig_useradd *conf = cbi->current->uptr;
 	conf->master_preadd = NULL;
 	conf->user_preadd   = HX_strdup(cbi->data);
-	return;
 }
 
 static void useradd_getopt_postadd(const struct HXoptcb *cbi)
@@ -248,7 +246,6 @@ static void useradd_getopt_postadd(const struct HXoptcb *cbi)
 	struct vxconfig_useradd *conf = cbi->current->uptr;
 	conf->master_postadd = NULL;
 	conf->user_postadd   = HX_strdup(cbi->data);
-	return;
 }
 
 static int useradd_read_config(struct useradd_state *state)
@@ -364,5 +361,3 @@ static void useradd_show_version(const struct HXoptcb *cbi)
 	printf("Vitalnix " PACKAGE_VERSION " useradd\n");
 	exit(EXIT_SUCCESS);
 }
-
-//=============================================================================

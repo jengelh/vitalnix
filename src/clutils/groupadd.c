@@ -198,5 +198,3 @@ static void groupadd_show_version(const struct HXoptcb *cbi)
 	printf("Vitalnix " PACKAGE_VERSION " groupadd\n");
 	exit(EXIT_SUCCESS);
 }
-
-//=============================================================================

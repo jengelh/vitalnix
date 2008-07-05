@@ -101,5 +101,3 @@ static void show_version(const struct HXoptcb *cbi)
 	printf("Vitalnix " PACKAGE_VERSION " randpw\n");
 	exit(EXIT_SUCCESS);
 }
-
-//=============================================================================

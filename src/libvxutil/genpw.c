@@ -118,7 +118,6 @@ EXPORT_SYMBOL void vxutil_genpw(char *plain, int len, unsigned int flags)
 		genpw_jp(plain, len, fl);
 	else
 		genpw_random(plain, len, fl);
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -180,8 +179,6 @@ static void genpw_jp(char *plain, int size, unsigned int flags)
 	 */
 	if (flags & (GENPW_1CASE | GENPW_1DIGIT))
 		genpw_jp(saved_plain, saved_size, saved_flags);
-
-	return;
 }
 
 static void genpw_zh(char *plain, int size, unsigned int flags)
@@ -237,8 +234,6 @@ static void genpw_zh(char *plain, int size, unsigned int flags)
 	 */
 	if (flags & (GENPW_1CASE | GENPW_1DIGIT))
 		genpw_zh(saved_plain, saved_size, saved_flags);
-
-	return;
 }
 
 static void genpw_random(char *plain, int size, unsigned int flags)
@@ -267,8 +262,4 @@ static void genpw_random(char *plain, int size, unsigned int flags)
 	*plain++ = '\0';
 	if (flags & (GENPW_1CASE | GENPW_1DIGIT))
 		genpw_random(saved_plain, saved_size, saved_flags);
-
-	return;
 }
-
-//=============================================================================

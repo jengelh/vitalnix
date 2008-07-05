@@ -75,5 +75,4 @@ void db_flush_groups(struct shadow_state *state)
 
 	truncate_here(state->fgroup.fp);
 	TOUCH_GROUP_TAG(false);
-	return;
 }

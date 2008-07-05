@@ -32,7 +32,6 @@ static void pgtxt_tbl_header(const struct pwlfmt_workspace *state,
 		PACKAGE_NAME, PACKAGE_VERSION, data->pvgrp,
 		"Name", "Login", "Password"
 	);
-	return;
 }
 
 static void pgtxt_tbl_entry(const struct pwlfmt_workspace *state,
@@ -43,14 +42,12 @@ static void pgtxt_tbl_entry(const struct pwlfmt_workspace *state,
 	fprintf(state->output_fh, "  %-*s  %-10s  %s\n",
 	        35 + pwlfmt_extra_whitespace(buf), buf, data->username,
 	        data->password);
-	return;
 }
 
 static void pgtxt_tbl_footer(const struct pwlfmt_workspace *state,
     const struct pwl_data *data)
 {
 	fputc('\f', state->output_fh);
-	return;
 }
 
 static const struct pwlstyle_vtable THIS_STYLE = {

@@ -57,7 +57,6 @@ void db_read_vxshadow(const char *file, struct HXdeque *dq)
 
  out:
 	xmlFreeDoc(doc);
-	return;
 }
 
 void db_write_vxshadow(FILE *fp, const struct vxdb_user *u)
@@ -82,7 +81,6 @@ void db_write_vxshadow(FILE *fp, const struct vxdb_user *u)
 
 	fprintf(fp, " />\n");
 	free(fm);
-	return;
 }
 
 static inline int strcmp_1u(const xmlChar *a, const char *b)

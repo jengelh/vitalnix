@@ -130,7 +130,6 @@ EXPORT_SYMBOL void mdsync_compare(struct mdsync_workspace *w)
 	vxdb_user_free(&pwd, false);
 	if (w->report != NULL)
 		w->report(MDREP_COMPARE, w, users_max, users_max);
-	return;
 }
 
 EXPORT_SYMBOL void mdsync_compare_simple(struct mdsync_workspace *w)
@@ -152,7 +151,6 @@ EXPORT_SYMBOL void mdsync_compare_simple(struct mdsync_workspace *w)
 
 	vxdb_usertrav_free(w->database, travp);
 	vxdb_user_free(&pwd, false);
-	return;
 }
 
 EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
@@ -487,5 +485,3 @@ static inline char *now_in_ymdhms(char *buf, size_t count)
 	strftime(buf, MAXSNLEN, "%Y%m%d-%H%M%S", localtime_r(&now, &res));
 	return buf;
 }
-
-//=============================================================================

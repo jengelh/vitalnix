@@ -46,16 +46,12 @@ WD_FixUUID::WD_FixUUID(wxWindow *parent) :
 	vp->SetSizeHints(this);
 	smc_size_aspect(this);
 	Center();
-
-	return;
 }
 
 void WD_FixUUID::Fill_Defaults(wxCommandEvent &event)
 {
-	return;
 }
 
 void WD_FixUUID::Ok(wxCommandEvent &event)
 {
-	return;
 }

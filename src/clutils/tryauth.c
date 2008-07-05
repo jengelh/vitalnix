@@ -45,7 +45,6 @@ int main(int argc, const char **argv)
 	return (ret > 0) ? EXIT_SUCCESS : -ret;
 }
 
-//-----------------------------------------------------------------------------
 static void show_version(const struct HXoptcb *cbi)
 {
 	printf("Vitalnix " PACKAGE_VERSION " tryauth\n");
@@ -64,5 +63,3 @@ static bool get_options(int *argc, const char ***argv)
 	};
 	return HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) > 0;
 }
-
-//=============================================================================

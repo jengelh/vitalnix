@@ -20,7 +20,6 @@
 #include "steelmill/xu_common.hpp"
 #include "steelmill/xu_database.hpp"
 
-//-----------------------------------------------------------------------------
 struct vxdb_state *database_open(long open_flags, wxWindow *parent)
 {
 	struct vxdb_state *dbh;
@@ -45,5 +44,3 @@ struct vxdb_state *database_open(long open_flags, wxWindow *parent)
 
 	return dbh;
 }
-
-//=============================================================================

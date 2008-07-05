@@ -121,7 +121,6 @@ static void sdf_close(void *state_ptr)
 		fclose(state->input_fh);
 	HX_strclone(&state->input_file, NULL);
 	free(state_ptr);
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -151,5 +150,3 @@ static const struct edsformat_vtable THIS_FORMAT = {
 };
 
 REGISTER_MODULE(sdf, &THIS_FORMAT);
-
-//=============================================================================

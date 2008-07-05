@@ -49,7 +49,6 @@ EXPORT_SYMBOL void mdsync_fixup(struct mdsync_workspace *w)
 	}
 
 	HXbtrav_free(travp);
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -80,5 +79,3 @@ static inline char *format_name(const char *name, unsigned int idx,
 	snprintf(dest, dsize, "%.*s%s", MAX_LNAME - ret, name, istr);
 	return dest;
 }
-
-//=============================================================================

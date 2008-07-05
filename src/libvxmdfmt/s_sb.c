@@ -20,7 +20,6 @@
 #include <vitalnix/libvxmdfmt/vtable.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
-//-----------------------------------------------------------------------------
 static int sb_construct(struct pwlfmt_workspace *state)
 {
 	/*
@@ -44,7 +43,6 @@ static int sb_construct(struct pwlfmt_workspace *state)
 static void sb_destruct(struct pwlfmt_workspace *state)
 {
 	free(state->template_data);
-	return;
 }
 
 static void sb_file_header(const struct pwlfmt_workspace *state)
@@ -56,7 +54,6 @@ static void sb_file_header(const struct pwlfmt_workspace *state)
 		"\\usepackage{german}\n\n"
 		"\\begin{document}\n\n"
 	);
-	return;
 }
 
 static void sb_tbl_entry(const struct pwlfmt_workspace *state,
@@ -65,13 +62,11 @@ static void sb_tbl_entry(const struct pwlfmt_workspace *state,
 	struct HXbtree *catalog = defcat_tbl_entry(state, data);
 	HXformat_fprintf(catalog, state->output_fh, state->template_data);
 	fprintf(state->output_fh, "\\newpage\n");
-	return;
 }
 
 static void sb_file_footer(const struct pwlfmt_workspace *state)
 {
 	fprintf(state->output_fh, "\\end{document}\n");
-	return;
 }
 
 static const struct pwlstyle_vtable THIS_STYLE = {

@@ -17,7 +17,6 @@
 #include <vitalnix/libvxdb/libvxdb.h>
 #include <vitalnix/libvxutil/defines.h>
 
-//-----------------------------------------------------------------------------
 /*
  * db_read_passwd -
  * @fp:	stdio filehandle to read from
@@ -96,5 +95,4 @@ void db_write_passwd(FILE *fp, const struct vxdb_user *u)
 	if (priv != NULL && priv[0] != NULL)
 		fprintf(fp, "%s", priv[0]);
 	fprintf(fp, "\n");
-	return;
 }

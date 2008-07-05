@@ -114,7 +114,6 @@ static void run_other_backend(const hmc_t *prog)
 
 	pclose(fp);
 	hmc_free(ln);
-	return;
 }
 
 static void find_other_backends(void)
@@ -142,7 +141,6 @@ static void find_other_backends(void)
 	}
 
 	HXdir_close(dirptr);
-	return;
 }
 
 static void confirm_syslog(const char **argv)
@@ -153,7 +151,6 @@ static void confirm_syslog(const char **argv)
 	syslog(LOG_INFO, "id=%s/%s/%s confirmed\n",
 	       queue, argv[ARGP_JOBID], argv[ARGP_USER]);
 	closelog();
-	return;
 }
 
 static void confirm_mysql(MYSQL *conn, const char **argv)
@@ -171,7 +168,6 @@ static void confirm_mysql(MYSQL *conn, const char **argv)
 	mysql_close(conn);
 	free(quser);
 	free(sql_query);
-	return;
 }
 
 int main(int argc, const char **argv)

@@ -29,7 +29,6 @@ enum {
 	ID_TICK = 1,
 };
 
-//-----------------------------------------------------------------------------
 IMPLEMENT_APP(Loader);
 
 BEGIN_EVENT_TABLE(Loader, wxApp)
@@ -76,7 +75,6 @@ bool Loader::OnInit(void)
 void Loader::splash_tick(wxTimerEvent &event)
 {
 	++splash_done;
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -114,8 +112,6 @@ WD_Console::WD_Console(void) :
 		stdout = stderr = current;
 	}
 #endif
-
-	return;
 }
 
 WD_Console::~WD_Console(void)
@@ -126,25 +122,21 @@ WD_Console::~WD_Console(void)
 		stderr = saved_stderr;
 	if (current != NULL)
 		fclose(current);
-	return;
 }
 
 void WD_Console::Append(const char *buffer)
 {
 	tc->WriteText(fU8(buffer));
-	return;
 }
 
 void WD_Console::Clear(wxCommandEvent &event)
 {
 	tc->Clear();
-	return;
 }
 
 void WD_Console::hide_command(wxCommandEvent &event)
 {
 	Hide();
-	return;
 }
 
 void WD_Console::hide_close(wxCloseEvent &event)
@@ -155,7 +147,6 @@ void WD_Console::hide_close(wxCloseEvent &event)
 	} else {
 		wxFrame::Destroy();
 	}
-	return;
 }
 
 ssize_t WD_Console::write_cb(void *cookie, const char *buffer, size_t size)
@@ -163,5 +154,3 @@ ssize_t WD_Console::write_cb(void *cookie, const char *buffer, size_t size)
 	static_cast<Loader *>(wxTheApp)->console->Append(buffer);
 	return size;
 }
-
-//=============================================================================

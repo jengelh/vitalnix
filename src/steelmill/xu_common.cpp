@@ -21,7 +21,6 @@
 #include "steelmill/xu_common.hpp"
 #define MAX_BUTTONS 8
 
-//-----------------------------------------------------------------------------
 wxPanel *smc_logo_panel(wxWindow *parent)
 {
 	wxPanel *panel = new wxPanel(parent);
@@ -104,7 +103,6 @@ void smc_size_aspect(wxWindow *w, double f)
 	wxSize s = w->GetSize();
 	s.IncTo(wxSize((int)(f * s.GetHeight()), -1));
 	w->SetSize(s);
-	return;
 }
 
 void smc_size_minimum(wxWindow *w, int x, int y)
@@ -112,7 +110,6 @@ void smc_size_minimum(wxWindow *w, int x, int y)
 	wxSize s = w->GetSize();
 	s.IncTo(wxSize(x, y));
 	w->SetSize(s);
-	return;
 }
 
 void smc_size_minimum(wxWindow *w, const wxSize &ps)
@@ -120,7 +117,6 @@ void smc_size_minimum(wxWindow *w, const wxSize &ps)
 	wxSize ns = w->GetSize();
 	ns.IncTo(ps);
 	w->SetSize(ns);
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -140,7 +136,6 @@ GW_FTC::GW_FTC(wxWindow *parent, const wxString &string, unsigned int border,
 	SetSizer(vp);
 	vp->SetSizeHints(this);
 	this->flags = flags;
-	return;
 }
 
 wxString GW_FTC::GetValue(void) const
@@ -162,7 +157,6 @@ void GW_FTC::Browse(wxCommandEvent &event)
 			return;
 		textfield->SetValue(dlg.GetPath());
 	}
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -171,7 +165,6 @@ GW_GroupCombo::GW_GroupCombo(wxWindow *parent, wxWindowID id,
 	wxComboBox(parent, id, wxEmptyString)
 {
 	switch_database(db);
-	return;
 }
 
 void GW_GroupCombo::switch_database(const char *db_name)
@@ -205,7 +198,6 @@ void GW_GroupCombo::switch_database(const char *db_name)
 	vxdb_close(db);
  out_unload:
 	vxdb_unload(db);
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -225,7 +217,6 @@ GW_Listbox::GW_Listbox(wxWindow *parent, const wxString &title,
 	smc_size_minimum(this, 400, 100);
 	smc_size_aspect(this);
 	Center();
-	return;
 }
 
 GW_Listbox::GW_Listbox(wxWindow *parent, const wxString &title,
@@ -248,7 +239,6 @@ GW_Listbox::GW_Listbox(wxWindow *parent, const wxString &title,
 	smc_size_minimum(this, 400, 100);
 	smc_size_aspect(this);
 	Center();
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -274,25 +264,21 @@ GW_Message::GW_Message(wxWindow *parent, const wxString &title,
 	vp->SetSizeHints(this);
 	smc_size_aspect(this);
 	Center();
-	return;
 }
 
 void GW_Message::Yes(wxCommandEvent &event)
 {
 	EndModal(wxID_YES);
-	return;
 }
 
 void GW_Message::No(wxCommandEvent &event)
 {
 	EndModal(wxID_NO);
-	return;
 }
 
 void GW_Message::Cancel(wxCommandEvent &event)
 {
 	EndModal(wxID_CANCEL);
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -330,13 +316,11 @@ GW_Table::GW_Table(wxWindow *parent, wxWindowID id, const wxString *names,
 		item.SetText(*names++);
 		InsertColumn(i++, item);
 	}
-	return;
 }
 
 GW_Table::~GW_Table(void)
 {
 	delete[] column_layout;
-	return;
 }
 
 /*
@@ -354,14 +338,12 @@ void GW_Table::Insert(const wxString *c)
 		item.SetText(*c++);
 		InsertColumn(n++, item);
 	}
-	return;
 }
 
 void GW_Table::Resize_Column(wxListEvent &event)
 {
 	printf("column resized\n");
 	event.Skip();
-	return;
 }
 
 void GW_Table::Resize_Table(wxSizeEvent &event)
@@ -376,7 +358,6 @@ void GW_Table::Resize_Table(wxSizeEvent &event)
 	}
 
 	event.Skip();
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -385,7 +366,6 @@ GW_UserCombo::GW_UserCombo(wxWindow *parent, wxWindowID id, const char *db) :
 	           0, NULL, wxCB_SORT)
 {
 	switch_database(db);
-	return;
 }
 
 void GW_UserCombo::switch_database(const char *db_name)
@@ -417,7 +397,4 @@ void GW_UserCombo::switch_database(const char *db_name)
 	vxdb_close(db);
  out_unload:
 	vxdb_unload(db);
-	return;
 }
-
-//=============================================================================

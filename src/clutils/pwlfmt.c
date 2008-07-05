@@ -59,8 +59,6 @@ static void list_styles(void)
 	while ((p = pwlstyles_trav(&trav)) != NULL)
 		printf("\t" "%c%-10s   %s\n",
 		       (p->require_template ? '*' : ' '), p->name, p->desc);
-
-	return;
 }
 
 static int pwlfmt(struct pwlfmt_workspace *i)
@@ -133,5 +131,3 @@ static void show_version(const struct HXoptcb *cbi)
 	printf("Vitalnix " PACKAGE_VERSION " pwlfmt\n");
 	exit(EXIT_SUCCESS);
 }
-
-//=============================================================================

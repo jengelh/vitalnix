@@ -19,7 +19,6 @@
 #include <vitalnix/libvxcli/libvxcli.h>
 #include <vitalnix/libvxutil/defines.h>
 
-//-----------------------------------------------------------------------------
 EXPORT_SYMBOL char *vxcli_query(const char *msg, const char *prompt,
     const char *defl, unsigned int opts, char *buf, unsigned int size)
 {
@@ -139,5 +138,3 @@ EXPORT_SYMBOL unsigned int vxcli_query_v(const struct vxcq_entry *tp)
 	}
 	return count;
 }
-
-//=============================================================================

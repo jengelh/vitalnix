@@ -110,7 +110,6 @@ static void read_eds(struct HXdeque *workspace)
 	}
 
 	vxeds_close(state);
-	return;
 }
 
 static void read_vxdb(struct HXdeque *workspace, struct vxdb_state *dbh)
@@ -144,7 +143,6 @@ static void read_vxdb(struct HXdeque *workspace, struct vxdb_state *dbh)
 	}
 
 	vxdb_usertrav_free(dbh, trav);
-	return;
 }
 
 static inline unsigned int min3(unsigned int a, unsigned int b, unsigned int c)
@@ -281,7 +279,6 @@ static void levd_p(struct levd_pair *pair, const struct ckentry *vxdb,
 
 	pair->combined_dist = (pair->uuid_dist + pair->name_dist) *
 	                      pair->cost_factor;
-	return;
 }
 
 static int sort_by_distance(const void *va, const void *vb)
@@ -345,7 +342,6 @@ static void output(const struct HXdeque *vxdb, const struct HXdeque *eds)
 
 	free(pair_flat);
 	HXdeque_genocide(pair_list);
-	return;
 }
 
 static int run1(void)

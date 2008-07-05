@@ -71,7 +71,6 @@ void pr_warn(const char *func, const char *fmt, ...)
 	fprintf(stderr, PREFIX "%s: ", func);
 	vfprintf(stderr, fmt, argp);
 	va_end(argp);
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -244,8 +243,6 @@ static void ghostscript_exit(pid_t pid)
 		        "signal %d\n", WTERMSIG(status));
 	else
 		pr_warn(__func__, "GhostScript terminated abnormally\n");
-
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -347,5 +344,3 @@ static enum colorspace get_colorspace(void)
 	hmc_free(ln);
 	return ret;
 }
-
-//=============================================================================

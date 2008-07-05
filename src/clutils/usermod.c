@@ -184,7 +184,6 @@ static void usermod_getopt_expire(const struct HXoptcb *cbi)
 {
 	struct vxdb_user *user = cbi->current->ptr;
 	user->sp_expire = vxutil_string_iday(cbi->data);
-	return;
 }
 
 static void usermod_getopt_premod(const struct HXoptcb *cbi)
@@ -192,7 +191,6 @@ static void usermod_getopt_premod(const struct HXoptcb *cbi)
 	struct vxconfig_usermod *conf = cbi->current->uptr;
 	conf->master_premod = NULL;
 	conf->user_premod   = HX_strdup(cbi->data);
-	return;
 }
 
 static void usermod_getopt_postmod(const struct HXoptcb *cbi)
@@ -200,7 +198,6 @@ static void usermod_getopt_postmod(const struct HXoptcb *cbi)
 	struct vxconfig_usermod *conf = cbi->current->uptr;
 	conf->master_postmod = NULL;
 	conf->user_postmod   = HX_strdup(cbi->data);
-	return;
 }
 
 static int usermod_read_config(struct usermod_state *sp)
@@ -264,5 +261,3 @@ static void usermod_show_version(const struct HXoptcb *cbi)
 	printf("Vitalnix " PACKAGE_VERSION " usermod\n");
 	exit(EXIT_SUCCESS);
 }
-
-//=============================================================================

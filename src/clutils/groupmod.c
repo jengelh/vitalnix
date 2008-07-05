@@ -218,5 +218,3 @@ static void groupmod_show_version(const struct HXoptcb *cbi)
 	printf("Vitalnix " PACKAGE_VERSION " groupmod\n");
 	exit(EXIT_SUCCESS);
 }
-
-//=============================================================================

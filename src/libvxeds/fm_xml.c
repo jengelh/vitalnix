@@ -102,7 +102,6 @@ static void xml_close(void *state_ptr)
 	if (state->doc != NULL)
 		xmlFreeDoc(state->doc);
 	free(state);
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -127,5 +126,3 @@ static const struct edsformat_vtable THIS_FORMAT = {
 };
 
 REGISTER_MODULE(xml, &THIS_FORMAT);
-
-//=============================================================================

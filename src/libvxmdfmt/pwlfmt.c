@@ -194,7 +194,6 @@ static void pwlfmt_destruct(struct pwlfmt_workspace *w)
 		fclose(w->output_fh);
 	if (w->template_data != NULL)
 		free(w->template_data);
-	return;
 }
 
 /*
@@ -268,5 +267,3 @@ static int pwlfmt_process2(struct pwlfmt_workspace *w,
 	HXbtrav_free(tl_trav);
 	return 1;
 }
-
-//=============================================================================

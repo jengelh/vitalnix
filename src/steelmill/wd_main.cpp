@@ -71,74 +71,62 @@ WD_MainMenu::WD_MainMenu(const char *title, const wxSize &size,
 	SetSize(size);
 	smc_size_aspect(this);
 	Center();
-	return;
 }
 
 WD_MainMenu::~WD_MainMenu(void)
 {
 	/* Kill the console window. Even if it is invisible, it still exists. */
 	static_cast<Loader *>(wxTheApp)->console->Destroy();
-	return;
 }
 
 void WD_MainMenu::About(wxCommandEvent &event)
 {
 	WD_About(this).ShowModal();
-	return;
 }
 
 void WD_MainMenu::Add_Single(wxCommandEvent &event)
 {
 	WD_Single(this).ShowModal();
-	return;
 }
 
 void WD_MainMenu::Exit(wxCommandEvent &event)
 {
 	Close(true);
-	return;
 }
 
 void WD_MainMenu::FixUUID(wxCommandEvent &event)
 {
 	WD_FixUUID(this).ShowModal();
-	return;
 }
 
 void WD_MainMenu::Pwl_Format(wxCommandEvent &event)
 {
 	WD_Pwlfmt(this).ShowModal();
-	return;
 }
 
 void WD_MainMenu::Show_Console(wxCommandEvent &event)
 {
 	static_cast<Loader *>(wxTheApp)->console->Show();
-	return;
 }
 
 void WD_MainMenu::Sync(wxCommandEvent &event)
 {
 	WD_SyncParam(this).ShowModal();
-	return;
 }
 
 void WD_MainMenu::View_Groups(wxCommandEvent &event)
 {
 	WD_Overview(this, OVERVIEW_GROUPS).ShowModal();
-	return;
 }
 
 void WD_MainMenu::View_Users(wxCommandEvent &event)
 {
 	WD_Overview(this, OVERVIEW_USERS).ShowModal();
-	return;
 }
 
 void WD_MainMenu::lpcadm(wxCommandEvent &event)
 {
 	//WD_lpcadm(this).ShowModal();
-	return;
 }
 
 wxFlexGridSizer *WD_MainMenu::generate_menu(void)

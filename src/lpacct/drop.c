@@ -42,7 +42,6 @@ void drop2bl(struct costf *out, const struct cost *in, int dpi)
 	out->k = 6.4516 * in->k / d;
 	out->t = 6.4516 * in->t / d;
 	out->p = in->p;
-	return;
 }
 
 void drop2sqcm(struct costf *out, const struct cost *in, int dpi)
@@ -58,7 +57,6 @@ void drop2sqcm(struct costf *out, const struct cost *in, int dpi)
 	out->k = 6.4516 * in->k / d;
 	out->t = 6.4516 * in->t / d;
 	out->p = in->p;
-	return;
 }
 
 void drop2sqm(struct costf *out, const struct cost *in, int dpi)
@@ -70,7 +68,6 @@ void drop2sqm(struct costf *out, const struct cost *in, int dpi)
 	out->k = 6.4516 * in->k / d;
 	out->t = 6.4516 * in->t / d;
 	out->p = in->p;
-	return;
 }
 
 void drop2sqin(struct costf *out, const struct cost *in, int dpi)
@@ -82,7 +79,6 @@ void drop2sqin(struct costf *out, const struct cost *in, int dpi)
 	out->k = (double)in->k / d;
 	out->t = (double)in->t / d;
 	out->p = in->p;
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -316,5 +312,3 @@ static inline unsigned int rgb_to_gray(unsigned int r, unsigned int g,
 {
 	return (78 * r + 151 * g + 27 * b) / 256;
 }
-
-//=============================================================================

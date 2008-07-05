@@ -36,7 +36,6 @@ static void pghtml_file_header(const struct pwlfmt_workspace *state)
 		"</style><body>",
 		state->input_file
 	);
-	return;
 }
 
 static void pghtml_tbl_header(const struct pwlfmt_workspace *state,
@@ -49,7 +48,6 @@ static void pghtml_tbl_header(const struct pwlfmt_workspace *state,
 		"<th width=\"50%%\">Name</th><th>Login</th><th>Password</th></tr>\n",
 		data->pvgrp, PACKAGE_NAME, PACKAGE_VERSION
 	);
-	return;
 }
 
 static void pghtml_tbl_entry(const struct pwlfmt_workspace *state,
@@ -62,20 +60,17 @@ static void pghtml_tbl_entry(const struct pwlfmt_workspace *state,
 		   data->surname, data->first_name,
 		   data->username,
 		   data->password);
-	return;
 }
 
 static void pghtml_tbl_footer(const struct pwlfmt_workspace *state,
     const struct pwl_data *data)
 {
 	fprintf(state->output_fh, "</table>");
-	return;
 }
 
 static void pghtml_file_footer(const struct pwlfmt_workspace *state)
 {
 	fprintf(state->output_fh, "</body></html>");
-	return;
 }
 
 static const struct pwlstyle_vtable THIS_STYLE = {

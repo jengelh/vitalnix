@@ -17,7 +17,6 @@
 #include <vitalnix/libvxdb/libvxdb.h>
 #include <vitalnix/libvxutil/defines.h>
 
-//-----------------------------------------------------------------------------
 /*
  * db_read_shadow -
  * @fp:	stdio filehandle to read from
@@ -62,7 +61,6 @@ void db_read_shadow(FILE *fp, struct HXdeque *dq)
 	}
 
 	hmc_free(ln);
-	return;
 }
 
 void db_write_shadow(FILE *fp, const struct vxdb_user *u)
@@ -82,5 +80,4 @@ void db_write_shadow(FILE *fp, const struct vxdb_user *u)
 	if (priv != NULL && priv[1] != NULL)
 		fprintf(fp, "%s", priv[1]);
 	fprintf(fp, "\n");
-	return;
 }

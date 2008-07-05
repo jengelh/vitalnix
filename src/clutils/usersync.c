@@ -253,7 +253,6 @@ static void sync_cleanup(struct private_info *priv)
 	free(priv->input_file);
 	free(priv->input_fmt);
 	free(priv->output_file);
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -294,14 +293,12 @@ static void cb_report(unsigned int type, const struct mdsync_workspace *mdsw,
 		printf(": %.2f%%\n", pct);
 	else
 		printf(": %u/%u users (%.2f%%)\n", current, max, pct);
-	return;
 }
 
 static void print_compare_input(const struct mdsync_workspace *mdsw)
 {
 	printf("Comparing EDS to VXDB\n");
 	printf("%u user(s) in EDS list\n", mdsw->add_req->items);
-	return;
 }
 
 static void print_compare_output(const struct mdsync_workspace *mdsw)
@@ -321,7 +318,6 @@ static void print_compare_output(const struct mdsync_workspace *mdsw)
 		mdsw->defer_stop->items,
 		mdsw->delete_now->items,
 		mdsw->add_req->items);
-	return;
 }
 
 static void print_compare_output2(const struct mdsync_workspace *mdsw)
@@ -355,7 +351,6 @@ static void print_compare_output2(const struct mdsync_workspace *mdsw)
 		printf("XS  %s\n", static_cast(const char *, d->ptr));
 	for (d = mdsw->delete_now->first; d != NULL; d = d->next)
 		printf("D   %s\n", static_cast(const char *, d->ptr));
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -405,5 +400,3 @@ static inline bool time_limit(time_t *last, time_t interval)
 	*last = now;
 	return true;
 }
-
-//=============================================================================

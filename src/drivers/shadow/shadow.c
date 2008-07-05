@@ -86,7 +86,6 @@ static void vxshadow_close(struct vxdb_state *vp)
 	struct shadow_state *state = vp->state;
 	db_close(state);
 	free_data(state);
-	return;
 }
 
 static void vxshadow_exit(struct vxdb_state *vp)
@@ -94,7 +93,6 @@ static void vxshadow_exit(struct vxdb_state *vp)
 	struct shadow_state *state = vp->state;
 	read_config(state, CONFIG_FREE, NULL);
 	free(state);
-	return;
 }
 
 static long vxshadow_modctl(struct vxdb_state *vp, unsigned int command, ...)
@@ -318,7 +316,6 @@ static int vxshadow_usertrav_walk(struct vxdb_state *vp, void *ptr,
 static void vxshadow_usertrav_free(struct vxdb_state *vp, void *ptr)
 {
 	free(ptr);
-	return;
 }
 
 static int vxshadow_groupadd(struct vxdb_state *vp,
@@ -437,7 +434,6 @@ static int vxshadow_grouptrav_walk(struct vxdb_state *vp, void *ptr,
 static void vxshadow_grouptrav_free(struct vxdb_state *vp, void *ptr)
 {
 	free(ptr);
-	return;
 }
 
 EXPORT_SYMBOL struct vxdb_driver THIS_MODULE = {

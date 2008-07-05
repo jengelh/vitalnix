@@ -47,7 +47,6 @@ WD_Overview::WD_Overview(wxWindow *parent, unsigned int display_type) :
 	vp->SetSizeHints(this);
 	smc_size_aspect(this);
 	Center();
-	return;
 }
 
 wxListCtrl *WD_Overview::init_list(unsigned int type)

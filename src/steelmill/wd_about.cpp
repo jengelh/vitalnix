@@ -44,5 +44,4 @@ WD_About::WD_About(wxWindow *parent) :
 	SetSizer(vp);
 	vp->SetSizeHints(this);
 	smc_size_aspect(this);
-	return;
 }

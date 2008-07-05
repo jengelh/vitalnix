@@ -127,7 +127,6 @@ static void driver_info(const char *fn)
 
 	vxdb_unload(md);
 	++mcount;
-	return;
 }
 
 /*
@@ -150,7 +149,6 @@ static void read_ldso_conf(void)
 	}
 
 	HXdir_close(dirp);
-	return;
 }
 
 /*
@@ -179,7 +177,6 @@ static void read_ldso_conf1(const char *file)
 
 	fclose(fp);
 	hmc_free(ln);
-	return;
 }
 
 /*
@@ -199,7 +196,6 @@ static void read_environment(void)
 		HXdeque_push(Dirs, dirname);
 
 	free(working_copy);
-	return;
 }
 
 static bool get_options(int *argc, const char ***argv)
@@ -222,5 +218,3 @@ static void show_version(const struct HXoptcb *cbi)
 	printf("Vitalnix " PACKAGE_VERSION " dbinfo\n");
 	exit(EXIT_SUCCESS);
 }
-
-//=============================================================================

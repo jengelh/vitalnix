@@ -27,5 +27,4 @@ WD_Splash::WD_Splash(const wxPoint &pos) :
 	SetSizer(vp);
 	vp->SetSizeHints(this);
 	Center();
-	return;
 }

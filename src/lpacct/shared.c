@@ -22,7 +22,6 @@
 const char *const lpacct_sql_fields =
 	"queue, jid, user, title, cyan, magenta, yellow, black, total, pages";
 
-//-----------------------------------------------------------------------------
 /*
  * lpacct_readconfig -
  * @p:	config structure
@@ -87,5 +86,3 @@ MYSQL *lpacct_sql_start(const struct options *p)
 	mysql_query(conn, "set names 'utf8'");
 	return conn;
 }
-
-//=============================================================================

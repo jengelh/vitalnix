@@ -134,5 +134,3 @@ static bool get_options(int *argc, const char ***argv, struct mdf_priv *p)
 	}
 	return true;
 }
-
-//=============================================================================

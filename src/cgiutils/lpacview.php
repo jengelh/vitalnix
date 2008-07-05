@@ -17,7 +17,6 @@ function force_https()
 		header("Location: https://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"]);
 		exit();
 	}
-	return;
 }
 
 /*
@@ -162,7 +161,6 @@ function helptext()
 		<span style="color: red;">✘</span> = no;<br />
 	<i>Ink</i> is measured in fully-tinted ISO A4 pages.</p>
 	<?php
-	return;
 }
 
 function time_period($user = "")
@@ -296,7 +294,6 @@ function root_view()
 
 	<?php
 	helptext();
-	return;
 }
 
 function user_query($user)
@@ -507,7 +504,6 @@ function user_view($user)
 	</form>
 	<?php
 	helptext();
-	return;
 }
 
 function delete_all()
@@ -518,8 +514,6 @@ function delete_all()
 	if ($ret === false)
 		echo "<p><b>TRUNCATE query failed:</b><br />",
 		     "<b>", mysql_error(), "</b></p>";
-
-	return;
 }
 
 function delete_users($user, $confirmed = false)
@@ -545,8 +539,6 @@ function delete_users($user, $confirmed = false)
 			break;
 		}
 	}
-
-	return;
 }
 
 function delete_jobs($job)
@@ -574,8 +566,6 @@ function delete_jobs($job)
 			break;
 		}
 	}
-
-	return;
 }
 
 function process_delete()

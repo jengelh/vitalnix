@@ -65,7 +65,6 @@ const struct time_period timetable_sek2[] = {
 
 #define PAM_DENY PAM_PERM_DENIED
 
-//-----------------------------------------------------------------------------
 static inline bool is_schueler(const struct vxdb_user *u)
 {
 	return u->pw_gid == 600 /* schueler */ || u->pw_gid == 604 /* extsc */;

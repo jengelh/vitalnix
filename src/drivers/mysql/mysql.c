@@ -158,7 +158,6 @@ static void vxmysql_exit(struct vxdb_state *vp)
 	struct mysql_state *state = vp->state;
 	read_config(state, CONFIG_FREE, NULL);
 	free(state);
-	return;
 }
 
 static int vxmysql_open(struct vxdb_state *vp, unsigned int flags)
@@ -229,7 +228,6 @@ static void vxmysql_close(struct vxdb_state *vp)
 	struct mysql_state *state = vp->state;
 	mysql_close(state->cn.handle);
 	hmc_free(state->names.tsl_user);
-	return;
 }
 
 static int vxmysql_xlock_user(struct mysql_state *state)
@@ -265,7 +263,6 @@ static inline void vxmysql_xunlock(struct mysql_state *state)
 	MYSQL_RES *r = mysql_store_result(state->cn.handle);
 	if (r != NULL)
 		mysql_free_result(r);
-	return;
 }
 
 static long vxmysql_modctl(struct vxdb_state *vp, unsigned int command, ...)
@@ -517,7 +514,6 @@ static void vxmysql_usertrav_free(struct vxdb_state *vp, void *ptr)
 	struct traverser_state *trav = ptr;
 	mysql_free_result(trav->res);
 	free(trav);
-	return;
 }
 
 static int vxmysql_groupadd(struct vxdb_state *vp,
@@ -609,7 +605,6 @@ static void vxmysql_grouptrav_free(struct vxdb_state *vp, void *ptr)
 	struct traverser_state *trav = ptr;
 	mysql_free_result(trav->res);
 	free(trav);
-	return;
 }
 
 static unsigned int count_rows(struct mysql_state *state, const char *table)
@@ -644,7 +639,6 @@ static void export_passwd(struct vxdb_user *dest, const MYSQL_ROW in)
 	hmc_strasg(&dest->pw_real, in[3]);
 	hmc_strasg(&dest->pw_home, in[4]);
 	hmc_strasg(&dest->pw_shell, in[5]);
-	return;
 }
 
 static void export_shadow(struct vxdb_user *dest, const MYSQL_ROW in)
@@ -663,7 +657,6 @@ static void export_shadow(struct vxdb_user *dest, const MYSQL_ROW in)
 		dest->sp_expire  = ito_expire(strtol(in[6], NULL, 0));
 	if (in[7] != NULL)
 		dest->sp_inact   = ito_inact(strtol(in[7], NULL, 0));
-	return;
 }
 
 static inline void export_vxshadow(struct vxdb_user *dest,
@@ -673,7 +666,6 @@ static inline void export_vxshadow(struct vxdb_user *dest,
 	hmc_strasg(&dest->vs_pvgrp, in[2]);
 	if (in[3] != NULL)
 		dest->vs_defer = strtoul(in[3], NULL, 0);
-	return;
 }
 
 static inline void export_group(struct vxdb_group *dest, const MYSQL_ROW in)
@@ -681,7 +673,6 @@ static inline void export_group(struct vxdb_group *dest, const MYSQL_ROW in)
 	hmc_strasg(&dest->gr_name, in[0]);
 	if (in[1] != NULL)
 		dest->gr_gid = strtol(in[1], NULL, 0);
-	return;
 }
 
 static unsigned int find_next_id(struct mysql_state *state,
@@ -814,7 +805,6 @@ static void quote_append(hmc_t **dest, const char *s)
 		hmc_strcat(dest, "'");
 	}
 	free(fm);
-	return;
 }
 
 static void read_config(struct mysql_state *state, unsigned int action,
@@ -889,14 +879,11 @@ static void read_config(struct mysql_state *state, unsigned int action,
 	} else if (action == CONFIG_FREE) {
 		HX_shconfig_free(options_table);
 	}
-
-	return;
 }
 
 static void read_config_cb(const struct HXoptcb *cbi)
 {
 	read_config(cbi->current->uptr, CONFIG_READ_NEST, cbi->data);
-	return;
 }
 
 static char *s_join(const char *delim, ...)

@@ -118,5 +118,3 @@ static int vxcgi_conv(int num_msg, const struct pam_message **msg_ap,
 	errno = ENOMEM;
 	return PAM_CONV_ERR;
 }
-
-//=============================================================================

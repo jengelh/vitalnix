@@ -57,7 +57,6 @@ void invert_image(struct image *image)
 		*Bptr = ~*Bptr;
 		++Bptr;
 	}
-	return;
 }
 
 /*
@@ -165,7 +164,6 @@ static void cost_add(struct cost *out, const struct cost *in)
 	out->k += in->k;
 	out->t += in->c + in->m + in->y + in->k;
 	out->p += in->p;
-	return;
 }
 
 static inline unsigned long min2(unsigned long a, unsigned long b)
@@ -313,8 +311,6 @@ static void print_stats(const struct options *op, const struct cost *cost,
 		sqm.c, sqm.m, sqm.y, sqm.k, sqm.t,
 		sqin.c, sqin.m, sqin.y, sqin.k, sqin.t,
 		bl.c, bl.m, bl.y, bl.k, bl.t);
-
-	return;
 #undef COLOR
 }
 
@@ -327,5 +323,3 @@ static inline double px_to_in(unsigned int p, unsigned int dpi)
 {
 	return (double)p / dpi;
 }
-
-//=============================================================================

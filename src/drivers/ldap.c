@@ -123,7 +123,6 @@ static void vxldap_read_ldap_secret(const struct HXoptcb *cbi)
 		return;
 	*pw = hmc_sinit("");
 	HX_getl(pw, fp);
-	return;
 }
 
 static void vxldap_read_config(struct ldap_state *state, const char *file,
@@ -155,7 +154,6 @@ static void vxldap_read_config(struct ldap_state *state, const char *file,
 	state->uid_max      = state->gid_max = 60000;
 	HX_shconfig(CONFIG_SYSCONFDIR "/autouid.conf", autouid_table);
 	HX_shconfig(file, options_table);
-	return;
 }
 
 static int vxldap_init(struct vxdb_state *vp, const char *config_file)
@@ -284,7 +282,6 @@ static void vxldap_close(struct vxdb_state *vp)
 {
 	struct ldap_state *state = vp->state;
 	ldap_unbind_ext(state->conn, NULL, NULL);
-	return;
 }
 
 static void vxldap_exit(struct vxdb_state *vp)
@@ -293,7 +290,6 @@ static void vxldap_exit(struct vxdb_state *vp)
 	vxldap_read_config(state, NULL, true);
 	hmc_free(state->root_pw);
 	free(state);
-	return;
 }
 
 /*
@@ -663,7 +659,6 @@ static void vxldap_getattr(struct ldap_state *state, const char *dn,
 	if (ber != NULL)
 		ber_free(ber, false);
 	ldap_msgfree(result);
-	return;
 }
 
 /*
@@ -968,7 +963,6 @@ static void vxldap_copy_user(struct vxdb_user *dest, LDAP *conn,
 
 	if (ber != NULL)
 		ber_free(ber, false);
-	return;
 }
 
 static int vxldap_getpwx(struct ldap_state *state, const char *filter,
@@ -1062,7 +1056,6 @@ static void vxldap_usertrav_free(struct vxdb_state *vp, void *ptr)
 	struct ldap_trav *trav = ptr;
 	ldap_msgfree(trav->base);
 	free(trav);
-	return;
 }
 
 static hmc_t *dn_group(const struct ldap_state *state, const char *name)
@@ -1181,7 +1174,6 @@ static void vxldap_copy_group(struct vxdb_group *dest, LDAP *conn,
 
 	if (ber != NULL)
 		ber_free(ber, false);
-	return;
 }
 
 static int vxldap_getgrx(struct ldap_state *state, const char *filter,
@@ -1271,7 +1263,6 @@ static void vxldap_grouptrav_free(struct vxdb_state *vp, void *ptr)
 	struct ldap_trav *trav = ptr;
 	ldap_msgfree(trav->base);
 	free(trav);
-	return;
 }
 
 static int vxldap_sgmapadd(struct vxdb_state *vp, const char *user,
@@ -1385,7 +1376,6 @@ static void vxldap_sgmapget2(LDAP *conn, LDAPMessage *ldres,
 
 	*out = NULL;
 	ldap_msgfree(ldres);
-	return;
 }
 
 static int vxldap_sgmapget(struct vxdb_state *vp, const char *user,

@@ -20,7 +20,6 @@
 
 #define NDSTRLEN(s) (((s) != NULL) ? strlen(s) + 1 : 0)
 
-//-----------------------------------------------------------------------------
 EXPORT_SYMBOL void vxdb_user_clean(struct vxdb_user *u)
 {
 	memset(u, 0, sizeof(struct vxdb_user));
@@ -31,7 +30,6 @@ EXPORT_SYMBOL void vxdb_user_clean(struct vxdb_user *u)
 	u->sp_warn   = VXDB_DFL_WARNAGE;
 	u->sp_expire = VXDB_NO_EXPIRE;
 	u->sp_inact  = VXDB_NO_INACTIVE;
-	return;
 }
 
 EXPORT_SYMBOL void vxdb_user_copy(struct vxdb_user *dest,
@@ -56,7 +54,6 @@ EXPORT_SYMBOL void vxdb_user_copy(struct vxdb_user *dest,
 	hmc_strasg(&dest->vs_pvgrp, src->vs_pvgrp);
 	dest->vs_defer   = src->vs_defer;
 	dest->be_priv    = NULL;
-	return;
 }
 
 EXPORT_SYMBOL struct vxdb_user *vxdb_user_dup(const struct vxdb_user *src)
@@ -81,7 +78,6 @@ EXPORT_SYMBOL void vxdb_user_free(struct vxdb_user *user, bool heap)
 	hmc_free(user->vs_pvgrp);
 	if (heap)
 		free(user);
-	return;
 }
 
 EXPORT_SYMBOL void vxdb_user_nomodify(struct vxdb_user *u)
@@ -96,7 +92,6 @@ EXPORT_SYMBOL void vxdb_user_nomodify(struct vxdb_user *u)
 	u->sp_expire  = VXDB_NO_CHANGE;
 	u->sp_inact   = VXDB_NO_CHANGE;
 	u->vs_defer   = VXDB_NO_CHANGE;
-	return;
 }
 
 EXPORT_SYMBOL void vxdb_group_clean(struct vxdb_group *group)
@@ -104,7 +99,6 @@ EXPORT_SYMBOL void vxdb_group_clean(struct vxdb_group *group)
 	group->gr_name = NULL;
 	group->gr_gid  = VXDB_NOGID;
 	group->be_priv = NULL;
-	return;
 }
 
 EXPORT_SYMBOL void vxdb_group_copy(struct vxdb_group *dest,
@@ -113,7 +107,6 @@ EXPORT_SYMBOL void vxdb_group_copy(struct vxdb_group *dest,
 	hmc_strasg(&dest->gr_name, src->gr_name);
 	dest->gr_gid  = src->gr_gid;
 	dest->be_priv = NULL;
-	return;
 }
 
 EXPORT_SYMBOL struct vxdb_group *vxdb_group_dup(const struct vxdb_group *src)
@@ -130,7 +123,6 @@ EXPORT_SYMBOL void vxdb_group_free(struct vxdb_group *group, bool heap)
 	hmc_free(group->gr_name);
 	if (heap)
 		free(group);
-	return;
 }
 
 EXPORT_SYMBOL void vxdb_group_nomodify(struct vxdb_group *group)
@@ -138,7 +130,4 @@ EXPORT_SYMBOL void vxdb_group_nomodify(struct vxdb_group *group)
 	group->gr_name = NULL;
 	group->gr_gid  = VXDB_NO_CHANGE;
 	group->be_priv = NULL;
-	return;
 }
-
-//=============================================================================

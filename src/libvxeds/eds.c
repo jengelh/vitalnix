@@ -56,7 +56,6 @@ EXPORT_SYMBOL void vxeds_close(void *state_ptr)
 	struct vxeds_state *state = state_ptr;
 	state->vtable->close(state->private_data);
 	free(state);
-	return;
 }
 
 EXPORT_SYMBOL const char *vxeds_derivefromname(const char *filename)
@@ -79,7 +78,6 @@ EXPORT_SYMBOL void vxeds_free_entry(struct vxeds_entry *e)
 	free(e->full_name);
 	free(e->pvgrp);
 	free(e->uuid);
-	return;
 }
 
 EXPORT_SYMBOL char *vxeds_bfullname(const char *first_name,
@@ -101,5 +99,3 @@ const struct edsformat_vtable *vxeds_formats_trav(void **trav_pptr)
 {
 	return vxcore_section_trav(trav_pptr, "libvxeds");
 }
-
-//=============================================================================

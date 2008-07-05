@@ -190,5 +190,3 @@ static inline int wb_classof(char x)
 		return CLASS_NONE;
 	return CLASS_OTHER;
 }
-
-//=============================================================================

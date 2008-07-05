@@ -226,8 +226,6 @@ static void groupbld_transform(const char *name, hmc_t **unix_name)
 			*(p-1) = '\0';
 		hmc_strcat(unix_name, buf);
 	}
-
-	return;
 }
 
 /*

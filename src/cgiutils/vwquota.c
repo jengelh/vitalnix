@@ -142,7 +142,6 @@ static void do_quota(const char *user)
 	printf("</table>");
 	pclose(fp);
 	hmc_free(ln);
-	return;
 }
 
 static void header(void)
@@ -160,7 +159,6 @@ static void header(void)
 	"<p>&nbsp;</p>"
 	"<p style=\"font-size: 16pt;\"><b>Query DiskQuota Status</b></p>"
 	);
-	return;
 }
 
 static void form(const char *user)
@@ -189,7 +187,6 @@ static void form(const char *user)
 	"</form>",
 	user
 	);
-	return;
 }
 
 static void footer(void)
@@ -199,5 +196,4 @@ static void footer(void)
 	"</body>"
 	"</html>"
 	);
-	return;
 }

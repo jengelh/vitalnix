@@ -94,7 +94,6 @@ static int vxnss1_usertrav_walk(struct vxdb_state *this, void *priv_data,
 static void vxnss1_usertrav_free(struct vxdb_state *this, void *priv_data)
 {
 	endpwent();
-	return;
 }
 
 static int vxnss1_getgrgid(struct vxdb_state *this, unsigned int gid,
@@ -147,7 +146,6 @@ static int vxnss1_grouptrav_walk(struct vxdb_state *this, void *priv_data,
 static void vxnss1_grouptrav_free(struct vxdb_state *this, void *priv_data)
 {
 	endgrent();
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -195,7 +193,6 @@ static void nssuser_copy(struct vxdb_user *dest, const struct passwd *pe,
 	dest->vs_pvgrp   = NULL;
 	dest->vs_defer   = 0;
 	dest->be_priv    = NULL;
-	return;
 }
 
 static void nssgroup_copy(struct vxdb_group *dest, const struct group *src)
@@ -203,7 +200,6 @@ static void nssgroup_copy(struct vxdb_group *dest, const struct group *src)
 	HX_strclone(&dest->gr_name, src->gr_name);
 	dest->gr_gid  = src->gr_gid;
 	dest->be_priv = NULL;
-	return;
 }
 
 EXPORT_SYMBOL struct vxdb_driver THIS_MODULE = {

@@ -224,7 +224,6 @@ static void finger_grep(struct vxdb_state *db, const char *keyword)
 	hmc_free(lc_real);
 	vxdb_user_free(&user, false);
 	vxdb_usertrav_free(db, trav);
-	return;
 }
 
 static void finger_uid(struct vxdb_state *db, unsigned int uid)
@@ -266,7 +265,6 @@ static void finger_uid(struct vxdb_state *db, unsigned int uid)
 
 	vxdb_user_free(&user, false);
 	vxdb_usertrav_free(db, trav);
-	return;
 }
 
 static bool check_utmp(const char *user)
@@ -352,7 +350,6 @@ static void check_lastlog(long uid)
 
  never:
 	printf("Never logged in.\n");
-	return;
 }
 
 static void check_mail(const char *user)
@@ -381,5 +378,4 @@ static void check_mail(const char *user)
 		       mstr, astr);
 	else
 		printf("Mail last read on %s\n", astr);
-	return;
 }

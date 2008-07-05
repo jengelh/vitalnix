@@ -16,7 +16,6 @@
 #include "steelmill/wd_usermod.hpp"
 #include "steelmill/xu_common.hpp"
 
-//-----------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(WD_Usermod, wxDialog)
 END_EVENT_TABLE()
 
@@ -201,7 +200,4 @@ WD_Usermod::WD_Usermod(wxWindow *parent, unsigned int new_flag) :
 	SetSizer(vp);
 	vp->SetSizeHints(this);
 	Center();
-	return;
 }
-
-//=============================================================================

@@ -60,7 +60,6 @@ WD_Pwlfmt::WD_Pwlfmt(wxWindow *parent) :
 	vp->SetSizeHints(this);
 	smc_size_aspect(this);
 	Center();
-	return;
 }
 
 void WD_Pwlfmt::change_style(wxCommandEvent &event)
@@ -70,12 +69,10 @@ void WD_Pwlfmt::change_style(wxCommandEvent &event)
 		(ct_style->GetClientData(ct_style->GetSelection()));
 	ct_tpltext->Enable(vtable->require_template);
 	ct_template->Enable(vtable->require_template);
-	return;
 }
 
 void WD_Pwlfmt::process(wxCommandEvent &event)
 {
-	return;
 }
 
 GW_PwlstylesChoice::GW_PwlstylesChoice(wxWindow *parent, wxWindowID id) :
@@ -88,6 +85,4 @@ GW_PwlstylesChoice::GW_PwlstylesChoice(wxWindow *parent, wxWindowID id) :
 		Append(fU8(vtable->name) + wxT(" (") +
 		       fU8(vtable->desc) + wxT(")"),
 		       const_cast<void *>(static_cast<const void *>(vtable)));
-
-	return;
 }

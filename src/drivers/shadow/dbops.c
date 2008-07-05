@@ -30,7 +30,6 @@ static void db_flush_users(struct shadow_state *);
  * - on db_flush(), write db to disk and release write lock (no close/reread)
  */
 
-//-----------------------------------------------------------------------------
 int db_open(struct shadow_state *state, unsigned int flags)
 {
 #define open_fd(n) ((state->n.fd = open(state->n.path, flags)) >= 0)
@@ -116,7 +115,6 @@ void db_close(struct shadow_state *state)
 	close_fpd(fgroup);
 	close_fpd(fshadow);
 	close_fpd(fpasswd);
-	return;
 #undef close_fpd
 }
 
@@ -139,8 +137,6 @@ void db_flush(struct shadow_state *state, bool force)
 
 	if (state->fgroup.is_chg || force)
 		db_flush_groups(state);
-
-	return;
 }
 
 static void db_flush_users(struct shadow_state *state)
@@ -175,5 +171,4 @@ static void db_flush_users(struct shadow_state *state)
 	}
 
 	TOUCH_USER_TAG(false);
-	return;
 }

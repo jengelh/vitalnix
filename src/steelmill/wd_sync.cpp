@@ -176,7 +176,6 @@ WD_SyncParam::WD_SyncParam(wxWindow *parent) :
 	Center();
 
 	priv = NULL;
-	return;
 }
 
 void WD_SyncParam::Compare(wxCommandEvent &event)
@@ -278,7 +277,6 @@ void WD_SyncParam::Compare(wxCommandEvent &event)
 	}
 
 	release_priv(priv);
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -310,7 +308,6 @@ WD_SyncCompare::WD_SyncCompare(wxWindow *parent, struct pv_sync *priv) :
 	Center();
 
 	priv->window = this;
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -395,7 +392,6 @@ WD_SyncProg::WD_SyncProg(wxWindow *parent, struct pv_sync *priv) :
 
 	this->priv   = priv;
 	priv->window = this;
-	return;
 }
 
 void WD_SyncProg::Continue(wxCommandEvent &event)
@@ -441,49 +437,42 @@ void WD_SyncProg::Continue(wxCommandEvent &event)
 	btn->Enable();
 
 	GetSizer()->Layout();
-	return;
 }
 
 void WD_SyncProg::Details_Update(wxCommandEvent &event)
 {
 	GW_Listbox(this, wxEmptyString, listbox_fill_user,
 	           priv->mdsw->update_req->root, wxLB_SORT).ShowModal();
-	return;
 }
 
 void WD_SyncProg::Details_Add(wxCommandEvent &event)
 {
 	GW_Listbox(this, wxEmptyString, listbox_fill_eds,
 	           priv->mdsw->add_req->root, wxLB_SORT).ShowModal();
-	return;
 }
 
 void WD_SyncProg::Details_Defer_Start(wxCommandEvent &event)
 {
 	GW_Listbox(this, wxEmptyString, priv->mdsw->defer_start,
 	           wxLB_SORT).ShowModal();
-	return;
 }
 
 void WD_SyncProg::Details_Defer_Wait(wxCommandEvent &event)
 {
 	GW_Listbox(this, wxEmptyString, priv->mdsw->defer_wait,
 	           wxLB_SORT).ShowModal();
-	return;
 }
 
 void WD_SyncProg::Details_Defer_Stop(wxCommandEvent &event)
 {
 	GW_Listbox(this, wxEmptyString, priv->mdsw->defer_stop,
 	           wxLB_SORT).ShowModal();
-	return;
 }
 
 void WD_SyncProg::Details_Delete(wxCommandEvent &event)
 {
 	GW_Listbox(this, wxEmptyString, priv->mdsw->delete_now,
 	           wxLB_SORT).ShowModal();
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -497,8 +486,6 @@ GW_EdsformatChoice::GW_EdsformatChoice(wxWindow *parent, wxWindowID id) :
 	while ((vtable = vxeds_formats_trav(&trav)) != NULL)
 		Append(fU8(vtable->desc),
 		       const_cast<struct edsformat_vtable *>(vtable));
-
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -531,7 +518,6 @@ static void cb_report(unsigned int type, const struct mdsync_workspace *mdsw,
 	gg->SetValue(current);
 	priv->window->GetSizer()->Layout();
 	wxTheApp->Yield();
-	return;
 }
 
 template<class Object> static inline Object find_window(long n, wxWindow *w)
@@ -557,7 +543,6 @@ static void listbox_fill_eds(wxListBox *lb, const void *user_ptr)
 		listbox_fill_eds(lb, node->sub[0]);
 	if (node->sub[1] != NULL)
 		listbox_fill_eds(lb, node->sub[1]);
-	return;
 }
 
 static void listbox_fill_user(wxListBox *lb, const void *user_ptr)
@@ -578,7 +563,6 @@ static void listbox_fill_user(wxListBox *lb, const void *user_ptr)
 		listbox_fill_user(lb, node->sub[0]);
 	if (node->sub[1] != NULL)
 		listbox_fill_user(lb, node->sub[1]);
-	return;
 }
 
 static void release_priv(struct pv_sync *priv)
@@ -592,7 +576,6 @@ static void release_priv(struct pv_sync *priv)
 	if (priv->module_handle != NULL)
 		vxdb_unload(priv->module_handle);
 	delete priv;
-	return;
 }
 
 static int time_limit(struct timeval *last, const struct timeval *max)
@@ -627,8 +610,6 @@ static void tv_delta(const struct timeval *past, const struct timeval *now,
 		dest->tv_sec = sec;
 		dest->tv_usec = acc;
 	}
-
-	return;
 }
 
 static void update_max(wxWindow *w, long id)
@@ -640,8 +621,6 @@ static void update_max(wxWindow *w, long id)
 		pt->SetLabel(wxT("100%"));
 	if (gg != NULL)
 		gg->SetValue(gg->GetRange());
-
-	return;
 }
 
 static wxString wxString_int(unsigned int n)
@@ -650,5 +629,3 @@ static wxString wxString_int(unsigned int n)
 	s.Printf(wxT("%u"), n);
 	return s;
 }
-
-//=============================================================================

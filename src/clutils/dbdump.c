@@ -96,7 +96,6 @@ static void d_ldif(struct vxdb_state *db)
 		d_ldif_users(db);
 	if (Dump_what[DUMP_GROUP])
 		d_ldif_groups(db);
-	return;
 }
 
 static void d_ldif_groups(struct vxdb_state *db)
@@ -121,7 +120,6 @@ static void d_ldif_groups(struct vxdb_state *db)
 
 	vxdb_grouptrav_free(db, trav);
 	vxdb_group_free(&group, false);
-	return;
 }
 
 static void d_ldif_users(struct vxdb_state *db) 
@@ -217,7 +215,6 @@ static void d_ldif_users(struct vxdb_state *db)
 	vxdb_usertrav_free(db, trav);
 	vxdb_user_free(&user, false);
 	free(freeme);
-	return;
 }
 
 static void d_mysql(struct vxdb_state *db)
@@ -282,7 +279,6 @@ static void d_mysql(struct vxdb_state *db)
 	if (Dump_what[DUMP_GROUP])
 		d_mysql_groups(db);
 	printf("unlock tables;\n");
-	return;
 }
 
 static void d_mysql_users(struct vxdb_state *db)
@@ -320,7 +316,6 @@ static void d_mysql_users(struct vxdb_state *db)
 	vxdb_usertrav_free(db, trav);
 	vxdb_user_free(&user, false);
 	printf("# Number of users: %ld\n", vxdb_modctl(db, VXDB_COUNT_USERS));
-	return;
 }
 
 static void d_mysql_groups(struct vxdb_state *db)
@@ -338,7 +333,6 @@ static void d_mysql_groups(struct vxdb_state *db)
 	vxdb_grouptrav_free(db, trav);
 	vxdb_group_free(&group, false);
 	printf("# Number of groups: %ld\n", vxdb_modctl(db, VXDB_COUNT_GROUPS));
-	return;
 }
 
 static void d_shadow(struct vxdb_state *db)
@@ -418,7 +412,6 @@ static void d_shadow(struct vxdb_state *db)
 	printf("#---INFO---\n");
 	printf("# Number of users: %ld\n", vxdb_modctl(db, VXDB_COUNT_USERS));
 	printf("# Number of groups: %ld\n", vxdb_modctl(db, VXDB_COUNT_GROUPS));
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -452,7 +445,6 @@ static void getopt_t(const struct HXoptcb *cbi)
 		Output_type = OUTPUT_MYSQL;
 	else if (strcmp(cbi->data, "ldif") == 0)
 		Output_type = OUTPUT_LDIF;
-	return;
 }
 
 static void getopt_u(const struct HXoptcb *cbi)
@@ -466,7 +458,6 @@ static void getopt_u(const struct HXoptcb *cbi)
 	if (to != NULL && *to != '\0')
 		Uid_range[1] = strtol(to, NULL, 0);
 	free(wk);
-	return;
 }
 
 static void getopt_w(const struct HXoptcb *cbi)
@@ -491,7 +482,6 @@ static void getopt_w(const struct HXoptcb *cbi)
 	}
 
 	free(orig_wk);
-	return;
 }
 
 /*
@@ -519,5 +509,3 @@ static void show_version(const struct HXoptcb *cbi)
 	printf("Vitalnix " PACKAGE_VERSION " dbdump\n");
 	exit(EXIT_SUCCESS);
 }
-
-//=============================================================================

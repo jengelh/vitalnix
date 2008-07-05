@@ -57,7 +57,6 @@ static int pgrtf_construct(struct pwlfmt_workspace *w)
 static void pgrtf_destruct(struct pwlfmt_workspace *w)
 {
 	free(w->style_data);
-	return;
 }
 
 static void pgrtf_file_header(const struct pwlfmt_workspace *ws)
@@ -67,7 +66,6 @@ static void pgrtf_file_header(const struct pwlfmt_workspace *ws)
 
 	HXformat_fprintf(catalog, ws->output_fh, priv->tps_file_header);
 	HXformat_free(catalog);
-	return;
 }
 
 static void pgrtf_tbl_header(const struct pwlfmt_workspace *ws,
@@ -78,7 +76,6 @@ static void pgrtf_tbl_header(const struct pwlfmt_workspace *ws,
 
 	HXformat_fprintf(catalog, ws->output_fh, priv->tps_tbl_header);
 	HXformat_free(catalog);
-	return;
 }
 
 static void pgrtf_tbl_entry(const struct pwlfmt_workspace *ws,
@@ -94,7 +91,6 @@ static void pgrtf_tbl_entry(const struct pwlfmt_workspace *ws,
 	HXformat_add(catalog, "FIRSTNAME", uni_firstname,
 	             HXTYPE_STRING | HXFORMAT_IMMED);
 	HXformat_fprintf(catalog, ws->output_fh, priv->tps_tbl_entry);
-	return;
 }
 
 static void pgrtf_tbl_footer(const struct pwlfmt_workspace *ws,
@@ -102,14 +98,12 @@ static void pgrtf_tbl_footer(const struct pwlfmt_workspace *ws,
 {
 	const struct pgrtf_data *priv = ws->style_data;
 	fprintf(ws->output_fh, priv->tps_tbl_footer);
-	return;
 }
 
 static void pgrtf_file_footer(const struct pwlfmt_workspace *ws)
 {
 	const struct pgrtf_data *priv = ws->style_data;
 	fprintf(ws->output_fh, priv->tps_file_footer);
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -190,5 +184,3 @@ static const struct pwlstyle_vtable THIS_STYLE = {
 };
 
 REGISTER_MODULE(pg_rtf, &THIS_STYLE);
-
-//=============================================================================

@@ -29,7 +29,6 @@ static void header(void)
 	"<p>&nbsp;</p>\n"
 	"<p style=\"font-size: 16pt;\"><b>Update NT password from UNIX password</b></p>\n"
 	);
-	return;
 }
 
 static void form(const char *username)
@@ -55,7 +54,6 @@ static void form(const char *username)
 		"</form>\n"
 		"</body>\n"
 		"</html>\n", getenv("REQUEST_URI"), username);
-	return;
 }
 
 static bool update_ntpassword(const char *username, const char *password)

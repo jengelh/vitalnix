@@ -85,5 +85,4 @@ WD_Single::WD_Single(wxWindow *parent) :
 	SetSizer(vp);
 	vp->SetSizeHints(this);
 	Center();
-	return;
 }

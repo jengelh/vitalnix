@@ -22,7 +22,6 @@
 #include <vitalnix/libvxutil/defines.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
-//-----------------------------------------------------------------------------
 EXPORT_SYMBOL int mdsync_read_file(struct mdsync_workspace *w,
     const char *input_dsc, const char *input_fmt)
 {
@@ -63,5 +62,3 @@ EXPORT_SYMBOL int mdsync_read_file(struct mdsync_workspace *w,
 	vxeds_close(state);
 	return 1;
 }
-
-//=============================================================================

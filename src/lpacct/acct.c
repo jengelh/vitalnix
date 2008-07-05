@@ -32,7 +32,6 @@ void acct_syslog(const struct options *op, const struct costf *cost)
 	       op->cups_args[ARGP_USER], cost->c, cost->m, cost->y, cost->k,
 	       cost->t, cost->p);
 	closelog();
-	return;
 }
 
 void acct_mysql(const struct options *op, const struct costf *cost)
@@ -60,5 +59,4 @@ void acct_mysql(const struct options *op, const struct costf *cost)
 	free(quser);
 	free(qtitle);
 	free(sql_query);
-	return;
 }

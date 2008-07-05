@@ -76,13 +76,11 @@ static int vxnss_open(struct vxdb_state *vp, unsigned int flags)
 static void vxnss_close(struct vxdb_state *vp)
 {
 	free_data(vp->state);
-	return;
 }
 
 static void vxnss_exit(struct vxdb_state *vp)
 {
 	free(vp->state);
-	return;
 }
 
 static long vxnss_modctl(struct vxdb_state *vp, unsigned int command, ...)
@@ -159,7 +157,6 @@ static int vxnss_usertrav_walk(struct vxdb_state *vp, void *priv_data,
 static void vxnss_usertrav_free(struct vxdb_state *vp, void *priv_data)
 {
 	free(priv_data);
-	return;
 }
 
 static int vxnss_getgrgid(struct vxdb_state *vp, unsigned int gid,
@@ -221,7 +218,6 @@ static int vxnss_grouptrav_walk(struct vxdb_state *vp, void *priv_data,
 static void vxnss_grouptrav_free(struct vxdb_state *vp, void *priv_data)
 {
 	free(priv_data);
-	return;
 }
 
 static int db_open(struct nss_state *state)
@@ -344,7 +340,6 @@ static void free_data(struct nss_state *state)
 		HXdeque_free(state->dq_group);
 		state->dq_group = NULL;
 	}
-	return;
 }
 
 static inline void free_single_user(struct vxdb_user *u)
@@ -355,14 +350,12 @@ static inline void free_single_user(struct vxdb_user *u)
 	free(u->pw_shell);
 	free(u->sp_passwd);
 	free(u);
-	return;
 }
 
 static inline void free_single_group(struct vxdb_group *g)
 {
 	free(g->gr_name);
 	free(g);
-	return;
 }
 
 static inline struct vxdb_user *get_user(const struct HXdeque *dq,

@@ -26,7 +26,6 @@ static struct HXdeque *tag_b_i_stack;
 static struct HXdeque *tag_h_stack;
 static char xlat_last;
 
-//-----------------------------------------------------------------------------
 static inline int strcmp_1u(const xmlChar *a, const char *b)
 {
 	return strcmp(reinterpret_cast(const char *, a), b);

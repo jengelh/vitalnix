@@ -351,7 +351,6 @@ static void vxutil_quote_base64(const char *s, char *d)
 		d += 4;
 	}
 	*d = '\0';
-	return;
 }
 
 /*
@@ -861,5 +860,3 @@ char *transform7(const char *src, char *dest, size_t dsize)
 	*dest = '\0';
 	return od;
 }
-
-//=============================================================================

@@ -96,7 +96,6 @@ static void vxmmd_close(struct vxdb_state *vp)
 {
 	struct multi_state *state = vp->state;
 	modules_close(state);
-	return;
 }
 
 static void vxmmd_exit(struct vxdb_state *vp)
@@ -104,7 +103,6 @@ static void vxmmd_exit(struct vxdb_state *vp)
 	struct multi_state *state = vp->state;
 	modules_destruct(state);
 	free(state);
-	return;
 }
 
 static unsigned int vxmmd_modctl_count(const struct multi_state *state,
@@ -318,7 +316,6 @@ static int vxmmd_usertrav_walk(struct vxdb_state *vp, void *ptr,
 static void vxmmd_usertrav_free(struct vxdb_state *vp, void *ptr)
 {
 	free(ptr);
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -466,7 +463,6 @@ static int vxmmd_grouptrav_walk(struct vxdb_state *vp, void *ptr,
 static void vxmmd_grouptrav_free(struct vxdb_state *vp, void *ptr)
 {
 	free(ptr);
-	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -658,8 +654,6 @@ static void modules_close(struct multi_state *state)
 		vxdb_close(WR_MOD(state));
 		state->wr_mod.mh_state = STATE_LOADED;
 	}
-
-	return;
 }
 
 static void modules_destruct(struct multi_state *state)
@@ -679,8 +673,6 @@ static void modules_destruct(struct multi_state *state)
 		state->wr_mod.mh_state = STATE_OUT;
 		free(state->wr_mod.mh_name);
 	}
-
-	return;
 }
 
 static void read_config(struct multi_state *state, const char *file)
@@ -702,7 +694,6 @@ static void read_config(struct multi_state *state, const char *file)
 	state->uid_max = state->gid_max = 60000;
 	HX_shconfig(CONFIG_SYSCONFDIR "/autouid.conf", autouid_table);
 	HX_shconfig(file, options_table);
-	return;
 }
 
 static int vxmmd_sgmapadd(struct vxdb_state *vp, const char *user,

@@ -26,7 +26,6 @@ static CONSTRUCTOR void vxcore_init(void)
 	if (module_tree == NULL)
 		module_tree = HXbtree_init(HXBT_MAP | HXBT_CKEY | HXBT_SCMP | HXBT_CID);
 	pthread_mutex_unlock(&module_lock);
-	return;
 }
 
 static DESTRUCTOR void vxcore_exit(void)
@@ -36,7 +35,6 @@ static DESTRUCTOR void vxcore_exit(void)
 		HXbtree_free(module_tree);
 	module_tree = NULL;
 	pthread_mutex_unlock(&module_lock);
-	return;
 }
 
 EXPORT_SYMBOL int vxcore_module_register(const char *section, const char *name,
@@ -82,7 +80,6 @@ EXPORT_SYMBOL void vxcore_module_unregister(const char *section,
 	if ((sect_tree = HXbtree_get(module_tree, section)) != NULL)
 		HXbtree_del(sect_tree, name);
 	pthread_mutex_unlock(&module_lock);
-	return;
 }
 
 EXPORT_SYMBOL struct HXbtree *vxcore_section_lookup(const char *section)
@@ -127,5 +124,3 @@ EXPORT_SYMBOL const void *vxcore_section_trav(void **trav_pptr,
 
 	return node->data;
 }
-
-//=============================================================================
