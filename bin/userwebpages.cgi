@@ -7,7 +7,7 @@ our $CACHE_FILE = "/home/wwwrun/www-users.cache";
 if ($ARGV[0] eq "-c") {
 	# Called by a cron entry
 	print "Creating cache $CACHE_FILE\n";
-	&create_cache();
+	create_cache();
 	exit 0;
 }
 
@@ -21,7 +21,7 @@ print
 	"<h1>Liste der User-Webseiten</h1>\n\n";
 
 my @users;
-my $cache_time = &load_cache(\@users);
+my $cache_time = load_cache(\@users);
 
 print scalar(@users) <= 15 ?
 	"<p>" : "<p style=\"-moz-column-count: 3; min-height: 6em;\">";
@@ -38,7 +38,7 @@ print
 	"</html>\n";
 
 #==============================================================================
-sub check_dir($)
+sub check_dir
 {
 	my $dir = shift @_;
 	my $found = 0;
@@ -66,7 +66,7 @@ sub check_dir($)
 	return $found;
 }
 
-sub create_cache($)
+sub create_cache
 {
 	my $list = shift @_;
 	my $u;
@@ -76,9 +76,9 @@ sub create_cache($)
 			next;
 		}
 		DirLoop: foreach my $d (qw(www public_html)) {
-			if (&check_dir($u->dir()."/$d")) {
+			if (check_dir($u->dir()."/$d")) {
 				print $u->name(), "\n";
-				push(@$list, [$u->name(), &realname($u)]);
+				push(@$list, [$u->name(), realname($u)]);
 				last DirLoop;
 			}
 		}
@@ -88,7 +88,7 @@ sub create_cache($)
 	return;
 }
 
-sub load_cache($)
+sub load_cache
 {
 	my $list = shift @_;
 	local *FH;
@@ -121,12 +121,12 @@ sub load_cache($)
 	return $s[9];
 }
 
-sub realname(@)
+sub realname
 {
 	return (split(/,/, $_[0]->gecos()))[0];
 }
 
-sub write_cache($)
+sub write_cache
 {
 	my $list  = shift @_;
 	my $tries = 0;

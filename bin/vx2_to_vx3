@@ -18,13 +18,13 @@ use Time::Local;
 use strict;
 my %passwd;
 
-exit &main(\@ARGV);
+exit(main(\@ARGV));
 
 #------------------------------------------------------------------------------
-sub main($)
+sub main
 {
 	my($passwd_file, $vxshadow_file) = ("/etc/passwd", "/etc/vxshadow");
-	&GetOptions(
+	GetOptions(
 		"p=s" => \$passwd_file,
 		"x=s" => \$vxshadow_file,
 	);
@@ -52,9 +52,9 @@ sub main($)
 			warn "Unknown user \"$_[0]\" in vxshadow\n";
 			next;
 		}
-		print "  <user lname=\"".&xmlencode($_[0])."\"";
-		print " uuid=\"".&xmlencode(&re_uuid($passwd{$_[0]}, $_[1]))."\"";
-		print " pvgrp=\"".&xmlencode($_[2])."\"";
+		print "  <user lname=\"".xmlencode($_[0])."\"";
+		print " uuid=\"".xmlencode(re_uuid($passwd{$_[0]}, $_[1]))."\"";
+		print " pvgrp=\"".xmlencode($_[2])."\"";
 		print " defer=\"".($_[3] + 0)."\" />\n";
 	}
 
@@ -65,12 +65,12 @@ sub main($)
 }
 
 # re_uuid
-#   @realname:  real name of the user
-#   @uuid_v0:   v0 uuid (hex-encoded into '0_YYYMDD')
+# @realname:	real name of the user
+# @uuid_v0:	v0 uuid (hex-encoded into '0_YYYMDD')
 #
 # Computes the new VX3 scheme from VX2.
 #
-sub re_uuid($$)
+sub re_uuid
 {
 	my($realname, $uuid_v0) = @_;
 
@@ -89,7 +89,7 @@ sub re_uuid($$)
 	return;
 }
 
-sub xmlencode($)
+sub xmlencode
 {
 	my $s = shift @_;
 	$s =~ s/&/&amp;/g;

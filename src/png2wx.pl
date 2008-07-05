@@ -1,24 +1,23 @@
 #!/usr/bin/perl
 #
 #	png2wx - embed png in C++
-#	by Jan Engelhardt <jengelh [at] gmx de>, 2004 - 2007
-#	http://jengelh.hopto.org/
+#	written by Jan Engelhardt <jengelh [at] medozas de>, 2004 - 2008
+#	http://jengelh.medozas.de/
 #	released in the Public Domain
 #
 
 use Getopt::Long;
 use strict;
 
-&main(\@ARGV);
+exit(main(\@ARGV));
 
-#------------------------------------------------------------------------------
-sub main($)
+sub main
 {
 	my($cpp_file, $hpp_file, $hpp_include, $Marker, $main, $tmp);
-	&Getopt::Long::Configure(qw(bundling));
-	&GetOptions(
-		"C=s"  => \$cpp_file,
-		"H=s"  => \$hpp_file,
+	Getopt::Long::Configure(qw(bundling));
+	GetOptions(
+		"C=s" => \$cpp_file,
+		"H=s" => \$hpp_file,
 		"M=s" => \$Marker,
 	);
 
@@ -26,7 +25,8 @@ sub main($)
 		die "You need to specify -C, -H and -M options.\n";
 	}
 
-	$hpp_include = ($hpp_file =~ m{/([^/]*)$})[0];
+	$hpp_include = $hpp_file;
+	$hpp_include =~ s{^(.*)/}{};
 
 	#
 	# C++ header
@@ -78,7 +78,7 @@ extern void initialize_images(void);
 		print CPP "wxBitmap *_img_$base;\n";
 
 		$main .= "	{\n".
-		         "		wxMemoryInputStream sm(\"".&encoded($file)."\", ".(-s $file).");\n".
+		         "		wxMemoryInputStream sm(\"".encoded($file)."\", ".(-s $file).");\n".
 		         "		_img_$base = new wxBitmap(wxImage(sm));\n".
 		         "	}\n";
 	}
@@ -99,7 +99,8 @@ extern void initialize_images(void);
 	return;
 }
 
-sub encoded {
+sub encoded
+{
 	my $file = shift @_;
 	my $data;
 	local *FH;
@@ -113,7 +114,7 @@ sub encoded {
 	$data = join(undef, <FH>);
 	$data =~ s/\\/\\\\/go;
 	$data =~ s/([^\x21\x23-\x7e])/sprintf "\\%03o", ord $1/egs;
-	$data =~ s/\?\?(?=[-\(\)<>=\/'!])/?\\077/g;
+	$data =~ s/\?\?(?=[-\(\)<>=\/\'!])/?\\077/g;
 	close FH;
 	return $data;
 }

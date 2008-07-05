@@ -22,7 +22,7 @@ chomp(my $password = <STDIN>);
 system qw(stty echo);
 
 my $err_msg;
-$ret = &authenticate($username, $password, \$err_msg);
+$ret = authenticate($username, $password, \$err_msg);
 if ($ret == 7 || $ret == 10) {
 	#
 	# 7  = Incorrect password
@@ -40,7 +40,7 @@ if ($ret == 7 || $ret == 10) {
 }
 
 #------------------------------------------------------------------------------
-sub authenticate($$)
+sub authenticate
 {
 	my($username, $password, $eref) = @_;
 	local(*FWRITE, *FERR);
@@ -68,5 +68,3 @@ sub authenticate($$)
 	close FERR;
 	return $status;
 }
-
-#==============================================================================
