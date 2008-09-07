@@ -1,7 +1,6 @@
 /*
  *	libvxcli - Command-line interface helper
- *	Copyright © CC Computer Consultants GmbH, 2003 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -14,7 +13,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libHX.h>
+#include <libHX/option.h>
+#include <libHX/string.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxcli/libvxcli.h>
 #include <vitalnix/libvxutil/defines.h>
@@ -22,7 +22,7 @@
 EXPORT_SYMBOL char *vxcli_query(const char *msg, const char *prompt,
     const char *defl, unsigned int opts, char *buf, unsigned int size)
 {
-	hmc_t *answer = NULL;
+	hxmc_t *answer = NULL;
 	bool i = false;
 
 	if (msg != NULL)
@@ -54,7 +54,7 @@ EXPORT_SYMBOL char *vxcli_query(const char *msg, const char *prompt,
 
 		if ((opts & VXCQ_ABORT) && answer[0] == '\x01' &&
 		    answer[1] == '\0') {
-			hmc_free(answer);
+			HXmc_free(answer);
 			return NULL;
 		}
 
@@ -85,7 +85,7 @@ EXPORT_SYMBOL char *vxcli_query(const char *msg, const char *prompt,
 		break;
 	}
 
-	hmc_free(answer);
+	HXmc_free(answer);
 	return buf;
 }
 

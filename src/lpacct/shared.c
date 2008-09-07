@@ -1,7 +1,6 @@
 /*
  *	lpacct/shared.c - Shared functions between lpacct_filter and lpaview
- *	Copyright © CC Computer Consultants GmbH, 2006 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2006 - 2007
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -11,7 +10,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
-#include <libHX.h>
+#include <libHX/option.h>
 #include <vitalnix/config.h>
 #include <mysql.h>
 #include "drop.h"

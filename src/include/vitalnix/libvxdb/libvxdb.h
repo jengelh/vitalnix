@@ -8,7 +8,8 @@
 #else
 #	include <cstdlib>
 #endif
-#include <libHX.h>
+
+struct HXdeque;
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,7 +50,7 @@ struct vxconfig_userdel;
 
 /*
  * When vxdb functions return something, the string
- * fields must be handled like "hmc_t"s.
+ * fields must be handled like "hxmc_t"s.
  */
 /*
  * @vs_defer: day on which tagging occurred, not when deletion is due

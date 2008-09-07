@@ -1,7 +1,6 @@
 /*
  *	ihlogon.c -
- *	Copyright © CC Computer Consultants GmbH, 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2007 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -19,7 +18,6 @@
 #include <syslog.h>
 #include <time.h>
 #include <unistd.h>
-#include <libHX.h>
 #include <security/pam_appl.h>
 #include <security/pam_modules.h>
 #include <vitalnix/compiler.h>

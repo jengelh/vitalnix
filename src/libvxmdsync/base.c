@@ -1,7 +1,6 @@
 /*
  *	libvxmdsync/base.c
- *	Copyright © CC Computer Consultants GmbH, 2003 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -14,7 +13,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libHX.h>
+#include <libHX/arbtree.h>
+#include <libHX/option.h>
+#include <libHX/string.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
 #include <vitalnix/libvxeds/libvxeds.h>
@@ -61,7 +62,7 @@ EXPORT_SYMBOL struct mdsync_workspace *mdsync_init(void)
 		goto out;
 
 	/* mdsync_add() */
-	w->output_data = hmc_minit(NULL, 64);
+	w->output_data = HXmc_meminit(NULL, 64);
 
 	/* Defaults, defaults, defaults */
 	c = &w->config;
@@ -114,7 +115,7 @@ EXPORT_SYMBOL int mdsync_open_log(struct mdsync_workspace *w,
 EXPORT_SYMBOL void mdsync_free(struct mdsync_workspace *w)
 {
 	/* mdsync_add() */
-	hmc_free(w->output_data);
+	HXmc_free(w->output_data);
 
 	/* mdsync_open_log() */
 	if (w->logfile != NULL)

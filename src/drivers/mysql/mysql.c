@@ -1,7 +1,6 @@
 /*
  *	mysql.c - MYSQL back-end
- *	Copyright © CC Computer Consultants GmbH, 2005 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2005 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -16,7 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libHX.h>
+#include <libHX/string.h>
 #include <mysql.h>
 #include <mysqld_error.h>
 #include <vitalnix/compiler.h>
@@ -58,7 +57,7 @@ struct mq_names {
 	/* SELECT <csl> FROM <tsl> */
 	char *csl_passwd, *csl_shadow, *csl_group, *csl_vxshadow;
 	/* table selects */
-	hmc_t *tsl_user;
+	hxmc_t *tsl_user;
 };
 
 struct mysql_state {
@@ -92,9 +91,9 @@ static int queryf(MYSQL *, const char *, ...);
 static void read_config(struct mysql_state *, unsigned int, const char *);
 static void read_config_cb(const struct HXoptcb *);
 static char *s_join(const char *, ...);
-static hmc_t *sql_groupmask(hmc_t **, const struct mysql_state *,
+static hxmc_t *sql_groupmask(hxmc_t **, const struct mysql_state *,
 	const struct vxdb_group *, unsigned int);
-static hmc_t *sql_usermask(hmc_t **, const struct mysql_state *,
+static hxmc_t *sql_usermask(hxmc_t **, const struct mysql_state *,
 	const struct vxdb_user *, unsigned int);
 
 //-----------------------------------------------------------------------------
@@ -199,23 +198,23 @@ static int vxmysql_open(struct vxdb_state *vp, unsigned int flags)
 
 	/* FROM part for user UPDATE */
 	{
-		hmc_t *s = hmc_minit(NULL, 256);
-		hmc_strcat(&s, names->pw_table);
+		hxmc_t *s = HXmc_meminit(NULL, 256);
+		HXmc_strcat(&s, names->pw_table);
 		if (state->perm_shadow) {
-			hmc_strcat(&s, " left join ");
-			hmc_strcat(&s, names->sp_table);
-			hmc_strcat(&s, " on ");
-			hmc_strcat(&s, names->pw_name);
-			hmc_strcat(&s, "=");
-			hmc_strcat(&s, names->sp_user);
+			HXmc_strcat(&s, " left join ");
+			HXmc_strcat(&s, names->sp_table);
+			HXmc_strcat(&s, " on ");
+			HXmc_strcat(&s, names->pw_name);
+			HXmc_strcat(&s, "=");
+			HXmc_strcat(&s, names->sp_user);
 		}
 		if (state->perm_vxshadow) {
-			hmc_strcat(&s, " left join ");
-			hmc_strcat(&s, names->vs_table);
-			hmc_strcat(&s, " on ");
-			hmc_strcat(&s, names->pw_name);
-			hmc_strcat(&s, "=");
-			hmc_strcat(&s, names->vs_user);
+			HXmc_strcat(&s, " left join ");
+			HXmc_strcat(&s, names->vs_table);
+			HXmc_strcat(&s, " on ");
+			HXmc_strcat(&s, names->pw_name);
+			HXmc_strcat(&s, "=");
+			HXmc_strcat(&s, names->vs_user);
 		}
 		names->tsl_user = s;
 	}
@@ -227,7 +226,7 @@ static void vxmysql_close(struct vxdb_state *vp)
 {
 	struct mysql_state *state = vp->state;
 	mysql_close(state->cn.handle);
-	hmc_free(state->names.tsl_user);
+	HXmc_free(state->names.tsl_user);
 }
 
 static int vxmysql_xlock_user(struct mysql_state *state)
@@ -386,7 +385,7 @@ static int vxmysql_userdel(struct vxdb_state *vp, const char *name)
 static int vxmysql_userdel_unlocked(struct mysql_state *state, const char *name)
 {
 	/*
-	hmc_t *wtable_pw = where_pw_u(state, sr_mask, WHERE_PW_NAME | WHERE_PW_UID);
+	hxmc_t *wtable_pw = where_pw_u(state, sr_mask, WHERE_PW_NAME | WHERE_PW_UID);
 	char query[1024];
 	int ret = 1;
 	size_t n;
@@ -414,11 +413,11 @@ static int vxmysql_userdel_unlocked(struct mysql_state *state, const char *name)
 			ret = -mysql_errno(state->cn.handle);
 	}
 
-	hmc_free(where);
+	HXmc_free(where);
 	return ret;
 
  toolong:
-	hmc_free(where);
+	HXmc_free(where);
 	*/
 	return -E2BIG;
 }
@@ -427,32 +426,32 @@ static void *vxmysql_usertrav_init(struct vxdb_state *vp)
 {
 	struct mysql_state *state    = vp->state;
 	const struct mq_names *names = &state->names;
-	hmc_t *query = hmc_minit(NULL, 1024);
+	hxmc_t *query = HXmc_meminit(NULL, 1024);
 	struct traverser_state trav;
 
 	/* Build query */
-	hmc_strasg(&query, "select ");
-	hmc_strcat(&query, names->csl_passwd);
+	HXmc_strcpy(&query, "select ");
+	HXmc_strcat(&query, names->csl_passwd);
 	if (state->perm_shadow) {
-		hmc_strcat(&query, ",");
-		hmc_strcat(&query, names->csl_shadow);
+		HXmc_strcat(&query, ",");
+		HXmc_strcat(&query, names->csl_shadow);
 	}
 	if (state->perm_vxshadow) {
-		hmc_strcat(&query, ",");
-		hmc_strcat(&query, names->csl_vxshadow);
+		HXmc_strcat(&query, ",");
+		HXmc_strcat(&query, names->csl_vxshadow);
 	}
 
-	hmc_strcat(&query, " from ");
-	hmc_strcat(&query, names->tsl_user);
+	HXmc_strcat(&query, " from ");
+	HXmc_strcat(&query, names->tsl_user);
 
 	/* Do the query */
 	if (mysql_query(state->cn.handle, query) != 0) {
-		hmc_free(query);
+		HXmc_free(query);
 		errno = mysql_errno(state->cn.handle);
 		return NULL;
 	}
 
-	hmc_free(query);
+	HXmc_free(query);
 	if ((trav.res = mysql_store_result(state->cn.handle)) == NULL) {
 		errno = mysql_errno(state->cn.handle);
 		return NULL;
@@ -539,7 +538,7 @@ static int vxmysql_groupdel(struct vxdb_state *vp, const char *name)
 	/*
 	struct mysql_state *state = vp->state;
 	char query[1024], qtmp[512];
-	hmc_t *where;
+	hxmc_t *where;
 	int ret;
 
 	if (!state->have_shadow)
@@ -556,7 +555,7 @@ static int vxmysql_groupdel(struct vxdb_state *vp, const char *name)
 		ret = -mysql_errno(state->cn.handle);
 
 	vxmysql_xunlock(state);
-	hmc_free(where);
+	HXmc_free(where);
 	*/
 	return 0; /* (ret == 0) ? 1 : ret; */
 }
@@ -631,20 +630,20 @@ static unsigned int count_rows(struct mysql_state *state, const char *table)
 
 static void export_passwd(struct vxdb_user *dest, const MYSQL_ROW in)
 {
-	hmc_strasg(&dest->pw_name, in[0]);
+	HXmc_strcpy(&dest->pw_name, in[0]);
 	if (in[1] != NULL)
 		dest->pw_uid = strtoul(in[1], NULL, 0);
 	if (in[2] != NULL)
 		dest->pw_gid = strtoul(in[2], NULL, 0);
-	hmc_strasg(&dest->pw_real, in[3]);
-	hmc_strasg(&dest->pw_home, in[4]);
-	hmc_strasg(&dest->pw_shell, in[5]);
+	HXmc_strcpy(&dest->pw_real, in[3]);
+	HXmc_strcpy(&dest->pw_home, in[4]);
+	HXmc_strcpy(&dest->pw_shell, in[5]);
 }
 
 static void export_shadow(struct vxdb_user *dest, const MYSQL_ROW in)
 {
 	/* in[0] is username, we do not to copy it again */
-	hmc_strasg(&dest->sp_passwd, in[1]);
+	HXmc_strcpy(&dest->sp_passwd, in[1]);
 	if (in[2] != NULL)
 		dest->sp_lastchg = strtol(in[2], NULL, 0);
 	if (in[3] != NULL)
@@ -662,15 +661,15 @@ static void export_shadow(struct vxdb_user *dest, const MYSQL_ROW in)
 static inline void export_vxshadow(struct vxdb_user *dest,
     const MYSQL_ROW in)
 {
-	hmc_strasg(&dest->vs_uuid, in[1]);
-	hmc_strasg(&dest->vs_pvgrp, in[2]);
+	HXmc_strcpy(&dest->vs_uuid, in[1]);
+	HXmc_strcpy(&dest->vs_pvgrp, in[2]);
 	if (in[3] != NULL)
 		dest->vs_defer = strtoul(in[3], NULL, 0);
 }
 
 static inline void export_group(struct vxdb_group *dest, const MYSQL_ROW in)
 {
-	hmc_strasg(&dest->gr_name, in[0]);
+	HXmc_strcpy(&dest->gr_name, in[0]);
 	if (in[1] != NULL)
 		dest->gr_gid = strtol(in[1], NULL, 0);
 }
@@ -735,60 +734,60 @@ static int queryf(MYSQL *handle, const char *fmt, ...)
 {
 	const char *last_ptr, *next_ptr;
 	va_list argp;
-	hmc_t *query;
+	hxmc_t *query;
 	char *quote;
 	int ret;
 
-	query = hmc_minit(NULL, 256);
+	query = HXmc_meminit(NULL, 256);
 	va_start(argp, fmt);
 	last_ptr = fmt;
 
 	while ((next_ptr = strchr(last_ptr, '%')) != NULL) {
-		hmc_memcat(&query, last_ptr, next_ptr - last_ptr);
+		HXmc_memcat(&query, last_ptr, next_ptr - last_ptr);
 		if (strncmp(next_ptr, "%s", 2) == 0) {
-			hmc_strcat(&query, va_arg(argp, const char *));
+			HXmc_strcat(&query, va_arg(argp, const char *));
 			last_ptr += 2;
 		} else if (strncmp(next_ptr, "%S", 2) == 0) {
 			vxutil_quote(va_arg(argp, const char *),
 			             VXQUOTE_SINGLE, &quote);
-			hmc_strcat(&query, "'");
-			hmc_strcat(&query, quote);
-			hmc_strcat(&query, "'");
+			HXmc_strcat(&query, "'");
+			HXmc_strcat(&query, quote);
+			HXmc_strcat(&query, "'");
 			last_ptr += 2;
 		} else if (strncmp(next_ptr, "%ld", 3) == 0) {
 			char buf[ZD_64];
 			snprintf(buf, sizeof(buf), "%ld", va_arg(argp, long));
-			hmc_strcat(&query, buf);
+			HXmc_strcat(&query, buf);
 			last_ptr += 3;
 		} else if (strncmp(next_ptr, "%lu", 3) == 0) {
 			char buf[ZU_64];
 			snprintf(buf, sizeof(buf), "%lu", va_arg(argp, unsigned long));
-			hmc_strcat(&query, buf);
+			HXmc_strcat(&query, buf);
 			last_ptr += 3;
 		} else if (strncmp(next_ptr, "%d", 2) == 0) {
 			char buf[ZD_32];
 			snprintf(buf, sizeof(buf), "%d", va_arg(argp, int));
-			hmc_strcat(&query, buf);
+			HXmc_strcat(&query, buf);
 			last_ptr += 3;
 		} else if (strncmp(next_ptr, "%u", 2) == 0) {
 			char buf[ZU_32];
 			snprintf(buf, sizeof(buf), "%d", va_arg(argp, unsigned int));
-			hmc_strcat(&query, buf);
+			HXmc_strcat(&query, buf);
 			last_ptr += 3;
 		} else {
 			last_ptr = next_ptr;
 		}
 	}
 
-	hmc_memcat(&query, last_ptr, strlen(last_ptr));
+	HXmc_memcat(&query, last_ptr, strlen(last_ptr));
 	ret = mysql_query(handle, query);
-	hmc_free(query);
+	HXmc_free(query);
 	free(quote);
 	va_end(argp);
 	return ret;
 }
 
-static void quote_append(hmc_t **dest, const char *s)
+static void quote_append(hxmc_t **dest, const char *s)
 {
 	size_t orig_len;
 	char *ret, *tmp, *fm;
@@ -800,9 +799,9 @@ static void quote_append(hmc_t **dest, const char *s)
 		abort(); /* FIXME: ugly */
 	}
 	if ((ret = vxutil_quote(s, 0, &fm)) != NULL) {
-		hmc_strcat(dest, "='");
-		hmc_strcat(dest, ret);
-		hmc_strcat(dest, "'");
+		HXmc_strcat(dest, "='");
+		HXmc_strcat(dest, ret);
+		HXmc_strcat(dest, "'");
 	}
 	free(fm);
 }
@@ -922,20 +921,20 @@ static char *s_join(const char *delim, ...)
 
 #define PUT_I(SF, MF) \
 	do { \
-		if (n) hmc_strcat(s, " and "); \
-		hmc_strcat(s, (SF)); \
+		if (n) HXmc_strcat(s, " and "); \
+		HXmc_strcat(s, (SF)); \
 		snprintf(tmp, sizeof(tmp), "=%u", (MF)); \
-		hmc_strcat(s, tmp); \
+		HXmc_strcat(s, tmp); \
 		n = 1; \
 	} while (0)
 #define PUT_S(SF, MF) \
 	do { \
-		if (n) hmc_strcat(s, " and "); \
-		hmc_strcat(s, (SF)); \
+		if (n) HXmc_strcat(s, " and "); \
+		HXmc_strcat(s, (SF)); \
 		quote_append(s, (MF)); \
 		n = 1; \
 	} while (0)
-static hmc_t *sql_groupmask(hmc_t **s, const struct mysql_state *state,
+static hxmc_t *sql_groupmask(hxmc_t **s, const struct mysql_state *state,
     const struct vxdb_group *mask, unsigned int flags)
 {
 	const struct mq_names *names = &state->names;
@@ -957,7 +956,7 @@ flags can contain:
 	MASK_SET    = add extra fields to set username in ->sp_table and ->vs_table
 */
 
-static hmc_t *sql_usermask(hmc_t **s, const struct mysql_state *state,
+static hxmc_t *sql_usermask(hxmc_t **s, const struct mysql_state *state,
     const struct vxdb_user *mask, unsigned int flags)
 {
 	const struct mq_names *names = &state->names;

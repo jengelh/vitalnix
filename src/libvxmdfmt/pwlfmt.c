@@ -1,7 +1,6 @@
 /*
  *	libvxmdfmt/pwlfmt.c - Password list formatting
- *	Copyright © CC Computer Consultants GmbH, 2005 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2005 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -12,7 +11,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libHX.h>
+#include <libHX/arbtree.h>
+#include <libHX/string.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
 #include <vitalnix/libvxcore/loader.h>
@@ -132,7 +132,7 @@ static int pwl_build_tree(FILE *fh, struct HXbtree **b_ret)
 {
 	unsigned int seen_format_id = 0;
 	struct HXbtree *bt;
-	hmc_t *ln = NULL;
+	hxmc_t *ln = NULL;
 	int ret = 0;
 
 	bt = HXbtree_init(HXBT_MAP | HXBT_CKEY | HXBT_CMPFN, compare_wbc);

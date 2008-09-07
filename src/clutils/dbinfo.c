@@ -1,7 +1,6 @@
 /*
  *	dbinfo - Print database driver information
- *	Copyright © CC Computer Consultants GmbH, 2003 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -12,7 +11,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libHX.h>
+#include <libHX/deque.h>
+#include <libHX/misc.h>
+#include <libHX/option.h>
+#include <libHX/string.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
 #include <vitalnix/libvxdb/libvxdb.h>
@@ -159,7 +161,7 @@ static void read_ldso_conf(void)
  */
 static void read_ldso_conf1(const char *file)
 {
-	hmc_t *ln = NULL;
+	hxmc_t *ln = NULL;
 	FILE *fp;
 
 	if ((fp = fopen(file, "r")) == NULL)
@@ -176,7 +178,7 @@ static void read_ldso_conf1(const char *file)
 	}
 
 	fclose(fp);
-	hmc_free(ln);
+	HXmc_free(ln);
 }
 
 /*

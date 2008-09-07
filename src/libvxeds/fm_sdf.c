@@ -1,7 +1,6 @@
 /*
  *	libvxeds/fm_sdf.c - SDF parser
- *	Copyright © CC Computer Consultants GmbH, 2002 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2002 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -13,7 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libHX.h>
+#include <libHX/string.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxeds/libvxeds.h>
 #include "libvxeds/static-build.h"
@@ -27,7 +26,7 @@ struct sdf_state {
 	char *input_file;
 	FILE *input_fh;
 	int current_line;
-	hmc_t *hmc;
+	hxmc_t *mc;
 	iconv_t conv_fd;
 };
 
@@ -49,7 +48,7 @@ static int sdf_open(const char *filename, void **state_pptr)
 	}
 
 	state->input_file = HX_strdup(filename);
-	state->hmc        = NULL;
+	state->mc         = NULL;
 	return 1;
 }
 
@@ -59,17 +58,17 @@ static int sdf_read(void *state_ptr, struct vxeds_entry *e)
 	char *data[6], *line;
 	int num_fields;
 
-	if (HX_getl(&state->hmc, state->input_fh) == NULL)
+	if (HX_getl(&state->mc, state->input_fh) == NULL)
 		return 0;
 	++state->current_line;
-	HX_chomp(state->hmc);
+	HX_chomp(state->mc);
 
-	if (*state->hmc == '#' || strncmp(state->hmc, "(*", 2) == 0 || /* *) */
-	    *state->hmc == '\0')
+	if (*state->mc == '#' || strncmp(state->mc, "(*", 2) == 0 || /* *) */
+	    *state->mc == '\0')
 		/* Skip comment lines */
 		return sdf_read(state_ptr, e);
 
-	line = convert(state->conv_fd, state->hmc);
+	line = convert(state->conv_fd, state->mc);
 
 	if ((num_fields = HX_split5(line, ";", ARRAY_SIZE(data), data)) < 3) {
 		fprintf(stderr, "%s: SDF-4 format: Line %d has less than three "
@@ -114,7 +113,7 @@ static int sdf_read(void *state_ptr, struct vxeds_entry *e)
 static void sdf_close(void *state_ptr)
 {
 	struct sdf_state *state = state_ptr;
-	hmc_free(state->hmc);
+	HXmc_free(state->mc);
 	if (state->conv_fd != ICONV_NULL)
 		iconv_close(state->conv_fd);
 	if (state->input_fh != NULL)

@@ -1,7 +1,6 @@
 /*
  *	html2man - Minimal HTML to NROFF converter
- *	Copyright © CC Computer Consultants GmbH, 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2007 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -12,7 +11,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#include <libHX.h>
+#include <libHX/deque.h>
+#include <libHX/option.h>
 #include <libxml/HTMLparser.h>
 #include <vitalnix/compiler.h>
 

@@ -1,7 +1,6 @@
 /*
  *	ldap.c - LDAP back-end
- *	Copyright © CC Computer Consultants GmbH, 2006 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2006 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -16,6 +15,8 @@
 #include <string.h>
 #include <time.h>
 #include <ldap.h>
+#include <libHX/option.h>
+#include <libHX/string.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxdb/libvxdb.h>
 
@@ -35,7 +36,7 @@ struct ldap_attrmap {
 struct ldap_state {
 	LDAP *conn;
 	char *uri, *root_dn;
-	hmc_t *root_pw;
+	hxmc_t *root_pw;
 	char *user_suffix, *group_suffix;
 	char *domain_dn, *domain_sid;
 	unsigned int domain_algoridbase;
@@ -117,11 +118,11 @@ static int vxldap_errno_sp(int ld_errno, const char *fmt, ...)
 
 static void vxldap_read_ldap_secret(const struct HXoptcb *cbi)
 {
-	hmc_t **pw = cbi->current->uptr;
+	hxmc_t **pw = cbi->current->uptr;
 	FILE *fp;
 	if ((fp = fopen(cbi->data, "r")) == NULL)
 		return;
-	*pw = hmc_sinit("");
+	*pw = HXmc_meminit(NULL, 0);
 	HX_getl(pw, fp);
 }
 
@@ -214,7 +215,7 @@ static int vxldap_get_rid(struct ldap_state *state)
 			continue;
 		}
 		if (strcmp(attr, "sambaSID") == 0)
-			hmc_strasg(&state->domain_sid, *val);
+			HXmc_strcpy(&state->domain_sid, *val);
 		else if (strcmp(attr, "sambaAlgorithmicRidBase") == 0)
 			state->domain_algoridbase = strtoul(*val, NULL, 0);
 		ldap_value_free(val);
@@ -288,7 +289,7 @@ static void vxldap_exit(struct vxdb_state *vp)
 {
 	struct ldap_state *state = vp->state;
 	vxldap_read_config(state, NULL, true);
-	hmc_free(state->root_pw);
+	HXmc_free(state->root_pw);
 	free(state);
 }
 
@@ -344,15 +345,15 @@ static long vxldap_modctl(struct vxdb_state *vp, unsigned int command, ...)
 	return ret;
 }
 
-static hmc_t *dn_user(const struct ldap_state *state, const char *name)
+static hxmc_t *dn_user(const struct ldap_state *state, const char *name)
 {
-	hmc_t *ret;
+	hxmc_t *ret;
 	if (name == NULL)
 		return NULL;
-	ret = hmc_sinit("uid=");
-	hmc_strcat(&ret, name);
-	hmc_strcat(&ret, ",");
-	hmc_strcat(&ret, state->user_suffix);
+	ret = HXmc_strinit("uid=");
+	HXmc_strcat(&ret, name);
+	HXmc_strcat(&ret, ",");
+	HXmc_strcat(&ret, state->user_suffix);
 	return ret;
 }
 
@@ -379,7 +380,7 @@ static int vxldap_useradd(struct vxdb_state *vp, const struct vxdb_user *rq)
 	LDAPMod attr[21], *attr_ptrs[22];
 	const char *object_classes[6];
 	unsigned int a = 0, i, o = 0;
-	hmc_t *dn, *password = NULL;
+	hxmc_t *dn, *password = NULL;
 	int ret;
 
 	if ((dn = dn_user(state, rq->pw_name)) == NULL)
@@ -454,8 +455,8 @@ static int vxldap_useradd(struct vxdb_state *vp, const struct vxdb_user *rq)
 		};
 
 	if (rq->sp_passwd != NULL) {
-		password = hmc_sinit(rq->sp_passwd);
-		hmc_strpcat(&password, "{crypt}");
+		password = HXmc_strinit(rq->sp_passwd);
+		HXmc_strpcat(&password, "{crypt}");
 		attr[a++] = (LDAPMod){
 			.mod_op     = LDAP_MOD_ADD,
 			.mod_type   = "userPassword",
@@ -568,8 +569,8 @@ static int vxldap_useradd(struct vxdb_state *vp, const struct vxdb_user *rq)
 	attr_ptrs[i] = NULL;
 	ret = ldap_add_ext_s(state->conn, dn, attr_ptrs, NULL, NULL);
 
-	hmc_free(dn);
-	hmc_free(password);
+	HXmc_free(dn);
+	HXmc_free(password);
 	if (ret != LDAP_SUCCESS)
 		return vxldap_errno_sp(ret, "vxldap_useradd");
 
@@ -667,17 +668,17 @@ static void vxldap_getattr(struct ldap_state *state, const char *dn,
  * @old_dn:	old/current DN
  * @new_name:	new username
  */
-static int vxldap_usermod2(struct ldap_state *state, hmc_t *old_dn,
+static int vxldap_usermod2(struct ldap_state *state, hxmc_t *old_dn,
     const char *new_name)
 {
-	hmc_t *new_rdn;
+	hxmc_t *new_rdn;
 	int ret;
 
-	new_rdn = hmc_sinit("uid=");
-	hmc_strcat(&new_rdn, new_name);
+	new_rdn = HXmc_strinit("uid=");
+	HXmc_strcat(&new_rdn, new_name);
 	ret = ldap_rename_s(state->conn, old_dn, new_rdn,
 	      NULL, false, NULL, NULL);
-	hmc_free(new_rdn);
+	HXmc_free(new_rdn);
 	if (ret != LDAP_SUCCESS) {
 		ldap_perror(state->conn, "vxldap_usermod2: The DN was not "
 		            "modified. You NEED to fix this up!\n");
@@ -698,7 +699,7 @@ static int vxldap_usermod(struct vxdb_state *vp, const char *name,
 	char s_sp_expire[ZU_32], s_sp_inact[ZU_32], s_vs_defer[ZU_32];
 	struct ldap_attrmap attr_map = {};
 	LDAPMod attr[20], *attr_ptrs[21];
-	hmc_t *dn, *password = NULL;
+	hxmc_t *dn, *password = NULL;
 	unsigned int a = 0, i;
 	int ret;
 
@@ -751,8 +752,8 @@ static int vxldap_usermod(struct vxdb_state *vp, const char *name,
 			.mod_values = (char *[]){param->pw_shell, NULL},
 		};
 	if (param->sp_passwd != NULL) {
-		password = hmc_sinit(param->sp_passwd);
-		hmc_strpcat(&password, "{crypt}");
+		password = HXmc_strinit(param->sp_passwd);
+		HXmc_strpcat(&password, "{crypt}");
 		attr[a++] = (LDAPMod){
 			.mod_op     = repl_add(attr_map.userPassword),
 			.mod_type   = "userPassword",
@@ -875,12 +876,12 @@ static int vxldap_usermod(struct vxdb_state *vp, const char *name,
 	if (ret == LDAP_NO_SUCH_OBJECT) {
 		return -ENOENT;
 	} else if (ret != LDAP_SUCCESS) {
-		hmc_free(dn);
+		HXmc_free(dn);
 		return vxldap_errno_sp(ret, "vxldap_usermod");
 	}
 
 	if (param->pw_name == NULL) {
-		hmc_free(dn);
+		HXmc_free(dn);
 		return 1;
 	}
 
@@ -891,14 +892,14 @@ static int vxldap_usermod(struct vxdb_state *vp, const char *name,
 static int vxldap_userdel(struct vxdb_state *vp, const char *name)
 {
 	struct ldap_state *state = vp->state;
-	hmc_t *dn;
+	hxmc_t *dn;
 	int ret;
 
 	if ((dn = dn_user(state, name)) == NULL)
 		return -ENOMEM;
 
 	ret = ldap_delete_ext_s(state->conn, dn, NULL, NULL);
-	hmc_free(dn);
+	HXmc_free(dn);
 	if (ret == LDAP_NO_SUCH_OBJECT)
 		return 0;
 	else if (ret != LDAP_SUCCESS)
@@ -926,19 +927,19 @@ static void vxldap_copy_user(struct vxdb_user *dest, LDAP *conn,
 			continue;
 		}
 		if (strcmp(attr, "uid") == 0)
-			hmc_strasg(&dest->pw_name, *val);
+			HXmc_strcpy(&dest->pw_name, *val);
 		else if (strcmp(attr, "uidNumber") == 0)
 			dest->pw_uid = strtoul(*val, NULL, 0);
 		else if (strcmp(attr, "gidNumber") == 0)
 			dest->pw_gid = strtoul(*val, NULL, 0);
 		else if (strcmp(attr, "gecos") == 0)
-			hmc_strasg(&dest->pw_real, *val);
+			HXmc_strcpy(&dest->pw_real, *val);
 		else if (strcmp(attr, "homeDirectory") == 0)
-			hmc_strasg(&dest->pw_home, *val);
+			HXmc_strcpy(&dest->pw_home, *val);
 		else if (strcmp(attr, "loginShell") == 0)
-			hmc_strasg(&dest->pw_shell, *val);
+			HXmc_strcpy(&dest->pw_shell, *val);
 		else if (strcmp(attr, "userPassword") == 0)
-			hmc_strasg(&dest->sp_passwd, *val);
+			HXmc_strcpy(&dest->sp_passwd, *val);
 		else if (strcmp(attr, "shadowLastChange") == 0)
 			dest->sp_lastchg = strtol(*val, NULL, 0);
 		else if (strcmp(attr, "shadowMin") == 0)
@@ -954,9 +955,9 @@ static void vxldap_copy_user(struct vxdb_user *dest, LDAP *conn,
 		else if (strcmp(attr, "vitalnixDeferTimer") == 0)
 			dest->vs_defer = strtoul(*val, NULL, 0);
 		else if (strcmp(attr, "vitalnixUUID") == 0)
-			hmc_strasg(&dest->vs_uuid, *val);
+			HXmc_strcpy(&dest->vs_uuid, *val);
 		else if (strcmp(attr, "vitalnixGroup") == 0)
-			hmc_strasg(&dest->vs_pvgrp, *val);
+			HXmc_strcpy(&dest->vs_pvgrp, *val);
 		ldap_value_free(val);
 		ldap_memfree(attr);
 	}
@@ -1001,14 +1002,14 @@ static int vxldap_getpwuid(struct vxdb_state *vp, unsigned int uid,
 static int vxldap_getpwnam(struct vxdb_state *vp, const char *user,
     struct vxdb_user *dest)
 {
-	hmc_t *filter;
+	hxmc_t *filter;
 	int ret;
 
-	filter = hmc_sinit("(&(" F_POSIXACCOUNT ")(uid=" /* )) */);
-	hmc_strcat(&filter, user);
-	hmc_strcat(&filter, /* (( */ "))");
+	filter = HXmc_strinit("(&(" F_POSIXACCOUNT ")(uid=" /* )) */);
+	HXmc_strcat(&filter, user);
+	HXmc_strcat(&filter, /* (( */ "))");
 	ret = vxldap_getpwx(vp->state, filter, dest);
-	hmc_free(filter);
+	HXmc_free(filter);
 	return (ret == -ENOENT) ? 0 : ret;
 }
 
@@ -1058,14 +1059,14 @@ static void vxldap_usertrav_free(struct vxdb_state *vp, void *ptr)
 	free(trav);
 }
 
-static hmc_t *dn_group(const struct ldap_state *state, const char *name)
+static hxmc_t *dn_group(const struct ldap_state *state, const char *name)
 {
-	hmc_t *ret = hmc_sinit("cn=");
+	hxmc_t *ret = HXmc_strinit("cn=");
 	if (name == NULL)
 		return ret;
-	hmc_strcat(&ret, name);
-	hmc_strcat(&ret, ",");
-	hmc_strcat(&ret, state->group_suffix);
+	HXmc_strcat(&ret, name);
+	HXmc_strcat(&ret, ",");
+	HXmc_strcat(&ret, state->group_suffix);
 	return ret;
 }
 
@@ -1075,7 +1076,7 @@ static int vxldap_groupadd(struct vxdb_state *vp, const struct vxdb_group *rq)
 	LDAPMod attr[4], *attr_ptrs[5];
 	unsigned int a = 0, i;
 	char s_gr_gid[ZU_32];
-	hmc_t *dn;
+	hxmc_t *dn;
 	int ret;
 
 	if ((dn = dn_group(state, rq->gr_name)) == NULL)
@@ -1117,7 +1118,7 @@ static int vxldap_groupadd(struct vxdb_state *vp, const struct vxdb_group *rq)
 	attr_ptrs[i] = NULL;
 	ret = ldap_add_ext_s(state->conn, dn, attr_ptrs, NULL, NULL);
 
-	hmc_free(dn);
+	HXmc_free(dn);
 	if (ret != LDAP_SUCCESS)
 		return vxldap_errno_sp(ret, "vxldap_groupadd");
 
@@ -1133,12 +1134,12 @@ static int vxldap_groupmod(struct vxdb_state *vp, const char *name,
 static int vxldap_groupdel(struct vxdb_state *vp, const char *name)
 {
 	struct ldap_state *state = vp->state;
-	hmc_t *dn;
+	hxmc_t *dn;
 	int ret;
 
 	dn  = dn_group(state, name);
 	ret = ldap_delete_ext_s(state->conn, dn, NULL, NULL);
-	hmc_free(dn);
+	HXmc_free(dn);
 	if (ret == LDAP_NO_SUCH_OBJECT)
 		return 0;
 	else if (ret != LDAP_SUCCESS)
@@ -1167,7 +1168,7 @@ static void vxldap_copy_group(struct vxdb_group *dest, LDAP *conn,
 		if (strcmp(attr, "gidNumber") == 0)
 			dest->gr_gid = strtol(*val, NULL, 0);
 		else if (strcmp(attr, "cn") == 0)
-			hmc_strasg(&dest->gr_name, *val);
+			HXmc_strcpy(&dest->gr_name, *val);
 		ldap_value_free(val);
 		ldap_memfree(attr);
 	}
@@ -1212,14 +1213,14 @@ static int vxldap_getgrgid(struct vxdb_state *vp, unsigned int gid,
 static int vxldap_getgrnam(struct vxdb_state *vp, const char *user,
     struct vxdb_group *dest)
 {
-	hmc_t *filter;
+	hxmc_t *filter;
 	int ret;
 
-	filter = hmc_sinit("(&(" F_POSIXGROUP ")(cn=" /* )) */);
-	hmc_strcat(&filter, user);
-	hmc_strcat(&filter, /* (( */ "))");
+	filter = HXmc_strinit("(&(" F_POSIXGROUP ")(cn=" /* )) */);
+	HXmc_strcat(&filter, user);
+	HXmc_strcat(&filter, /* (( */ "))");
 	ret = vxldap_getgrx(vp->state, filter, dest);
-	hmc_free(filter);
+	HXmc_free(filter);
 	return (ret == -ENOENT) ? 0 : ret;
 }
 
@@ -1269,7 +1270,7 @@ static int vxldap_sgmapadd(struct vxdb_state *vp, const char *user,
     const char *group)
 {
 	struct ldap_state *state = vp->state;
-	hmc_t *userdn = NULL, *groupdn = NULL;
+	hxmc_t *userdn = NULL, *groupdn = NULL;
 	LDAPMod attr, *attr_ptrs[2];
 	LDAPMessage *result;
 	int ret, ldret;
@@ -1303,8 +1304,8 @@ static int vxldap_sgmapadd(struct vxdb_state *vp, const char *user,
 		ret = vxldap_errno_sp(ret, "vxldap_sgmapadd");
 
  out:
-	hmc_free(userdn);
-	hmc_free(groupdn);
+	HXmc_free(userdn);
+	HXmc_free(groupdn);
 	return ret;
 }
 
@@ -1316,17 +1317,17 @@ static int vxldap_sgmapadd(struct vxdb_state *vp, const char *user,
  * Builds the LDAP filter for searching @user in all groups, taking care of
  * encoding @user as per RFC 4515.
  */
-static hmc_t *vxldap_member_filter(const struct ldap_state *state,
+static hxmc_t *vxldap_member_filter(const struct ldap_state *state,
     const char *user)
 {
 	static const char *const hexmap = "0123456789ABCDEF";
 	const char *s = state->user_suffix;
 	char buf[64], *ptr;
-	hmc_t *filter;
+	hxmc_t *filter;
 
-	filter = hmc_sinit("(&(" F_POSIXGROUP ")(member=uid\\3D"); /* )) */
-	hmc_strcat(&filter, user);
-	hmc_strcat(&filter, ",");
+	filter = HXmc_strinit("(&(" F_POSIXGROUP ")(member=uid\\3D"); /* )) */
+	HXmc_strcat(&filter, user);
+	HXmc_strcat(&filter, ",");
 
 	while (*s != '\0') {
 		for (ptr = buf; ptr < buf + sizeof(buf) - 1; ++s) {
@@ -1343,10 +1344,10 @@ static hmc_t *vxldap_member_filter(const struct ldap_state *state,
 			*ptr++ = *s;
 		}
 		*ptr = '\0';
-		hmc_strcat(&filter, buf);
+		HXmc_strcat(&filter, buf);
 	}
 
-	hmc_strcat(&filter, /* (( */ "))");
+	HXmc_strcat(&filter, /* (( */ "))");
 	return filter;
 }
 
@@ -1384,14 +1385,14 @@ static int vxldap_sgmapget(struct vxdb_state *vp, const char *user,
 	static const char *const attrs[] = {"cn", NULL};
 	struct ldap_state *state = vp->state;
 	LDAPMessage *result;
-	hmc_t *filter;
+	hxmc_t *filter;
 	int ret;
 
 	filter = vxldap_member_filter(state, user);
 	ret    = ldap_search_ext_s(state->conn, state->group_suffix,
 	         LDAP_SCOPE_SUBTREE, filter, const_cast(char **, attrs),
 	         false, NULL, NULL, NULL, LDAP_MAXINT, &result);
-	hmc_free(filter);
+	HXmc_free(filter);
 	if (ret == LDAP_NO_SUCH_OBJECT)
 		return -ENOENT;
 	else if (ret != LDAP_SUCCESS)
@@ -1424,7 +1425,7 @@ static int vxldap_sgmapdel(struct vxdb_state *vp, const char *user,
 {
 	struct ldap_state *state = vp->state;
 	LDAPMod attr, *attr_ptrs[2];
-	hmc_t *userdn, *groupdn;
+	hxmc_t *userdn, *groupdn;
 	int ret;
 
 	ret     = -ENOMEM;
@@ -1450,8 +1451,8 @@ static int vxldap_sgmapdel(struct vxdb_state *vp, const char *user,
 		ret = 1;
 
  out:
-	hmc_free(userdn);
-	hmc_free(groupdn);
+	HXmc_free(userdn);
+	HXmc_free(groupdn);
 	return ret;
 }
 

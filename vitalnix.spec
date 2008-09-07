@@ -10,7 +10,7 @@ URL:		http://vitalnix.sourceforge.net/
 Source:		http://downloads.sf.net/sourceforge/%name/%name-%version.tar.bz2
 BuildRoot:	%_tmppath/%name-%version-build
 BuildRequires:	cups-devel, gcc-c++
-BuildRequires:	libHX-devel >= 1.10, libxml2-devel, mysql-devel >= 5.0
+BuildRequires:	libHX-devel >= 1.25, libxml2-devel, mysql-devel >= 5.0
 BuildRequires:	openldap2-devel
 BuildRequires:	openssl-devel, pam-devel, perl >= 5.6.0, php >= 5, pkg-config
 BuildRequires:	w3m, wxGTK-devel >= 2.7.0

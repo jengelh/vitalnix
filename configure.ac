@@ -1,7 +1,6 @@
 #
 #	configure.ac - gnu cold boilerplate
-#	Copyright © CC Computer Consultants GmbH, 2007 - 2008
-#	Jan Engelhardt <jengelh [at] computergmbh de>
+#	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2007 - 2008
 #
 #	This file is part of Vitalnix. Vitalnix is free software; you
 #	can redistribute it and/or modify it under the terms of the GNU
@@ -52,7 +51,7 @@ AM_CONDITIONAL([GOT_TOOLS_FOR_DOC],
 regular_CFLAGS="-D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
 	-D_REENTRANT -Wall -Waggregate-return -Wmissing-declarations \
 	-Wmissing-prototypes -Wredundant-decls -Wshadow -Wstrict-prototypes \
-	-Winline -fPIC -pipe";
+	-fPIC -pipe";
 regular_CXXFLAGS="-D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
 	-D_REENTRANT -Wall -Wno-pointer-arith -Wredundant-decls -fPIC -pipe";
 
@@ -64,7 +63,7 @@ AC_HAVE_HEADERS([crypt.h lastlog.h paths.h utmpx.h])
 #
 #	openssl-devel, libxml-devel
 #
-PKG_CHECK_MODULES([libHX], [libHX >= 1.15])
+PKG_CHECK_MODULES([libHX], [libHX >= 1.25])
 PKG_CHECK_MODULES([libcrypto], [libcrypto])
 PKG_CHECK_MODULES([libxml], [libxml-2.0])
 

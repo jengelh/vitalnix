@@ -6,6 +6,7 @@
 #else
 #	include <cstdio>
 #endif
+#include <libHX/string.h>
 #include <vitalnix/libvxdb/config.h>
 #include <vitalnix/libvxdb/libvxdb.h>
 
@@ -43,7 +44,7 @@ struct mdsync_workspace {
 		unsigned int, unsigned int);
 
 	struct vxdb_state *database;
-	hmc_t *output_data;
+	hxmc_t *output_data;
 	unsigned int num_grp;
 
 	/* private to mdsync */

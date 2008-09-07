@@ -1,7 +1,6 @@
 /*
  *	finger - Search for user and display info
- *	Copyright © CC Computer Consultants GmbH, 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2007 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -18,7 +17,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
-#include <libHX.h>
+#include <libHX/option.h>
+#include <libHX/string.h>
 #include <vitalnix/config.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxdb/libvxdb.h>
@@ -133,7 +133,7 @@ static void finger_grep(struct vxdb_state *db, const char *keyword)
 	const char *name_ptr, *real_ptr;
 	struct vxdb_group group = {};
 	struct vxdb_user user = {};
-	hmc_t *lc_name, *lc_real;
+	hxmc_t *lc_name, *lc_real;
 	void *trav;
 	char *p;
 
@@ -142,10 +142,8 @@ static void finger_grep(struct vxdb_state *db, const char *keyword)
 		return;
 	}
 
-	lc_name = hmc_sinit("abcdefgh");
-	lc_real = hmc_sinit("abcdefgh");
-	hmc_trunc(&lc_name, 0);
-	hmc_trunc(&lc_real, 0);
+	lc_name = HXmc_meminit(NULL, 10);
+	lc_real = HXmc_meminit(NULL, 10);
 
 	while (vxdb_usertrav_walk(db, trav, &user) > 0) {
 		if (!Fullgecos && user.pw_real != NULL &&
@@ -153,11 +151,11 @@ static void finger_grep(struct vxdb_state *db, const char *keyword)
 			*p = '\0';
 
 		if (user.pw_real == NULL)
-			user.pw_real = hmc_sinit("");
+			user.pw_real = HXmc_meminit(NULL, 0);
 
 		if (Icase) {
-			hmc_strasg(&lc_name, user.pw_name);
-			hmc_strasg(&lc_real, user.pw_real);
+			HXmc_strcpy(&lc_name, user.pw_name);
+			HXmc_strcpy(&lc_real, user.pw_real);
 			HX_strlower(lc_name);
 			HX_strlower(lc_real);
 			name_ptr = strstr(lc_name, keyword);
@@ -220,8 +218,8 @@ static void finger_grep(struct vxdb_state *db, const char *keyword)
 		printf("\n");
 	}
 
-	hmc_free(lc_name);
-	hmc_free(lc_real);
+	HXmc_free(lc_name);
+	HXmc_free(lc_real);
 	vxdb_user_free(&user, false);
 	vxdb_usertrav_free(db, trav);
 }

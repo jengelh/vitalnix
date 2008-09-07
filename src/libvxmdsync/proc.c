@@ -1,7 +1,6 @@
 /*
  *	libvxmdsync/proc.c
- *	Copyright © CC Computer Consultants GmbH, 2003 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -16,7 +15,10 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
-#include <libHX.h>
+#include <libHX/arbtree.h>
+#include <libHX/deque.h>
+#include <libHX/option.h>
+#include <libHX/string.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxeds/libvxeds.h>
 #include <vitalnix/libvxmdsync/libvxmdsync.h>
@@ -104,7 +106,7 @@ EXPORT_SYMBOL void mdsync_compare(struct mdsync_workspace *w)
 		if (decision & ACTION_UPDATE) {
 			if (strcmp(eds->pvgrp, pwd.vs_uuid) != 0) {
 				struct vxdb_user *copy = vxdb_user_dup(&pwd);
-				hmc_strasg(&copy->vs_pvgrp, eds->pvgrp);
+				HXmc_strcpy(&copy->vs_pvgrp, eds->pvgrp);
 				HXbtree_add(w->update_req, copy->vs_uuid, copy);
 			}
 			vxeds_free_entry(HXbtree_del(w->add_req, pwd.vs_uuid));
@@ -246,10 +248,10 @@ EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
 			vxdb_modctl(w->database, VXDB_FLUSH);
 
 		if (w->logfile == NULL) {
-			hmc_strcat(&w->output_data, out.pw_name);
-			hmc_strcat(&w->output_data, ":");
-			hmc_strcat(&w->output_data, plain_pw);
-			hmc_strcat(&w->output_data, "\n");
+			HXmc_strcat(&w->output_data, out.pw_name);
+			HXmc_strcat(&w->output_data, ":");
+			HXmc_strcat(&w->output_data, plain_pw);
+			HXmc_strcat(&w->output_data, "\n");
 		} else {
 			fprintf(w->logfile, "+:%s:%s:%s:%s:%s\n", in->pvgrp, in->surname,
 			        in->first_name, out.pw_name, plain_pw);

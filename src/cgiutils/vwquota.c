@@ -1,7 +1,6 @@
 /*
  *	vwquota - Web interface for quota statistics
- *	Copyright © CC Computer Consultants GmbH, 2005 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2005 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -12,7 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libHX.h>
+#include <libHX/string.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxcgi/libvxcgi.h>
 #include <vitalnix/libvxutil/defines.h>
@@ -55,7 +54,7 @@ int main(int argc, const char **argv)
 static void do_quota(const char *user)
 {
 	long saved = getuid();
-	hmc_t *ln = NULL;
+	hxmc_t *ln = NULL;
 	char buf[256];
 	FILE *fp;
 	int i;
@@ -141,7 +140,7 @@ static void do_quota(const char *user)
 
 	printf("</table>");
 	pclose(fp);
-	hmc_free(ln);
+	HXmc_free(ln);
 }
 
 static void header(void)

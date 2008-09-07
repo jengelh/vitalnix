@@ -1,7 +1,6 @@
 /*
  *	pwlfmt - Format password lists
- *	Copyright © CC Computer Consultants GmbH, 2003 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -13,7 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libHX.h>
+#include <libHX/option.h>
 #include <vitalnix/config.h>
 #include <vitalnix/libvxmdfmt/libvxmdfmt.h>
 #include <vitalnix/libvxmdfmt/vtable.h>

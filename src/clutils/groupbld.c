@@ -1,7 +1,6 @@
 /*
  *	groupbld - Build system groups from Vitalnix group tags
- *	Copyright © CC Computer Consultants GmbH, 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2007 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -14,7 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <libHX.h>
+#include <libHX/string.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
 #include <vitalnix/libvxdb/libvxdb.h>
@@ -27,7 +26,7 @@ static void groupbld_show_version(const struct HXoptcb *);
 static unsigned int groupbld_select_group(struct vxdb_state *, const char *);
 static bool groupbld_loop(struct vxdb_state *, unsigned int);
 static bool groupbld_create(struct vxdb_state *, const char *);
-static void groupbld_transform(const char *, hmc_t **);
+static void groupbld_transform(const char *, hxmc_t **);
 static bool groupbld_move(struct vxdb_state *, const char *, const char *);
 
 /* Variables */
@@ -158,7 +157,7 @@ static bool groupbld_loop(struct vxdb_state *db, unsigned int gid)
 {
 	struct vxdb_user user = {};
 	unsigned int iuser    = 0;
-	hmc_t *vgname         = NULL;
+	hxmc_t *vgname        = NULL;
 	bool success          = true;
 	void *trav;
 	int nusers;
@@ -191,7 +190,7 @@ static bool groupbld_loop(struct vxdb_state *db, unsigned int gid)
 
 	if (Verbose)
 		printf("Done processing %d users.\n", nusers);
-	hmc_free(vgname);
+	HXmc_free(vgname);
 	vxdb_user_free(&user, false);
 	vxdb_usertrav_free(db, trav);
 	return success;
@@ -204,14 +203,14 @@ static bool groupbld_loop(struct vxdb_state *db, unsigned int gid)
  *
  * Transform a Vitalnix Group name into a valid UNIX group name.
  */
-static void groupbld_transform(const char *name, hmc_t **unix_name)
+static void groupbld_transform(const char *name, hxmc_t **unix_name)
 {
 	unsigned int i;
 	char buf[32], *p;
 
-	hmc_strasg(unix_name, vg_prefix);
+	HXmc_strcpy(unix_name, vg_prefix);
 
-	/* Only call hmc_strcat() in chunks */
+	/* Only call HXmc_strcat() in chunks */
 	while (*name != '\0') {
 		for (i = 0, p = buf; i < sizeof(buf) - 1; ++i, ++name) {
 			if (*name == '\0')
@@ -224,7 +223,7 @@ static void groupbld_transform(const char *name, hmc_t **unix_name)
 		*p = '\0';
 		if (*buf != '\0' && *(p-1) == '-')
 			*(p-1) = '\0';
-		hmc_strcat(unix_name, buf);
+		HXmc_strcat(unix_name, buf);
 	}
 }
 

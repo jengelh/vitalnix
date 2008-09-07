@@ -1,7 +1,6 @@
 /*
  *	libvxdb/aux.c - Auxiliary functions
- *	Copyright © CC Computer Consultants GmbH, 2005 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2005 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -13,7 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libHX.h>
+#include <libHX/string.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxdb/libvxdb.h>
 #include <vitalnix/libvxutil/libvxutil.h>
@@ -35,23 +34,23 @@ EXPORT_SYMBOL void vxdb_user_clean(struct vxdb_user *u)
 EXPORT_SYMBOL void vxdb_user_copy(struct vxdb_user *dest,
     const struct vxdb_user *src)
 {
-	hmc_strasg(&dest->pw_name, src->pw_name);
+	HXmc_strcpy(&dest->pw_name, src->pw_name);
 	dest->pw_uid     = src->pw_uid;
 	dest->pw_gid     = src->pw_gid;
-	hmc_strasg(&dest->pw_igrp, src->pw_igrp);
-	hmc_strasg(&dest->pw_real, src->pw_real);
-	hmc_strasg(&dest->pw_home, src->pw_home);
-	hmc_strasg(&dest->pw_shell, src->pw_shell);
-	hmc_strasg(&dest->sp_passwd, src->sp_passwd);
-	hmc_strasg(&dest->sp_ntpasswd, src->sp_ntpasswd);
+	HXmc_strcpy(&dest->pw_igrp, src->pw_igrp);
+	HXmc_strcpy(&dest->pw_real, src->pw_real);
+	HXmc_strcpy(&dest->pw_home, src->pw_home);
+	HXmc_strcpy(&dest->pw_shell, src->pw_shell);
+	HXmc_strcpy(&dest->sp_passwd, src->sp_passwd);
+	HXmc_strcpy(&dest->sp_ntpasswd, src->sp_ntpasswd);
 	dest->sp_lastchg = src->sp_lastchg;
 	dest->sp_min     = src->sp_min;
 	dest->sp_max     = src->sp_max;
 	dest->sp_warn    = src->sp_warn;
 	dest->sp_expire  = src->sp_expire;
 	dest->sp_inact   = src->sp_inact;
-	hmc_strasg(&dest->vs_uuid, src->vs_uuid);
-	hmc_strasg(&dest->vs_pvgrp, src->vs_pvgrp);
+	HXmc_strcpy(&dest->vs_uuid, src->vs_uuid);
+	HXmc_strcpy(&dest->vs_pvgrp, src->vs_pvgrp);
 	dest->vs_defer   = src->vs_defer;
 	dest->be_priv    = NULL;
 }
@@ -67,15 +66,15 @@ EXPORT_SYMBOL struct vxdb_user *vxdb_user_dup(const struct vxdb_user *src)
 
 EXPORT_SYMBOL void vxdb_user_free(struct vxdb_user *user, bool heap)
 {
-	hmc_free(user->pw_name);
-	hmc_free(user->pw_igrp);
-	hmc_free(user->pw_real);
-	hmc_free(user->pw_home);
-	hmc_free(user->pw_shell);
-	hmc_free(user->sp_passwd);
-	hmc_free(user->sp_ntpasswd);
-	hmc_free(user->vs_uuid);
-	hmc_free(user->vs_pvgrp);
+	HXmc_free(user->pw_name);
+	HXmc_free(user->pw_igrp);
+	HXmc_free(user->pw_real);
+	HXmc_free(user->pw_home);
+	HXmc_free(user->pw_shell);
+	HXmc_free(user->sp_passwd);
+	HXmc_free(user->sp_ntpasswd);
+	HXmc_free(user->vs_uuid);
+	HXmc_free(user->vs_pvgrp);
 	if (heap)
 		free(user);
 }
@@ -104,7 +103,7 @@ EXPORT_SYMBOL void vxdb_group_clean(struct vxdb_group *group)
 EXPORT_SYMBOL void vxdb_group_copy(struct vxdb_group *dest,
     const struct vxdb_group *src)
 {
-	hmc_strasg(&dest->gr_name, src->gr_name);
+	HXmc_strcpy(&dest->gr_name, src->gr_name);
 	dest->gr_gid  = src->gr_gid;
 	dest->be_priv = NULL;
 }
@@ -120,7 +119,7 @@ EXPORT_SYMBOL struct vxdb_group *vxdb_group_dup(const struct vxdb_group *src)
 
 EXPORT_SYMBOL void vxdb_group_free(struct vxdb_group *group, bool heap)
 {
-	hmc_free(group->gr_name);
+	HXmc_free(group->gr_name);
 	if (heap)
 		free(group);
 }

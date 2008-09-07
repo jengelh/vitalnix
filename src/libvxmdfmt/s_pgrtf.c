@@ -1,7 +1,6 @@
 /*
  *	libvxmdfmt/s_pgrtf.c - text/rtf formatter
- *	Copyright © CC Computer Consultants GmbH, 2005 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2005 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -19,7 +18,8 @@ software. */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libHX.h>
+#include <libHX/option.h>
+#include <libHX/string.h>
 #include <vitalnix/compiler.h>
 #include "libvxmdfmt/internal.h"
 #include <vitalnix/libvxmdfmt/libvxmdfmt.h>
@@ -36,7 +36,7 @@ struct pgrtf_data {
 
 /* Functions */
 static int pgrtf_read_template(const char *, struct pgrtf_data *);
-static hmc_t *utf8_to_rtfuni(const char *);
+static hxmc_t *utf8_to_rtfuni(const char *);
 
 //-----------------------------------------------------------------------------
 static int pgrtf_construct(struct pwlfmt_workspace *w)
@@ -83,8 +83,8 @@ static void pgrtf_tbl_entry(const struct pwlfmt_workspace *ws,
 {
 	const struct pgrtf_data *priv = ws->style_data;
 	struct HXbtree *catalog       = defcat_tbl_entry(ws, data);
-	hmc_t *uni_firstname          = utf8_to_rtfuni(data->first_name);
-	hmc_t *uni_surname            = utf8_to_rtfuni(data->surname);
+	hxmc_t *uni_firstname         = utf8_to_rtfuni(data->first_name);
+	hxmc_t *uni_surname           = utf8_to_rtfuni(data->surname);
 
 	HXformat_add(catalog, "SURNAME", uni_surname,
 	             HXTYPE_STRING | HXFORMAT_IMMED);
@@ -137,11 +137,11 @@ static int pgrtf_read_template(const char *template_file, struct pgrtf_data *p)
 	return 1;
 }
 
-static hmc_t *utf8_to_rtfuni(const char *ip)
+static hxmc_t *utf8_to_rtfuni(const char *ip)
 {
 	const char *cfh = ip;
 	iconv_t cd      = iconv_open("wchar_t", "UTF-8");
-	hmc_t *dest     = hmc_minit(NULL, 0);
+	hxmc_t *dest    = HXmc_meminit(NULL, 0);
 	char buf[16];
 	size_t is, os;
 	wchar_t oc, *op = &oc;
@@ -154,17 +154,17 @@ static hmc_t *utf8_to_rtfuni(const char *ip)
 
 		is = strlen(ip);
 		os = sizeof(wchar_t);
-		hmc_memcat(&dest, cfh, ip - cfh);
+		HXmc_memcat(&dest, cfh, ip - cfh);
 		iconv(cd, reinterpret_cast(char **, &ip), &is,
 		          reinterpret_cast(char **,
 		          	reinterpret_cast(void *, &op)), &os);
 		snprintf(buf, sizeof(buf), "\\uc0\\u%ld", static_cast(long, oc));
-		hmc_strcat(&dest, buf);
+		HXmc_strcat(&dest, buf);
 		cfh = ip;
 	}
 
 	if (*cfh != '\0')
-		hmc_strcat(&dest, cfh);
+		HXmc_strcat(&dest, cfh);
 	return dest;
 }
 

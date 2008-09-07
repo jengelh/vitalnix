@@ -235,7 +235,7 @@ libvxcore_la_LDFLAGS := ${regular_SOLDFLAGS}
 #
 libvxeds_la_LIBADD  := ${libHX_LIBS} libvxcore.la libvxutil.la
 libvxeds_la_LDFLAGS := ${regular_SOLDFLAGS} ${libxml_LIBS}
-libvxeds_la_CFLAGS  := ${libxml_CFLAGS}
+libvxeds_la_CFLAGS  := ${AM_CFLAGS} ${libxml_CFLAGS}
 libvxeds_la_SOURCES := \
 	src/libvxeds/eds.c \
 	src/libvxeds/fm_sdf.c \
