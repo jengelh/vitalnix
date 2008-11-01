@@ -27,7 +27,7 @@
 #include "lpacct.h"
 #define PROTOCOL_PREFIX "scv:" /* sql confirm for vitalnix */
 
-static hmc_t *backend_dir;
+static hxmc_t *backend_dir;
 
 static bool next_word(const char **w, const char **s, const char **e)
 {
@@ -68,14 +68,14 @@ static bool next_wordq(const char **w, const char **s, const char **e)
 	return true;
 }
 
-static void run_other_backend(const hmc_t *prog)
+static void run_other_backend(const hxmc_t *prog)
 {
 	const char *class_start, *class_end;
 	const char *uri_start, *uri_end;
 	const char *model_start, *model_end;
 	const char *desc_start, *desc_end;
 	const char *devid_start, *devid_end, *w;
-	hmc_t *ln = NULL;
+	hxmc_t *ln = NULL;
 	bool do_devid;
 	FILE *fp;
 
@@ -113,12 +113,12 @@ static void run_other_backend(const hmc_t *prog)
 	}
 
 	pclose(fp);
-	hmc_free(ln);
+	HXmc_free(ln);
 }
 
 static void find_other_backends(void)
 {
-	hmc_t *backend_prog;
+	hxmc_t *backend_prog;
 	const char *de;
 	struct stat sb;
 	void *dirptr;
@@ -130,14 +130,14 @@ static void find_other_backends(void)
 	while ((de = HXdir_read(dirptr)) != NULL) {
 		if (*de == '.')
 			continue;
-		backend_prog = hmc_sinit(backend_dir);
-		hmc_strcat(&backend_prog, de);
+		backend_prog = HXmc_strinit(backend_dir);
+		HXmc_strcat(&backend_prog, de);
 		if (stat(backend_prog, &sb) < 0) /* dereference symlinks */
 			continue;
 		if (!S_ISREG(sb.st_mode))
 			continue;
 		run_other_backend(backend_prog);
-		hmc_free(backend_prog);
+		HXmc_free(backend_prog);
 	}
 
 	HXdir_close(dirptr);
@@ -180,8 +180,8 @@ int main(int argc, const char **argv)
 
 	if ((p = getenv("CUPS_SERVERBIN")) == NULL)
 		return CUPS_BACKEND_FAILED;
-	backend_dir = hmc_sinit(p);
-	hmc_strcat(&backend_dir, "/backend/");
+	backend_dir = HXmc_strinit(p);
+	HXmc_strcat(&backend_dir, "/backend/");
 
 	if (argc == 1) {
 		/* Detect recursion */
@@ -228,13 +228,13 @@ int main(int argc, const char **argv)
 		perror("fork");
 		return CUPS_BACKEND_FAILED;
 	} else if (pid == 0) {
-		hmc_t *backend_name = hmc_sinit(backend_dir);
+		hxmc_t *backend_name = HXmc_strinit(backend_dir);
 		const char *e = strchr(*argv, ':');
 
-		hmc_memcat(&backend_name, *argv, e - *argv);
+		HXmc_memcat(&backend_name, *argv, e - *argv);
 		execv(backend_name, const_cast(char *const *, argv));
 		perror("execv");
-		hmc_free(backend_name);
+		HXmc_free(backend_name);
 		exit(CUPS_BACKEND_FAILED);
 	}
 

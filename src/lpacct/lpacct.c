@@ -304,7 +304,7 @@ static enum colorspace get_colorspace(void)
 	enum colorspace ret = COLORSPACE_GRAY;
 	const char *printer, *p;
 	char buf[MAXFNLEN];
-	hmc_t *ln = NULL;
+	hxmc_t *ln = NULL;
 	FILE *fp;
 
 	if ((printer = getenv("PRINTER")) == NULL) {
@@ -341,6 +341,6 @@ static enum colorspace get_colorspace(void)
 		}
 	}
 
-	hmc_free(ln);
+	HXmc_free(ln);
 	return ret;
 }

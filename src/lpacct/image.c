@@ -27,7 +27,7 @@
 static void cost_add(struct cost *, const struct cost *);
 static inline unsigned long min2(unsigned long, unsigned long);
 static int mpxm_chunk_alloc(struct image *);
-static int mpxm_fdgetl(int, hmc_t **);
+static int mpxm_fdgetl(int, hxmc_t **);
 static int mpxm_get_header(int, struct image *);
 static void print_stats(const struct options *, const struct cost *,
 	const struct image *);
@@ -196,15 +196,15 @@ static int mpxm_chunk_alloc(struct image *image)
  *
  * Reads a line from @fd and puts it into @res.
  */
-static int mpxm_fdgetl(int fd, hmc_t **res)
+static int mpxm_fdgetl(int fd, hxmc_t **res)
 {
 	char temp[256], *temp_ptr = temp;
 	int ret;
 
 	if (*res == NULL)
-		*res = hmc_sinit("");
+		*res = HXmc_strinit("");
 	else
-		hmc_trunc(res, 0);
+		HXmc_trunc(res, 0);
 
 	while (true) {
 		/*
@@ -213,12 +213,12 @@ static int mpxm_fdgetl(int fd, hmc_t **res)
 		 */
 		if ((ret = read(fd, temp_ptr, 1)) <= 0 || *temp_ptr++ == '\n') {
 			*temp_ptr = '\0';
-			hmc_strcat(res, temp);
+			HXmc_strcat(res, temp);
 			break;
 		}
 		if (temp_ptr == temp + sizeof(temp) - 1) {
 			*temp_ptr = '\0';
-			hmc_strcat(res, temp);
+			HXmc_strcat(res, temp);
 			temp_ptr = temp;
 		}
 	}
@@ -236,7 +236,7 @@ static int mpxm_fdgetl(int fd, hmc_t **res)
  */
 static int mpxm_get_header(int fd, struct image *image)
 {
-	hmc_t *ln = NULL;
+	hxmc_t *ln = NULL;
 	int ret;
 
 	if ((ret = mpxm_fdgetl(fd, &ln)) < 0)
@@ -261,7 +261,7 @@ static int mpxm_get_header(int fd, struct image *image)
 
 	/* bits per pixel line (unused) */
 	mpxm_fdgetl(fd, &ln);
-	hmc_free(ln);
+	HXmc_free(ln);
 
 	image->nr_pixels = static_cast(unsigned long long,
 	                   image->width * image->height);
