@@ -12,10 +12,4 @@
 #	define EXPORT_SYMBOL
 #endif
 
-/* Code annotations */
-#define const_cast(type, expr)          ((type)(expr))
-#define signed_cast(type, expr)         ((type)(expr))
-#define static_cast(type, expr)         ((type)(expr))
-#define reinterpret_cast(type, expr)    ((type)(expr))
-
 #endif /* _VITALNIX_GENERIC_COMPILER_H */

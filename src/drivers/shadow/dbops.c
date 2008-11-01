@@ -1,7 +1,6 @@
 /*
  *	shadow/dbops.c
- *	Copyright © CC Computer Consultants GmbH, 2002 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2002 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -15,7 +14,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <libHX.h>
+#include <libHX/deque.h>
 #include "drivers/shadow/shadow.h"
 #include <vitalnix/libvxdb/libvxdb.h>
 

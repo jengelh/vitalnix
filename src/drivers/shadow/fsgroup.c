@@ -11,12 +11,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <libHX/defs.h>
 #include <libHX/deque.h>
 #include <libHX/string.h>
 #include <vitalnix/compiler.h>
 #include "drivers/shadow/shadow.h"
 #include <vitalnix/libvxdb/libvxdb.h>
-#include <vitalnix/libvxutil/defines.h>
 
 struct HXdeque *db_read_groups(FILE *fp)
 {

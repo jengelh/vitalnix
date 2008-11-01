@@ -19,9 +19,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <libHX/defs.h>
 #include <libHX/option.h>
 #include <libHX/string.h>
-#include <vitalnix/compiler.h>
 #include <vitalnix/libvxutil/defines.h>
 #include "acct.h"
 #include "global.h"

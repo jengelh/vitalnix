@@ -1,7 +1,6 @@
 /*
  *	libvxmdsync/fixup.c
- *	Copyright © CC Computer Consultants GmbH, 2003 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -10,7 +9,8 @@
  */
 #include <stdio.h>
 #include <string.h>
-#include <libHX.h>
+#include <libHX/arbtree.h>
+#include <libHX/string.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxeds/libvxeds.h>
 #include "libvxmdsync/internal.h" /* get MAX_LNAME */

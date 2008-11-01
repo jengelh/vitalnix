@@ -13,11 +13,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <libHX/defs.h>
 #include <libHX/option.h>
 #include <vitalnix/config.h>
 #include <vitalnix/libvxdb/libvxdb.h>
 #include <vitalnix/libvxdb/xafunc.h>
-#include <vitalnix/libvxutil/defines.h>
 
 /* Functions */
 static bool get_options(int *, const char ***);

@@ -1,7 +1,6 @@
 /*
  *	lpacct/confirm.c - confirm SQL entry
- *	Copyright © CC Computer Consultants GmbH, 2006 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2006 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -19,9 +18,10 @@
 #include <string.h>
 #include <syslog.h>
 #include <unistd.h>
-#include <libHX.h>
+#include <libHX/defs.h>
+#include <libHX/misc.h>
+#include <libHX/string.h>
 #include <cups/backend.h>
-#include <vitalnix/compiler.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 #include "global.h"
 #include "lpacct.h"

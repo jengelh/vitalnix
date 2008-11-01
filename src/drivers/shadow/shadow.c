@@ -1,7 +1,6 @@
 /*
  *	shadow/shadow.c - Shadow back-end (local files)
- *	Copyright © CC Computer Consultants GmbH, 2002 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2002 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -15,12 +14,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <libHX.h>
+#include <libHX/deque.h>
+#include <libHX/string.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
 #include "drivers/shadow/shadow.h"
 #include <vitalnix/libvxdb/libvxdb.h>
-#include <vitalnix/libvxutil/defines.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
 #define RWLOCKED(z)     ((z)->flags & VXDB_WRLOCK)

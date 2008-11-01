@@ -1,7 +1,6 @@
 /*
  *	lpacct/image.c - Image processing routines
- *	Copyright © CC Computer Consultants GmbH, 2006 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2006 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -15,8 +14,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include <libHX.h>
-#include <vitalnix/compiler.h>
+#include <libHX/defs.h>
+#include <libHX/string.h>
 #include "acct.h"
 #include "drop.h"
 #include "global.h"

@@ -10,12 +10,12 @@
 #	include <cstdio>
 #	include <cstdlib>
 #endif
-#include <libHX.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+struct HXbtree;
 struct HXoption;
 
 /*

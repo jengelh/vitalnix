@@ -1,7 +1,6 @@
 /*
  *	steelmill/xu_common.cpp
- *	Copyright © CC Computer Consultants GmbH, 2005 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2005 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -9,7 +8,7 @@
  *	Foundation; either version 2.1 or 3 of the License.
  */
 #include <cstdio>
-#include <libHX.h>
+#include <libHX/deque.h>
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #	include <wx/wx.h>

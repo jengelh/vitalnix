@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <libHX/arbtree.h>
+#include <libHX/defs.h>
 #include <libHX/string.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
@@ -20,7 +21,6 @@
 #include <vitalnix/libvxmdfmt/libvxmdfmt.h>
 #include <vitalnix/libvxmdfmt/vtable.h>
 #include "libvxmdsync/logversion.h"
-#include <vitalnix/libvxutil/defines.h>
 
 /* Functions */
 static int pwl_build_tree(FILE *, struct HXbtree **);

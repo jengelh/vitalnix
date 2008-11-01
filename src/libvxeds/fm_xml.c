@@ -1,7 +1,6 @@
 /*
  *	libvxeds/fm_xml.c - XML parser
- *	Copyright © CC Computer Consultants GmbH, 2003 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -12,6 +11,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <libHX/defs.h>
+#include <libHX/libxml_helper.h>
 #include <libxml/parser.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxeds/libvxeds.h>
@@ -27,8 +28,6 @@ struct xml_state {
 
 /* Functions */
 static void xml_close(void *);
-static inline int strcmp_1u(const xmlChar *, const char *);
-static inline char *xmlGetProp_2s(xmlNode *, const char *);
 
 //-----------------------------------------------------------------------------
 static int xml_open(const char *filename, void **state_pptr)
@@ -48,7 +47,7 @@ static int xml_open(const char *filename, void **state_pptr)
 	}
 
 	if ((state->ptr = xmlDocGetRootElement(state->doc)) == NULL ||
-	    strcmp_1u(state->ptr->name, "VX3_xmlds") != 0) {
+	    xml_strcmp(state->ptr->name, "VX3_xmlds") != 0) {
 		xml_close(*state_pptr);
 		return 0;
 	}
@@ -70,11 +69,11 @@ static int xml_read(void *state_ptr, struct vxeds_entry *e)
 		return 0;
 
 	if (state->ptr->type == XML_ELEMENT_NODE &&
-	    strcmp_1u(state->ptr->name, "user") == 0) {
+	    xml_strcmp(state->ptr->name, "user") == 0) {
 		char *bd;
 
 		memset(e, 0, sizeof(*e));
-		e->first_name = xmlGetProp_2s(state->ptr, "firstname");
+		e->first_name = xml_getprop(state->ptr, "firstname");
 
 		if (e->first_name == NULL) {
 			/* bogus entry */
@@ -82,12 +81,12 @@ static int xml_read(void *state_ptr, struct vxeds_entry *e)
 			return -EINVAL;
 		}
 
-		e->surname   = xmlGetProp_2s(state->ptr, "surname");
+		e->surname   = xml_getprop(state->ptr, "surname");
 		e->full_name = vxeds_bfullname(e->first_name, e->surname);
-		e->pvgrp     = xmlGetProp_2s(state->ptr, "pvgrp");
+		e->pvgrp     = xml_getprop(state->ptr, "pvgrp");
 
-		if ((e->uuid = xmlGetProp_2s(state->ptr, "uuid")) == NULL)
-			if ((bd = xmlGetProp_2s(state->ptr, "bday")) != NULL)
+		if ((e->uuid = xml_getprop(state->ptr, "uuid")) == NULL)
+			if ((bd = xml_getprop(state->ptr, "bday")) != NULL)
 				e->uuid = vxuuid_vx3(e->full_name,
 				          vxutil_string_xday(bd));
 	}
@@ -102,18 +101,6 @@ static void xml_close(void *state_ptr)
 	if (state->doc != NULL)
 		xmlFreeDoc(state->doc);
 	free(state);
-}
-
-//-----------------------------------------------------------------------------
-static inline int strcmp_1u(const xmlChar *a, const char *b)
-{
-	return strcmp(reinterpret_cast(const char *, a), b);
-}
-
-static inline char *xmlGetProp_2s(xmlNode *p, const char *v)
-{
-	return reinterpret_cast(char *, xmlGetProp(p,
-	       reinterpret_cast(const xmlChar *, v)));
 }
 
 //-----------------------------------------------------------------------------

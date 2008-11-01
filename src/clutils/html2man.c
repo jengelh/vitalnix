@@ -11,10 +11,10 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include <libHX/defs.h>
 #include <libHX/deque.h>
 #include <libHX/option.h>
 #include <libxml/HTMLparser.h>
-#include <vitalnix/compiler.h>
 
 /* Functions */
 static void tag_generic(xmlNode *, bool);

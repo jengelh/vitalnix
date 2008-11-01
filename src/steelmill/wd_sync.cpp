@@ -1,7 +1,6 @@
 /*
  *	steelmill/wd_sync.cpp
- *	Copyright © CC Computer Consultants GmbH, 2005 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2005 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -18,12 +17,13 @@
 #endif
 #include <wx/spinctrl.h>
 #include <wx/statline.h>
+#include <libHX/arbtree.h>
+#include <libHX/deque.h>
 #include <vitalnix/libvxeds/libvxeds.h>
 #include <vitalnix/libvxeds/vtable.h>
 #include <vitalnix/libvxmdsync/libvxmdsync.h>
 #include <vitalnix/libvxdb/libvxdb.h>
 #include <vitalnix/libvxdb/xafunc.h>
-#include <vitalnix/libvxutil/defines.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 #include "steelmill/wd_sync.hpp"
 #include "steelmill/xu_common.hpp"

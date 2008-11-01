@@ -20,6 +20,7 @@
 #include <unistd.h>
 #include <security/pam_appl.h>
 #include <security/pam_modules.h>
+#include <libHX/defs.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxdb/libvxdb.h>
 #include <vitalnix/libvxdb/xafunc.h>

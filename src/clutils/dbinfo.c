@@ -15,7 +15,6 @@
 #include <libHX/misc.h>
 #include <libHX/option.h>
 #include <libHX/string.h>
-#include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
 #include <vitalnix/libvxdb/libvxdb.h>
 #include <vitalnix/libvxdb/xafunc.h>

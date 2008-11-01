@@ -17,10 +17,10 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
+#include <libHX/defs.h>
 #include <libHX/option.h>
 #include <libHX/string.h>
 #include <vitalnix/config.h>
-#include <vitalnix/compiler.h>
 #include <vitalnix/libvxdb/libvxdb.h>
 #include <vitalnix/libvxdb/xafunc.h>
 #ifdef HAVE_LASTLOG_H

@@ -16,6 +16,8 @@
 #include <string.h>
 #include <time.h>
 #include <libHX/arbtree.h>
+#include <libHX/defs.h>
+#include <libHX/option.h>
 #include <libHX/string.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxutil/defines.h>

@@ -1,7 +1,6 @@
 /*
  *	libvxcore - Module registrator
- *	Copyright © CC Computer Consultants GmbH, 2006 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2006 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -11,7 +10,8 @@
 #include <errno.h>
 #include <pthread.h>
 #include <stdio.h>
-#include <libHX.h>
+#include <string.h>
+#include <libHX/arbtree.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxcore/loader.h>
 

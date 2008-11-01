@@ -1,7 +1,6 @@
 /*
  *	testcase - A small testcase center for some Vitalnix functionality
- *	Copyright © CC Computer Consultants GmbH, 2006 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2006 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -12,8 +11,8 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+#include <libHX/defs.h>
 #include <vitalnix/libvxeds/libvxeds.h>
-#include <vitalnix/libvxutil/defines.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
 static void test_1(void)

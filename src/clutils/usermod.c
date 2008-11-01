@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <libHX/option.h>
-#include <vitalnix/compiler.h>
+#include <libHX/string.h>
 #include <vitalnix/config.h>
 #include <vitalnix/libvxdb/config.h>
 #include <vitalnix/libvxdb/xafunc.h>

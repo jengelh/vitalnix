@@ -1,7 +1,6 @@
 /*
  *	libvxmdsync/read_file.c
- *	Copyright © CC Computer Consultants GmbH, 2003 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -14,12 +13,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libHX.h>
+#include <libHX/arbtree.h>
+#include <libHX/string.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxeds/libvxeds.h>
 #include "libvxmdsync/internal.h" /* MAX_LNAME */
 #include <vitalnix/libvxmdsync/libvxmdsync.h>
-#include <vitalnix/libvxutil/defines.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
 EXPORT_SYMBOL int mdsync_read_file(struct mdsync_workspace *w,

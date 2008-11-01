@@ -1,7 +1,6 @@
 /*
  *	libvxcgi/auth.c - authentication helpers
- *	Copyright © CC Computer Consultants GmbH, 2005 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2005 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -18,7 +17,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <security/pam_appl.h>
-#include <libHX.h>
+#include <libHX/defs.h>
+#include <libHX/string.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxcgi/libvxcgi.h>
 

@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <vitalnix/compiler.h>
 
 static int get_date_parts(const char *, unsigned int *, unsigned int *,
 	unsigned int *);
@@ -101,7 +100,6 @@ static char *v0_encode(const char *date)
 	return s;
 }
 
-//-----------------------------------------------------------------------------
 static int get_date_parts(const char *date, unsigned int *year,
 	unsigned int *month, unsigned int *day)
 {
@@ -118,5 +116,3 @@ static int get_date_parts(const char *date, unsigned int *year,
 	}
 	return 1;
 }
-
-//=============================================================================

@@ -12,12 +12,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <libHX/defs.h>
 #include <libHX/string.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxeds/libvxeds.h>
 #include "libvxeds/static-build.h"
 #include <vitalnix/libvxeds/vtable.h>
-#include <vitalnix/libvxutil/defines.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 #define ICONV_NULL reinterpret_cast(iconv_t, -1)
 

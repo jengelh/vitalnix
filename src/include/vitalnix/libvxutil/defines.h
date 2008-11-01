@@ -8,7 +8,6 @@
 
 #define __STRINGIFY_EXPAND(s)   #s
 #define __STRINGIFY(s)          __STRINGIFY_EXPAND(s)
-#define ARRAY_SIZE(a)           (sizeof(a) / sizeof(*a))
 #define MAXSNLEN                256
 #define MAXFNLEN                256
 #define MAXLNLEN                1024

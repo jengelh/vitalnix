@@ -15,7 +15,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <libHX/arbtree.h>
-#include <vitalnix/compiler.h>
+#include <libHX/misc.h>
+#include <libHX/option.h>
+#include <libHX/string.h>
 #include <vitalnix/config.h>
 #include <vitalnix/libvxdb/config.h>
 #include <vitalnix/libvxdb/libvxdb.h>

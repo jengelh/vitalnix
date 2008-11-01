@@ -11,10 +11,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <libHX/arbtree.h>
+#include <libHX/defs.h>
 #include <libHX/string.h>
-#include <vitalnix/compiler.h>
 #include <vitalnix/libvxcgi/libvxcgi.h>
-#include <vitalnix/libvxutil/defines.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
 /* Functions */

@@ -6,13 +6,14 @@
 #else
 #	include <cstdio>
 #endif
-#include <libHX.h>
 #include <vitalnix/libvxmdfmt/libvxmdfmt.h>
 #include "libvxmdfmt/static-build.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+struct HXbtree;
 
 struct pwl_data {
 	const char *pvgrp, *first_name, *surname, *username, *password;

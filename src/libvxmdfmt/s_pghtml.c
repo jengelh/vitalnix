@@ -1,7 +1,6 @@
 /*
  *	libvxmdfmt/s_pghtml.c - text/html formatter
- *	Copyright © CC Computer Consultants GmbH, 2002 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2002 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -13,14 +12,12 @@
 external advertisements for this software. */
 
 #include <stdio.h>
-#include <libHX.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/config.h>
 #include "libvxmdfmt/internal.h"
 #include <vitalnix/libvxmdfmt/libvxmdfmt.h>
 #include "libvxmdfmt/static-build.h"
 #include <vitalnix/libvxmdfmt/vtable.h>
-#include <vitalnix/libvxutil/defines.h>
 
 static void pghtml_file_header(const struct pwlfmt_workspace *state)
 {

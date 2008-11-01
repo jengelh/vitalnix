@@ -1,7 +1,6 @@
 /*
  *	libvxeds/eds.c
- *	Copyright © CC Computer Consultants GmbH, 2004 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2004 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -10,12 +9,11 @@
  */
 #include <errno.h>
 #include <stdio.h>
-#include <libHX.h>
+#include <libHX/string.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxeds/libvxeds.h>
 #include <vitalnix/libvxeds/vtable.h>
 #include <vitalnix/libvxcore/loader.h>
-#include <vitalnix/libvxutil/defines.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
 /* Definitions */

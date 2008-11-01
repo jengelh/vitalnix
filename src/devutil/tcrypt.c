@@ -1,7 +1,6 @@
 /*
  *	tcrypt - Test encryption
- *	Copyright © CC Computer Consultants GmbH, 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2007 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -10,7 +9,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <vitalnix/libvxutil/defines.h>
+#include <libHX/defs.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
 static const unsigned int algo_id[] = {

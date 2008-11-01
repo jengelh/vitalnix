@@ -17,6 +17,7 @@
 #include <unistd.h>
 #include <libHX/arbtree.h>
 #include <libHX/deque.h>
+#include <libHX/misc.h>
 #include <libHX/option.h>
 #include <libHX/string.h>
 #include <vitalnix/compiler.h>

@@ -1,7 +1,6 @@
 /*
  *	lpacct/acct.c - Accounting
- *	Copyright © CC Computer Consultants GmbH, 2006 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2006 - 2008
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -14,7 +13,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <syslog.h>
-#include <libHX.h>
 #include <mysql.h>
 #include <vitalnix/config.h>
 #include <vitalnix/libvxutil/libvxutil.h>
