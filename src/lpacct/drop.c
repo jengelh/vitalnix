@@ -82,7 +82,7 @@ void drop2sqin(struct costf *out, const struct cost *in, int dpi)
 }
 
 //-----------------------------------------------------------------------------
-/*
+/**
  * pxcost_cmyk -
  * @image:	Image data
  * @cost:	Storage point for image cost
@@ -129,7 +129,7 @@ static int pxcost_cmyk(int fd, struct image *image, struct cost *cost)
 	return ret;
 }
 
-/*
+/**
  * pxcost_cmypk -
  * @image:	Image data
  * @cost:	Storage point for image cost
@@ -176,7 +176,7 @@ static int pxcost_cmypk(int fd, struct image *image, struct cost *cost)
 	return ret;
 }
 
-/*
+/**
  * pxcost_cmy -
  * @image:	Image data
  * @cost:	Storage point for image cost
@@ -212,7 +212,7 @@ static int pxcost_cmy(int fd, struct image *image, struct cost *cost)
 	return ret;
 }
 
-/*
+/**
  * pxcost_gray -
  * @image:	Image data
  * @cost:	Storage point for image cost
@@ -274,7 +274,7 @@ static inline unsigned int abs1(int a)
 	return (a < 0) ? -a : a;
 }
 
-/*
+/**
  * kdist - distance to black
  * @r:	red component
  * @g:	green component

@@ -43,7 +43,8 @@ struct multi_state {
 	unsigned int uid_min, uid_max, gid_min, gid_max;
 };
 
-/*
+/**
+ * struct vxmmd_trav -
  * @rd_mod:	current RD module that is traversed
  * @wr_mod:	true if the WD module is to be traversed (changes)
  * @itrav:	traverser for current read module

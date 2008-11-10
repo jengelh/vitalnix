@@ -152,7 +152,7 @@ EXPORT_SYMBOL void mdsync_free(struct mdsync_workspace *w)
 }
 
 //-----------------------------------------------------------------------------
-/*
+/**
  * kill_eds -
  * @node:	node to free data at
  *
@@ -167,7 +167,7 @@ static void kill_eds(const struct HXbtree_node *node)
 		kill_eds(node->sub[1]);
 }
 
-/*
+/**
  * kill_pwd -
  * @node:	node to free data at
  *

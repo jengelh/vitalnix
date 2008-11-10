@@ -34,7 +34,7 @@ static inline double px_to_cm(unsigned int, unsigned int);
 static inline double px_to_in(unsigned int, unsigned int);
 
 //-----------------------------------------------------------------------------
-/*
+/**
  * invert_image -
  * @image:	image to operate on
  *
@@ -58,7 +58,7 @@ void invert_image(struct image *image)
 	}
 }
 
-/*
+/**
  * mpxm_chunk_next -
  * @image:	image state to operate on
  *
@@ -103,7 +103,7 @@ long mpxm_chunk_next(int fd, struct image *image)
 	return block_size;
 }
 
-/*
+/**
  * mpxm_process -
  * @fd:		file descriptor to read from
  * @cost:	accounting structure
@@ -170,7 +170,7 @@ static inline unsigned long min2(unsigned long a, unsigned long b)
 	return (a < b) ? a : b;
 }
 
-/*
+/**
  * mpxm_chunk_alloc -
  * @image:	image state to operate on
  *
@@ -188,7 +188,7 @@ static int mpxm_chunk_alloc(struct image *image)
 	return 1;
 }
 
-/*
+/**
  * mpxm_fdgetl -
  * @fd:		file descriptor to read from
  * @res:	buffer to put data into
@@ -225,7 +225,7 @@ static int mpxm_fdgetl(int fd, hxmc_t **res)
 	return (ret < 0) ? -errno : 0;
 }
 
-/*
+/**
  * mpxm_get_header -
  * @fd:		file descriptor to read from
  * @image:	pointer to image parameters

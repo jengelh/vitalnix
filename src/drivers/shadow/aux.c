@@ -168,7 +168,7 @@ void free_single_group(struct vxdb_group *g)
 	free(g);
 }
 
-/*
+/**
  * lookup_group -
  * @dq:		list to search
  * @gname:	group name to search on, or %NULL if don't-care
@@ -196,7 +196,7 @@ struct vxdb_group *lookup_group(const struct HXdeque *dq,
 	return NULL;
 }
 
-/*
+/**
  * lookup_user -
  * @dq:	list to search on
  * @lname:	user login name to match on, or %NULL if don't-care

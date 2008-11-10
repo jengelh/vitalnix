@@ -117,7 +117,7 @@ EXPORT_SYMBOL const struct pwlstyle_vtable *pwlstyles_trav(void **trav_pptr)
 }
 
 //-----------------------------------------------------------------------------
-/*
+/**
  * pwl_build_tree -
  * @fh:		stdio filehandle to read from
  * @b_ret:	pointer to storage point for resulting B-tree
@@ -177,7 +177,7 @@ static int pwl_build_tree(FILE *fh, struct HXbtree **b_ret)
 	return ret;
 }
 
-/*
+/**
  * pwlfmt_destruct - Destroy the workspace
  * @w:	Workspace to free
  *
@@ -196,7 +196,7 @@ static void pwlfmt_destruct(struct pwlfmt_workspace *w)
 		free(w->template_data);
 }
 
-/*
+/**
  * pwlfmt_process2 - Print tree
  * @w:		Workspace to operate on
  * @tl_tree:	Tree to print out

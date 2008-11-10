@@ -107,7 +107,7 @@ static void groupbld_show_version(const struct HXoptcb *cbi)
 	exit(EXIT_SUCCESS);
 }
 
-/*
+/**
  * groupbld_select_group - Transform group name into GID
  * @db:		db handle
  * @name:	group name
@@ -152,7 +152,7 @@ static inline bool groupbld_timebolt(void)
 	return true;
 }
 
-/*
+/**
  * groupbld_loop - traverse over all users and update VUG membership
  */
 static bool groupbld_loop(struct vxdb_state *db, unsigned int gid)
@@ -198,7 +198,7 @@ static bool groupbld_loop(struct vxdb_state *db, unsigned int gid)
 	return success;
 }
 
-/*
+/**
  * groupbld_transform -
  * @name:	input name
  * @unix_name:	pointer for result
@@ -229,7 +229,7 @@ static void groupbld_transform(const char *name, hxmc_t **unix_name)
 	}
 }
 
-/*
+/**
  * groupbld_create - create VUG if it does not exist already
  * @db:		db handle
  * @name:	name of UNIX group

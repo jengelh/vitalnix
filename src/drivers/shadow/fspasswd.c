@@ -17,7 +17,7 @@
 #include "drivers/shadow/shadow.h"
 #include <vitalnix/libvxdb/libvxdb.h>
 
-/*
+/**
  * db_read_passwd -
  * @fp:	stdio filehandle to read from
  *

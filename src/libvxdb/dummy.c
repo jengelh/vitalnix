@@ -157,7 +157,7 @@ static int vxdummy_sgmapdel(struct vxdb_state *vp, const char *user,
 	return 0;
 }
 
-/*
+/**
  * vxdb_fix_vtable -
  * @m:	vtable
  */

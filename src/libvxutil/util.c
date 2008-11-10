@@ -45,7 +45,7 @@ EXPORT_SYMBOL unsigned int vxutil_now_iday(void)
 	return time(NULL) / 86400;
 }
 
-/*
+/**
  * vxutil_only_digits -
  * @p:	string to look at
  *
@@ -79,7 +79,7 @@ EXPORT_SYMBOL char *vxutil_propose_home(char *dest, size_t size,
 	return dest;
 }
 
-/*
+/**
  * vxutil_propose_lname -
  * @surname_8:		The surname (family name), UTF-8 encoded
  * @firstname_8:	The first name, UTF-8 encoded
@@ -315,7 +315,7 @@ static int vxutil_parse_date(const char *s, unsigned int *day,
 	return 1;
 }
 
-/*
+/**
  * vxutil_quote_base64 -
  * @s:	string to encode
  * @d:	destination buffer
@@ -355,7 +355,7 @@ static void vxutil_quote_base64(const char *s, char *d)
 	*d = '\0';
 }
 
-/*
+/**
  * quoted_size -
  * @s:		string to analyze
  * @type:	non-zero if double quoted
@@ -401,7 +401,7 @@ static size_t quoted_size(const char *s, unsigned int type)
 	return n;
 }
 
-/*
+/**
  * surname_pointer -
  * @s:	string to analyze
  *
@@ -805,7 +805,7 @@ static const struct stab {
 #undef E
 };
 
-/*
+/**
  * transform7 -
  * @src:	Source string to transform
  * @dest:	Destination buffer

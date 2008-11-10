@@ -218,7 +218,7 @@ static bool readhtml(const char *file)
 {
 	xmlNode *ptr;
 	xmlDoc *doc;
-	
+
 	if ((doc = htmlParseFile(file, "utf-8")) == NULL)
 		return false;
 	ptr = xmlDocGetRootElement(doc);

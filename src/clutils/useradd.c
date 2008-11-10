@@ -87,7 +87,7 @@ int main(int argc, const char **argv)
 	return (ret < 0) ? E_OTHER : ret;
 }
 
-/*
+/**
  * useradd_fill_defaults -
  * @state:	pointer to useradd state
  *
@@ -116,7 +116,7 @@ static int useradd_fill_defaults(struct useradd_state *state)
 	return 1;
 }
 
-/*
+/**
  * useradd_genhome -
  *
  * Generate a home directory path based upon the split level that was set in

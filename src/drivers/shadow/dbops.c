@@ -117,7 +117,7 @@ void db_close(struct shadow_state *state)
 #undef close_fpd
 }
 
-/*
+/**
  * db_flush -
  * @state:	Current instance
  * @force:	Force flush even if in-memory copy is recent

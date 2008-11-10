@@ -21,7 +21,7 @@
 const char *const lpacct_sql_fields =
 	"queue, jid, user, title, cyan, magenta, yellow, black, total, pages";
 
-/*
+/**
  * lpacct_readconfig -
  * @p:	config structure
  *
@@ -47,7 +47,7 @@ int lpacct_readconfig(struct options *p)
 	p->acct_syslog = 1;
 	p->colorspace  = COLORSPACE_GRAY;
 	p->dpi         = 300;
-	
+
 #define file CONFIG_SYSCONFDIR "/lpacct.conf"
 	ret = HX_shconfig(file, options_table);
 	if (ret <= 0) {

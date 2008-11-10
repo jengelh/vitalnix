@@ -169,7 +169,7 @@ static inline bool timebolt(void)
 	return true;
 }
 
-/*
+/**
  * levd - Levenshtein distance
  * @s:		string
  * @width:	length of string @s to consider

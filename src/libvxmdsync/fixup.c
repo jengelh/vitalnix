@@ -52,7 +52,7 @@ EXPORT_SYMBOL void mdsync_fixup(struct mdsync_workspace *w)
 }
 
 //-----------------------------------------------------------------------------
-/*
+/**
  * format_name -
  * @name:	Login name
  * @idx:	Index number

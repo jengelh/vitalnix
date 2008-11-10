@@ -84,7 +84,7 @@ int main(int argc, const char **argv)
 	return EXIT_SUCCESS;
 }
 
-/*
+/**
  * driver_info -
  * @fn:	filename of the driver
  *
@@ -130,7 +130,7 @@ static void driver_info(const char *fn)
 	++mcount;
 }
 
-/*
+/**
  * read_ldso_conf -
  *
  * Looks into /etc/ld.so.conf and /etc/ld.so.conf.d.
@@ -152,7 +152,7 @@ static void read_ldso_conf(void)
 	HXdir_close(dirp);
 }
 
-/*
+/**
  * read_ldso_conf1 -
  * @file:	file to analyze
  *
@@ -180,7 +180,7 @@ static void read_ldso_conf1(const char *file)
 	HXmc_free(ln);
 }
 
-/*
+/**
  * read_environment -
  *
  * Adds the search paths listed in LD_LIBRARY_PATH.

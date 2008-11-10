@@ -101,7 +101,7 @@ static int vxdb_cleanup(struct vxdb_state *thx, int err, struct opt *cf)
 	return err;
 }
 
-/*
+/**
  * vxdb_config -
  * @cf:		pointer to config structure
  * @action:	%CONFIG_READ or %CONFIG_FREE
@@ -158,7 +158,7 @@ static int vxdb_config(struct opt *cf, unsigned int action,
 	return 1;
 }
 
-/*
+/**
  * vxdb_get_handle -
  * @filename:	Shared library to open
  *

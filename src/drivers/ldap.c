@@ -172,7 +172,7 @@ static int vxldap_init(struct vxdb_state *vp, const char *config_file)
 	return 1;
 }
 
-/*
+/**
  * vxldap_get_rid - get Samba RID number
  * @state:	vxldap internal structure
  *
@@ -294,7 +294,7 @@ static void vxldap_exit(struct vxdb_state *vp)
 	free(state);
 }
 
-/*
+/**
  * vxldap_count - count results of a search
  * @conn:	libldap structure
  * @base:	basedn to start search at
@@ -663,7 +663,7 @@ static void vxldap_getattr(struct ldap_state *state, const char *dn,
 	ldap_msgfree(result);
 }
 
-/*
+/**
  * vxldap_usermod2 - handle DN rename
  * @state:	vxldap internal structure
  * @old_dn:	old/current DN
@@ -905,7 +905,7 @@ static int vxldap_userdel(struct vxdb_state *vp, const char *name)
 		return 0;
 	else if (ret != LDAP_SUCCESS)
 		return vxldap_errno_sp(ret, "vxldap_userdel");
-	
+
 	return 1;
 }
 
@@ -1310,7 +1310,7 @@ static int vxldap_sgmapadd(struct vxdb_state *vp, const char *user,
 	return ret;
 }
 
-/*
+/**
  * vxldap_member_filter -
  * @state:	vxldap control structure
  * @user:	username

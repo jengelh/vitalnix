@@ -485,7 +485,7 @@ static void getopt_w(const struct HXoptcb *cbi)
 	free(orig_wk);
 }
 
-/*
+/**
  * ldif_safe -
  * @s:	string to analyze
  *

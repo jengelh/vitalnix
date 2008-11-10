@@ -74,7 +74,7 @@ void pr_warn(const char *func, const char *fmt, ...)
 }
 
 //-----------------------------------------------------------------------------
-/*
+/**
  * lpacct_analyze_main -
  * @argc:	argument count
  * @argv:	argument vector
@@ -122,7 +122,7 @@ static int lpacct_analyze_main(int argc, const char **argv)
 	return ret;
 }
 
-/*
+/**
  * lpacct_filter_main -
  * @argc:	argument count
  * @argv:	argument vector
@@ -175,7 +175,7 @@ static int lpacct_filter_main(int argc, const char **argv)
 	return EXIT_SUCCESS;
 }
 
-/*
+/**
  * ghostscript_init -
  * @input_file:	gs param -- postscript file to parse
  * @pid:	store point for PID

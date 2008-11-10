@@ -38,7 +38,7 @@ enum {
 static inline int wb_classof(char);
 
 //-----------------------------------------------------------------------------
-/*
+/**
  * compare_wbc - Compare two strings on a per-class basis
  *
  * A boundary in compare_wbc() is between two characters which are of
