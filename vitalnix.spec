@@ -70,8 +70,6 @@ for i in vx{ckuuid,dbdump,fixuuid,newuser,pwlfmt,tryauth} \
 	ln -s "%pfx/sbin/$i" "$b/%_sbindir/";
 done;
 
-rm -f "$b/%pfx/%_lib"/*.la;
-
 %clean
 rm -Rf "%buildroot";
 
