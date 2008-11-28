@@ -15,10 +15,10 @@ define(_xtmp, esyscmd(
 		([[0-9]]*) echo -en "_SVN$x";;
 	esac;
 ))
-AC_INIT(Vitalnix, _xrelease[]_xtmp)
-AC_CONFIG_HEADERS(config.h)
+AC_INIT([Vitalnix], _xrelease[]_xtmp)
+AC_CONFIG_HEADERS([config.h])
 AC_PROG_INSTALL
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([-Wall])
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_PROG_CXX
@@ -31,7 +31,7 @@ case `uname -m` in
 	(i?86) x86_32=1;;
 	(*)    x86_32=0;;
 esac;
-AM_CONDITIONAL(X86_32, test $x86_32 -eq 1)
+AM_CONDITIONAL([X86_32], [test $x86_32 -eq 1])
 
 #
 #	cups
@@ -58,13 +58,13 @@ regular_CXXFLAGS="-D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
 #
 #	libc
 #
-AC_HAVE_HEADERS([crypt.h lastlog.h paths.h utmpx.h])
+AC_CHECK_HEADERS([crypt.h lastlog.h paths.h utmpx.h])
 
 #
 #	openssl-devel, libxml-devel
 #
 PKG_CHECK_MODULES([libHX], [libHX >= 1.25])
-PKG_CHECK_MODULES([libcrypto], [libcrypto])
+PKG_CHECK_MODULES([libcrypto], [libcrypto >= 0.9.8])
 PKG_CHECK_MODULES([libxml], [libxml-2.0])
 
 #
@@ -74,7 +74,7 @@ AC_MSG_CHECKING([for mysql])
 libmysql_CFLAGS_INSANE=`mysql_config --cflags 2>/dev/null`;
 ret=$?;
 AM_CONDITIONAL([HAVE_MYSQL], [test "$ret" -eq 0])
-if [[ "$?" -eq 0 ]]; then
+if test "$?" -eq 0; then
 	AC_MSG_RESULT([yes])
 	libmysql_LIBS_INSANE=`mysql_config --libs_r`;
 else
@@ -100,25 +100,27 @@ AC_ARG_WITH([pkgconfigdir], AS_HELP_STRING([--with-pkgconfigdir=PATH],
 	[pkgconfigdir="$withval"], [pkgconfigdir='${libdir}/pkgconfig'])
 AC_SUBST(pkgconfigdir)
 
-m4_sinclude(m4lib/gcc4_visibility.m4)
+m4_include([m4/gcc4_visibility.m4])
 
 PACKAGE_VERSION_SIMPLE="_xrelease";
-AC_DEFINE_UNQUOTED(PACKAGE_VERSION_SIMPLE, ["_xrelease"], [Simplified package version])
-AC_SUBST(PACKAGE_VERSION_SIMPLE)
-AC_SUBST(regular_CFLAGS)
-AC_SUBST(regular_CXXFLAGS)
-AC_SUBST(libmysql_CFLAGS_INSANE)
-AC_SUBST(libmysql_LIBS_INSANE)
-AC_SUBST(libwx_CFLAGS)
-AC_SUBST(libwx_LIBS)
+AC_DEFINE_UNQUOTED([PACKAGE_VERSION_SIMPLE], ["_xrelease"],
+	[Simplified package version])
+AC_SUBST([PACKAGE_VERSION_SIMPLE])
+AC_SUBST([regular_CFLAGS])
+AC_SUBST([regular_CXXFLAGS])
+AC_SUBST([libmysql_CFLAGS_INSANE])
+AC_SUBST([libmysql_LIBS_INSANE])
+AC_SUBST([libwx_CFLAGS])
+AC_SUBST([libwx_LIBS])
 
 mkdir -p include/vitalnix;
-if [[ -L include/vitalnix/config.h ]]; then
+if test -L include/vitalnix/config.h; then
 	:;
-elif [[ -e include/vitalnix/config.h ]]; then
+elif test -e include/vitalnix/config.h; then
 	AC_MSG_ERROR([include/vitalnix/config.h already exists and is not a symbolic link!])
 else
 	ln -s ../../config.h include/vitalnix/config.h;
 fi;
 
-AC_OUTPUT([GNUmakefile src/doc/GNUmakefile vitalnix.pc])
+AC_CONFIG_FILES([GNUmakefile src/doc/GNUmakefile vitalnix.pc])
+AC_OUTPUT
