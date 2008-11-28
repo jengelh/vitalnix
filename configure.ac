@@ -17,6 +17,7 @@ define(_xtmp, esyscmd(
 ))
 AC_INIT([Vitalnix], _xrelease[]_xtmp)
 AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_MACRO_DIR([m4])
 AC_PROG_INSTALL
 AM_INIT_AUTOMAKE([-Wall])
 AC_PROG_CC
@@ -100,7 +101,7 @@ AC_ARG_WITH([pkgconfigdir], AS_HELP_STRING([--with-pkgconfigdir=PATH],
 	[pkgconfigdir="$withval"], [pkgconfigdir='${libdir}/pkgconfig'])
 AC_SUBST(pkgconfigdir)
 
-m4_include([m4/gcc4_visibility.m4])
+CHECK_GCC_FVISIBILITY
 
 PACKAGE_VERSION_SIMPLE="_xrelease";
 AC_DEFINE_UNQUOTED([PACKAGE_VERSION_SIMPLE], ["_xrelease"],
