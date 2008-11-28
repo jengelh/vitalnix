@@ -374,18 +374,16 @@ static size_t quoted_size(const char *s, unsigned int type)
 	if (type == VXQUOTE_XML) {
 		while ((p = strpbrk(p, quote_match[type])) != NULL) {
 			switch (*p) {
-				/*
-				 * minus 1 because the original
-				 * character will disappear
-				 */
+				/* minus 2: \0 and the original char */
 				case '"':
-					n += sizeof_z("&quot;");
+					n += sizeof("&quot;") - 2;
 					break;
 				case '&':
-					n += sizeof_z("&amp;");
+					n += sizeof("&amp;") - 2;
+					break;
 				case '<':
 				case '>':
-					n += sizeof_z("&lt;"); /* and &gt; */
+					n += sizeof("&lt;") - 2;
 					break;
 			}
 			++p;
