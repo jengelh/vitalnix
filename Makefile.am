@@ -17,7 +17,6 @@ regular_DCONFIG := \
 	-DCONFIG_LIBDIR='"${libdir}"'
 AM_CFLAGS         := ${regular_CFLAGS} ${GCC_FVISIBILITY_HIDDEN} ${regular_DCONFIG} ${libHX_CFLAGS}
 AM_CXXFLAGS       := ${regular_CXXFLAGS} ${GCC_FVISIBILITY_HIDDEN} ${regular_DCONFIG} ${libHX_CFLAGS}
-regular_SOLDFLAGS :=
 
 # These got some harmful crap which needs to be sanitized first
 libmysql_CFLAGS := $(filter -I%,${libmysql_CFLAGS_INSANE})
@@ -141,7 +140,7 @@ vxgroupdel_LDADD   := ${libHX_LIBS} libvxdb.la libvxutil.la
 
 pam_ihlogon_la_SOURCES := src/clutils/ihlogon.c
 pam_ihlogon_la_LIBADD  := ${libHX_LIBS} -lpam libvxdb.la
-pam_ihlogon_la_LDFLAGS := ${regular_SOLDFLAGS} -module -avoid-version
+pam_ihlogon_la_LDFLAGS := -module -avoid-version
 
 #
 #	src/devutils
@@ -157,7 +156,7 @@ vxcconfig_SOURCES := src/devutil/vxcconfig.c
 #
 drv_dummy_la_SOURCES := src/drivers/dummy.c
 drv_dummy_la_LIBADD  := libvxcore.la libvxdb.la
-drv_dummy_la_LDFLAGS := ${regular_SOLDFLAGS} -module -avoid-version
+drv_dummy_la_LDFLAGS := -module -avoid-version
 
 #
 #	src/drivers/ldap
@@ -165,30 +164,30 @@ drv_dummy_la_LDFLAGS := ${regular_SOLDFLAGS} -module -avoid-version
 drv_ldap_la_CFLAGS  := ${AM_CFLAGS} -DLDAP_DEPRECATED
 drv_ldap_la_SOURCES := src/drivers/ldap.c
 drv_ldap_la_LIBADD  := ${libHX_LIBS} -lldap_r -lpthread libvxcore.la libvxdb.la
-drv_ldap_la_LDFLAGS := ${regular_SOLDFLAGS} -module -avoid-version
+drv_ldap_la_LDFLAGS := -module -avoid-version
 
 #
 #	src/drivers/mmd
 #
 drv_mmd_la_SOURCES := src/drivers/mmd.c
 drv_mmd_la_LIBADD  := ${libHX_LIBS} libvxcore.la libvxdb.la
-drv_mmd_la_LDFLAGS := ${regular_SOLDFLAGS} -module -avoid-version
+drv_mmd_la_LDFLAGS := -module -avoid-version
 
 #
 #	src/drivers/nss
 #
 drv_nss_la_SOURCES  := src/drivers/nss.c
 drv_nss_la_LIBADD   := ${libHX_LIBS} libvxcore.la libvxdb.la
-drv_nss_la_LDFLAGS  := ${regular_SOLDFLAGS} -module -avoid-version
+drv_nss_la_LDFLAGS  := -module -avoid-version
 drv_nss1_la_SOURCES := src/drivers/nss1.c
 drv_nss1_la_LIBADD  := ${libHX_LIBS} libvxcore.la libvxdb.la libvxutil.la
-drv_nss1_la_LDFLAGS := ${regular_SOLDFLAGS} -module -avoid-version
+drv_nss1_la_LDFLAGS := -module -avoid-version
 
 #
 #	src/drivers/mysql
 #
 drv_mysql_la_LIBADD  := ${libHX_LIBS} libvxcore.la libvxdb.la libvxutil.la
-drv_mysql_la_LDFLAGS := ${regular_SOLDFLAGS} ${libmysql_LIBS} -module -avoid-version
+drv_mysql_la_LDFLAGS := ${libmysql_LIBS} -module -avoid-version
 drv_mysql_la_CFLAGS  := ${AM_CFLAGS} ${libmysql_CFLAGS}
 drv_mysql_la_SOURCES := src/drivers/mysql/mysql.c
 
@@ -196,7 +195,7 @@ drv_mysql_la_SOURCES := src/drivers/mysql/mysql.c
 #	src/drivers/shadow
 #
 drv_shadow_la_LIBADD  := ${libHX_LIBS} libvxcore.la libvxdb.la
-drv_shadow_la_LDFLAGS := ${regular_SOLDFLAGS} ${libxml_LIBS} -module -avoid-version
+drv_shadow_la_LDFLAGS := ${libxml_LIBS} -module -avoid-version
 drv_shadow_la_CFLAGS  := ${AM_CFLAGS} ${libxml_CFLAGS}
 drv_shadow_la_SOURCES := \
 	src/drivers/shadow/aux.c \
@@ -212,27 +211,24 @@ drv_shadow_la_SOURCES := \
 #
 libvxcgi_la_SOURCES := src/libvxcgi/auth.c src/libvxcgi/cgi.c
 libvxcgi_la_LIBADD  := ${libHX_LIBS} -lpam
-libvxcgi_la_LDFLAGS := ${regular_SOLDFLAGS}
 
 #
 #	src/libvxcli
 #
 libvxcli_la_SOURCES := src/libvxcli/cli.c
 libvxcli_la_LIBADD  := ${libHX_LIBS}
-libvxcli_la_LDFLAGS := ${regular_SOLDFLAGS}
 
 #
 #	src/libvxcore
 #
 libvxcore_la_SOURCES := src/libvxcore/loader.c
 libvxcore_la_LIBADD  := ${libHX_LIBS}
-libvxcore_la_LDFLAGS := ${regular_SOLDFLAGS}
 
 #
 #	src/libvxeds
 #
 libvxeds_la_LIBADD  := ${libHX_LIBS} libvxcore.la libvxutil.la
-libvxeds_la_LDFLAGS := ${regular_SOLDFLAGS} ${libxml_LIBS}
+libvxeds_la_LDFLAGS := ${libxml_LIBS}
 libvxeds_la_CFLAGS  := ${AM_CFLAGS} ${libxml_CFLAGS}
 libvxeds_la_SOURCES := \
 	src/libvxeds/eds.c \
@@ -243,7 +239,6 @@ libvxeds_la_SOURCES := \
 #	src/libvxmdfmt
 #
 libvxmdfmt_la_LIBADD  := ${libHX_LIBS} libvxcore.la libvxutil.la
-libvxmdfmt_la_LDFLAGS := ${regular_SOLDFLAGS}
 libvxmdfmt_la_SOURCES := \
 	src/libvxmdfmt/extra.c \
 	src/libvxmdfmt/pwlfmt.c \
@@ -257,7 +252,6 @@ libvxmdfmt_la_SOURCES := \
 #	src/libvxmdsync
 #
 libvxmdsync_la_LIBADD  := ${libHX_LIBS} libvxeds.la libvxdb.la libvxutil.la
-libvxmdsync_la_LDFLAGS := ${regular_SOLDFLAGS}
 libvxmdsync_la_SOURCES := \
 	src/libvxmdsync/base.c \
 	src/libvxmdsync/fixup.c \
@@ -268,7 +262,6 @@ libvxmdsync_la_SOURCES := \
 #	src/libvxdb
 #
 libvxdb_la_LIBADD  := ${libHX_LIBS} libvxcore.la libvxutil.la
-libvxdb_la_LDFLAGS := ${regular_SOLDFLAGS}
 libvxdb_la_SOURCES := \
 	src/libvxdb/aux.c \
 	src/libvxdb/config.c \
@@ -289,7 +282,7 @@ blowfish_sources := src/libvxutil/blowfish_x86.S
 endif
 libvxutil_la_SOURCES := ${libvxutil_sources} ${blowfish_sources}
 libvxutil_la_LIBADD  := ${libHX_LIBS} -lcrypt
-libvxutil_la_LDFLAGS := ${regular_SOLDFLAGS} ${libcrypto_LIBS}
+libvxutil_la_LDFLAGS := ${libcrypto_LIBS}
 
 #
 #	src/lpacct
