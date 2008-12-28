@@ -7,7 +7,6 @@
  *	Lesser General Public License as published by the Free Software
  *	Foundation; either version 2.1 or 3 of the License.
  */
-#include <ctype.h>
 #include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -16,6 +15,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <libHX/arbtree.h>
+#include <libHX/ctype_helper.h>
 #include <libHX/defs.h>
 #include <libHX/deque.h>
 #include <libHX/option.h>
@@ -266,7 +266,7 @@ static bool ask_continue(const struct private_info *priv, const char *msg)
 		return true;
 
 	vxcli_query(msg, NULL, "yes", VXCQ_NONE, buf, sizeof(buf));
-	return tolower(*buf) == 'y';
+	return HX_tolower(*buf) == 'y';
 }
 
 static void cb_report(unsigned int type, const struct mdsync_workspace *mdsw,

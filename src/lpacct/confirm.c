@@ -11,13 +11,13 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <syslog.h>
 #include <unistd.h>
+#include <libHX/ctype_helper.h>
 #include <libHX/defs.h>
 #include <libHX/misc.h>
 #include <libHX/string.h>
@@ -36,10 +36,10 @@ static bool next_word(const char **w, const char **s, const char **e)
 	if (*i == '\0')
 		return false;
 	*s = i;
-	while (!isspace(*i))
+	while (!HX_isspace(*i))
 		++i;
 	*e = i;
-	while (isspace(*i))
+	while (HX_isspace(*i))
 		++i;
 	*w = i;
 	return true;
@@ -62,7 +62,7 @@ static bool next_wordq(const char **w, const char **s, const char **e)
 		++i;
 	}
 	*e = i++;
-	while (isspace(*i))
+	while (HX_isspace(*i))
 		++i;
 	*w = i;
 	return true;

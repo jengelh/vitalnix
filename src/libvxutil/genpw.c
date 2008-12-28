@@ -7,9 +7,9 @@
  *	Lesser General Public License as published by the Free Software
  *	Foundation; either version 2.1 or 3 of the License.
  */
-#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
+#include <libHX/ctype_helper.h>
 #include <libHX/defs.h>
 #include <libHX/misc.h>
 #include <vitalnix/compiler.h>
@@ -159,7 +159,7 @@ static void genpw_jp(char *plain, int size, unsigned int flags)
 		ksz = strlen(key);
 		if (ksz > size)
 			continue;
-		if (knum == jpt_size - 1 && !jp_vowel(tolower(*plain)))
+		if (knum == jpt_size - 1 && !jp_vowel(HX_tolower(*plain)))
 			/* Make sure that a vowel follows an "N". */
 			continue;
 
@@ -169,7 +169,7 @@ static void genpw_jp(char *plain, int size, unsigned int flags)
 		prev   = knum;
 
 		if ((flags & (GENPW_1CASE | GENPW_O1CASE)) && HX_irand(0, 10) == 0) {
-			*plain = toupper(*plain);
+			*plain = HX_toupper(*plain);
 			flags &= ~(GENPW_1CASE | GENPW_O1CASE);
 		}
 	}
@@ -224,7 +224,7 @@ static void genpw_zh(char *plain, int size, unsigned int flags)
 		prev   = knum;
 
 		if ((flags & (GENPW_1CASE | GENPW_O1CASE)) && HX_irand(0, 10) == 0) {
-			*plain = toupper(*plain);
+			*plain = HX_toupper(*plain);
 			flags &= ~(GENPW_1CASE | GENPW_O1CASE);
 		}
 	}
@@ -254,7 +254,7 @@ static void genpw_random(char *plain, int size, unsigned int flags)
 		*plain++ = 'a' + HX_irand(0, 26);
 		if ((flags & (GENPW_1CASE | GENPW_O1CASE)) &&
 		    HX_irand(0, 10) == 0) {
-			*plain = toupper(*plain);
+			*plain = HX_toupper(*plain);
 			flags &= ~(GENPW_1CASE | GENPW_O1CASE);
 			/*continue;*/
 		}

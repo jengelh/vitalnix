@@ -7,12 +7,12 @@
  *	Lesser General Public License as published by the Free Software
  *	Foundation; either version 2.1 or 3 of the License.
  */
-#include <ctype.h>
 #include <iconv.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <libHX/ctype_helper.h>
 #include <libHX/defs.h>
 #include <libHX/option.h>
 #include <vitalnix/compiler.h>
@@ -183,9 +183,9 @@ int pwlfmt_extra_whitespace(const char *s)
 //-----------------------------------------------------------------------------
 static inline int wb_classof(char x)
 {
-	if (isalpha(x))
+	if (HX_isalpha(x))
 		return CLASS_ALPHA;
-	if (isdigit(x))
+	if (HX_isdigit(x))
 		return CLASS_DIGIT;
 	if (x == '\0')
 		return CLASS_NONE;

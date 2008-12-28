@@ -7,10 +7,10 @@
  *	Lesser General Public License as published by the Free Software
  *	Foundation; either version 2.1 or 3 of the License.
  */
-#include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include <libHX/ctype_helper.h>
 #include <libHX/defs.h>
 #include <libHX/deque.h>
 #include <libHX/option.h>
@@ -50,7 +50,7 @@ static inline bool is_nbsp(const unsigned char *s)
 static void xlat_printf_h(const unsigned char *s)
 {
 	for (; *s != '\0'; ++s) {
-		while (xlat_last == ' ' && isspace(*s))
+		while (xlat_last == ' ' && HX_isspace(*s))
 			++s;
 		if (*s == '\0')
 			break;
@@ -81,7 +81,7 @@ static void xlat_printf(const unsigned char *s)
 		return;
 	}
 	for (; *s != '\0'; ++s) {
-		while (xlat_last == ' ' && isspace(*s))
+		while (xlat_last == ' ' && HX_isspace(*s))
 			++s;
 		if (*s == '\0')
 			break;

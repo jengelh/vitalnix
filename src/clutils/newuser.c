@@ -7,7 +7,6 @@
  *	Lesser General Public License as published by the Free Software
  *	Foundation; either version 2.1 or 3 of the License.
  */
-#include <ctype.h>
 #include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -16,6 +15,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <libHX/arbtree.h>
+#include <libHX/ctype_helper.h>
 #include <libHX/defs.h>
 #include <libHX/option.h>
 #include <vitalnix/config.h>
@@ -274,7 +274,7 @@ static void single_interactive(struct private_info *priv)
 	};
 
 	vxcli_query_v(table_1);
-	if (!isupper(*priv->first_name)) {
+	if (!HX_isupper(*priv->first_name)) {
 		if (isatty(STDOUT_FILENO))
 			printf("\e[1;37;41m"); // ]
 		printf("WARNING: The first char of the name is not uppercase, "

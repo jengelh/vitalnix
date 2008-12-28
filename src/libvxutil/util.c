@@ -9,13 +9,13 @@
  */
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <libHX/arbtree.h>
+#include <libHX/ctype_helper.h>
 #include <libHX/defs.h>
 #include <libHX/option.h>
 #include <libHX/string.h>
@@ -54,7 +54,7 @@ EXPORT_SYMBOL unsigned int vxutil_now_iday(void)
 EXPORT_SYMBOL bool vxutil_only_digits(const char *p)
 {
 	while (*p != '\0')
-		if (!isdigit(*p++))
+		if (!HX_isdigit(*p++))
 			return false;
 	return true;
 }
@@ -419,20 +419,20 @@ static const char *surname_pointer(const char *s)
 {
 	const char *p;
 
-	while (isspace(*s))
+	while (HX_isspace(*s))
 		++s;
 	p = s;
 
 	while (*p != '\0') {
-		if (isupper(*p))
+		if (HX_isupper(*p))
 			return p;
-		while (!isspace(*p) && *p != '\0')
+		while (!HX_isspace(*p) && *p != '\0')
 			++p;
-		while (isspace(*p))
+		while (HX_isspace(*p))
 			++p;
 	}
 	if ((p = strchr(s, ' ')) != NULL) {
-		while (isspace(*p))
+		while (HX_isspace(*p))
 			++p;
 		return p;
 	}

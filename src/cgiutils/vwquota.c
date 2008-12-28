@@ -7,7 +7,6 @@
  *	Lesser General Public License as published by the Free Software
  *	Foundation; either version 2.1 or 3 of the License.
  */
-#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

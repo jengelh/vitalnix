@@ -11,7 +11,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdarg.h>
@@ -19,6 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <libHX/ctype_helper.h>
 #include <libHX/defs.h>
 #include <libHX/option.h>
 #include <libHX/string.h>
@@ -323,7 +323,7 @@ static enum colorspace get_colorspace(void)
 		if (strnacmp(ln, "*DefaultColorMode:") == 0) {
 			HX_chomp(ln);
 			p = strchr(ln, ':') + 1;
-			while (isspace(*p))
+			while (HX_isspace(*p))
 				++p;
 			if (strcasecmp(p, "CMYK") == 0 ||
 			    strcasecmp(p, "Color") == 0 ||

@@ -9,7 +9,6 @@
  */
 #define PAM_SM_SESSION 1
 #include <sys/types.h>
-#include <ctype.h>
 #include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -20,6 +19,7 @@
 #include <unistd.h>
 #include <security/pam_appl.h>
 #include <security/pam_modules.h>
+#include <libHX/ctype_helper.h>
 #include <libHX/defs.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxdb/libvxdb.h>
@@ -219,8 +219,8 @@ PAM_EXTERN EXPORT_SYMBOL int pam_sm_acct_mgmt(pam_handle_t *pamh,
 	if (user == NULL || rhost == NULL)
 		return PAM_IGNORE;
 
-	if (tolower(rhost[0]) == 'b' && isdigit(rhost[1]) &&
-	    isdigit(rhost[2]) && strcmp(&rhost[3], ".site") == 0)
+	if (HX_tolower(rhost[0]) == 'b' && HX_isdigit(rhost[1]) &&
+	    HX_isdigit(rhost[2]) && strcmp(&rhost[3], ".site") == 0)
 		mask |= REASON_TIMESLICE;
 
 	ret = ihlogon_init(user, rhost, mask);

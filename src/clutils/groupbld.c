@@ -7,12 +7,12 @@
  *	Lesser General Public License as published by the Free Software
  *	Foundation; either version 2.1 or 3 of the License.
  */
-#include <ctype.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <libHX/ctype_helper.h>
 #include <libHX/defs.h>
 #include <libHX/misc.h>
 #include <libHX/option.h>
@@ -217,7 +217,7 @@ static void groupbld_transform(const char *name, hxmc_t **unix_name)
 		for (i = 0, p = buf; i < sizeof(buf) - 1; ++i, ++name) {
 			if (*name == '\0')
 				break;
-			else if (isalnum(*name))
+			else if (HX_isalnum(*name))
 				*p++ = *name;
 			else if (*buf == '\0' || *(p-1) != '-')
 				*p++ = '-';
