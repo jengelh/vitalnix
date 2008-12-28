@@ -494,12 +494,12 @@ static void getopt_w(const struct HXoptcb *cbi)
  */
 static bool ldif_safe(const char *s)
 {
-	if (*const_cast(const unsigned char *, s) >= 128 ||
+	if (*signed_cast(const unsigned char *, s) >= 128 ||
 	    *s == '\n' || *s == '\r' || *s == ' ' || *s == ':' || *s == '<')
 		return false;
 
 	while (*++s != '\0')
-		if (*const_cast(const unsigned char *, s) >= 128 ||
+		if (*signed_cast(const unsigned char *, s) >= 128 ||
 		    *s == '\n' || *s == '\r')
 			return false;
 	return true;

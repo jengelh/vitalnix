@@ -191,7 +191,7 @@ static int vxldap_get_rid(struct ldap_state *state)
 	int ret;
 
 	ret = ldap_search_ext_s(state->conn, state->domain_dn,
-	      LDAP_SCOPE_BASE, NULL, const_cast(char **, attrs),
+	      LDAP_SCOPE_BASE, NULL, const_cast2(char **, attrs),
 	      false, NULL, NULL, NULL, 1, &result);
 	if (ret == LDAP_NO_SUCH_OBJECT)
 		return 0;
@@ -311,7 +311,7 @@ static unsigned int vxldap_count(LDAP *conn, const char *base,
 	int ret;
 
 	ret = ldap_search_ext_s(conn, base, LDAP_SCOPE_SUBTREE, filter,
-	      const_cast(char **, no_attrs), true, NULL, NULL,
+	      const_cast2(char **, no_attrs), true, NULL, NULL,
 	      NULL, LDAP_MAXINT, &result);
 	if (ret != LDAP_SUCCESS || result == NULL)
 		return -ret;
@@ -402,7 +402,7 @@ static int vxldap_useradd(struct vxdb_state *vp, const struct vxdb_user *rq)
 	attr[a++] = (LDAPMod){
 		.mod_op     = LDAP_MOD_ADD,
 		.mod_type   = "objectClass",
-		.mod_values = const_cast(char **, object_classes),
+		.mod_values = const_cast2(char **, object_classes),
 	};
 	attr[a++] = (LDAPMod){
 		.mod_op     = LDAP_MOD_ADD,
@@ -592,7 +592,7 @@ static void vxldap_getattr(struct ldap_state *state, const char *dn,
 	int ret;
 
 	ret = ldap_search_ext_s(state->conn, dn, LDAP_SCOPE_BASE, NULL,
-	      const_cast(char **, attrs), false, NULL, NULL, NULL, 1, &result);
+	      const_cast2(char **, attrs), false, NULL, NULL, NULL, 1, &result);
 	if (ret != LDAP_SUCCESS)
 		return;
 
@@ -1028,7 +1028,7 @@ static void *vxldap_usertrav_init(struct vxdb_state *vp)
 	int ret;
 
 	ret = ldap_search_ext_s(state->conn, state->user_suffix,
-	      LDAP_SCOPE_SUBTREE, F_POSIXACCOUNT, const_cast(char **, attrs),
+	      LDAP_SCOPE_SUBTREE, F_POSIXACCOUNT, const_cast2(char **, attrs),
 	      false, NULL, NULL, NULL, LDAP_MAXINT, &trav.base);
 	if (ret != LDAP_SUCCESS) {
 		vxldap_errno_sp(ret, "vxldap_usertrav_init");
@@ -1235,7 +1235,7 @@ static void *vxldap_grouptrav_init(struct vxdb_state *vp)
 	int ret;
 
 	ret = ldap_search_ext_s(state->conn, state->group_suffix,
-	      LDAP_SCOPE_SUBTREE, F_POSIXGROUP, const_cast(char **, attrs),
+	      LDAP_SCOPE_SUBTREE, F_POSIXGROUP, const_cast2(char **, attrs),
 	      false, NULL, NULL, NULL, LDAP_MAXINT, &trav.base);
 	if (ret != LDAP_SUCCESS) {
 		vxldap_errno_sp(ret, "vxldap_grouptrav_init");
@@ -1285,7 +1285,7 @@ static int vxldap_sgmapadd(struct vxdb_state *vp, const char *user,
 	/* Verify user exists */
 	ret    = -ENOENT;
 	ldret  = ldap_search_ext_s(state->conn, userdn, LDAP_SCOPE_BASE,
-	         NULL, const_cast(char **, no_attrs), true, NULL, NULL,
+	         NULL, const_cast2(char **, no_attrs), true, NULL, NULL,
 	         NULL, 1, &result);
 	if (ldret == LDAP_NO_SUCH_OBJECT || result == NULL)
 		goto out;
@@ -1391,7 +1391,7 @@ static int vxldap_sgmapget(struct vxdb_state *vp, const char *user,
 
 	filter = vxldap_member_filter(state, user);
 	ret    = ldap_search_ext_s(state->conn, state->group_suffix,
-	         LDAP_SCOPE_SUBTREE, filter, const_cast(char **, attrs),
+	         LDAP_SCOPE_SUBTREE, filter, const_cast2(char **, attrs),
 	         false, NULL, NULL, NULL, LDAP_MAXINT, &result);
 	HXmc_free(filter);
 	if (ret == LDAP_NO_SUCH_OBJECT)

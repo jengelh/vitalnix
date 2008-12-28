@@ -146,7 +146,7 @@ static int groupmod_main3(struct vxdb_state *db, struct HXbtree *ext_catalog)
 	if (action_before != NULL)
 		vxutil_replace_run(action_before, ext_catalog);
 
-	mod_request.gr_name = static_cast(char *, new_group_name);
+	mod_request.gr_name = const_cast1(char *, new_group_name);
 	mod_request.gr_gid  = new_group_id;
 
 	if ((ret = vxdb_groupmod(db, group_name, &mod_request)) <= 0) {

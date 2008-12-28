@@ -232,7 +232,7 @@ int main(int argc, const char **argv)
 		const char *e = strchr(*argv, ':');
 
 		HXmc_memcat(&backend_name, *argv, e - *argv);
-		execv(backend_name, const_cast(char *const *, argv));
+		execv(backend_name, const_cast2(char *const *, argv));
 		perror("execv");
 		HXmc_free(backend_name);
 		exit(CUPS_BACKEND_FAILED);

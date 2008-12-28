@@ -249,7 +249,7 @@ static bool groupbld_create(struct vxdb_state *db, const char *name)
 		return true;
 	}
 
-	group.gr_name = const_cast(char *, name);
+	group.gr_name = const_cast1(char *, name);
 	group.gr_gid  = VXDB_AUTOGID;
 	if ((ret = vxdb_groupadd(db, &group)) <= 0) {
 		perror("vxdb_groupadd");

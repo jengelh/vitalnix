@@ -44,7 +44,7 @@ void invert_image(struct image *image)
 {
 	unsigned long *Lptr = image->buffer;
 	unsigned char *Bptr, *Bend = image->buffer + image->buffer_size;
-	unsigned long *Lend = static_cast(void *,
+	unsigned long *Lend = reinterpret_cast(unsigned long *,
 	                      reinterpret_cast(unsigned long, Bend) &
 	                      ~(sizeof(long) - 1));
 	while (Lptr < Lend) {

@@ -115,7 +115,7 @@ EXPORT_SYMBOL char *vxutil_quote(const char *src, unsigned int type,
 
 	if (type >= _VXQUOTE_MAX ||
 	 (type <= VXQUOTE_XML && strpbrk(src, quote_match[type]) == NULL))
-		return const_cast(char *, src);
+		return const_cast1(char *, src);
 
 	/* Allocation and deallocation saving */
 	ret = realloc(*free_me, quoted_size(src, type) + 1);
@@ -827,7 +827,7 @@ char *transform7(const char *src, char *dest, size_t dsize)
 		if ((*src >= 'A' && *src <= 'Z') || (*src >= 'a' && *src <= 'z')) {
 			*dest++ = *src++;
 			--dsize;
-		} else if (*signed_cast(unsigned char *, src) & 0x80) {
+		} else if (*signed_cast(const unsigned char *, src) & 0x80) {
 			const struct stab *sp = subst_tab;
 			int ok = 0;
 			for (sp = subst_tab; sp->in != NULL; ++sp) {

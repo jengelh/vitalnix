@@ -136,7 +136,7 @@ static int groupadd_main3(struct vxdb_state *db, struct HXbtree *ext_catalog)
 	if (action_before != NULL)
 		vxutil_replace_run(action_before, ext_catalog);
 
-	group_info.gr_name = const_cast(char *, group_name);
+	group_info.gr_name = const_cast1(char *, group_name);
 	group_info.gr_gid  = group_id;
 
 	if ((ret = vxdb_groupadd(db, &group_info)) <= 0) {

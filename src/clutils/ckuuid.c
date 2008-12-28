@@ -285,8 +285,8 @@ static void levd_p(struct levd_pair *pair, const struct ckentry *vxdb,
 
 static int sort_by_distance(const void *va, const void *vb)
 {
-	const struct levd_pair **a = static_cast(const struct levd_pair **, va);
-	const struct levd_pair **b = static_cast(const struct levd_pair **, vb);
+	const struct levd_pair **a = reinterpret_cast(const struct levd_pair **, va);
+	const struct levd_pair **b = reinterpret_cast(const struct levd_pair **, vb);
 	return (*a)->combined_dist - (*b)->combined_dist;
 }
 

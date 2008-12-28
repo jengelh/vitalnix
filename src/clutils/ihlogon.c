@@ -202,15 +202,15 @@ PAM_EXTERN EXPORT_SYMBOL int pam_sm_acct_mgmt(pam_handle_t *pamh,
 
 	openlog("pam_ihlogon", LOG_PERROR | LOG_PID, LOG_AUTHPRIV);
 
-	ret = pam_get_item(pamh, PAM_USER, static_cast(const void **,
-	      static_cast(const void *, &user)));
+	ret = pam_get_item(pamh, PAM_USER,
+	      reinterpret_cast(const void **, &user));
 	if (ret != PAM_SUCCESS) {
 		syslog(LOG_ERR, "pam_get_item(PAM_USER): %s\n", pam_strerror(pamh, ret));
 		return PAM_SERVICE_ERR;
 	}
 
-	ret = pam_get_item(pamh, PAM_RHOST, static_cast(const void **,
-	      static_cast(const void *, &rhost)));
+	ret = pam_get_item(pamh, PAM_RHOST,
+	      reinterpret_cast(const void **, &rhost));
 	if (ret != PAM_SUCCESS) {
 		syslog(LOG_ERR, "pam_get_item(PAM_RHOST): %s\n", pam_strerror(pamh, ret));
 		return PAM_SERVICE_ERR;

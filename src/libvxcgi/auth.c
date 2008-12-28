@@ -32,7 +32,7 @@ EXPORT_SYMBOL int vxcgi_authenticate(const char *user,
 {
 	const struct pam_conv conv = {
 		.conv        = vxcgi_conv,
-		.appdata_ptr = static_cast(void *, const_cast(char *, password)),
+		.appdata_ptr = static_cast(void *, const_cast1(char *, password)),
 	};
 	pam_handle_t *ph;
 	int ret;
