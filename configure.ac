@@ -28,10 +28,14 @@ AC_DISABLE_STATIC
 AC_LIBTOOL_DLOPEN
 AC_PROG_LIBTOOL
 
-case `uname -m` in
-	(i?86) x86_32=1;;
-	(*)    x86_32=0;;
-esac;
+AC_LANG_PUSH([C])
+AC_COMPILE_IFELSE([
+	#ifndef __i386__
+	#	error Not i386.
+	#endif
+], [x86_32=1], [x86_32=0])
+AC_LANG_POP([C])
+# Select hand-tuned assembler code on x86_32.
 AM_CONDITIONAL([X86_32], [test $x86_32 -eq 1])
 
 #
