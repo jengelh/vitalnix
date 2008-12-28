@@ -111,7 +111,7 @@ vxpwlfmt_LDADD     := ${libHX_LIBS} libvxmdfmt.la
 vxnewuser_SOURCES  := src/clutils/newuser.c
 vxnewuser_LDADD    := ${libHX_LIBS} libvxcli.la libvxmdsync.la libvxdb.la
 vxdbdump_SOURCES   := src/clutils/dbdump.c
-vxdbdump_LDADD     := libvxdb.la libvxutil.la
+vxdbdump_LDADD     := ${libHX_LIBS} libvxdb.la libvxutil.la
 vxdbinfo_SOURCES   := src/clutils/dbinfo.c
 vxdbinfo_LDADD     := ${libHX_LIBS} libvxdb.la
 vxfinger_SOURCES   := src/clutils/finger.c
@@ -119,7 +119,7 @@ vxfinger_LDADD     := ${libHX_LIBS} libvxdb.la
 vxid_SOURCES       := src/clutils/id.c
 vxid_LDADD         := ${libHX_LIBS} libvxdb.la
 vxrandpw_SOURCES   := src/clutils/randpw.c
-vxrandpw_LDADD     := libvxdb.la
+vxrandpw_LDADD     := ${libHX_LIBS} libvxdb.la
 vxtryauth_SOURCES  := src/clutils/tryauth.c
 vxtryauth_LDADD    := ${libHX_LIBS} -lpam libvxcgi.la
 vxuseradd_SOURCES  := src/clutils/useradd.c
@@ -164,7 +164,7 @@ drv_dummy_la_LDFLAGS := ${regular_SOLDFLAGS} -module -avoid-version
 #
 drv_ldap_la_CFLAGS  := ${AM_CFLAGS} -DLDAP_DEPRECATED
 drv_ldap_la_SOURCES := src/drivers/ldap.c
-drv_ldap_la_LIBADD  := -lldap_r -lpthread libvxcore.la libvxdb.la
+drv_ldap_la_LIBADD  := ${libHX_LIBS} -lldap_r -lpthread libvxcore.la libvxdb.la
 drv_ldap_la_LDFLAGS := ${regular_SOLDFLAGS} -module -avoid-version
 
 #
@@ -187,7 +187,7 @@ drv_nss1_la_LDFLAGS := ${regular_SOLDFLAGS} -module -avoid-version
 #
 #	src/drivers/mysql
 #
-drv_mysql_la_LIBADD  := libvxcore.la libvxdb.la libvxutil.la
+drv_mysql_la_LIBADD  := ${libHX_LIBS} libvxcore.la libvxdb.la libvxutil.la
 drv_mysql_la_LDFLAGS := ${regular_SOLDFLAGS} ${libmysql_LIBS} -module -avoid-version
 drv_mysql_la_CFLAGS  := ${AM_CFLAGS} ${libmysql_CFLAGS}
 drv_mysql_la_SOURCES := src/drivers/mysql/mysql.c
