@@ -490,7 +490,9 @@ static void getopt_w(const struct HXoptcb *cbi)
  * @s:	string to analyze
  *
  * Returns false if the string @s needs to be BASE-64 encoded to correspond
- * to the LDIF standard. Returns true if it can be used as-is.
+ * to the LDIF standard (RFC 2849). Using HX_isprint here would have been
+ * nice, but more than just printable characters are allowed verbatim.
+ * Returns true if it can be used as-is.
  */
 static bool ldif_safe(const char *s)
 {
