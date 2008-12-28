@@ -9,6 +9,7 @@
  */
 #include <stdbool.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <libHX/arbtree.h>
 #include <vitalnix/libvxcgi/libvxcgi.h>
 #include <vitalnix/libvxutil/libvxutil.h>
