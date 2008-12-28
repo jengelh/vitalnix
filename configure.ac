@@ -123,5 +123,5 @@ else
 	ln -s ../../config.h include/vitalnix/config.h;
 fi;
 
-AC_CONFIG_FILES([GNUmakefile src/doc/GNUmakefile vitalnix.pc])
+AC_CONFIG_FILES([Makefile src/doc/GNUmakefile vitalnix.pc])
 AC_OUTPUT

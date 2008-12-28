@@ -1,8 +1,8 @@
 *.la
 *.lo
 *.o
-GNUmakefile
-GNUmakefile.in
+Makefile
+Makefile.in
 .deps
 .dirstamp
 .libs
