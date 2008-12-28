@@ -85,15 +85,12 @@ pkgdata_DATA    := $(wildcard share/*)
 #	src/cgiutils
 #
 cgi_chpasswd_SOURCES := src/cgiutils/chpasswd.c
-cgi_chpasswd_CFLAGS  := ${libHX_CFLAGS}
 cgi_chpasswd_LDADD   := libvxcgi.la libvxutil.la ${libHX_LIBS}
 
 cgi_ntactiv_SOURCES  := src/cgiutils/ntactiv.c
-cgi_ntactiv_CFLAGS   := ${libHX_CFLAGS}
 cgi_ntactiv_LDADD    := libvxcgi.la libvxutil.la ${libHX_LIBS}
 
 cgi_vwquota_SOURCES  := src/cgiutils/vwquota.c
-cgi_vwquota_CFLAGS   := ${libHX_CFLAGS}
 cgi_vwquota_LDADD    := libvxcgi.la libvxutil.la ${libHX_LIBS}
 
 #
