@@ -1,0 +1,8 @@
+# -*- Makefile -*-
+
+lib_LTLIBRARIES += libvxeds/libvxeds.la
+libvxeds_libvxeds_la_SOURCES = \
+	libvxeds/eds.s libvxeds/fm_sdf.c libvxeds/fm_xml.c
+libvxeds_libvxeds_la_CFLAGS  = ${AM_CFLAGS} ${libxml_CFLAGS}
+libvxeds_libvxeds_la_LIBADD  = ${libHX_LIBS} ${libxml_LIBS} \
+	libvxcore/libvxcore.la libvxutil/libvxutil.la

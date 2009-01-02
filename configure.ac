@@ -8,14 +8,7 @@
 #	Foundation; either version 2.1 or 3 of the License.
 #
 
-define(_xrelease, 3.2.0)
-define(_xtmp, esyscmd(
-	x=`svnversion 2>/dev/null`;
-	case "$x" in
-		([[0-9]]*) echo -en "_SVN$x";;
-	esac;
-))
-AC_INIT([Vitalnix], _xrelease[]_xtmp)
+AC_INIT([vitalnix], [3.2.0])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_PROG_INSTALL
@@ -39,10 +32,11 @@ AC_LANG_POP([C])
 AM_CONDITIONAL([X86_32], [test $x86_32 -eq 1])
 
 #
-#	cups
+#	cups, ldap
 #
-AC_CHECK_HEADER([cups/backend.h])
+AC_CHECK_HEADERS([cups/backend.h ldap.h])
 AM_CONDITIONAL([HAVE_CUPS], [test "$ac_cv_header_cups_backend_h" == "yes"])
+AM_CONDITIONAL([HAVE_LDAP], [test "$ac_cv_header_ldap_h" == "yes"])
 
 #
 #	doc
@@ -64,27 +58,51 @@ regular_CXXFLAGS="-D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
 #	libc
 #
 AC_CHECK_HEADERS([crypt.h lastlog.h paths.h utmpx.h])
+#dirstamp
+AC_CHECK_MEMBERS(
+	[struct stat.st_mtimensec, struct stat.st_mtim,
+	struct stat.st_mtimespec, struct stat.st_mtime],
+	[], [], [#include <sys/stat.h>])
 
 #
 #	openssl-devel, libxml-devel
 #
 PKG_CHECK_MODULES([libHX], [libHX >= 2.0])
 PKG_CHECK_MODULES([libcrypto], [libcrypto >= 0.9.8])
-PKG_CHECK_MODULES([libxml], [libxml-2.0])
+PKG_CHECK_MODULES([libxml], [libxml-2.0 >= 2.6])
 
 #
 #	mysql
 #
 AC_MSG_CHECKING([for mysql])
-libmysql_CFLAGS_INSANE=`mysql_config --cflags 2>/dev/null`;
+mysql_config --cflags >/dev/null 2>/dev/null;
 ret=$?;
+libmysql_CFLAGS="";
+libmysql_LIBS="";
 AM_CONDITIONAL([HAVE_MYSQL], [test "$ret" -eq 0])
 if test "$?" -eq 0; then
+	z=$(mysql_config --cflags);
+	for i in $z; do
+		if test "${i:0:2}" = "-I"; then
+			libmysql_CFLAGS="$libmysql_CFLAGS $i";
+		fi;
+	done;
+	z=$(mysql_config --libs_r);
+	for i in $z; do
+		if test "${i:0:2}" = "-L" -o "${i:0:2}" = "-l"; then
+			libmysql_LIBS="$libmysql_LIBS $i";
+		fi;
+	done;
 	AC_MSG_RESULT([yes])
-	libmysql_LIBS_INSANE=`mysql_config --libs_r`;
 else
 	AC_MSG_RESULT([no])
 fi;
+
+#
+#	pam
+#
+AC_CHECK_LIB([pam], [pam_authenticate], [have_pam=yes])
+AM_CONDITIONAL([HAVE_PAM], [test "$have_pam" = "yes"])
 
 #
 #	wxWidgets
@@ -103,29 +121,26 @@ fi;
 AC_ARG_WITH([pkgconfigdir], AS_HELP_STRING([--with-pkgconfigdir=PATH],
 	[Path to the pkgconfig directory [[LIBDIR/pkgconfig]]]),
 	[pkgconfigdir="$withval"], [pkgconfigdir='${libdir}/pkgconfig'])
-AC_SUBST(pkgconfigdir)
+AC_SUBST([pkgconfigdir])
 
 CHECK_GCC_FVISIBILITY
 
-PACKAGE_VERSION_SIMPLE="_xrelease";
-AC_DEFINE_UNQUOTED([PACKAGE_VERSION_SIMPLE], ["_xrelease"],
-	[Simplified package version])
-AC_SUBST([PACKAGE_VERSION_SIMPLE])
 AC_SUBST([regular_CFLAGS])
 AC_SUBST([regular_CXXFLAGS])
-AC_SUBST([libmysql_CFLAGS_INSANE])
-AC_SUBST([libmysql_LIBS_INSANE])
+AC_SUBST([libmysql_CFLAGS])
+AC_SUBST([libmysql_LIBS])
 AC_SUBST([libwx_CFLAGS])
 AC_SUBST([libwx_LIBS])
 
-mkdir -p include/vitalnix;
-if test -L include/vitalnix/config.h; then
+mkdir -p src/include/vitalnix;
+if test -L src/include/vitalnix/config.h; then
 	:;
-elif test -e include/vitalnix/config.h; then
-	AC_MSG_ERROR([include/vitalnix/config.h already exists and is not a symbolic link!])
+elif test -e src/include/vitalnix/config.h; then
+	AC_MSG_ERROR([src/include/vitalnix/config.h already exists and is not a symbolic link!])
 else
-	ln -s ../../config.h include/vitalnix/config.h;
+	ln -s ../../../config.h src/include/vitalnix/config.h;
 fi;
 
-AC_CONFIG_FILES([Makefile src/doc/GNUmakefile vitalnix.pc])
+AC_CONFIG_FILES([Makefile etc/Makefile share/Makefile src/Makefile
+	src/doc/GNUmakefile src/include/Makefile vitalnix.pc])
 AC_OUTPUT

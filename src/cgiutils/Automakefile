@@ -1,0 +1,16 @@
+# -*- Makefile -*-
+
+sbin_PROGRAMS += cgiutils/cgi_chpasswd
+cgiutils_cgi_chpasswd_SOURCES = cgiutils/chpasswd.c
+cgiutils_cgi_chpasswd_LDADD   = \
+	libvxcgi/libvxcgi.la libvxutil/libvxutil.la ${libHX_LIBS}
+
+sbin_PROGRAMS += cgiutils/cgi_ntactiv
+cgiutils_cgi_ntactiv_SOURCES = cgiutils/ntactiv.c
+cgiutils_cgi_ntactiv_LDADD   = \
+	libvxcgi/libvxcgi.la libvxutil/libvxutil.la ${libHX_LIBS}
+
+sbin_PROGRAMS += cgiutils/cgi_vwquota
+cgiutils_cgi_vwquota_SOURCES = cgiutils/vwquota.c
+cgiutils_cgi_vwquota_LDADD   = \
+	libvxcgi/libvxcgi.la libvxutil/libvxutil.la ${libHX_LIBS}

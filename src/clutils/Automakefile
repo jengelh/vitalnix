@@ -1,0 +1,100 @@
+# -*- Makefile -*-
+
+noinst_PROGRAMS += clutils/html2man
+clutils_html2man_SOURCES = clutils/html2man.c
+clutils_html2man_CFLAGS  = ${AM_CFLAGS} ${libxml_CFLAGS}
+clutils_html2man_LDADD   = ${libHX_LIBS} ${libxml_LIBS}
+
+noinst_PROGRAMS += clutils/ihlogon
+clutils_ihlogon_SOURCES = clutils/ihlogon.c
+clutils_ihlogon_CFLAGS  = ${AM_CFLAGS} -DSTANDALONE_DEBUG
+clutils_ihlogon_LDADD   = ${libHX_LIBS} -lpam libvxdb/libvxdb.la
+
+lib_LTLIBRARIES += clutils/pam_ihlogon.la
+clutils_pam_ihlogon_la_SOURCES = clutils/ihlogon.c
+clutils_pam_ihlogon_la_LIBADD  = ${libHX_LIBS} -lpam libvxdb/libvxdb.la
+clutils_pam_ihlogon_la_LDFLAGS = -avoid-version -module
+
+sbin_PROGRAMS += clutils/vxckuuid
+clutils_vxckuuid_SOURCES = clutils/ckuuid.c
+clutils_vxckuuid_LDADD   = ${libHX_LIBS} libvxeds/libvxeds.la \
+	libvxdb/libvxdb.la libvxutil/libvxutil.la
+
+sbin_PROGRAMS += clutils/vxdbdump
+clutils_vxdbdump_SOURCES = clutils/dbdump.c
+clutils_vxdbdump_LDADD   = ${libHX_LIBS} libvxdb/libvxdb.la \
+	libvxutil/libvxutil.la
+
+sbin_PROGRAMS += clutils/vxdbinfo
+clutils_vxdbinfo_SOURCES = clutils/dbinfo.c
+clutils_vxdbinfo_LDADD   = ${libHX_LIBS} libvxdb/libvxdb.la
+
+bin_PROGRAMS += clutils/vxfinger
+clutils_vxfinger_SOURCES = clutils/finger.c
+clutils_vxfinger_LDADD   = ${libHX_LIBS} libvxdb/libvxdb.la
+
+sbin_PROGRAMS += clutils/vxfixuuid
+clutils_vxfixuuid_SOURCES = clutils/fixuuid.c
+clutils_vxfixuuid_LDADD   = ${libHX_LIBS} libvxdb/libvxdb.la \
+	libvxutil/libvxutil.la
+
+sbin_PROGRAMS += clutils/vxgroupadd
+clutils_vxgroupadd_SOURCES = clutils/groupadd.c
+clutils_vxgroupadd_LDADD   = ${libHX_LIBS} libvxdb/libvxdb.la \
+	libvxutil/libvxutil.la
+
+sbin_PROGRAMS += clutils/vxgroupbld
+clutils_vxgroupbld_SOURCES = clutils/groupbld.c
+clutils_vxgroupbld_LDADD   = ${libHX_LIBS} libvxdb/libvxdb.la \
+	libvxutil/libvxutil.la
+
+sbin_PROGRAMS += clutils/vxgroupdel
+clutils_vxgroupdel_SOURCES = clutils/groupdel.c
+clutils_vxgroupdel_LDADD   = ${libHX_LIBS} libvxdb/libvxdb.la \
+	libvxutil/libvxutil.la
+
+sbin_PROGRAMS += clutils/vxgroupmod
+clutils_vxgroupmod_SOURCES = clutils/groupmod.c
+clutils_vxgroupmod_LDADD   = ${libHX_LIBS} libvxdb/libvxdb.la \
+	libvxutil/libvxutil.la
+
+bin_PROGRAMS += clutils/vxid
+clutils_vxid_SOURCES = clutils/id.c
+clutils_vxid_LDADD   = ${libHX_LIBS} libvxdb/libvxdb.la
+
+sbin_PROGRAMS += clutils/vxnewuser
+clutils_vxnewuser_SOURCES = clutils/newuser.c
+clutils_vxnewuser_LDADD   = ${libHX_LIBS} libvxcli/libvxcli.la \
+	libvxmdsync/libvxmdsync.la libvxdb/libvxdb.la
+
+sbin_PROGRAMS += clutils/vxpwlfmt
+clutils_vxpwlfmt_SOURCES = clutils/pwlfmt.c
+clutils_vxpwlfmt_LDADD   = ${libHX_LIBS} libvxmdfmt/libvxmdfmt.la
+
+bin_PROGRAMS += clutils/vxrandpw
+clutils_vxrandpw_SOURCES = clutils/randpw.c
+clutils_vxrandpw_LDADD   = ${libHX_LIBS} libvxutil/libvxutil.la
+
+sbin_PROGRAMS += clutils/vxtryauth
+clutils_vxtryauth_SOURCES = clutils/tryauth.c
+clutils_vxtryauth_LDADD   = ${libHX_LIBS} -lpam libvxcgi/libvxcgi.la
+
+sbin_PROGRAMS += clutils/vxuseradd
+clutils_vxuseradd_SOURCES = clutils/useradd.c
+clutils_vxuseradd_LDADD   = ${libHX_LIBS} libvxdb/libvxdb.la \
+	libvxutil/libvxutil.la
+
+sbin_PROGRAMS += clutils/vxuserdel
+clutils_vxuserdel_SOURCES = clutils/userdel.c
+clutils_vxuserdel_LDADD   = ${libHX_LIBS} libvxdb/libvxdb.la \
+	libvxutil/libvxutil.la
+
+sbin_PROGRAMS += clutils/vxusermod
+clutils_vxusermod_SOURCES = clutils/usermod.c
+clutils_vxusermod_LDADD   = ${libHX_LIBS} libvxdb/libvxdb.la \
+	libvxutil/libvxutil.la
+
+sbin_PROGRAMS += clutils/vxusersync
+clutils_vxusersync_SOURCES = clutils/usersync.c
+clutils_vxusersync_LDADD   = ${libHX_LIBS} libvxcli/libvxcli.la \
+	libvxeds/libvxeds.la libvxmdsync/libvxmdsync.la libvxdb/libvxdb.la

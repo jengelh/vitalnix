@@ -1,0 +1,5 @@
+# -*- Makefile -*-
+
+lib_LTLIBRARIES += libvxcli/libvxcli.la
+libvxcli_libvxcli_la_SOURCES = libvxcli/cli.c
+libvxcli_libvxcli_la_LIBADD  = ${libHX_LIBS}

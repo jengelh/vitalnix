@@ -1,0 +1,52 @@
+# -*- Makefile -*-
+
+lib_LTLIBRARIES += drivers/drv_dummy.la
+drivers_drv_dummy_la_SOURCES = drivers/dummy.c
+drivers_drv_dummy_la_LIBADD  = libvxcore/libvxcore.la libvxdb/libvxdb.la
+drivers_drv_dummy_la_LDFLAGS = -avoid-version -module
+
+if HAVE_LDAP
+lib_LTLIBRARIES += drivers/drv_ldap.la
+endif
+drivers_drv_ldap_la_SOURCES = drivers/ldap.c
+drivers_drv_ldap_la_CFLAGS  = ${AM_CFLAGS} -DLDAP_DEPRECATED
+drivers_drv_ldap_la_LIBADD  = ${libHX_LIBS} -lldap_r -lpthread \
+	libvxcore/libvxcore.la libvxdb/libvxdb.la
+drivers_drv_ldap_la_LDFLAGS = -avoid-version -module
+
+lib_LTLIBRARIES += drivers/drv_mmd.la
+drivers_drv_mmd_la_SOURCES = drivers/mmd.c
+drivers_drv_mmd_la_LIBADD  = ${libHX_LIBS} libvxcore/libvxcore.la \
+	libvxdb/libvxdb.la
+drivers_drv_mmd_la_LDFLAGS = -avoid-version -module
+
+noinst_LTLIBRARIES += drivers/drv_nss.la
+drivers_drv_nss_la_SOURCES = drivers/nss.c
+drivers_drv_nss_la_LIBADD  = ${libHX_LIBS} libvxcore/libvxcore.la \
+	libvxdb/libvxdb.la
+drivers_drv_nss_la_LDFLAGS = -avoid-version -module
+
+noinst_LTLIBRARIES += drivers/drv_nss1.la
+drivers_drv_nss1_la_SOURCES = drivers/nss1.c
+drivers_drv_nss1_la_LIBADD  = ${libHX_LIBS} libvxcore/libvxcore.la \
+	libvxdb/libvxdb.la libvxutil/libvxutil.la
+drivers_drv_nss1_la_LDFLAGS = -avoid-version -module
+
+if HAVE_MYSQL
+lib_LTLIBRARIES += drivers/drv_mysql.la
+endif
+drivers_drv_mysql_la_SOURCES = drivers/mysql/mysql.c
+drivers_drv_mysql_la_CFLAGS  = ${AM_CFLAGS} ${libmysql_CFLAGS}
+drivers_drv_mysql_la_LIBADD  = ${libHX_LIBS} \
+	libvxcore/libvxcore.la libvxdb/libvxdb.la libvxutil/libvxutil.la
+drivers_drv_mysql_la_LDFLAGS = ${libmysql_LIBS} -avoid-version -module
+
+lib_LTLIBRARIES += drivers/drv_shadow.la
+drivers_drv_shadow_la_SOURCES = drivers/shadow/aux.c \
+	drivers/shadow/dbops.c drivers/shadow/fsgroup.c \
+	drivers/shadow/fspasswd.c drivers/shadow/fsshadow.c \
+	drivers/shadow/fsvxshadow.c drivers/shadow/shadow.c
+drivers_drv_shadow_la_CFLAGS  = ${AM_CFLAGS} ${libxml_CFLAGS}
+drivers_drv_shadow_la_LIBADD  = ${libHX_LIS} ${libxml_LIBS} \
+	libvxcore/libvxcore.la libvxdb/libvxdb.la
+drivers_drv_shadow_la_LDFLAGS = -avoid-version -module

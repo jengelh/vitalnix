@@ -1,0 +1,8 @@
+# -*- Makefile -*-
+
+lib_LTLIBRARIES += libvxmdsync/libvxmdsync.la
+libvxmdsync_libvxmdsync_la_SOURCES = \
+	libvxmdsync/base.c libvxmdsync/fixup.c \
+	libvxmdsync/proc.c libvxmdsync/read_file.c
+libvxmdsync_libvxmdsync_la_LIBADD = ${libHX_LIBS} libvxeds/libvxeds.la \
+	libvxdb/libvxdb.la libvxutil/libvxutil.la

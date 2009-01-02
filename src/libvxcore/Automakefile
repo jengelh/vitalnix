@@ -1,0 +1,5 @@
+# -*- Makefile -*-
+
+lib_LTLIBRARIES += libvxcore/libvxcore.la
+libvxcore_libvxcore_la_SOURCES = libvxcore/loader.c
+libvxcore_libvxcore_la_LIBADD  = ${libHX_LIBS}

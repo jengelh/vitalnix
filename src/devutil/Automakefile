@@ -1,0 +1,12 @@
+# -*- Makefile -*-
+
+noinst_PROGRAMS += devutil/testcase
+devutil_testcase_SOURCES = devutil/testcase.c
+devutil_testcase_LDADD   = libvxeds/libvxeds.la libvxutil/libvxutil.la
+
+noinst_PROGRAMS += devutil/tcrypt
+devutil_tcrypt_SOURCES = devutil/tcrypt.c
+devutil_tcrypt_LDADD   = libvxutil/libvxutil.la
+
+bin_PROGRAMS += devutil/vxcconfig
+devutil_vxcconfig_SOURCES = devutil/vxcconfig.c

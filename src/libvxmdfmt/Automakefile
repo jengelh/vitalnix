@@ -1,0 +1,13 @@
+# -*- Makefile -*-
+
+lib_LTLIBRARIES += libvxmdfmt/libvxmdfmt.la
+libvxmdfmt_libvxmdfmt_la_SOURCES = \
+	libvxmdfmt/extra.c \
+	libvxmdfmt/pwlfmt.c \
+	libvxmdfmt/s_a1.c \
+	libvxmdfmt/s_pghtml.c \
+	libvxmdfmt/s_pgrtf.c \
+	libvxmdfmt/s_pgtxt.c \
+	libvxmdfmt/s_sb.c
+libvxmdfmt_libvxmdfmt_la_LIBADD = ${libHX_LIBS} libvxcore/libvxcore.la \
+	libvxutil/libvxutil.la

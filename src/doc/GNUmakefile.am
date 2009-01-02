@@ -1,18 +1,53 @@
 # -*- Makefile -*-
 
-man1_MANS := $(patsubst ${srcdir}/%.1.php,%.1,$(wildcard ${srcdir}/*.1.php))
-man3_MANS := $(patsubst ${srcdir}/%.3.php,%.3,$(wildcard ${srcdir}/*.3.php))
-man7_MANS := $(patsubst ${srcdir}/%.7.php,%.7,$(wildcard ${srcdir}/*.7.php))
-man8_MANS := $(patsubst ${srcdir}/%.8.php,%.8,$(wildcard ${srcdir}/*.8.php))
-noinst_DATA := \
-	$(patsubst ${srcdir}/%.php,%.html,$(wildcard ${srcdir}/[a-z]*.php)) \
-	$(patsubst ${srcdir}/%.icss,%.css,$(wildcard ${srcdir}/*.icss)) \
-	$(patsubst ${srcdir}/%.ipng,%.png,$(wildcard ${srcdir}/*.ipng))
+AUTOMAKE_OPTIONS = subdir-objects -Wno-portability
 
-CLEANFILES := ${man1_MANS} ${man3_MANS} ${man7_MANS} ${man8_MANS} ${noinst_DATA}
+man1_php = \
+	vxfinger.1.php \
+	vxid.1.php \
+	vxrandpw.1.php
+man3_php = \
+	libvxutil.3.php \
+	vxdb_getpwuid.3.php \
+	vxdb_sgmapadd.3.php \
+	vxdb_sgmapdel.3.php \
+	vxdb_sgmapget.3.php \
+	vxutil_genpw.3.php \
+	vxutil_phash.3.php
+man7_php = \
+	vitalnix.7.php \
+	vxdrv_dummy.7.php \
+	vxdrv_mysql.7.php \
+	vxdrv_nss.7.php \
+	vxdrv_shadow.7.php
+man8_php = \
+	vxckuuid.8.php \
+	vxdbdump.8.php \
+	vxdbinfo.8.php \
+	vxfixuuid.8.php \
+	vxgroupadd.8.php \
+	vxgroupbld.8.php \
+	vxgroupdel.8.php \
+	vxgroupmod.8.php \
+	vxpwlfmt.8.php \
+	vxtryauth.8.php \
+	vxuseradd.8.php \
+	vxuserdel.8.php \
+	vxusermod.8.php
+
+man1_MANS = ${man1_php:.php=}
+man3_MANS = ${man3_php:.php=}
+man7_MANS = ${man7_php:.php=}
+man8_MANS = ${man8_php:.php=}
+noinst_DATA = \
+	${man1_php:.php=.html} ${man3_php:.php=.html} \
+	${man7_php:.php=.html} ${man8_php:.php=.html} \
+	Base-format-printer.css Base-format-screen.css vhex.png
+
+CLEANFILES = ${man1_MANS} ${man3_MANS} ${man7_MANS} ${man8_MANS} ${noinst_DATA}
 
 build_man = \
-	${AM_VERBOSE_GEN}${top_builddir}/html2man \
+	${am__verbose_GEN}${top_builddir}/src/clutils/html2man \
 	-t "Vitalnix User Management Suite" -n $(1) -s $(2) $< >$@;
 
 %.1: %.1.php
@@ -27,11 +62,11 @@ build_man = \
 %.8: %.8.php
 	$(call build_man,$*,8)
 
-%.html: %.php
-	${AM_VERBOSE_GEN}${PHP} -q $< man | ${PERL} -pe 's{href="([^/]*?)\.php"}{href="$$1.html"}' >$@;
+.php.html:
+	${am__verbose_GEN}${PHP} -q $< man | ${PERL} -pe 's{href="([^/]*?)\.php"}{href="$$1.html"}' >$@;
 
-%.css: ${srcdir}/%.icss
+.icss.css:
 	cp -f "$<" "$@";
 
-%.png: ${srcdir}/%.ipng
+.ipng.png:
 	cp -f "$<" "$@";

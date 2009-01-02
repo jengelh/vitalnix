@@ -1,0 +1,8 @@
+# -*- Automakefile -*-
+
+lib_LTLIBRARIES += libvxdb/libvxdb.la
+libvxdb_libvxdb_la_SOURCES = libvxdb/aux.c libvxdb/config.c \
+	libvxdb/dummy.c libvxdb/loader.c
+libvxdb_libvxdb_la_CFLAGS = ${AM_CFLAGS}
+libvxdb_libvxdb_la_LIBADD = ${libHX_LIBS} libvxcore/libvxcore.la \
+	libvxutil/libvxutil.la

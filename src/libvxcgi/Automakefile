@@ -1,0 +1,5 @@
+# -*- Makefile -*-
+
+lib_LTLIBRARIES += libvxcgi/libvxcgi.la
+libvxcgi_libvxcgi_la_SOURCES = libvxcgi/auth.c libvxcgi/cgi.c
+libvxcgi_libvxcgi_la_LIBADD  = ${libHX_LIBS} -lpam

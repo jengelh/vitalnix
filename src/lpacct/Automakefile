@@ -1,0 +1,16 @@
+# -*- Makefile -*-
+
+sbin_PROGRAMS += lpacct/lpacct_filter
+lpacct_lpacct_filter_SOURCES = lpacct/acct.c lpacct/drop.c lpacct/image.c \
+	lpacct/lpacct.c lpacct/shared.c
+lpacct_lpacct_filter_CFLAGS  = ${AM_CFLAGS} ${libmysql_CFLAGS}
+lpacct_lpacct_filter_LDADD   = ${libHX_LIBS} libvxutil/libvxutil.la
+lpacct_lpacct_filter_LDFLAGS = ${libmysql_LIBS}
+
+if HAVE_CUPS
+sbin_PROGRAMS += lpacct/lpacct_scv
+endif
+lpacct_lpacct_scv_SOURCES    = lpacct/confirm.c lpacct/shared.c
+lpacct_lpacct_scv_CFLAGS     = ${AM_CFLAGS} ${libmysql_CFLAGS}
+lpacct_lpacct_scv_LDADD      = ${libHX_LIBS} libvxutil/libvxutil.la
+lpacct_lpacct_scv_LDFLAGS    = ${libmysql_LIBS}

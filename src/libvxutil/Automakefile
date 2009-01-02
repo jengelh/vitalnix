@@ -1,0 +1,13 @@
+# -*- Makefile -*-
+
+lib_LTLIBRARIES += libvxutil/libvxutil.la
+
+libvxutil_libvxutil_la_SOURCES = \
+	libvxutil/blowfish.c libvxutil/phash.c libvxutil/genpw.c \
+	libvxutil/util.c libvxutil/uuid.c
+
+if X86_32
+libvxutil_libvxutil_la_SOURCES += libvxutil/blowfish_x86.S
+endif
+
+libvxutil_libvxutil_la_LIBADD = ${libHX_LIBS} ${libcrypto_LIBS} -lcrypt
