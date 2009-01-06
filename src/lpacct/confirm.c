@@ -36,7 +36,7 @@ static bool next_word(const char **w, const char **s, const char **e)
 	if (*i == '\0')
 		return false;
 	*s = i;
-	while (!HX_isspace(*i))
+	while (!HX_isspace(*i) && *i != '\0')
 		++i;
 	*e = i;
 	while (HX_isspace(*i))
