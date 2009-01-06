@@ -243,6 +243,7 @@ EXPORT_SYMBOL bool vxutil_valid_username(const char *n)
 
 	if (*n == '\0')
 		return false;
+	/* Cannot use isalpha here since that may include more characters. */
 	if (!((*n >= 'A' && *n <= 'Z') || (*n >= 'a' && *n <= 'z') ||
 	    *n == '_'))
 		return false;
