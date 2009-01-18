@@ -47,12 +47,12 @@ AC_PATH_PROGS([PHP], [php php5])
 AM_CONDITIONAL([GOT_TOOLS_FOR_DOC],
 	[$am_make -v | grep -q GNU && test -n "$PERL" -a -n "$PHP"])
 
-regular_CFLAGS="-D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
+regular_CFLAGS="-D_FILE_OFFSET_BITS=64 \
 	-D_REENTRANT -Wall -Waggregate-return -Wmissing-declarations \
 	-Wmissing-prototypes -Wredundant-decls -Wshadow -Wstrict-prototypes \
-	-fPIC -pipe";
-regular_CXXFLAGS="-D_LARGEFILE_SOURCE=1 -D_LARGE_FILES -D_FILE_OFFSET_BITS=64 \
-	-D_REENTRANT -Wall -Wno-pointer-arith -Wredundant-decls -fPIC -pipe";
+	-pipe";
+regular_CXXFLAGS="-D_FILE_OFFSET_BITS=64 \
+	-D_REENTRANT -Wall -Wno-pointer-arith -Wredundant-decls -pipe";
 
 #
 #	libc
