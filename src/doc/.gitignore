@@ -1,2 +1,6 @@
+*.css
+*.[0-9]
+*.html
+*.png
 GNUmakefile
 GNUmakefile.in
