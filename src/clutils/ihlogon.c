@@ -1,6 +1,6 @@
 /*
  *	ihlogon.c -
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2007 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2007 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -88,8 +88,10 @@ static unsigned int login_times(const char *user)
 	);
 
 	fp = popen(buf, "r");
-	fgets(buf, sizeof(buf), fp);
-	return strtol(buf, NULL, 0);
+	if (fgets(buf, sizeof(buf), fp) != NULL)
+		return strtol(buf, NULL, 0);
+	else
+		return 0;
 }
 
 static time_t ourtime(void)
