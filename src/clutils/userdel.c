@@ -1,6 +1,6 @@
 /*
  *	userdel - User manipulation
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -16,6 +16,7 @@
 #include <libHX/defs.h>
 #include <libHX/misc.h>
 #include <libHX/option.h>
+#include <libHX/proc.h>
 #include <libHX/string.h>
 #include <vitalnix/config.h>
 #include <vitalnix/libvxdb/config.h>
@@ -246,11 +247,9 @@ static int userdel_run3(struct vxdb_state *db, struct userdel_state *state)
 		else
 			HX_rrmdir(home);
 	}
-	if (state->rm_cron) {
-		char buf[MAXFNLEN];
-		snprintf(buf, sizeof(buf), "crontab -r \"%s\"", username);
-		system(buf);
-	}
+	if (state->rm_cron)
+		HXproc_run_sync((const char *[])
+			{"crontab", "-r", username, NULL}, HXPROC_VERBOSE);
 	if (state->rm_mail) {
 		char buf[MAXFNLEN];
 		snprintf(buf, sizeof(buf), "/var/spool/mail/%s", username);
