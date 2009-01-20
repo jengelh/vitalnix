@@ -1,6 +1,6 @@
 /*
  *	lpacct/acct.c - Accounting
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2006 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2006 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -36,11 +36,12 @@ void acct_mysql(const struct options *op, const struct costf *cost)
 {
 	char *qqueue = NULL, *quser = NULL, *qtitle = NULL, *sql_query;
 	MYSQL *conn;
+	int ret;
 
 	if ((conn = lpacct_sql_start(op)) == NULL)
 		return;
 
-	asprintf(&sql_query,
+	ret = asprintf(&sql_query,
 		"insert into printlog (%s) values"
 		" ('%s', %ld, '%s', '%s', %f, %f, %f, %f, %f, %u);",
 		lpacct_sql_fields,
@@ -50,7 +51,9 @@ void acct_mysql(const struct options *op, const struct costf *cost)
 		vxutil_quote(op->cups_args[ARGP_TITLE], VXQUOTE_SINGLE, &qtitle),
 		cost->c, cost->m, cost->y, cost->k, cost->t, cost->p
 	);
-	if (mysql_query(conn, sql_query) != 0)
+	if (ret < 0)
+		fprintf(stderr, "asprintf: %s\n", strerror(errno));
+	else if (mysql_query(conn, sql_query) != 0)
 		fprintf(stderr, "mysql_query: %s\n", mysql_error(conn));
 	mysql_close(conn);
 	free(qqueue);

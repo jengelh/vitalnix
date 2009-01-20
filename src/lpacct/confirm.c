@@ -1,6 +1,6 @@
 /*
  *	lpacct/confirm.c - confirm SQL entry
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2006 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2006 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -156,14 +157,17 @@ static void confirm_syslog(const char **argv)
 static void confirm_mysql(MYSQL *conn, const char **argv)
 {
 	char *quser = NULL, *sql_query;
+	int ret;
 
-	asprintf(&sql_query,
+	ret = asprintf(&sql_query,
 		"update printlog set confirmed=true where "
 		"jid=%lu and user='%s'",
 		strtoul(argv[ARGP_JOBID], NULL, 0),
 		vxutil_quote(argv[ARGP_USER], VXQUOTE_SINGLE, &quser)
 	);
-	if (mysql_query(conn, sql_query) != 0)
+	if (ret < 0)
+		fprintf(stderr, "asprintf: %s\n", strerror(errno));
+	else if (mysql_query(conn, sql_query) != 0)
 		fprintf(stderr, "mysql_query: %s\n", mysql_error(conn));
 	mysql_close(conn);
 	free(quser);
