@@ -1,6 +1,6 @@
 /*
  *	libvxcgi/cgi.c - CGI parameter handling
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2005 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2005 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -34,10 +34,8 @@ EXPORT_SYMBOL char *vxcgi_read_data(int argc, const char **argv)
 		size_t len  = strtoul(len_s, NULL, 0);
 		char *new;
 
-		if ((new = malloc(len + 1)) != NULL) {
-			new[len]    = '\0';
-			fread(new, len, 1, stdin);
-		}
+		if ((new = malloc(len + 1)) != NULL)
+			new[fread(new, len, 1, stdin)] = '\0';
 		return new;
 	}
 
