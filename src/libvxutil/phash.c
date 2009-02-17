@@ -10,6 +10,9 @@
  *	Blowfish phash imported from http://freshmeat.net/p/crypt_blowfish/.
  *	MD5 and SHA phash based upon Ulrich Drepper's paper on SHA password
  *	hashing. http://people.redhat.com/drepper/SHA-crypt.txt
+ *
+ *	Uses OpenSSL/libcrypto to create MD5, SHA-256, SHA-512 and SMBNT
+ *	hashes.
  */
 #define _GNU_SOURCE 1
 #include <sys/types.h>
