@@ -1,5 +1,5 @@
 /*
- *	Copyright © Jan Engelhardt <jengelh [at] medozas.de>, 2008 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas.de>, 2008 - 2009
  *
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License
@@ -45,6 +45,8 @@ static int ds_file(const char *file)
 		fprintf(stderr, "stat: %s: %s\n", file, strerror(errno));
 		return 2;
 	}
+	if (S_ISDIR(sb.st_mode))
+		return 0;
 	ds_post_file(file, &sb);
 	return 0;
 }
