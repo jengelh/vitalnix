@@ -21,7 +21,7 @@ static void show_version(const struct HXoptcb *);
 /* Variables */
 static unsigned int
 	Length     = 9,
-	Cr_meth    = VXPHASH_BLOWFISH,
+	Cr_meth    = VXPHASH_SHA512,
 	Gen_meth   = GENPW_ZH,
 	Num_pw     = 1,
 	With_case  = 0,
@@ -60,6 +60,12 @@ static bool get_options(int *argc, const char ***argv)
 		{.sh = '1', .type = HXTYPE_VAL,
 		 .ptr = &With_digit, .val = GENPW_1DIGIT,
 		 .help = "Always have a digit in the password"},
+		{.sh = '2', .type = HXTYPE_VAL,
+		 .ptr = &Cr_meth, .val = VXPHASH_SHA256,
+		 .help = "Select SHA-256 hashing"},
+		{.sh = '5', .type = HXTYPE_VAL,
+		 .ptr = &Cr_meth, .val = VXPHASH_SHA512,
+		 .help = "Select SHA-512 hashing"},
 		{.sh = 'B', .type = HXTYPE_VAL,
 		 .ptr = &Cr_meth, .val = VXPHASH_BLOWFISH,
 		 .help = "Use Blowfish encryption"},
