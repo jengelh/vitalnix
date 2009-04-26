@@ -13,6 +13,7 @@
 #	include <wx/wx.h>
 #endif
 #include <wx/statline.h>
+#include <libHX/wx_helper.hpp>
 #include <vitalnix/config.h>
 #include "steelmill/images.hpp"
 #include "steelmill/wd_about.hpp"
@@ -37,7 +38,7 @@ WD_About::WD_About(wxWindow *parent) :
 	wxBoxSizer *vp = new wxBoxSizer(wxVERTICAL);
 
 	hp->Add(new wxStaticBitmap(this, wxID_ANY, *_img_steelmill_side, wxDPOS), 0, wxALIGN_CENTER);
-	hp->Add(new wxStaticText(this, wxID_ANY, fU8(text), wxDPOS, wxDSIZE, wxALIGN_CENTER), 1, wxACV | wxALL, 20);
+	hp->Add(new wxStaticText(this, wxID_ANY, wxfu8(text), wxDPOS, wxDSIZE, wxALIGN_CENTER), 1, wxACV | wxALL, 20);
 	vp->Add(hp, 1, wxGROW);
 	vp->Add(smc_navgen(this, "-o"), 0, wxGROW);
 

@@ -19,6 +19,7 @@
 #include <wx/statline.h>
 #include <libHX/arbtree.h>
 #include <libHX/deque.h>
+#include <libHX/wx_helper.hpp>
 #include <vitalnix/libvxeds/libvxeds.h>
 #include <vitalnix/libvxeds/vtable.h>
 #include <vitalnix/libvxmdsync/libvxmdsync.h>
@@ -205,23 +206,23 @@ void WD_SyncParam::Compare(wxCommandEvent &event)
 		priv = new struct pv_sync;
 		memset(priv, 0, sizeof(*priv));
 
-		priv->module_handle = vxdb_load(tU8(ct_module->GetValue()));
+		priv->module_handle = vxdb_load(wxtu8(ct_module->GetValue()));
 		if (priv->module_handle == NULL) {
 			str.Printf(wxT("Could not load VXDB backend module: %s\n"),
-			           fV8(strerror(errno)));
+			           wxfv8(strerror(errno)));
 			throw UserException();
 		}
 
 		if ((ret = vxdb_open(priv->module_handle, VXDB_WRLOCK)) <= 0) {
 			str.Printf(wxT("Could not open VXDB module: %s\n"),
-			           fV8(strerror(-ret)));
+			           wxfv8(strerror(-ret)));
 			throw UserException();
 		}
 
 		priv->open_status = 1;
 		if ((priv->mdsw = mdsync_init()) == NULL) {
 			str.Printf(wxT("mdsync_init(): %s\n"),
-			           fV8(strerror(errno)));
+			           wxfv8(strerror(errno)));
 			throw UserException();
 		}
 
@@ -230,9 +231,9 @@ void WD_SyncParam::Compare(wxCommandEvent &event)
 		priv->mdsw->user_private = priv;
 		priv->window             = this;
 
-		if ((ret = mdsync_prepare_group(priv->mdsw, tU8(group_name))) < 0) {
+		if ((ret = mdsync_prepare_group(priv->mdsw, wxtu8(group_name))) < 0) {
 			str.Printf(wxT("Could not look up group \"%s\": %s"),
-			           group_name.c_str(), fV8(strerror(-ret)));
+			           group_name.c_str(), wxfv8(strerror(-ret)));
 			throw UserException();
 		} else if (ret == 0) {
 			str.Printf(wxT("Group \"%s\" does not exist"), group_name.c_str());
@@ -241,20 +242,20 @@ void WD_SyncParam::Compare(wxCommandEvent &event)
 
 		format = static_cast<const char *>
 		         (ct_srctype->GetClientData(ct_srctype->GetSelection()));
-		if (format == NULL && (format = vxeds_derivefromname(tU8(input_file))) == NULL) {
+		if (format == NULL && (format = vxeds_derivefromname(wxtu8(input_file))) == NULL) {
 			str = wxT("Could not determine file type of input data source.");
 			throw UserException();
 		}
 
-		if ((ret = mdsync_read_file(priv->mdsw, tU8(input_file), format)) <= 0) {
+		if ((ret = mdsync_read_file(priv->mdsw, wxtu8(input_file), format)) <= 0) {
 			str.Printf(wxT("Error while reading Data Source: %s\n"),
-			           fV8(strerror(-ret)));
+			           wxfv8(strerror(-ret)));
 			throw UserException();
 		}
 
-		if ((ret = mdsync_open_log(priv->mdsw, tU8(output_file))) <= 0) {
+		if ((ret = mdsync_open_log(priv->mdsw, wxtu8(output_file))) <= 0) {
 			str.Printf(wxT("Error trying to open logfile: %s\n"),
-				       fV8(strerror(-ret)));
+				       wxfv8(strerror(-ret)));
 			throw UserException();
 		}
 
@@ -484,7 +485,7 @@ GW_EdsformatChoice::GW_EdsformatChoice(wxWindow *parent, wxWindowID id) :
 
 	Append(wxT("(autodetect)"), static_cast<void *>(NULL));
 	while ((vtable = vxeds_formats_trav(&trav)) != NULL)
-		Append(fU8(vtable->desc),
+		Append(wxfu8(vtable->desc),
 		       const_cast<struct edsformat_vtable *>(vtable));
 }
 
@@ -536,7 +537,7 @@ static void listbox_fill_eds(wxListBox *lb, const void *user_ptr)
 		return;
 
 	e = static_cast<const struct vxeds_entry *>(node->data);
-	s.Printf(wxT("%s (%s)"), fV8(e->username), fV8(e->full_name));
+	s.Printf(wxT("%s (%s)"), wxfv8(e->username), wxfv8(e->full_name));
 	lb->Append(s);
 
 	if (node->sub[0] != NULL)
@@ -556,7 +557,7 @@ static void listbox_fill_user(wxListBox *lb, const void *user_ptr)
 		return;
 
 	u = static_cast<const struct vxdb_user *>(node->data);
-	s.Printf(wxT("%s (%s)"), fV8(u->pw_name), fV8(u->pw_real));
+	s.Printf(wxT("%s (%s)"), wxfv8(u->pw_name), wxfv8(u->pw_real));
 	lb->Append(s);
 
 	if (node->sub[0] != NULL)

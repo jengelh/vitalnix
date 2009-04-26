@@ -13,6 +13,7 @@
 #ifndef WX_PRECOMP
 #	include <wx/wx.h>
 #endif
+#include <libHX/wx_helper.hpp>
 #include "steelmill/wd_overview.hpp"
 #include "steelmill/xu_common.hpp"
 

@@ -18,16 +18,6 @@
 #include <wx/gbsizer.h>
 
 /* Definitions */
-#define fU8(s)          wxString((s), wxConvUTF8)
-#define fV8(s)          (wxString((s), wxConvUTF8).c_str())
-#define tU8(s)          static_cast<const char *>((s).mb_str(wxConvUTF8))
-#define wxACV           wxALIGN_CENTER_VERTICAL
-#define wxCFF           (wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU | \
-	                    wxCLOSE_BOX | wxMAXIMIZE_BOX | wxMINIMIZE_BOX | \
-	                    wxFRAME_NO_TASKBAR)
-#define wxDPOS          wxDefaultPosition
-#define wxDSIZE         wxDefaultSize
-
 #define PROD_NAME       "Vitalnix 2007"
 
 enum {

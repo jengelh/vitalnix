@@ -9,6 +9,7 @@
  */
 #include <cstdio>
 #include <libHX/deque.h>
+#include <libHX/wx_helper.hpp>
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #	include <wx/wx.h>
@@ -189,7 +190,7 @@ void GW_GroupCombo::switch_database(const char *db_name)
 
 	while (vxdb_grouptrav_walk(db, trav, &group) > 0)
 		if (group.gr_gid > 0)
-			Append(fU8(group.gr_name));
+			Append(wxfu8(group.gr_name));
 
 	vxdb_grouptrav_free(db, trav);
 	vxdb_group_free(&group, false);
@@ -231,7 +232,7 @@ GW_Listbox::GW_Listbox(wxWindow *parent, const wxString &title,
 	if (dq != NULL)
 		for (const struct HXdeque_node *node = dq->first;
 		    node != NULL; node = node->next)
-			ct_listbox->Append(fU8(static_cast<const char *>(node->ptr)));
+			ct_listbox->Append(wxfu8(static_cast<const char *>(node->ptr)));
 
 	SetSizer(vp);
 	vp->SetSizeHints(this);
@@ -388,7 +389,7 @@ void GW_UserCombo::switch_database(const char *db_name)
 	if ((trav = vxdb_usertrav_init(db)) == NULL)
 	    goto out_close;
 	while (vxdb_usertrav_walk(db, trav, &user) > 0)
-	    Append(fU8(user.pw_name));
+	    Append(wxfu8(user.pw_name));
 
 	vxdb_usertrav_free(db, trav);
 	vxdb_user_free(&user, false);

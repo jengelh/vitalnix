@@ -13,6 +13,7 @@
 #	include <wx/wx.h>
 #endif
 #include <wx/notebook.h>
+#include <libHX/wx_helper.hpp>
 #include "steelmill/wd_usermod.hpp"
 #include "steelmill/xu_common.hpp"
 

@@ -13,6 +13,7 @@
 #ifndef WX_PRECOMP
 #	include <wx/wx.h>
 #endif
+#include <libHX/wx_helper.hpp>
 #include <vitalnix/libvxdb/libvxdb.h>
 #include <vitalnix/libvxdb/xafunc.h>
 #include "steelmill/wd_fixuuid.hpp"

@@ -14,6 +14,7 @@
 #	include <wx/wx.h>
 #endif
 #include <wx/statline.h>
+#include <libHX/wx_helper.hpp>
 #include "steelmill/wd_about.hpp"
 #include "steelmill/wd_fixuuid.hpp"
 //include "steelmill/wd_lpcadm.hpp"
@@ -51,7 +52,7 @@ END_EVENT_TABLE()
 
 WD_MainMenu::WD_MainMenu(const char *title, const wxSize &size,
     const wxPoint &pos) :
-	wxFrame(NULL, wxID_ANY, fU8(title), pos, size)
+	wxFrame(NULL, wxID_ANY, wxfu8(title), pos, size)
 {
 	SetFont(wxFont(12, wxFONTFAMILY_DEFAULT, wxNORMAL, wxNORMAL,
 	        false, wxT("Arial")));
@@ -165,9 +166,9 @@ wxFlexGridSizer *WD_MainMenu::generate_menu(void)
 	sizer->AddGrowableCol(2);
 
 	while (travp->id != 0) {
-		sizer->Add(new wxStaticText(this, wxID_ANY, fU8(travp->desc)), 0, wxGROW | wxALL, 5);
+		sizer->Add(new wxStaticText(this, wxID_ANY, wxfu8(travp->desc)), 0, wxGROW | wxALL, 5);
 		sizer->Add(25, 1);
-		sizer->Add(new wxButton(this, travp->id, fU8(travp->text)), 0, wxGROW | wxALL, 5);
+		sizer->Add(new wxButton(this, travp->id, wxfu8(travp->text)), 0, wxGROW | wxALL, 5);
 		++travp;
 	}
 

@@ -28,13 +28,13 @@ steelmill_steelmill_LDADD    = ${libHX_LIBS} \
 steelmill_steelmill_LDFLAGS  = ${libwx_LIBS}
 
 steelmill/images.cpp: steelmill/images.hpp
-	${am__verbose_GEN}
+	${AM_V_GEN}
 
 steelmill/images.hpp: steelmill/images.lst
-	${am__verbose_GEN}${srcdir}/png2wx.pl -C steelmill/images.cpp -H steelmill/images.hpp -M STEELMILL_IMAGES_HPP ${srcdir}/steelmill/*.png;
+	${AM_V_GEN}${srcdir}/png2wx.pl -C steelmill/images.cpp -H steelmill/images.hpp -M STEELMILL_IMAGES_HPP ${srcdir}/steelmill/*.png;
 
 steelmill/images.lst: .FORCE steelmill/dirstamp
-	${am__verbose_GEN}steelmill/dirstamp ${srcdir}/steelmill/*.png >$@.tmp; \
+	${AM_V_GEN}steelmill/dirstamp ${srcdir}/steelmill/*.png >$@.tmp; \
 	cmp -s $@ $@.tmp || mv $@.tmp $@; \
 	rm -f $@.tmp;
 

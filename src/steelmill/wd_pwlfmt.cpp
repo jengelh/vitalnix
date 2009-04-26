@@ -13,6 +13,7 @@
 #ifndef WX_PRECOMP
 #	include <wx/wx.h>
 #endif
+#include <libHX/wx_helper.hpp>
 #include <vitalnix/libvxmdfmt/libvxmdfmt.h>
 #include <vitalnix/libvxmdfmt/vtable.h>
 #include "steelmill/wd_pwlfmt.hpp"
@@ -82,7 +83,7 @@ GW_PwlstylesChoice::GW_PwlstylesChoice(wxWindow *parent, wxWindowID id) :
 	void *trav = NULL;
 
 	while ((vtable = pwlstyles_trav(&trav)) != NULL)
-		Append(fU8(vtable->name) + wxT(" (") +
-		       fU8(vtable->desc) + wxT(")"),
+		Append(wxfu8(vtable->name) + wxT(" (") +
+		       wxfu8(vtable->desc) + wxT(")"),
 		       const_cast<void *>(static_cast<const void *>(vtable)));
 }

@@ -15,6 +15,7 @@
 #ifndef WX_PRECOMP
 #	include <wx/wx.h>
 #endif
+#include <libHX/wx_helper.hpp>
 #include <vitalnix/libvxdb/libvxdb.h>
 #include <vitalnix/libvxdb/xafunc.h>
 #include "steelmill/xu_common.hpp"
@@ -28,7 +29,7 @@ struct vxdb_state *database_open(long open_flags, wxWindow *parent)
 	if ((dbh = vxdb_load("*")) == NULL) {
 		wxString s;
 		s.Printf(wxT("Could not load backend module \"%s\": %s\n"),
-		         wxT("*"), fV8(strerror(errno)));
+		         wxT("*"), wxfv8(strerror(errno)));
 		GW_Message(parent, wxT("Failure"), s, "-o").ShowModal();
 		return NULL;
 	}
@@ -36,7 +37,7 @@ struct vxdb_state *database_open(long open_flags, wxWindow *parent)
 	if ((ret = vxdb_open(dbh, open_flags)) <= 0) {
 		wxString s;
 		s.Printf(wxT("Could not open backend module: %s\n"),
-		         fV8(strerror(-ret)));
+		         wxfv8(strerror(-ret)));
 		GW_Message(parent, wxT("Failure"), s, "-o").ShowModal();
 		vxdb_unload(dbh);
 		return NULL;

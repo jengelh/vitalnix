@@ -19,6 +19,7 @@
 #	include <wx/wx.h>
 #endif
 #include <wx/statline.h>
+#include <libHX/wx_helper.hpp>
 #include <steelmill/images.hpp>
 #include "steelmill/xu_common.hpp"
 #include "steelmill/xu_loader.hpp"
@@ -126,7 +127,7 @@ WD_Console::~WD_Console(void)
 
 void WD_Console::Append(const char *buffer)
 {
-	tc->WriteText(fU8(buffer));
+	tc->WriteText(wxfu8(buffer));
 }
 
 void WD_Console::Clear(wxCommandEvent &event)
