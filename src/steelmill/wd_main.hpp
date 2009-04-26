@@ -29,7 +29,9 @@ class WD_MainMenu : public wxFrame {
 
     private: /* variables */
 	wxFlexGridSizer *generate_menu(void);
+
 	DECLARE_EVENT_TABLE();
+	DECLARE_NO_COPY_CLASS(WD_MainMenu);
 };
 
 #endif /* STEELMILL_WD_MAIN_HPP */

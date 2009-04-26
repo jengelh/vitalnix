@@ -9,6 +9,9 @@
 class WD_About : public wxDialog {
     public: /* functions */
 	WD_About(wxWindow *);
+
+    private:
+	DECLARE_NO_COPY_CLASS(WD_About);
 };
 
 #endif /* STEELMILL_WD_ABOUT_HPP */

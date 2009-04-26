@@ -22,7 +22,9 @@ class WD_FixUUID : public wxDialog {
 	struct vxdb_state *db_handle;
 	wxComboBox *ct_username;
 	wxTextCtrl *ct_realname, *ct_bday;
+
 	DECLARE_EVENT_TABLE();
+	DECLARE_NO_COPY_CLASS(WD_FixUUID);
 };
 
 #endif /* STEELMILL_WD_FIXUUID_HPP */

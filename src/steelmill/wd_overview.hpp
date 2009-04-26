@@ -20,6 +20,7 @@ class WD_Overview : public wxDialog {
 
     private: /* variables */
 	DECLARE_EVENT_TABLE();
+	DECLARE_NO_COPY_CLASS(WD_Overview);
 };
 
 #endif /* STEELMILL_WD_OVERVIEW_HPP */

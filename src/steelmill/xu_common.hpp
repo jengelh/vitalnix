@@ -45,12 +45,16 @@ class GW_FTC : public wxPanel {
 
     private: /* variables */
 	DECLARE_EVENT_TABLE();
+	DECLARE_NO_COPY_CLASS(GW_FTC);
 };
 
 class GW_GroupCombo : public wxComboBox {
     public: /* functions */
 	GW_GroupCombo(wxWindow *, wxWindowID = wxID_ANY, const char * = "*");
 	void switch_database(const char *);
+
+    private:
+	DECLARE_NO_COPY_CLASS(GW_GroupCombo);
 };
 
 class GW_Listbox : public wxDialog {
@@ -65,6 +69,9 @@ class GW_Listbox : public wxDialog {
 
     protected: /* variables */
 	wxListBox *ct_listbox;
+
+    private:
+	DECLARE_NO_COPY_CLASS(GW_Listbox);
 };
 
 class GW_Message : public wxDialog {
@@ -79,6 +86,7 @@ class GW_Message : public wxDialog {
 
     private: /* variables */
 	DECLARE_EVENT_TABLE();
+	DECLARE_NO_COPY_CLASS(GW_Message);
 };
 
 class GW_Table : public wxListCtrl {
@@ -98,12 +106,16 @@ class GW_Table : public wxListCtrl {
 
     private: /* variables */
 	DECLARE_EVENT_TABLE();
+	DECLARE_NO_COPY_CLASS(GW_Table);
 };
 
 class GW_UserCombo : public wxComboBox {
     public: /* functions */
 	GW_UserCombo(wxWindow *, wxWindowID = wxID_ANY, const char * = "*");
 	void switch_database(const char *);
+
+    private:
+	DECLARE_NO_COPY_CLASS(GW_UserCombo);
 };
 
 #endif /* STEELMILL_COMMON_HPP */

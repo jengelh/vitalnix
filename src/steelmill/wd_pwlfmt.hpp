@@ -19,7 +19,9 @@ class WD_Pwlfmt : public wxDialog {
 	GW_FTC *ct_input, *ct_output, *ct_template;
 	wxChoice *ct_style;
 	wxStaticText *ct_tpltext;
+
 	DECLARE_EVENT_TABLE();
+	DECLARE_NO_COPY_CLASS(WD_Pwlfmt);
 };
 
 #endif /* STEELMILL_WD_PWLFMT_HPP */

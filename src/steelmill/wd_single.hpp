@@ -12,6 +12,7 @@ class WD_Single : public wxDialog {
 
     private: /* variables */
 	DECLARE_EVENT_TABLE();
+	DECLARE_NO_COPY_CLASS(WD_Single);
 };
 
 #endif /* STEELMILL_WD_USERVIEW_HPP */

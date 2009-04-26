@@ -12,6 +12,7 @@ class WD_Usermod : public wxDialog {
 
     private: /* variables */
 	DECLARE_EVENT_TABLE();
+	DECLARE_NO_COPY_CLASS(WD_Usermod);
 };
 
 #endif /* STEELMILL_WD_USERMOD_HPP */

@@ -23,7 +23,9 @@ class WD_Console : public wxFrame {
     private: /* variables */
 	FILE *saved_stdout, *saved_stderr, *current;
 	wxTextCtrl *tc;
+
 	DECLARE_EVENT_TABLE();
+	DECLARE_NO_COPY_CLASS(WD_Console);
 };
 
 class Loader : public wxApp {
@@ -38,6 +40,7 @@ class Loader : public wxApp {
 
     private: /* variables */
 	unsigned int splash_done;
+
 	DECLARE_EVENT_TABLE();
 };
 

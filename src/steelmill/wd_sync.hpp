@@ -24,7 +24,9 @@ class WD_SyncParam : public wxDialog {
 	wxComboBox *ct_module, *ct_group;
 	GW_FTC *ct_output;
 	wxCheckBox *ct_prompt;
+
 	DECLARE_EVENT_TABLE();
+	DECLARE_NO_COPY_CLASS(WD_SyncParam);
 };
 
 #endif /* STEELMILL_WD_SYNC_HPP */

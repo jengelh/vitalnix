@@ -10,6 +10,9 @@
 class WD_Splash : public wxDialog {
     public: /* functions */
 	WD_Splash(const wxPoint & = wxDPOS);
+
+    private:
+	DECLARE_NO_COPY_CLASS(WD_Splash);
 };
 
 #endif /* STEELMILL_SPLASH_HPP */
