@@ -5,7 +5,6 @@ AUTOMAKE_OPTIONS = subdir-objects
 nobase_include_HEADERS = \
 	vitalnix/compiler.h \
 	vitalnix/config.h \
-	vitalnix/compiler.h \
 	vitalnix/libvxcgi/libvxcgi.h \
 	vitalnix/libvxcli/libvxcli.h \
 	vitalnix/libvxcore/loader.h \
