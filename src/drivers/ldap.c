@@ -23,7 +23,6 @@
 
 #define F_POSIXACCOUNT "objectClass=posixAccount"
 #define F_POSIXGROUP   "objectClass=posixGroup"
-#define ZU_32 sizeof("4294967296")
 
 struct ldap_attrmap {
 	bool posixAccount, shadowAccount, sambaSamAccount;
@@ -375,10 +374,10 @@ static inline int vxldap_uid_to_sid(struct ldap_state *state, char *sid,
 static int vxldap_useradd(struct vxdb_state *vp, const struct vxdb_user *rq)
 {
 	struct ldap_state *state = vp->state;
-	char s_pw_uid[ZU_32], s_pw_gid[ZU_32], s_sp_last[ZU_32];
-	char s_sp_min[ZU_32], s_sp_max[ZU_32], s_sp_warn[ZU_32];
-	char s_sp_expire[ZU_32], s_sp_inact[ZU_32], s_vs_defer[ZU_32];
-	char s_sid[256], s_smblastchg[ZU_32];
+	char s_pw_uid[HXSIZEOF_Z32], s_pw_gid[HXSIZEOF_Z32], s_sp_last[HXSIZEOF_Z32];
+	char s_sp_min[HXSIZEOF_Z32], s_sp_max[HXSIZEOF_Z32], s_sp_warn[HXSIZEOF_Z32];
+	char s_sp_expire[HXSIZEOF_Z32], s_sp_inact[HXSIZEOF_Z32], s_vs_defer[HXSIZEOF_Z32];
+	char s_sid[256], s_smblastchg[HXSIZEOF_Z32];
 	LDAPMod attr[21], *attr_ptrs[22];
 	const char *object_classes[6];
 	unsigned int a = 0, i, o = 0;
@@ -696,9 +695,9 @@ static int vxldap_usermod(struct vxdb_state *vp, const char *name,
     const struct vxdb_user *param)
 {
 	struct ldap_state *state = vp->state;
-	char s_pw_uid[ZU_32], s_pw_gid[ZU_32], s_sp_last[ZU_32];
-	char s_sp_min[ZU_32], s_sp_max[ZU_32], s_sp_warn[ZU_32];
-	char s_sp_expire[ZU_32], s_sp_inact[ZU_32], s_vs_defer[ZU_32];
+	char s_pw_uid[HXSIZEOF_Z32], s_pw_gid[HXSIZEOF_Z32], s_sp_last[HXSIZEOF_Z32];
+	char s_sp_min[HXSIZEOF_Z32], s_sp_max[HXSIZEOF_Z32], s_sp_warn[HXSIZEOF_Z32];
+	char s_sp_expire[HXSIZEOF_Z32], s_sp_inact[HXSIZEOF_Z32], s_vs_defer[HXSIZEOF_Z32];
 	struct ldap_attrmap attr_map = {};
 	LDAPMod attr[20], *attr_ptrs[21];
 	hxmc_t *dn, *password = NULL;
@@ -993,7 +992,7 @@ static int vxldap_getpwx(struct ldap_state *state, const char *filter,
 static int vxldap_getpwuid(struct vxdb_state *vp, unsigned int uid,
     struct vxdb_user *dest)
 {
-	char filter[48+ZU_32];
+	char filter[48+HXSIZEOF_Z32];
 	int ret;
 	snprintf(filter, sizeof(filter),
 	         "(&(" F_POSIXACCOUNT ")(uidNumber=%u))", uid);
@@ -1077,7 +1076,7 @@ static int vxldap_groupadd(struct vxdb_state *vp, const struct vxdb_group *rq)
 	struct ldap_state *state = vp->state;
 	LDAPMod attr[4], *attr_ptrs[5];
 	unsigned int a = 0, i;
-	char s_gr_gid[ZU_32];
+	char s_gr_gid[HXSIZEOF_Z32];
 	hxmc_t *dn;
 	int ret;
 
@@ -1204,7 +1203,7 @@ static int vxldap_getgrx(struct ldap_state *state, const char *filter,
 static int vxldap_getgrgid(struct vxdb_state *vp, unsigned int gid,
     struct vxdb_group *dest)
 {
-	char filter[48+ZU_32];
+	char filter[48+HXSIZEOF_Z32];
 	int ret;
 	snprintf(filter, sizeof(filter),
 	         "(&(" F_POSIXGROUP ")(gidNumber=%u))", gid);

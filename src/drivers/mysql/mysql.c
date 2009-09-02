@@ -1,6 +1,6 @@
 /*
  *	mysql.c - MYSQL back-end
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2005 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2005 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <libHX/defs.h>
 #include <libHX/option.h>
 #include <libHX/string.h>
 #include <mysql.h>
@@ -28,10 +29,6 @@
 	if ((state->names.sp_table != NULL && !state->perm_shadow) || \
 	    (state->names.vs_table != NULL && !state->perm_vxshadow)) \
 		return -EACCES;
-#define ZU_32 sizeof("4294967296")
-#define ZD_32 (ZU_32 + 1)
-#define ZU_64 sizeof("18446744073709551616")
-#define ZD_64 (ZU_64 + 1)
 
 /* Definitions */
 enum {
@@ -756,22 +753,22 @@ static int queryf(MYSQL *handle, const char *fmt, ...)
 			HXmc_strcat(&query, "'");
 			last_ptr += 2;
 		} else if (strncmp(next_ptr, "%ld", 3) == 0) {
-			char buf[ZD_64];
+			char buf[HXSIZEOF_Z64];
 			snprintf(buf, sizeof(buf), "%ld", va_arg(argp, long));
 			HXmc_strcat(&query, buf);
 			last_ptr += 3;
 		} else if (strncmp(next_ptr, "%lu", 3) == 0) {
-			char buf[ZU_64];
+			char buf[HXSIZEOF_Z64];
 			snprintf(buf, sizeof(buf), "%lu", va_arg(argp, unsigned long));
 			HXmc_strcat(&query, buf);
 			last_ptr += 3;
 		} else if (strncmp(next_ptr, "%d", 2) == 0) {
-			char buf[ZD_32];
+			char buf[HXSIZEOF_Z32];
 			snprintf(buf, sizeof(buf), "%d", va_arg(argp, int));
 			HXmc_strcat(&query, buf);
 			last_ptr += 3;
 		} else if (strncmp(next_ptr, "%u", 2) == 0) {
-			char buf[ZU_32];
+			char buf[HXSIZEOF_Z32];
 			snprintf(buf, sizeof(buf), "%d", va_arg(argp, unsigned int));
 			HXmc_strcat(&query, buf);
 			last_ptr += 3;
@@ -939,7 +936,7 @@ static hxmc_t *sql_groupmask(hxmc_t **s, const struct mysql_state *state,
     const struct vxdb_group *mask, unsigned int flags)
 {
 	const struct mq_names *names = &state->names;
-	char tmp[ZU_32];
+	char tmp[HXSIZEOF_Z32];
 	int n = 0;
 
 	if (*s == NULL)
@@ -961,7 +958,7 @@ static hxmc_t *sql_usermask(hxmc_t **s, const struct mysql_state *state,
     const struct vxdb_user *mask, unsigned int flags)
 {
 	const struct mq_names *names = &state->names;
-	char tmp[ZU_32];
+	char tmp[HXSIZEOF_Z32];
 	int n = 0;
 
 	if (*s == NULL)
