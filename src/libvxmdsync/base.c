@@ -1,6 +1,6 @@
 /*
  *	libvxmdsync/base.c
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -13,8 +13,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libHX/arbtree.h>
+#include <libHX/defs.h>
 #include <libHX/deque.h>
+#include <libHX/map.h>
 #include <libHX/option.h>
 #include <libHX/string.h>
 #include <vitalnix/compiler.h>
@@ -28,8 +29,7 @@
 #include <vitalnix/libvxutil/libvxutil.h>
 
 /* Functions */
-static void kill_eds(const struct HXbtree_node *);
-static void kill_pwd(const struct HXbtree_node *);
+static void kill_pwd(void *);
 static int mdsync_read_config(struct mdsync_config *);
 static void pconfig_phash(const struct HXoptcb *);
 static void pconfig_genpw(const struct HXoptcb *);
@@ -37,6 +37,17 @@ static void pconfig_genpw(const struct HXoptcb *);
 //-----------------------------------------------------------------------------
 EXPORT_SYMBOL struct mdsync_workspace *mdsync_init(void)
 {
+	static const struct HXmap_ops areq_ops = {
+		.k_compare = reinterpret_cast(HXtypeof_member(typeof(areq_ops),
+		             k_compare), strcmp),
+		.d_free    = reinterpret_cast(HXtypeof_member(typeof(areq_ops),
+		             d_free), vxeds_free_entry),
+	};
+	static const struct HXmap_ops ureq_ops = {
+		.k_compare = reinterpret_cast(HXtypeof_member(typeof(ureq_ops),
+		             k_compare), strcmp),
+		.d_free    = kill_pwd,
+	};
 	struct mdsync_workspace *w;
 	struct mdsync_config *c;
 	int esave;
@@ -45,9 +56,11 @@ EXPORT_SYMBOL struct mdsync_workspace *mdsync_init(void)
 		goto out;
 
 	/* Used in mdsync_read_file() */
-	if ((w->add_req = HXbtree_init(HXBT_MAP | HXBT_SCMP)) == NULL)
-		goto out;
-	if ((w->update_req = HXbtree_init(HXBT_MAP | HXBT_SCMP)) == NULL)
+	w->add_req = HXmap_init5(HXMAPT_ORDERED, 0,
+	             &areq_ops, 0, sizeof(struct vxeds_entry));
+	w->update_req = HXmap_init5(HXMAPT_ORDERED, 0,
+	                &ureq_ops, 0, sizeof(struct vxdb_user));
+	if (w->add_req == NULL || w->update_req == NULL)
 		goto out;
 
 	/* Used in mdsync_compare() */
@@ -55,7 +68,8 @@ EXPORT_SYMBOL struct mdsync_workspace *mdsync_init(void)
 	w->defer_wait  = HXdeque_init();
 	w->defer_stop  = HXdeque_init();
 	w->delete_now  = HXdeque_init();
-	w->lnlist      = HXbtree_init(HXBT_CDATA | HXBT_SCMP);
+	w->lnlist      = HXmap_init(HXMAPT_DEFAULT,
+	                 HXMAP_SCKEY | HXMAP_SINGULAR);
 
 	if (w->defer_start == NULL || w->defer_wait == NULL ||
 	    w->defer_stop == NULL || w->delete_now == NULL ||
@@ -127,60 +141,28 @@ EXPORT_SYMBOL void mdsync_free(struct mdsync_workspace *w)
 	/* mdsync_compare() */
 	/*
 	 * Auto-genocide of the linked list keys, because @w->lnlist (the owner
-	 * of the keys) has %HXBT_CDATA. See compare.c for comment.
+	 * of the keys) has %HXMAP_CKEY. See compare.c for comment.
 	 */
 	if (w->defer_start != NULL) HXdeque_free(w->defer_start);
 	if (w->defer_wait  != NULL) HXdeque_free(w->defer_wait);
 	if (w->defer_stop  != NULL) HXdeque_free(w->defer_stop);
 	if (w->delete_now  != NULL) HXdeque_free(w->delete_now);
-	if (w->lnlist      != NULL) HXbtree_free(w->lnlist);
+	if (w->lnlist      != NULL) HXmap_free(w->lnlist);
 
 	/* mdsync_read_file() */
-	if (w->add_req != NULL) {
-		if (w->add_req->root != NULL)
-			kill_eds(w->add_req->root);
-		HXbtree_free(w->add_req);
-	}
-	if (w->update_req != NULL) {
-		if (w->update_req->root != NULL)
-			kill_pwd(w->update_req->root);
-		HXbtree_free(w->update_req);
-	}
+	if (w->add_req != NULL)
+		HXmap_free(w->add_req);
+	if (w->update_req != NULL)
+		HXmap_free(w->update_req);
 
 	/* mdsync_prepare_group() */
 	vxdb_group_free(&w->dest_group, false);
 }
 
 //-----------------------------------------------------------------------------
-/**
- * kill_eds -
- * @node:	node to free data at
- *
- * Recursively descent into @node and its subtrees to free the EDS entries.
- */
-static void kill_eds(const struct HXbtree_node *node)
+static void kill_pwd(void *data)
 {
-	vxeds_free_entry(node->data);
-	if (node->sub[0] != NULL)
-		kill_eds(node->sub[0]);
-	if (node->sub[1] != NULL)
-		kill_eds(node->sub[1]);
-}
-
-/**
- * kill_pwd -
- * @node:	node to free data at
- *
- * Recursively descend into @node and its subtrees to free the PWD data
- * structures.
- */
-static void kill_pwd(const struct HXbtree_node *node)
-{
-	vxdb_user_free(node->data, true);
-	if (node->sub[0] != NULL)
-		kill_pwd(node->sub[0]);
-	if (node->sub[1] != NULL)
-		kill_pwd(node->sub[1]);
+	vxdb_user_free(data, true);
 }
 
 static int mdsync_read_config(struct mdsync_config *c)

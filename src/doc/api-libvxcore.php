@@ -12,7 +12,7 @@ functions such as module registering and lookup functions for such.</p>
 <br />
 <b>int</b> vxcore_module_register(<b>const char *</b>section, <b>const char *</b>name, <b>const void *</b>ptr);<br />
 <b>void</b> vxcore_module_unregister(<b>const char *</b>section, <b>const char *</b>name);<br />
-<b>struct</b> HXbtree <b>*</b>vxcore_section_lookup(<b>const char *</b>section);<br />
+<b>struct</b> HXmap <b>*</b>vxcore_section_lookup(<b>const char *</b>section);<br />
 <b>void *</b>vxcore_module_lookup(<b>const char *</b>section, <b>const char *</b>name);
 </code></p>
 

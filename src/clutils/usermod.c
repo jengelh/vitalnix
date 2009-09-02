@@ -1,6 +1,6 @@
 /*
  *	usermod - User manipulation
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -37,7 +37,7 @@ struct usermod_state {
 	struct vxconfig_usermod config;
 	const char *database;
 	unsigned int allow_dup, lock_account, move_home;
-	struct HXbtree *sr_map;
+	struct HXformat_map *sr_map;
 };
 
 /* Functions */

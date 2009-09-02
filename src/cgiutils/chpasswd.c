@@ -1,6 +1,6 @@
 /*
  *	chpasswd - Web interface for changing password
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <libHX/arbtree.h>
+#include <libHX/map.h>
 #include <vitalnix/libvxcgi/libvxcgi.h>
 #include <vitalnix/libvxutil/libvxutil.h>
 
@@ -30,11 +30,11 @@ static const char *const Wrong_auth =
 //-----------------------------------------------------------------------------
 int main(int argc, const char **argv)
 {
-	struct HXbtree *data = vxcgi_split(vxcgi_read_data(argc, argv));
-	const char *user     = vxutil_azstr(HXbtree_get(data, "user"));
-	const char *oldpw    = vxutil_azstr(HXbtree_get(data, "oldpw"));
-	const char *newpw    = vxutil_azstr(HXbtree_get(data, "newpw"));
-	const char *newpw2   = vxutil_azstr(HXbtree_get(data, "newpw2"));
+	struct HXmap *data = vxcgi_split(vxcgi_read_data(argc, argv));
+	const char *user   = vxutil_azstr(HXmap_get(data, "user"));
+	const char *oldpw  = vxutil_azstr(HXmap_get(data, "oldpw"));
+	const char *newpw  = vxutil_azstr(HXmap_get(data, "newpw"));
+	const char *newpw2 = vxutil_azstr(HXmap_get(data, "newpw2"));
 
 	header();
 
@@ -68,7 +68,7 @@ int main(int argc, const char **argv)
 	form(user);
 	footer();
 	printf("\n");
-	HXbtree_free(data);
+	HXmap_free(data);
 	return EXIT_SUCCESS;
 }
 

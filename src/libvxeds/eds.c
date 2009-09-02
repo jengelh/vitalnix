@@ -1,6 +1,6 @@
 /*
  *	libvxeds/eds.c
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2004 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2004 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -9,6 +9,7 @@
  */
 #include <errno.h>
 #include <stdio.h>
+#include <libHX/defs.h>
 #include <libHX/string.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxeds/libvxeds.h>
@@ -92,8 +93,8 @@ EXPORT_SYMBOL char *vxeds_bfullname(const char *first_name,
 	return full_name;
 }
 
-EXPORT_SYMBOL
-const struct edsformat_vtable *vxeds_formats_trav(void **trav_pptr)
+EXPORT_SYMBOL const struct edsformat_vtable *
+vxeds_formats_trav(void **trav_pptr)
 {
 	return vxcore_section_trav(trav_pptr, "libvxeds");
 }

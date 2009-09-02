@@ -5,14 +5,14 @@
 extern "C" {
 #endif
 
-struct HXbtree;
+struct HXmap;
 
 /*
  *	LOADER.C
  */
 extern int vxcore_module_register(const char *, const char *, const void *);
 extern void vxcore_module_unregister(const char *, const char *);
-extern struct HXbtree *vxcore_section_lookup(const char *);
+extern struct HXmap *vxcore_section_lookup(const char *);
 extern void *vxcore_module_lookup(const char *, const char *);
 extern const void *vxcore_section_trav(void **, const char *);
 

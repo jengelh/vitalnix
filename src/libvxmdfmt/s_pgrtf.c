@@ -1,6 +1,6 @@
 /*
  *	libvxmdfmt/s_pgrtf.c - text/rtf formatter
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2005 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2005 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -63,7 +63,7 @@ static void pgrtf_destruct(struct pwlfmt_workspace *w)
 static void pgrtf_file_header(const struct pwlfmt_workspace *ws)
 {
 	const struct pgrtf_data *priv = ws->style_data;
-	struct HXbtree *catalog       = defcat_file_header(ws);
+	struct HXformat_map *catalog  = defcat_file_header(ws);
 
 	HXformat_fprintf(catalog, ws->output_fh, priv->tps_file_header);
 	HXformat_free(catalog);
@@ -73,7 +73,7 @@ static void pgrtf_tbl_header(const struct pwlfmt_workspace *ws,
     const struct pwl_data *data)
 {
 	const struct pgrtf_data *priv = ws->style_data;
-	struct HXbtree *catalog       = defcat_tbl_header(ws, data);
+	struct HXformat_map *catalog  = defcat_tbl_header(ws, data);
 
 	HXformat_fprintf(catalog, ws->output_fh, priv->tps_tbl_header);
 	HXformat_free(catalog);
@@ -83,7 +83,7 @@ static void pgrtf_tbl_entry(const struct pwlfmt_workspace *ws,
     const struct pwl_data *data)
 {
 	const struct pgrtf_data *priv = ws->style_data;
-	struct HXbtree *catalog       = defcat_tbl_entry(ws, data);
+	struct HXformat_map *catalog  = defcat_tbl_entry(ws, data);
 	hxmc_t *uni_firstname         = utf8_to_rtfuni(data->first_name);
 	hxmc_t *uni_surname           = utf8_to_rtfuni(data->surname);
 

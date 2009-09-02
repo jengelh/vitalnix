@@ -14,8 +14,8 @@
 extern "C" {
 #endif
 
-struct HXbtree;
 struct HXdeque;
+struct HXmap;
 
 struct mdsync_config {
 	int new_pw_length;
@@ -51,8 +51,8 @@ struct mdsync_workspace {
 	struct vxdb_group dest_group;
 	FILE *logfile;
 	struct HXdeque *defer_start, *defer_wait, *defer_stop, *delete_now;
-	struct HXbtree *add_req;
-	struct HXbtree *lnlist, *update_req;
+	struct HXmap *add_req;
+	struct HXmap *lnlist, *update_req;
 };
 
 /*

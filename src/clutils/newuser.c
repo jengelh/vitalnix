@@ -1,6 +1,6 @@
 /*
  *	newuser - MDSYNC-compatible single user add
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -14,9 +14,9 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-#include <libHX/arbtree.h>
 #include <libHX/ctype_helper.h>
 #include <libHX/defs.h>
+#include <libHX/map.h>
 #include <libHX/option.h>
 #include <vitalnix/config.h>
 #include <vitalnix/libvxcli/libvxcli.h>
@@ -143,7 +143,7 @@ static int single_run(struct private_info *priv)
 		ee.uuid = vxuuid_vx3(ee.full_name,
 		          vxutil_string_xday(priv->bday));
 
-	HXbtree_add(mdsw->add_req, ee.uuid, HX_memdup(&ee, sizeof(ee)));
+	HXmap_add(mdsw->add_req, ee.uuid, HX_memdup(&ee, sizeof(ee)));
 	mdsync_compare_simple(mdsw);
 	mdsync_fixup(mdsw);
 

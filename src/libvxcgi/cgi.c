@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libHX/arbtree.h>
+#include <libHX/map.h>
 #include <libHX/string.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxcgi/libvxcgi.h>
@@ -42,14 +42,17 @@ EXPORT_SYMBOL char *vxcgi_read_data(int argc, const char **argv)
 	return NULL;
 }
 
-EXPORT_SYMBOL struct HXbtree *vxcgi_split(char *str)
+EXPORT_SYMBOL struct HXmap *vxcgi_split(char *str)
 {
-	struct HXbtree *h = HXbtree_init(HXBT_MAP | HXBT_CKEY | HXBT_CDATA);
-	char *bufp = str, *ptr;
+	struct HXmap *map;
+	char *bufp, *ptr;
 
-	if (h == NULL || str == NULL)
-		return h;
+	map = HXmap_init(HXMAPT_DEFAULT, HXMAP_SCKEY | HXMAP_SCDATA);
+	if (map == NULL || str == NULL)
+		/* Yes, do return a map (albeit empty) if @str is %NULL. */
+		return map;
 
+	bufp = str;
 	while ((ptr = HX_strsep(&bufp, "&")) != NULL) {
 		const char *key = ptr;
 		char *val = strchr(ptr, '=');
@@ -59,9 +62,9 @@ EXPORT_SYMBOL struct HXbtree *vxcgi_split(char *str)
 			if (*val == '\0')
 				val = NULL;
 		}
-		HXbtree_add(h, key, val);
+		HXmap_add(map, key, val);
 	}
 
 	free(str);
-	return h;
+	return map;
 }

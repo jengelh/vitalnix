@@ -12,7 +12,7 @@ in CGI environments.</p>
 <br />
 <b>int</b> vxcgi_authenticate(<b>const char *</b>user, <b>const char *</b>password);<br />
 <b>char *</b>vxcgi_read_data(<b>int</b> argc, <b>const char **</b>argv);<br />
-<b>struct</b> HXbtree <b>*</b>vxcgi_split(<b>char *</b>str);
+<b>struct</b> HXmap <b>*</b>vxcgi_split(<b>char *</b>str);
 </code></p>
 
 <h2>vxcgi_authenticate</h2>
@@ -38,19 +38,19 @@ string is allocated and therefore must be freed at a later time.</p>
 
 <p class="block">Splits the string according to
 <i>application/x-www-form-urlencoded</i> rules and returns the key-value pairs
-in a <code>struct HXbtree</code>. The string must be writable, as it will be
+in a <code>struct HXmap</code>. The string must be writable, as it will be
 modified and freed. The caller should preferably duplicate it beforehand.</p>
 
 <h1>Example</h1>
 
-<p class="block">Here is how to quickly get a HXbtree out of the query
+<p class="block">Here is how to quickly get a HXmap out of the query
 string:</p>
 
-<p class="code"><code><b>struct</b> HXbtree <b>*</b>data <b>=</b>
+<p class="code"><code><b>struct</b> HXmap<b>*</b>data <b>=</b>
 vxcgi_split(vxcgi_read_data(argc, argv));</code></p>
 
 <p class="block">and to get the "user" parameter if the query string:</p>
 
-<p class="code"><code><b>char *</b>u <b>=</b> HXbtree_get(data, "user");</code></p>
+<p class="code"><code><b>char *</b>u <b>=</b> HXmap_get(data, "user");</code></p>
 
 <?php include_once("Base-footer.php"); ?>
