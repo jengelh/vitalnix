@@ -23,19 +23,30 @@ static const char *const algo_name[] = {
 
 int main(int argc, const char **argv)
 {
-	const char *salt = NULL;
+	const char *password, *salt = NULL;
 	unsigned int i;
-	char *p;
+	char pbuf[256];
+	char *hash;
 
-	if (argc >= 3)
+	if (argc == 1) {
+		*pbuf = '\0';
+		printf("Password: ");
+		fflush(stdout);
+		fgets(pbuf, sizeof(pbuf), stdin);
+		HX_chomp(pbuf);
+		password = pbuf;
+	} else if (argc == 2) {
+		password = argv[1];
+	} else if (argc >= 3) {
 		salt = argv[2];
+	}
 
-	printf("%-16s: %s\n", "Original", argv[1]);
+	printf("%-16s: %s\n", "Original", password);
 
 	for (i = 0; i < ARRAY_SIZE(algo_id); ++i) {
-		vxutil_phash(argv[1], salt, algo_id[i], &p);
-		printf("%-16s: %s\n", algo_name[i], p);
-		free(p);
+		vxutil_phash(password, salt, algo_id[i], &hash);
+		printf("%-16s: %s\n", algo_name[i], hash);
+		free(hash);
 	}
 
 	return EXIT_SUCCESS;
