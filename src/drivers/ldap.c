@@ -1,6 +1,6 @@
 /*
  *	ldap.c - LDAP back-end
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2006 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2006 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -125,6 +125,7 @@ static void vxldap_read_ldap_secret(const struct HXoptcb *cbi)
 		return;
 	*pw = HXmc_meminit(NULL, 0);
 	HX_getl(pw, fp);
+	HX_chomp(*pw);
 }
 
 static void vxldap_read_config(struct ldap_state *state, const char *file,
