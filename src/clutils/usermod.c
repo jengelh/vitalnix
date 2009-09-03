@@ -32,7 +32,7 @@ enum {
 };
 
 struct usermod_state {
-	char *username;
+	const char *username;
 	struct vxdb_user newstuff;
 	struct vxconfig_usermod config;
 	const char *database;
@@ -67,6 +67,7 @@ int main(int argc, const char **argv)
 		fprintf(stderr, "You need to specify a username!\n");
 		return E_OTHER;
 	}
+	state.username = argv[1];
 
 	if ((ret = usermod_run(&state)) != E_SUCCESS)
 		fprintf(stderr, "%s: %s\n", usermod_strerror(ret),
@@ -80,6 +81,7 @@ static int usermod_fill_defaults(struct usermod_state *sp)
 	struct vxdb_user *u = &sp->newstuff;
 	int ret;
 
+	memset(sp, 0, sizeof(*sp));
 	vxdb_user_nomodify(u);
 	sp->database = "*";
 	if ((ret = usermod_read_config(sp)) <= 0)
@@ -233,7 +235,6 @@ static int usermod_run2(struct vxdb_state *db, struct usermod_state *state)
 static int usermod_run3(struct vxdb_state *db, struct usermod_state *state)
 {
 	struct vxconfig_usermod *conf = &state->config;
-	struct vxdb_user modify_mask  = {};
 	int ret;
 
 	if ((ret = vxdb_getpwnam(db, state->username, NULL)) < 0)
@@ -246,7 +247,7 @@ static int usermod_run3(struct vxdb_state *db, struct usermod_state *state)
 	if (conf->user_premod != NULL)
 		vxutil_replace_run(conf->user_premod, state->sr_map);
 
-	if ((ret = vxdb_usermod(db, state->username, &modify_mask)) <= 0)
+	if ((ret = vxdb_usermod(db, state->username, &state->newstuff)) <= 0)
 		return E_UPDATE;
 
 	if (conf->user_postmod != NULL)
