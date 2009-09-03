@@ -169,6 +169,8 @@ static const char *usermod_strerror(int e)
 			return "Error";
 		case E_OPEN:
 			return "Could not load/open database";
+		case E_NO_EXIST:
+			return "User does not exist";
 		case E_NAME_USED:
 			return "User already exists";
 		case E_UID_USED:
