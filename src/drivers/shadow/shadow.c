@@ -73,7 +73,7 @@ static int vxshadow_open(struct vxdb_state *vp, unsigned int flags)
 	struct shadow_state *state = vp->state;
 	int ret;
 
-	if ((ret = db_open(state, flags & VXDB_WRLOCK)) <= 0) {
+	if ((ret = db_open(state, flags & (VXDB_ADMIN | VXDB_WRLOCK))) <= 0) {
 		vxshadow_close(vp);
 		return ret;
 	}

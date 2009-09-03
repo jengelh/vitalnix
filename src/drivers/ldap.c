@@ -246,7 +246,7 @@ static int vxldap_open(struct vxdb_state *vp, unsigned int flags)
 	ret = LDAP_MAXINT;
 	ret = ldap_set_option(state->conn, LDAP_OPT_SIZELIMIT, &ret);
 
-	if (flags & VXDB_WRLOCK) {
+	if (flags & (VXDB_ADMIN | VXDB_WRLOCK)) {
 		if (ret != LDAP_SUCCESS) {
 			ldap_perror(state->conn, "Could not raise LDAP search "
 			            "limit to maximum, but we need it!\n");

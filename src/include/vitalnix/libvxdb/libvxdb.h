@@ -29,11 +29,19 @@ enum {
 	VXDB_DFL_KEEPMIN = 0,
 	VXDB_DFL_KEEPMAX = 10000,
 	VXDB_DFL_WARNAGE = 21,
+};
 
-	/* Flags for vxdb_open() */
+/**
+ * %VXDB_ADMIN:	Access database with administrative read permissions
+ * 		(e.g. being able to read shadow passwords)
+ */
+enum {
 	VXDB_SYNC   = 1 << 0,
 	VXDB_WRLOCK = 1 << 1,
+	VXDB_ADMIN  = 1 << 2,
+};
 
+enum {
 	/* vxdb_modctl() commands */
 	VXDB_FLUSH,
 	VXDB_COUNT_USERS,
