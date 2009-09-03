@@ -1,6 +1,6 @@
 /*
  *	syncuser - Mass user synchronization
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -14,10 +14,10 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-#include <libHX/arbtree.h>
 #include <libHX/ctype_helper.h>
 #include <libHX/defs.h>
 #include <libHX/deque.h>
+#include <libHX/map.h>
 #include <libHX/option.h>
 #include <vitalnix/config.h>
 #include <vitalnix/libvxcli/libvxcli.h>
@@ -324,25 +324,25 @@ static void print_compare_output(const struct mdsync_workspace *mdsw)
 
 static void print_compare_output2(const struct mdsync_workspace *mdsw)
 {
-	const struct HXbtree_node *b;
+	const struct HXmap_node *b;
 	const struct HXdeque_node *d;
-	void *travp;
+	struct HXmap_trav *trav;
 
-	if ((travp = HXbtrav_init(mdsw->add_req)) != NULL) {
-		while ((b = HXbtraverse(travp)) != NULL) {
+	if ((trav = HXmap_travinit(mdsw->add_req, 0)) != NULL) {
+		while ((b = HXmap_traverse(trav)) != NULL) {
 			const struct vxeds_entry *entry = b->data;
 			printf("A   %s (%s)\n", entry->username,
 			       entry->full_name);
 		}
-		HXbtrav_free(travp);
+		HXmap_travfree(trav);
 	}
 
-	if ((travp = HXbtrav_init(mdsw->update_req)) != NULL) {
-		while ((b = HXbtraverse(travp)) != NULL) {
+	if ((trav = HXmap_travinit(mdsw->update_req, 0)) != NULL) {
+		while ((b = HXmap_traverse(trav)) != NULL) {
 			const struct vxdb_user *user = b->data;
 			printf("U   %s (%s)\n", user->pw_name, user->pw_real);
 		}
-		HXbtrav_free(travp);
+		HXmap_travfree(trav);
 	}
 
 	for (d = mdsw->defer_start->first; d != NULL; d = d->next)

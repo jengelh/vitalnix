@@ -1,6 +1,6 @@
 #
 #	configure.ac - gnu cold boilerplate
-#	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2007 - 2008
+#	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2007 - 2009
 #
 #	This file is part of Vitalnix. Vitalnix is free software; you
 #	can redistribute it and/or modify it under the terms of the GNU
@@ -67,7 +67,7 @@ AC_CHECK_MEMBERS(
 #
 #	openssl-devel, libxml-devel
 #
-PKG_CHECK_MODULES([libHX], [libHX >= 2.7])
+PKG_CHECK_MODULES([libHX], [libHX >= 3.0.1])
 PKG_CHECK_MODULES([libcrypto], [libcrypto >= 0.9.8])
 PKG_CHECK_MODULES([libxml], [libxml-2.0 >= 2.6])
 

@@ -1,6 +1,6 @@
 /*
  *	libvxmdfmt/extra.c
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -117,9 +117,10 @@ int compare_wbc(const char *str_a, const char *str_b)
 	return 0;
 }
 
-struct HXbtree *defcat_file_header(const struct pwlfmt_workspace *ws)
+struct HXformat_map *defcat_file_header(const struct pwlfmt_workspace *ws)
 {
-	struct HXbtree *ret;
+	struct HXformat_map *ret;
+
 	if ((ret = HXformat_init()) == NULL)
 		return NULL;
 	HXformat_add(ret, "INFILE",  ws->input_file,  HXTYPE_STRING);
@@ -128,10 +129,11 @@ struct HXbtree *defcat_file_header(const struct pwlfmt_workspace *ws)
 	return ret;
 }
 
-struct HXbtree *defcat_tbl_header(const struct pwlfmt_workspace *ws,
+struct HXformat_map *defcat_tbl_header(const struct pwlfmt_workspace *ws,
     const struct pwl_data *data)
 {
-	struct HXbtree *ret;
+	struct HXformat_map *ret;
+
 	if ((ret = HXformat_init()) == NULL)
 		return NULL;
 	HXformat_add(ret, "PVGROUP", data->pvgrp,     HXTYPE_STRING);
@@ -139,10 +141,11 @@ struct HXbtree *defcat_tbl_header(const struct pwlfmt_workspace *ws,
 	return ret;
 }
 
-struct HXbtree *defcat_tbl_entry(const struct pwlfmt_workspace *ws,
+struct HXformat_map *defcat_tbl_entry(const struct pwlfmt_workspace *ws,
     const struct pwl_data *data)
 {
-	struct HXbtree *ret;
+	struct HXformat_map *ret;
+
 	if ((ret = HXformat_init()) == NULL)
 		return NULL;
 	HXformat_add(ret, "PVGROUP",   data->pvgrp,      HXTYPE_STRING);

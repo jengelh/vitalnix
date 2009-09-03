@@ -1,6 +1,6 @@
 /*
  *	steelmill/wd_sync.cpp
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2005 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2005 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -17,8 +17,8 @@
 #endif
 #include <wx/spinctrl.h>
 #include <wx/statline.h>
-#include <libHX/arbtree.h>
 #include <libHX/deque.h>
+#include <libHX/map.h>
 #include <libHX/wx_helper.hpp>
 #include <vitalnix/libvxeds/libvxeds.h>
 #include <vitalnix/libvxeds/vtable.h>
@@ -443,13 +443,13 @@ void WD_SyncProg::Continue(wxCommandEvent &event)
 void WD_SyncProg::Details_Update(wxCommandEvent &event)
 {
 	GW_Listbox(this, wxEmptyString, listbox_fill_user,
-	           priv->mdsw->update_req->root, wxLB_SORT).ShowModal();
+	           priv->mdsw->update_req, wxLB_SORT).ShowModal();
 }
 
 void WD_SyncProg::Details_Add(wxCommandEvent &event)
 {
 	GW_Listbox(this, wxEmptyString, listbox_fill_eds,
-	           priv->mdsw->add_req->root, wxLB_SORT).ShowModal();
+	           priv->mdsw->add_req, wxLB_SORT).ShowModal();
 }
 
 void WD_SyncProg::Details_Defer_Start(wxCommandEvent &event)
@@ -528,42 +528,38 @@ template<class Object> static inline Object find_window(long n, wxWindow *w)
 
 static void listbox_fill_eds(wxListBox *lb, const void *user_ptr)
 {
-	const struct HXbtree_node *node;
+	const struct HXmap *map = static_cast<const struct HXmap *>(user_ptr);
+	const struct HXmap_node *node;
 	const struct vxeds_entry *e;
+	struct HXmap_trav *trav;
 	wxString s;
 
-	node = static_cast<const struct HXbtree_node *>(user_ptr);
-	if (node == NULL)
-		return;
+	trav = HXmap_travinit(map, 0);
+	while ((node = HXmap_traverse(trav)) != NULL) {
+		e = static_cast<const struct vxeds_entry *>(node->data);
+		s.Printf(wxT("%s (%s)"), wxfv8(e->username), wxfv8(e->full_name));
+		lb->Append(s);
+	}
 
-	e = static_cast<const struct vxeds_entry *>(node->data);
-	s.Printf(wxT("%s (%s)"), wxfv8(e->username), wxfv8(e->full_name));
-	lb->Append(s);
-
-	if (node->sub[0] != NULL)
-		listbox_fill_eds(lb, node->sub[0]);
-	if (node->sub[1] != NULL)
-		listbox_fill_eds(lb, node->sub[1]);
+	HXmap_travfree(trav);
 }
 
 static void listbox_fill_user(wxListBox *lb, const void *user_ptr)
 {
-	const struct HXbtree_node *node;
+	const struct HXmap *map = static_cast<const struct HXmap *>(user_ptr);
+	const struct HXmap_node *node;
 	const struct vxdb_user *u;
+	struct HXmap_trav *trav;
 	wxString s;
 
-	node = static_cast<const struct HXbtree_node *>(user_ptr);
-	if (node == NULL)
-		return;
+	trav = HXmap_travinit(map, 0);
+	while ((node = HXmap_traverse(trav)) != NULL) {
+		u = static_cast<const struct vxdb_user *>(node->data);
+		s.Printf(wxT("%s (%s)"), wxfv8(u->pw_name), wxfv8(u->pw_real));
+		lb->Append(s);
+	}
 
-	u = static_cast<const struct vxdb_user *>(node->data);
-	s.Printf(wxT("%s (%s)"), wxfv8(u->pw_name), wxfv8(u->pw_real));
-	lb->Append(s);
-
-	if (node->sub[0] != NULL)
-		listbox_fill_user(lb, node->sub[0]);
-	if (node->sub[1] != NULL)
-		listbox_fill_user(lb, node->sub[1]);
+	HXmap_travfree(trav);
 }
 
 static void release_priv(struct pv_sync *priv)

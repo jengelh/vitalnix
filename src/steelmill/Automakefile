@@ -25,7 +25,7 @@ steelmill_steelmill_CXXFLAGS = ${AM_CXXFLAGS} ${libwx_CFLAGS}
 steelmill_steelmill_LDADD    = ${libHX_LIBS} \
 	libvxeds/libvxeds.la libvxmdfmt/libvxmdfmt.la \
 	libvxmdsync/libvxmdsync.la libvxdb/libvxdb.la
-steelmill_steelmill_LDFLAGS  = ${libwx_LIBS}
+steelmill_steelmill_LDFLAGS  = ${AM_LDFLAGS} ${libwx_LIBS}
 
 steelmill/images.cpp: steelmill/images.hpp
 	${AM_V_GEN}

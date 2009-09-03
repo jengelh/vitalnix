@@ -1,6 +1,6 @@
 /*
  *	libvxutil/util.c - General functions
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -14,9 +14,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <libHX/arbtree.h>
 #include <libHX/ctype_helper.h>
 #include <libHX/defs.h>
+#include <libHX/map.h>
 #include <libHX/option.h>
 #include <libHX/string.h>
 #include <vitalnix/compiler.h>
@@ -178,7 +178,7 @@ EXPORT_SYMBOL char *vxutil_quote(const char *src, unsigned int type,
 }
 
 EXPORT_SYMBOL int vxutil_replace_run(const char *fmt,
-    const struct HXbtree *catalog)
+    const struct HXformat_map *catalog)
 {
 	hxmc_t *cmd = NULL;
 	int ret;

@@ -127,7 +127,7 @@ free(free_me);</code></p>
 <h1>Function: vxutil_replace_run()</h1>
 
 <p class="code"><code><b>int</b> vxutil_replace_run(<b>const char
-*</b><i>command</i>, <b>const struct</b> HXbtree
+*</b><i>command</i>, <b>const struct</b> HXformat_map
 <b>*</b><i>varmap</i>);</code></p>
 
 <p class="block">Replaces every occurrence of a <code>%{}</code>-tag in the

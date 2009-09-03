@@ -1,6 +1,6 @@
 /*
  *	libvxmdsync/read_file.c
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libHX/arbtree.h>
+#include <libHX/map.h>
 #include <libHX/string.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxeds/libvxeds.h>
@@ -55,7 +55,7 @@ EXPORT_SYMBOL int mdsync_read_file(struct mdsync_workspace *w,
 		entry->username = HX_strdup(vxutil_propose_lname(username,
 		                  sizeof(username), entry->surname,
 		                  entry->first_name));
-		HXbtree_add(w->add_req, entry->uuid, entry);
+		HXmap_add(w->add_req, entry->uuid, entry);
 	}
 
 	vxeds_close(state);

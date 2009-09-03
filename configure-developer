@@ -1,0 +1,26 @@
+#!/bin/bash -e
+
+echo -e "\e[1;31m""Reminder: You may want to add --sysconfdir=/etc/vitalnix if dealing with the software already installed as RPM.""\e[0m"
+
+top_srcdir="${0%/*}";
+if [[ "$top_srcdir" == "$0" ]]; then
+	top_srcdir=".";
+fi;
+abs_top_srcdir=$(readlink -f "$top_srcdir");
+
+echo "May take a while";
+if [[ ! -e "$top_srcdir/configure" ]]; then
+	pushd "$top_srcdir";
+	./autogen.sh;
+	popd;
+fi;
+
+cflags="-ggdb3";
+ldflags="";
+for i in "$PWD/src"/lib*; do
+	ldflags="$ldflags -Wl,-rpath,$i/.libs";
+done;
+
+exec "$top_srcdir/configure" CFLAGS="$cflags" CXXFLAGS="$cflags" \
+	LDFLAGS="$ldflags -lpthread" \
+	--libdir="$PWD/src/drivers/.libs" "$@";

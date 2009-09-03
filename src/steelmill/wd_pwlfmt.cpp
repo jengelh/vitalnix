@@ -1,7 +1,6 @@
 /*
  *	steelmill/wd_pwlfmt.cpp
- *	Copyright © CC Computer Consultants GmbH, 2005 - 2007
- *	Contact: Jan Engelhardt <jengelh [at] computergmbh de>
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2005 -2 009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU

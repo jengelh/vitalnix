@@ -1,6 +1,6 @@
 /*
  *	libvxmdsync/fixup.c
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -9,7 +9,7 @@
  */
 #include <stdio.h>
 #include <string.h>
-#include <libHX/arbtree.h>
+#include <libHX/map.h>
 #include <libHX/string.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxeds/libvxeds.h>
@@ -23,9 +23,9 @@ static inline char *format_name(const char *, unsigned int, char *, size_t);
 EXPORT_SYMBOL void mdsync_fixup(struct mdsync_workspace *w)
 {
 	unsigned int users_max, users_proc;
-	struct HXbtree_node *node;
+	const struct HXmap_node *node;
 	char tmp[MAX_LNAME+1];
-	void *travp;
+	struct HXmap_trav *trav;
 
 	if (w->add_req->items == 0)
 		return;
@@ -33,22 +33,22 @@ EXPORT_SYMBOL void mdsync_fixup(struct mdsync_workspace *w)
 	users_proc = 0;
 	users_max  = w->add_req->items;
 
-	travp = HXbtrav_init(w->add_req);
-	while ((node = HXbtraverse(travp)) != NULL) {
+	trav = HXmap_travinit(w->add_req, 0);
+	while ((node = HXmap_traverse(trav)) != NULL) {
 		struct vxeds_entry *entry = node->data;
 		unsigned int i = 0;
 
 		HX_strlcpy(tmp, entry->username, sizeof(tmp));
-		while (HXbtree_find(w->lnlist, tmp) != NULL)
+		while (HXmap_find(w->lnlist, tmp) != NULL)
 			format_name(entry->username, ++i, tmp, sizeof(tmp));
 		if (strcmp(entry->username, tmp) != 0)
 			HX_strclone(&entry->username, tmp);
-		HXbtree_add(w->lnlist, tmp);
+		HXmap_add(w->lnlist, tmp, NULL);
 		if (w->report != NULL)
 			w->report(MDREP_FIXUP, w, ++users_proc, users_max);
 	}
 
-	HXbtrav_free(travp);
+	HXmap_travfree(trav);
 }
 
 //-----------------------------------------------------------------------------

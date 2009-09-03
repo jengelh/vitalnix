@@ -11,3 +11,4 @@ libvxmdfmt_libvxmdfmt_la_SOURCES = \
 	libvxmdfmt/s_sb.c
 libvxmdfmt_libvxmdfmt_la_LIBADD = ${libHX_LIBS} libvxcore/libvxcore.la \
 	libvxutil/libvxutil.la
+libvxmdfmt_libvxmdfmt_la_LDFLAGS = ${AM_LDFLAGS} -version-info 1:0:0

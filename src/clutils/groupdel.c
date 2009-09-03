@@ -1,6 +1,6 @@
 /*
  *	groupdel - Group manipulation
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -36,7 +36,7 @@ enum {
 
 /* Functions */
 static int groupdel_main2(struct vxdb_state *);
-static int groupdel_main3(struct vxdb_state *, struct HXbtree *);
+static int groupdel_main3(struct vxdb_state *, struct HXformat_map *);
 static bool groupdel_check_pri_group(struct vxdb_state *, struct vxdb_group *);
 static bool groupdel_get_options(int *, const char ***);
 static bool groupdel_read_config(void);
@@ -83,7 +83,7 @@ int main(int argc, const char **argv)
 
 static int groupdel_main2(struct vxdb_state *db)
 {
-	struct HXbtree *ext_catalog;
+	struct HXformat_map *ext_catalog;
 	int ret;
 
 	if ((ret = vxdb_open(db, VXDB_WRLOCK)) <= 0) {
@@ -99,7 +99,8 @@ static int groupdel_main2(struct vxdb_state *db)
 	return ret;
 }
 
-static int groupdel_main3(struct vxdb_state *db, struct HXbtree *ext_catalog)
+static int groupdel_main3(struct vxdb_state *db,
+    struct HXformat_map *ext_catalog)
 {
 	struct vxdb_group group_info = {};
 	int ret;

@@ -1,6 +1,6 @@
 /*
  *	libvxmdsync/proc.c
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -15,8 +15,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
-#include <libHX/arbtree.h>
 #include <libHX/deque.h>
+#include <libHX/map.h>
 #include <libHX/misc.h>
 #include <libHX/option.h>
 #include <libHX/string.h>
@@ -50,13 +50,14 @@ static inline char *now_in_ymdhms(char *, size_t);
 EXPORT_SYMBOL void mdsync_compare(struct mdsync_workspace *w)
 {
 	const struct vxdb_group *grp = &w->dest_group;
-	const struct HXbtree_node *ln_node;
+	const struct HXmap_node *ln_node;
 	unsigned int users_proc, users_max, decision;
 	struct vxdb_user pwd = {};
 	struct vxeds_entry *eds;
 	bool analyze;
 	const unsigned int defer = w->config.add_opts.defaults.vs_defer;
 	void *travp;
+	int ret;
 
 	users_proc = 0;
 	users_max  = vxdb_modctl(w->database, VXDB_COUNT_USERS);
@@ -64,7 +65,14 @@ EXPORT_SYMBOL void mdsync_compare(struct mdsync_workspace *w)
 
 	while (vxdb_usertrav_walk(w->database, travp, &pwd)) {
 		/* Record username in @lnlist */
-		ln_node = HXbtree_add(w->lnlist, pwd.pw_name);
+		if ((ret = HXmap_add(w->lnlist, pwd.pw_name, NULL)) <= 0) {
+			fprintf(stderr, "%s: HXmap_add: %s\n",
+			        __func__, strerror(-ret));
+			abort();
+		}
+		ln_node = HXmap_find(w->lnlist, pwd.pw_name);
+		if (ln_node == NULL)
+			abort();
 		analyze = (grp->gr_gid != VXDB_NOGID && grp->gr_gid == pwd.pw_gid) ||
 		          (grp->gr_name != NULL && pwd.pw_igrp != NULL &&
 		          strcmp(grp->gr_name, pwd.pw_igrp) == 0);
@@ -78,10 +86,10 @@ EXPORT_SYMBOL void mdsync_compare(struct mdsync_workspace *w)
 		 * Users we look for (only specified group)
 		 */
 		if (pwd.vs_uuid != NULL &&
-		    (eds = HXbtree_get(w->add_req, pwd.vs_uuid)) != NULL) {
+		    (eds = HXmap_get(w->add_req, pwd.vs_uuid)) != NULL) {
 			/*
-			 * VXDB user found in EDS:
-			 * Keep, and remove from add_req
+			 * VXDB user also found in EDS:
+			 * Keep; and remove from @add_req
 			 */
 			decision = ACTION_UPDATE | ((pwd.vs_defer != 0) ?
 			           ACTION_DEFER_STOP : 0);
@@ -108,9 +116,9 @@ EXPORT_SYMBOL void mdsync_compare(struct mdsync_workspace *w)
 			if (strcmp(eds->pvgrp, pwd.vs_uuid) != 0) {
 				struct vxdb_user *copy = vxdb_user_dup(&pwd);
 				HXmc_strcpy(&copy->vs_pvgrp, eds->pvgrp);
-				HXbtree_add(w->update_req, copy->vs_uuid, copy);
+				HXmap_add(w->update_req, copy->vs_uuid, copy);
 			}
-			vxeds_free_entry(HXbtree_del(w->add_req, pwd.vs_uuid));
+			vxeds_free_entry(HXmap_del(w->add_req, pwd.vs_uuid));
 		}
 		if (decision & ACTION_DEFER_START)
 			HXdeque_push(w->defer_start, ln_node->key);
@@ -146,8 +154,8 @@ EXPORT_SYMBOL void mdsync_compare_simple(struct mdsync_workspace *w)
 
 	if (travp != NULL)
 		while (vxdb_usertrav_walk(w->database, travp, &pwd)) {
-			/* No invalid references later, thanks to %HXBT_CDATA */
-			HXbtree_add(w->lnlist, pwd.pw_name);
+			/* No invalid references later, thanks to %HXMAP_CKEY */
+			HXmap_add(w->lnlist, pwd.pw_name, NULL);
 			if (w->report != NULL)
 				w->report(MDREP_COMPARE, w, ++count, count_max);
 		}
@@ -158,11 +166,11 @@ EXPORT_SYMBOL void mdsync_compare_simple(struct mdsync_workspace *w)
 
 EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
 {
-	struct HXbtree *master_catalog = NULL, *user_catalog = NULL;
+	struct HXformat_map *master_catalog = NULL, *user_catalog = NULL;
 	struct mdsync_config *c = &w->config;
 	char home_path[MAXFNLEN], plain_pw[64];
 	unsigned int users_proc, users_max;
-	const struct HXbtree_node *node;
+	const struct HXmap_node *node;
 	struct vxdb_user chk = {};
 	struct vxdb_user out;
 	void *travp;
@@ -197,8 +205,8 @@ EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
 	if (c->new_pw_length >= sizeof(plain_pw))
 		c->new_pw_length = sizeof(plain_pw) - 1;
 
-	travp = HXbtrav_init(w->add_req);
-	while ((node = HXbtraverse(travp)) != NULL) {
+	travp = HXmap_travinit(w->add_req, 0);
+	while ((node = HXmap_traverse(travp)) != NULL) {
 		struct vxeds_entry *in = node->data;
 
 		vxdb_user_clean(&out);
@@ -277,7 +285,7 @@ EXPORT_SYMBOL int mdsync_add(struct mdsync_workspace *w)
 	}
 
 	memset(plain_pw, 0, sizeof(plain_pw));
-	HXbtrav_free(travp);
+	HXmap_travfree(travp);
 	vxdb_modctl(w->database, VXDB_FLUSH);
 	vxdb_user_free(&chk, false);
 
@@ -312,7 +320,7 @@ EXPORT_SYMBOL int mdsync_mod(struct mdsync_workspace *w)
 EXPORT_SYMBOL int mdsync_del(struct mdsync_workspace *w)
 {
 	/* Deleting the old users */
-	struct HXbtree *master_catalog = NULL, *user_catalog = NULL;
+	struct HXformat_map *master_catalog = NULL, *user_catalog = NULL;
 	const struct mdsync_config *c = &w->config;
 	unsigned int users_proc, users_max;
 	char current_date[MAXSNLEN];
@@ -399,13 +407,14 @@ EXPORT_SYMBOL int mdsync_del(struct mdsync_workspace *w)
 static int mdsync_update(struct mdsync_workspace *w)
 {
 	unsigned int users_proc = 0, users_max = w->update_req->items;
-	void *travp = HXbtrav_init(w->update_req);
+	void *travp;
 	struct vxdb_user mod_rq;
-	const struct HXbtree_node *node;
+	const struct HXmap_node *node;
 	const struct vxdb_user *act;
 	int ret;
 
-	while ((node = HXbtraverse(travp)) != NULL) {
+	travp = HXmap_travinit(w->update_req, 0);
+	while ((node = HXmap_traverse(travp)) != NULL) {
 		vxdb_user_nomodify(&mod_rq);
 		act = node->data;
 		mod_rq.vs_pvgrp   = act->vs_pvgrp;

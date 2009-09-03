@@ -1,7 +1,7 @@
 /*
  *	libvxmdfmt/s_sb.c - Form letter formatter (Seriendruck)
  *	by Christoph Thiel <cthiel1 [at] linux01 gwdg de>, 2002
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2002 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2002 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -18,8 +18,6 @@
 #include "libvxmdfmt/static-build.h"
 #include <vitalnix/libvxmdfmt/vtable.h>
 #include <vitalnix/libvxutil/libvxutil.h>
-
-struct HXbtree;
 
 static int sb_construct(struct pwlfmt_workspace *state)
 {
@@ -60,7 +58,7 @@ static void sb_file_header(const struct pwlfmt_workspace *state)
 static void sb_tbl_entry(const struct pwlfmt_workspace *state,
     const struct pwl_data *data)
 {
-	struct HXbtree *catalog = defcat_tbl_entry(state, data);
+	struct HXformat_map *catalog = defcat_tbl_entry(state, data);
 	HXformat_fprintf(catalog, state->output_fh, state->template_data);
 	fprintf(state->output_fh, "\\newpage\n");
 }

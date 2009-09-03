@@ -41,7 +41,7 @@ struct userdel_state {
 	struct vxconfig_userdel config;
 	const char *database;
 	unsigned int force, rm_cron, rm_home, rm_mail;
-	struct HXbtree *sr_map;
+	struct HXformat_map *sr_map;
 };
 
 /* Functions */

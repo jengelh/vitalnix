@@ -56,6 +56,3 @@ include clutils/Automakefile
 include devutil/Automakefile
 include lpacct/Automakefile
 include steelmill/Automakefile
-
-install-exec-hook:
-	chmod u+s ${DESTDIR}${sbindir}/vxtryauth

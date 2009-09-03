@@ -11,3 +11,4 @@ libvxutil_libvxutil_la_SOURCES += libvxutil/blowfish_x86.S
 endif
 
 libvxutil_libvxutil_la_LIBADD = ${libHX_LIBS} ${libcrypto_LIBS} -lcrypt
+libvxutil_libvxutil_la_LDFLAGS = ${AM_LDFLAGS} -version-info 1:0:0

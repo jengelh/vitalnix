@@ -1,6 +1,6 @@
 /*
  *	useradd - User manipulation
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <libHX/arbtree.h>
+#include <libHX/map.h>
 #include <libHX/misc.h>
 #include <libHX/option.h>
 #include <libHX/string.h>
@@ -40,7 +40,7 @@ struct useradd_state {
 	struct vxconfig_useradd config;
 	const char *database;
 	unsigned int allow_dup, force, sys_uid;
-	struct HXbtree *sr_map;
+	struct HXformat_map *sr_map;
 };
 
 /* Functions */

@@ -1,6 +1,6 @@
 /*
  *	groupadd - Group manipulation
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -35,7 +35,7 @@ enum {
 
 /* Functions */
 static int groupadd_main2(struct vxdb_state *);
-static int groupadd_main3(struct vxdb_state *, struct HXbtree *);
+static int groupadd_main3(struct vxdb_state *, struct HXformat_map *);
 static bool groupadd_get_options(int *, const char ***);
 static bool groupadd_read_config(void);
 static void groupadd_show_version(const struct HXoptcb *);
@@ -82,7 +82,7 @@ int main(int argc, const char **argv)
 
 static int groupadd_main2(struct vxdb_state *db)
 {
-	struct HXbtree *ext_catalog;
+	struct HXformat_map *ext_catalog;
 	int ret;
 
 	if ((ret = vxdb_open(db, VXDB_WRLOCK)) <= 0) {
@@ -98,7 +98,8 @@ static int groupadd_main2(struct vxdb_state *db)
 	return ret;
 }
 
-static int groupadd_main3(struct vxdb_state *db, struct HXbtree *ext_catalog)
+static int groupadd_main3(struct vxdb_state *db,
+    struct HXformat_map *ext_catalog)
 {
 	struct vxdb_group group_info;
 	int ret;

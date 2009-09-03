@@ -13,7 +13,7 @@
 extern "C" {
 #endif
 
-struct HXbtree;
+struct HXformat_map;
 
 struct pwl_data {
 	const char *pvgrp, *first_name, *surname, *username, *password;
@@ -23,10 +23,10 @@ struct pwl_data {
  *	EXTRA.C
  */
 extern int compare_wbc(const char *, const char *);
-extern struct HXbtree *defcat_file_header(const struct pwlfmt_workspace *);
-extern struct HXbtree *defcat_tbl_header(const struct pwlfmt_workspace *,
+extern struct HXformat_map *defcat_file_header(const struct pwlfmt_workspace *);
+extern struct HXformat_map *defcat_tbl_header(const struct pwlfmt_workspace *,
 	const struct pwl_data *);
-extern struct HXbtree *defcat_tbl_entry(const struct pwlfmt_workspace *,
+extern struct HXformat_map *defcat_tbl_entry(const struct pwlfmt_workspace *,
 	const struct pwl_data *);
 extern int pwlfmt_extra_whitespace(const char *);
 

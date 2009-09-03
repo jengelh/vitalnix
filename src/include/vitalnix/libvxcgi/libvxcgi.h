@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-struct HXbtree;
+struct HXmap;
 
 /*
  *	AUTH.C
@@ -17,7 +17,7 @@ extern int vxcgi_authenticate_ext(const char *, const char *, const char *);
  *	CGI.C
  */
 extern char *vxcgi_read_data(int, const char **);
-extern struct HXbtree *vxcgi_split(char *);
+extern struct HXmap *vxcgi_split(char *);
 
 #ifdef __cplusplus
 } /* extern "C" */

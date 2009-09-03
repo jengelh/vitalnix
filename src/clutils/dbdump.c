@@ -1,6 +1,6 @@
 /*
  *	dbdump - Dump database
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2004 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2004 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -52,7 +52,8 @@ static bool ldif_safe(const char *);
 static void show_version(const struct HXoptcb *);
 
 /* Variables */
-enum output_type_e Output_type = OUTPUT_SHADOW;
+static enum output_type_e Output_type = OUTPUT_SHADOW;
+static unsigned int Superuser_mode;
 
 static char *Database    = "*";
 static long Uid_range[2] = {0, LONG_MAX};
@@ -76,7 +77,7 @@ int main(int argc, const char **argv)
 		perror("Error loading database");
 		return EXIT_FAILURE;
 	}
-	if ((ret = vxdb_open(db, 0)) <= 0) {
+	if ((ret = vxdb_open(db, Superuser_mode ? VXDB_ADMIN : 0)) <= 0) {
 		vxdb_unload(db);
 		fprintf(stderr, "Error opening database: %s\n",
 		        strerror(-ret));
@@ -421,6 +422,8 @@ static bool get_options(int *argc, const char ***argv)
 	struct HXoption options_table[] = {
 		{.ln = "vxdb", .type = HXTYPE_STRING, .ptr = &Database,
 		 .help = "Use specified database", .htyp = "name"},
+		{.sh = 'S', .type = HXTYPE_NONE, .ptr = &Superuser_mode,
+		 .help = "Login with root DN"},
 		{.sh = 'V', .type = HXTYPE_NONE, .cb = show_version,
 		 .help = "Show version information"},
 		{.sh = 't', .type = HXTYPE_STRING, .cb = getopt_t,

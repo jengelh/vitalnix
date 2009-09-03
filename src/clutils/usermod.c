@@ -1,6 +1,6 @@
 /*
  *	usermod - User manipulation
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -32,12 +32,12 @@ enum {
 };
 
 struct usermod_state {
-	char *username;
+	const char *username;
 	struct vxdb_user newstuff;
 	struct vxconfig_usermod config;
 	const char *database;
 	unsigned int allow_dup, lock_account, move_home;
-	struct HXbtree *sr_map;
+	struct HXformat_map *sr_map;
 };
 
 /* Functions */
@@ -67,6 +67,7 @@ int main(int argc, const char **argv)
 		fprintf(stderr, "You need to specify a username!\n");
 		return E_OTHER;
 	}
+	state.username = argv[1];
 
 	if ((ret = usermod_run(&state)) != E_SUCCESS)
 		fprintf(stderr, "%s: %s\n", usermod_strerror(ret),
@@ -80,6 +81,7 @@ static int usermod_fill_defaults(struct usermod_state *sp)
 	struct vxdb_user *u = &sp->newstuff;
 	int ret;
 
+	memset(sp, 0, sizeof(*sp));
 	vxdb_user_nomodify(u);
 	sp->database = "*";
 	if ((ret = usermod_read_config(sp)) <= 0)
@@ -169,6 +171,8 @@ static const char *usermod_strerror(int e)
 			return "Error";
 		case E_OPEN:
 			return "Could not load/open database";
+		case E_NO_EXIST:
+			return "User does not exist";
 		case E_NAME_USED:
 			return "User already exists";
 		case E_UID_USED:
@@ -231,7 +235,6 @@ static int usermod_run2(struct vxdb_state *db, struct usermod_state *state)
 static int usermod_run3(struct vxdb_state *db, struct usermod_state *state)
 {
 	struct vxconfig_usermod *conf = &state->config;
-	struct vxdb_user modify_mask  = {};
 	int ret;
 
 	if ((ret = vxdb_getpwnam(db, state->username, NULL)) < 0)
@@ -244,7 +247,7 @@ static int usermod_run3(struct vxdb_state *db, struct usermod_state *state)
 	if (conf->user_premod != NULL)
 		vxutil_replace_run(conf->user_premod, state->sr_map);
 
-	if ((ret = vxdb_usermod(db, state->username, &modify_mask)) <= 0)
+	if ((ret = vxdb_usermod(db, state->username, &state->newstuff)) <= 0)
 		return E_UPDATE;
 
 	if (conf->user_postmod != NULL)

@@ -1,6 +1,6 @@
 /*
  *	groupmod - Group manipulation
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2009
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -39,7 +39,7 @@ enum {
 
 /* Functions */
 static int groupmod_main2(struct vxdb_state *);
-static int groupmod_main3(struct vxdb_state *, struct HXbtree *);
+static int groupmod_main3(struct vxdb_state *, struct HXformat_map *);
 static bool groupmod_get_options(int *, const char ***);
 static bool groupmod_read_config(void);
 static void groupmod_show_version(const struct HXoptcb *);
@@ -92,7 +92,7 @@ int main(int argc, const char **argv)
 
 static int groupmod_main2(struct vxdb_state *db)
 {
-	struct HXbtree *ext_catalog;
+	struct HXformat_map *ext_catalog;
 	int ret;
 
 	if ((ret = vxdb_open(db, VXDB_WRLOCK)) <= 0) {
@@ -108,7 +108,8 @@ static int groupmod_main2(struct vxdb_state *db)
 	return ret;
 }
 
-static int groupmod_main3(struct vxdb_state *db, struct HXbtree *ext_catalog)
+static int groupmod_main3(struct vxdb_state *db,
+    struct HXformat_map *ext_catalog)
 {
 	struct vxdb_group current = {}, mod_request;
 	int ret;
