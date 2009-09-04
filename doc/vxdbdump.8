@@ -1,0 +1,51 @@
+.TH "vxdbdump" "8" "2008-01-05" "Vitalnix" "Vitalnix User Management Suite"
+.SH "Name"
+.PP
+vxdbdump \(em database dump program
+.SH "Syntax"
+.PP
+\fBvxdbdump\fP [\fB\-\-vxdb\fP \fIdatabase\fP] [\fB\-t\fP
+{\fBldif\fP|\fBmysql\fP|\fBshadow\fP}] [\fB\-u\fP \fIfrom\fP\fB:\fP\fIto\fP]
+[\fB\-w\fP {\fBpasswd\fP,\fBshadow\fP,\fBvxshadow\fP,\fBgroup\fP}[\fB,\fP...]]
+.SH "Description"
+.PP
+\fBvxdbdump\fP dumps all users and groups from the VXDB. Although designed for
+debugging purposes, this utility can be used as a real dump utility with which
+the original database \fIcontent\fP (see below) can be restored. You can also
+use it to convert between databases.
+.PP
+\fBvxdbdump\fP can output the data in a number of formats, but the output is
+dependent on the capabilities of \fBvxdbdump\fP, so having an XYZ back-end
+module does not imply \fBvxdbdump\fP can produce output XYZ-style.
+.PP
+Note that \fBvxdbdump\fP does only allow you to reconstruct the database's
+content, not the table structure. In case of e.g. a MySQL database, this means
+that the table names, column names, column order, indexed fields, etc. are not
+stored, but whatever is hardcoded is taken as name/option. But the
+\fIcontent\fP remains the same, so if you plan to restore it using
+\fBvxdbdump\fP output, you would [only] have to change (in our MySQL case)
+/etc/nss\-mysql.conf*.
+.PP
+This "problem" with only retaining database content will not be fixated, as
+\fBvxdbdump\fP is not designed to be a restore helper. Use backup mechanisms
+provided by the database engine instead (mysqldump, slapcat, etc.).
+.SH "Options"
+.TP
+\fB\-\-vxdb\fP \fIdatabase\fP
+Uses the specified database rather than the default one defined in the VXDB
+configuration file.
+.TP
+\fB\-t\fP \fIformat\fP
+Output format of the dump. This may either be \fBldif\fP, \fBmysql\fP or
+\fBshadow\fP. Defaults to \fBshadow\fP.
+.TP
+\fB\-u\fP \fIstart\fP:\fIend\fP
+Limit dump to the UID range from \fIstart\fP to (inclusive) \fIend\fP. This
+does not limit groups when \fB\-w group\fP is used.
+.TP
+\fB\-w\fP \fIlist\fP[\fB,\fP...]
+Parts of the VXDB to dump, separated by comma. Possible parts are \fBpasswd\fP,
+\fBshadow\fP, \fBvxshadow\fP and \fBgroup\fP.
+.SH "See also"
+.PP
+\fBvitalnix\fP(7)

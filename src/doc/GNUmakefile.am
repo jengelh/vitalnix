@@ -2,10 +2,6 @@
 
 AUTOMAKE_OPTIONS = subdir-objects -Wno-portability
 
-man1_php = \
-	vxfinger.1.php \
-	vxid.1.php \
-	vxrandpw.1.php
 man3_php = \
 	libvxutil.3.php \
 	vxdb_getpwuid.3.php \
@@ -20,25 +16,9 @@ man7_php = \
 	vxdrv_mysql.7.php \
 	vxdrv_nss.7.php \
 	vxdrv_shadow.7.php
-man8_php = \
-	vxckuuid.8.php \
-	vxdbdump.8.php \
-	vxdbinfo.8.php \
-	vxfixuuid.8.php \
-	vxgroupadd.8.php \
-	vxgroupbld.8.php \
-	vxgroupdel.8.php \
-	vxgroupmod.8.php \
-	vxpwlfmt.8.php \
-	vxtryauth.8.php \
-	vxuseradd.8.php \
-	vxuserdel.8.php \
-	vxusermod.8.php
 
-man1_MANS = ${man1_php:.php=}
 man3_MANS = ${man3_php:.php=}
 man7_MANS = ${man7_php:.php=}
-man8_MANS = ${man8_php:.php=}
 noinst_DATA = \
 	${man1_php:.php=.html} ${man3_php:.php=.html} \
 	${man7_php:.php=.html} ${man8_php:.php=.html} \
@@ -50,17 +30,11 @@ build_man = \
 	${am__verbose_GEN}${top_builddir}/src/clutils/html2man \
 	-t "Vitalnix User Management Suite" -n $(1) -s $(2) $< >$@;
 
-%.1: %.1.php
-	$(call build_man,$*,1)
-
 %.3: %.3.php
 	$(call build_man,$*,3)
 
 %.7: %.7.php
 	$(call build_man,$*,7)
-
-%.8: %.8.php
-	$(call build_man,$*,8)
 
 .php.html:
 	${am__verbose_GEN}${PHP} -q $< man | ${PERL} -pe 's{href="([^/]*?)\.php"}{href="$$1.html"}' >$@;

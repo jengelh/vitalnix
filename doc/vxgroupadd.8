@@ -1,0 +1,44 @@
+.TH "vxgroupadd" "8" "2008-01-05" "Vitalnix" "Vitalnix User Management Suite"
+.SH "Name"
+.PP
+vxgroupadd \(em create a new group
+.SH "Syntax"
+.PP
+\fBvxgroupadd\fP [\fB\-\-after\fP \fIcommand\fP] [\fB\-\-before\fP
+\fIcommand\fP] [\fB\-\-vxdb\fP \fIdatabase\fP] [\fB\-g\fP \fIgid\fP
+[\fB\-o\fP]|\fB\-r\fP] \fIgroup\fP
+.SH "Description"
+.PP
+\fBvxgroupadd\fP will create a new group using the supplied parameters. The
+configuration file for it is /etc/vitalnix/groupadd.conf.
+.SH "Options"
+.TP
+\fB\-\-after\fP \fIcommand\fP
+Runs the specified command after the group was successfully added. If
+\-\-after is given, but with a zero-length command string, the default command
+in the configuration file is not run.
+.TP
+\fB\-\-before\fP \fIcommand\fP
+Runs the specified command before the group is added. It is run always, even if
+adding fails. If \-\-before is given, but with a zero-length command string,
+the default command in the configuration file is not run.
+.TP
+\fB\-\-vxdb\fP \fIdatabase\fP
+Uses the specified database rather than the default one listed in the VXDB
+configuration file.
+.TP
+\fB\-g\fP \fIgid\fP
+The numerical group identification number of the new group. The default is to
+assign the group the next greatest GID available. This option overrides \-r.
+.TP
+\fB\-o\fP
+If a group with the explicit GID given by \-g already exists, you can override
+the error message with this option, to create non-unique GIDs.
+.TP
+\fB\-r\fP
+Create a system group, that is, with a lower GID than the hardcoded default
+(100), or what is specified for MIN_GID in the autouid configuration file. The
+\-g option overrides this one.
+.SH "See also"
+.PP
+\fBvitalnix\fP(7), \fBvxgroupmod\fP(8), \fBvxgroupdel\fP(8)

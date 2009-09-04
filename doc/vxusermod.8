@@ -1,0 +1,93 @@
+.TH "vxusermod" "8" "2008-01-05" "Vitalnix" "Vitalnix User Management Suite"
+.SH "Name"
+.PP
+vxusermod \(em modify a user account
+.SH "Syntax"
+.PP
+\fBvxusermod\fP [\fB\-L\fP] [\fB\-\-after\fP \fIcommand\fP] [\fB\-\-before\fP
+\fIcommand\fP] [\fB\-\-vxdb\fP \fIdatabase\fP] [\fB\-A\fP
+\fIgroup\fP[\fB,\fP...]] [\fB\-G\fP \fIgroup\fP[\fB,\fP...]] [\fB\-R\fP
+\fIgroup\fP[\fB,\fP...]] [\fB\-c\fP \fIcomment\fP] [\fB\-d\fP \fIdirectory\fP
+[\fB\-m\fP]] [\fB\-e\fP \fIdate\fP] [\fB\-f\fP \fIinactive_days\fP] [\fB\-g\fP
+\fIprimary_group\fP] [\fB\-l\fP \fIlogin_name\fP] [\fB\-s\fP \fIshell\fP]
+[\fB\-u\fP \fIuid\fP [\fB\-o\fP]] \fIlogin\fP
+.SH "Description"
+.PP
+\fBusermod\fP updates the user's account with the information given on the
+command line. Not specified options will not change the corresponding account
+field.
+.PP
+If \-I is passed, the user is interactively asked for what parameters shall be
+changed, by presenting a default value, which he may either accept (by leaving
+the answer empty) or specifying a new value. The \-A, \-B, \-I, and \-M options
+are unique to Vitalnix. The configuration file for vxusermod is
+/etc/vitalnix/usermod.conf.
+.SH "Options"
+.TP
+\fB\-\-after\fP \fIcommand\fP
+Runs the specified command after the user was successfully added. If \-\-after
+is given, but with a zero-length command string, the default command in the
+configuration file is not run.
+.TP
+\fB\-\-before\fP \fIcommand\fP
+Runs the specified command before the user is added. It is run always, even if
+adding fails. If \-\-before is given, but with a zero-length command string,
+the default command in the configuration file is not run.
+.TP
+\fB\-\-vxdb\fP \fIdatabase\fP
+Uses the specified database rather than the default one listed in the VXDB
+configuration file.
+.TP
+\fB\-A\fP \fIgroup\fP[\fB,\fP...]
+Add the user into the listed secondary groups.
+.TP
+\fB\-G\fP \fIgroup\fP[\fB,\fP...]
+Set the user's list of secondary groups.
+.TP
+\fB\-L\fP
+Lock the user's account.
+.TP
+\fB\-R\fP \fIgroup\fP[\fB,\fP...]
+Remove the user from the listed secondary groups.
+.TP
+\fB\-U\fP
+Unlock the user's account.
+.TP
+\fB\-c\fP \fIcomment\fP
+Changes the comment (GECOS) field
+.TP
+\fB\-d\fP \fIdirectory\fP
+Changes the home directory. Also see the \-m option.
+.TP
+\fB\-e\fP \fIdate\fP
+The new date on which the user account will expire. (Valid format is
+YYYY-MM-DD.)
+.TP
+\fB\-f\fP \fIdays\fP
+The number of days which need to pass after a password expiration (which is not
+\-e!) until the account is locked down.
+.TP
+\fB\-g\fP \fIgroup\fP
+Changes the users initial (primary) group.
+.TP
+\fB\-l\fP \fIlogin\fP
+Changes the login name for the user, which must be unique.
+.TP
+\fB\-m\fP
+When \-d is given, specifying \-m will move data from the old home directory
+into the new one, necessarily creating the new directory if it does not exist
+yet.
+.TP
+\fB\-o\fP
+If a user with the explicit UID given by \-u already exists, you can override
+the error message with this option, to create non-unique UIDs.
+.TP
+\fB\-s\fP \fIshell\fP
+Changes the user's default shell.
+.TP
+\fB\-u\fP \fIuid\fP
+Changes the user's identification number. It must be unique, unless \-o is
+given.
+.SH "See also"
+.PP
+\fBvitalnix\fP(7), \fBvxuseradd\fP(8), \fBvxuserdel\fP(8)

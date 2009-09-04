@@ -1,0 +1,47 @@
+.TH "vxgroupmod" "8" "2008-01-05" "Vitalnix" "Vitalnix User Management Suite"
+.SH "Name"
+.PP
+vxgroupmod \(em modify a group
+.SH "Syntax"
+.PP
+\fBvxgroupmod\fP [\fB\-\-after\fP \fIcommand\fP] [\fB\-\-before\fP
+\fIcommand\fP] [\fB\-\-vxdb\fP \fIdatabase\fP] [\fB\-g\fP \fIgid\fP
+[\fB\-o\fP]] [\fB\-n\fP \fIgroup_name\fP] \fIgroup\fP
+.SH "Description"
+.PP
+\fBvxgroupmod\fP updates the group's info with the data given on the command
+line. Not specified options will not change the corresponding fields in the
+database. The configuration file for vxgroupmod is /etc/vitalnix/groupmod.conf.
+.PP
+Note that after changing the GID of a group, there might be objects left in the
+filesystem which you should pay attention to with respect to the GID owner. A
+future group may get the original GID and get accidental access to files.
+.SH "Options"
+.TP
+\fB\-\-after\fP \fIcommand\fP
+Runs the specified command after the group was successfully added. If \-\-after
+is given, but with a zero-length command string, the default command in the
+configuration file is not run.
+.TP
+\fB\-\-before\fP \fIcommand\fP
+Runs the specified command before the group is added. It is run always, even if
+adding fails. If \-\-before is given, but with a zero-length command string,
+the default command in the configuration file is not run.
+.TP
+\fB\-\-vxdb\fP \fIdatabase\fP
+Uses the specified database rather than the default one listed in the VXDB
+configuration file.
+.TP
+\fB\-g\fP \fIgid\fP
+Changes the group's identification number. It must be unique, unless \-o is
+given.
+.TP
+\fB\-n\fP \fIname\fP
+Changes the group's name, which must be unique.
+.TP
+\fB\-o\fP
+If a group with the explicit GID given by \-g already exists, you can override
+the error message with this option, to create non-unique GIDs.
+.SH "See also"
+.PP
+\fBvitalnix\fP(7), \fBvxgroupadd\fP(8), \fBvxgroupdel\fP(8)

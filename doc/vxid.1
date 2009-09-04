@@ -1,0 +1,22 @@
+.TH "vxid" "1" "2008-01-05" "Vitalnix" "Vitalnix User Management Suite"
+.SH "Name"
+.PP
+vxid \(em print user identity
+.SH "Syntax"
+.PP
+\fBvxid\fP [\fB\-\-vxdb\fP \fIdatabase\fP] [\fIuser\fP]
+.SH "Description"
+.PP
+\fBvxid\fP will print basic UID/GID information about the specified user, who
+may either be adressed by username or numeric UID.
+.PP
+If no \fIuser\fP argument is given, \fBvxid\fP will print the current UID/GID
+sets.
+.SH "Options"
+.TP
+\fB\-\-vxdb\fP \fIdatabase\fP
+Uses the specified database rather than the default one defined in the VXDB
+configuration file.
+.SH "See also"
+.PP
+\fBvitalnix\fP(7), \fBvxfinger\fP(1)

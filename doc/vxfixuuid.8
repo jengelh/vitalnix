@@ -1,0 +1,40 @@
+.TH "vxfixuuid" "8" "2008-01-05" "Vitalnix" "Vitalnix User Management Suite"
+.SH "Name"
+.PP
+vxfixuuid \(em VX3 UUID correction utility
+.SH "Syntax"
+.PP
+\fBvxfixuuid\fP [\fB\-\-vxdb\fP \fIdatabase\fP] [\fB\-b\fP \fIdate\fP]
+[\fB\-r\fP \fIname\fP] \fB\-u\fP \fIusername\fP
+.SH "Description"
+.PP
+The \fBvxfixuuid\fP utility is used to regenerate the Vitalnix UUID of a user
+when the data that was used to generate the UUID has changed, mostly due to
+typographic fixes. If the UUID was not corrected by the time the user database
+is synchronized again to the External Data Source (e.g. using
+\fBvxusersync\fP(8)), the user will be deleted and instantly be readded with a
+new username, new password and fresh home directory.
+.PP
+When no UUID is provided by the External Data Source, as is the case with
+Kolleg/SDF, the UUID is generated from the birthdate and the real name, so if
+either change upstream, the UUID needs to be adjusted. If the External Data
+Source \fIdoes\fP already provide a UUID, then there is no problem.
+.SH "Options"
+.TP
+\fB\-\-vxdb\fP \fIdatabase\fP
+Uses the specified database rather than the default one defined in the VXDB
+configuration file.
+.TP
+\fB\-b\fP \fIdate\fP
+The new birthdate of the user
+.TP
+\fB\-r\fP \fIname\fP
+The new realname of the user
+.TP
+\fB\-u\fP \fIuser\fP
+The user to modify
+.PP
+At least one of \-b or \-r option needs to be specified.
+.SH "See also"
+.PP
+\fBvitalnix\fP(7), \fBvxckuuid\fP(8)

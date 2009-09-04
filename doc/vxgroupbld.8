@@ -1,0 +1,51 @@
+.TH "vxgroupbld" "8" "2008-01-05" "Vitalnix" "Vitalnix User Management Suite"
+.SH "Name"
+.PP
+vxgroupbld \(em group membership synchronization
+.SH "Syntax"
+.PP
+\fBvxgroupbld\fP [\fB\-qv\fP] [\fB\-\-vxdb\fP \fIdatabase\fP] [\fB\-G\fP
+\fIgroup\fP] [\fB\-p\fP \fIprefix\fP]
+.SH "Description"
+.PP
+\fBvxgroupbld\fP updates the system (UNIX) group membership of all users that
+have a Vitalnix group tag, and moves them from their current
+Vitalnix-UNIX-Group (VUG) to the new VUG that matches the Vitalnix group tag.
+\fBvxgroupbld\fP will create the new VUG if necessary. The VUGs can then be
+used for filesystem permissions, for example.
+.PP
+VUGs are generally prefixed with a fixed string so as to distinguish them from
+regular UNIX groups. The default prefix is vg\-, which allows the Vitalnix
+group to start with a number. For example, if it was 10NK, the VUG would be
+called vg\-10NK. \fBNOTE: Using a potentially ambiguous or no prefix will
+obviously cause users to lose membership in secondary groups\fP, because
+vxgroupbld operates on all secondary groups that have this prefix.
+.PP
+\fBvxgroupbld\fP is typically used after updating the Vitalnix group tag;
+running it after vxusersync is a common case, e.g. when students move up one
+grade.
+.SH "Options"
+.TP
+\fB\-\-vxdb\fP \fIdatabase\fP
+Uses the specified database rather than the default one defined in the VXDB
+configuration file.
+.TP
+\fB\-G\fP \fIgroup\fP
+Only operate on users which have \fIgroup\fP as their primary group. This can
+either be a group's name or its GID.
+.TP
+\fB\-p\fP \fIprefix\fP
+Prefix to use for VUGs. The default is vg\-.
+.TP
+\fB\-q\fP
+Quiet operation. This is the default.
+.TP
+\fB\-v\fP
+Verbose operation. This will print progress information messages every second.
+.SH "Exit status"
+.PP
+\fBvxgroupbld\fP will return 0 if all operations completed successfully. On
+error, it will abort right away and returns non-zero.
+.SH "See also"
+.PP
+\fBvitalnix\fP(7)

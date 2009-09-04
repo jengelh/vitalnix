@@ -1,0 +1,26 @@
+.TH "vxdbinfo" "8" "2008-01-05" "Vitalnix" "Vitalnix User Management Suite"
+.SH "Name"
+.PP
+vxdbinfo \(em database module information program
+.SH "Syntax"
+.PP
+\fBvxdbinfo\fP [\fB\-O\fP] [\fB\-L\fP \fIdir\fP]
+.SH "Description"
+.PP
+\fBvxdbinfo\fP will load all backend modules and print their descriptive name,
+description, and author. When used with the \-O option, the database(s) are
+opened (in read\-only mode) and closed too. It is basically just an information
+and debugging tool. You can specify additional search directories for backend
+modules using the \-L option, e.g.:
+.PP
+vxdbinfo \-L /usr/local/lib \-L ~/lib
+.SH "Options"
+.TP
+\fB\-L\fP \fIdir\fP
+Search this directory for Vitalnix database modules too.
+.TP
+\fB\-O\fP
+Do not just load the database modules, but also call the vxdb_open(3) function.
+.SH "See also"
+.PP
+\fBvitalnix\fP(7), \fBvxdbdump\fP(8)

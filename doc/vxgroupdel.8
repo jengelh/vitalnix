@@ -1,0 +1,41 @@
+.TH "vxgroupdel" "8" "2008-01-05" "Vitalnix" "Vitalnix User Management Suite"
+.SH "Name"
+.PP
+vxgroupdel \(em delete a group
+.SH "Syntax"
+.PP
+\fBvxgroupdel\fP [\fB\-F\fP] [\fB\-\-after\fP \fIcommand\fP] [\fB\-\-before\fP
+\fIcommand\fP] [\fB\-\-vxdb\fP \fIdatabase\fP] \fIgroup\fP
+.SH "Description"
+.PP
+\fBvxgroupdel\fP deletes the specified group, but will take care for whether
+any use has that group as a primary group set. All options provided are unique
+to Vitalnix. The configuration file for vxgroupdel is
+/etc/vitalnix/groupdel.conf.
+.PP
+Note that after deletion of a group, there might be objects left in the
+filesystem which have the just deleted group's GID as group owner. One should
+look after these files and adjust their group membership (if applicable), to
+avoid the case that a future group will accidentally get access because it has
+the same GID as the previous group.
+.SH "Options"
+.TP
+\fB\-\-after\fP \fIcommand\fP
+Runs the specified command after the group was successfully added. If
+\-\-after is given, but with a zero-length command string, the default command
+in the configuration file is not run.
+.TP
+\fB\-\-before\fP \fIcommand\fP
+Runs the specified command before the group is added. It is run always, even if
+adding fails. If \-\-before is given, but with a zero-length command string,
+the default command in the configuration file is not run.
+.TP
+\fB\-\-vxdb\fP \fIdatabase\fP
+Uses the specified database rather than the default one listed in the VXDB configuration file.
+.TP
+\fB\-F\fP
+\fBvxgroupdel\fP will, by default, not delete any groups, of which a user is a
+primary member of. \-F forces to delete the group.
+.SH "See also"
+.PP
+\fBvitalnix\fP(7), \fBvxgroupadd\fP(8), \fBvxgroupmod\fP(8)

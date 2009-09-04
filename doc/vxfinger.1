@@ -1,0 +1,30 @@
+.TH "vxfinger" "1" "2008-01-05" "Vitalnix" "Vitalnix User Management Suite"
+.SH "Name"
+.PP
+vxfinger \(em user information lookup program
+.SH "Syntax"
+.PP
+\fBvxfinger\fP [\fB\-Igi\fP] [\fB\-\-vxdb\fP \fIdatabase\fP] \fIsubstring\fP
+.SH "Description"
+.PP
+\fBvxfinger\fP greps through the VXDB searching for \fIsubstring\fP in either
+the username, numeric UID or real name and displays matching results.
+Additionally, it prints information about logged-in status and mailbox, like
+the original \fBfinger\fP(1) utility.
+.SH "Options"
+.TP
+\fB\-\-vxdb\fP \fIdatabase\fP
+Uses the specified database configuration rather than the default one.
+.TP
+\fB\-I\fP
+Use case-sensitive matching
+.TP
+\fB\-g\fP
+Match the full GECOS field (instead of just the first part until the first
+comma) and also display it in full.
+.TP
+\fB\-i\fP
+Use case-insensitive matching (this is the default)
+.SH "See also"
+.PP
+\fBvitalnix\fP(7), \fBvxid\fP(1)

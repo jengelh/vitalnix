@@ -1,0 +1,99 @@
+.TH "vxuseradd" "8" "2008-01-05" "Vitalnix" "Vitalnix User Management Suite"
+.SH "Name"
+.PP
+useradd \(em create a new user
+.SH "Syntax"
+.PP
+\fBvxuseradd\fP [\fB\-\-after\fP \fIcommand\fP] [\fB\-\-before\fP
+\fIcommand\fP] [\fB\-\-vxdb\fP \fIdatabase\fP] [\fB\-G\fP
+\fIgroup\fP[\fB,\fP...]] [\fB\-S\fP \fIlevel\fP] [\fB\-c\fP \fIcomment\fP]
+[\fB\-d\fP \fIhome_dir\fP] [\fB\-e\fP \fIdate\fP] [\fB\-f\fP \fIdays\fP]
+[\fB\-g\fP \fIgroup\fP] [\fB\-m\fP [\fB\-k\fP \fIskel_dir\fP]] [\fB\-s\fP
+\fIshell\fP] [\fB\-u\fP \fIuid\fP [\fB\-o\fP]|\fB\-r\fP] \fIusername\fP
+.SH "Description"
+.PP
+\fBvxuseradd\fP will create a new user using the supplied parameters. The
+configuration file for it is /etc/vitalnix/useradd.conf.
+.SH "Options"
+.TP
+\fB\-\-after\fP \fIcommand\fP
+Runs the specified command after the user was successfully added. If
+\fB\-\-after\fP is given, but with a zero-length command string, the default
+command in the configuration file is not run.
+.TP
+\fB\-\-before\fP \fIcommand\fP
+Runs the specified command before the user is added. It is run always, even if
+adding fails. If \fB\-\-before\fP is given, but with a zero-length command
+string, the default command in the configuration file is not run.
+.TP
+\fB\-\-vxdb\fP \fIdatabase\fP
+Uses the specified database rather than the default one listed in the VXDB
+configuration file.
+.TP
+\fB\-G\fP \fIgroup\fP[\fB,\fP...]
+The supplemental (secondary) groups the user should be a member in, separated
+by comma. \fIgroup\fP can either be the group's name or its GID.
+.TP
+\fB\-S\fP
+Uses the "split home" feature. This will create the home directory as
+/home/u/username rather than the default /home/username. Specifying \-S twice
+(which is the maximum) will result in a two-level split, i.e.
+/home/u/us/username. The \-d option overrides this one.
+.TP
+\fB\-c\fP \fIcomment\fP
+The comment field for the new user. It can be in turn again split up in fields,
+separated by comma. Usually, the real name of the user is stored in the first
+field, the others are left for other commentary or data.
+.TP
+\fB\-d\fP \fIdir\fP
+The new user will get \fIdir\fP as his home directory. This option alone does
+not create his home directory, but rather only writes that directory
+information into the user database. You usually want to pass \-m also along to
+create the directory. This option overrides \-S.
+.TP
+\fB\-e\fP \fIdate\fP
+Date on which the account expires. Date formats must be YYYY-MM-DD. The default
+is to not let the account expire.
+.TP
+\fB\-f\fP \fIdays\fP
+The number of days which need to pass after a password expiration (that is not
+\-e!) until the account is locked down.
+.TP
+\fB\-g\fP \fIgroup\fP
+The group name or number of the user's initial (primary) group. \fIgroup\fP can
+either be the group's name or its GID.
+.TP
+\fB\-k\fP \fIdir\fP
+The skeleton directory to use for the new user. Contents from this directory
+will be copied into the user's.
+.TP
+\fB\-m\fP
+Create the user's home directory. The default is to create a directory called
+the same name as the user in /home, or what you specified as HOME in the
+configuration file, or if you passed \-S or \-d. If this option is given, an
+implicit \-k /etc/skel (or SKEL) takes effect, unless an explicit \-k is
+specified.
+.TP
+\fB\-o\fP
+If a user with the explicit UID given by \-u already exists, you can override
+the error message with this option, to create non-unique UIDs.
+.TP
+\fB\-p\fP \fIpass\fP
+The password to use for the new user. It must already be encrypted when passed
+with \-p.
+.TP
+\fB\-r\fP
+Create a system user, that is, with a lower UID than the hardcoded default
+(100), or what is specified for MIN_UID in the autouid configuration file. The
+\-u option overrides this one.
+.TP
+\fB\-s\fP \fIshell\fP
+Use shell as the default command interpreter for the new user. The default is
+/bin/bash or whatever you specified as SHELL in the configuration file.
+.TP
+\fB\-u\fP \fIuid\fP
+The numerical user id of the new user. The default is to assign the user the
+next greatest UID. This option overrides \-r.
+.SH "See also"
+.PP
+\fBvitalnix\fP(7), \fBvxusermod\fP(8), \fBvxuserdel\fP(8)

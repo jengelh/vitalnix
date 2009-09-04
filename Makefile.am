@@ -2,7 +2,7 @@
 
 ACLOCAL_AMFLAGS  = -I m4
 AUTOMAKE_OPTIONS = foreign subdir-objects
-SUBDIRS          = etc share src
+SUBDIRS          = doc etc share src
 
 pkgconfig_DATA = vitalnix.pc
 

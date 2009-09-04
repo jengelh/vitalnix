@@ -1,0 +1,29 @@
+.TH "vxtryauth" "8" "2008-01-05" "Vitalnix" "Vitalnix User Management Suite"
+.SH "Name"
+.PP
+vxtryauth \(em command-line interface to authenticate with PAM
+.SH "Syntax"
+.PP
+\fBvxtryauth\fP [\fB\-v\fP]
+.SH "Description"
+.PP
+\fIvxtryauth\fP is a helper utility for programs and/or scripts which do not
+have intermediate access to the libvxdb C API, but still want to authenticate a
+user. \fBvxtryauth\fP accepts the username and password on standard input and
+the exit status contains the result of the authentication.
+.PP
+vxtryauth needs to be setuid to function properly. By default, the SUID bit is
+not enabled.
+.SH "Options"
+.TP
+\fB\-v\fP
+Print error messages, should an error happen.
+.SH "Exit status"
+.PP
+0 is returned on success, 127 if there was a problem during option parsing, or
+any other value indicating the PAM error code. If the \-v option is specified,
+additional error messages \(em if any \(em will be printed to the standard
+error file descriptor (stderr).
+.SH "See also"
+.PP
+\fBvitalnix\fP(7)

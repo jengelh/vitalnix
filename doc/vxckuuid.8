@@ -1,0 +1,57 @@
+.TH "vxckuuid" "8" "2008-01-05" "Vitalnix" "Vitalnix User Management Suite"
+.SH "Name"
+.PP
+vxckuuid \(em EDS UUID discrepancy checker
+.SH "Syntax"
+.PP
+\fBvxckuuid\fP [\fB\-\-vxdb\fP \fIdatabase\fP] [\fB\-T\fP \fIlimit\fP]
+\fB\-i\fP \fIfile\fP [\fB\-t\fP \fItype\fP]
+.SH "Description"
+.PP
+\fBvxckuuid\fP will help find minimal differences between EDS and VXDB users.
+Such changes are often corrections of user data (i.e. fixing typos) on the EDS
+side. However, libvxmdsync (used by \fBvxusersync\fP(8) and \fBsteelmill\fP(8))
+regards every EDS difference as a old/new user (delete/create). Since it is
+impossible to say whether an EDS change is just a typo or a new user, manual
+user intervention is required, usually by utilizing \fBvxfixuuid\fP(8) and/or
+\fBvxusermod\fP(8), adjusting the VXDB with the new EDS data, before running
+\fBvxusersync\fP(8).
+.SH "Options"
+.TP
+\fB\-\-vxdb\fP \fIdatabase\fP
+Uses the specified database rather than the default one defined in the VXDB
+configuration file.
+.TP
+\fB\-T\fP \fIlimit\fP
+Omit displaying comparisons where the computed distance is larger than
+\fIlimit\fP. Defaults to 1000.
+.TP
+\fB\-i\fP \fIfile\fP
+External Data Source input file
+.TP
+\fB\-t\fP \fItype\fP
+External Data Source type
+.SH "Description, continued"
+.PP
+In External Data Source formats where no external UUID is provided, Vitalnix
+has to generate one. This generated UUID is based upon the user's real name, so
+if the real name received a typo fix, the UUID changes and triggers a
+new-user-discovered event in libvxmdsync. Hence you use vxfixuuid to not cause
+this event in the first place.
+.PP
+Note about complexity: vxckuuid will take linear time (O(\fIm\fP*\fIn\fP)) to
+calculate difference between \fIm\fP EDS and \fIn\fP VXDB users.
+.PP
+vxckuuid will display each EDS-VXDB user pair, sorted by smallest difference,
+up to the difference limit given by the \-T option. Output will look like:
+.PP
+[   1]: \- \fIEDS_Computed_UUID\fP  \fIEDS_User_Realname\fP
+.sp 0
+ 0/1/1: + \fIVXDB_Stored_UUID \fP  \fIVXDB_User_Realname\fP 
+.PP
+The number in square brackets gives the total distance. The other three numbers
+denote UUID distance, Name distance and weighthing factor. The exact algorithm
+can be obtained from the ckuuid.c source code.
+.SH "See also"
+.PP
+\fBvitalnix\fP(7), \fBvxfixuuid\fP(8), \fBvxusermod\fP(8), \fBvxusersync\fP(8)

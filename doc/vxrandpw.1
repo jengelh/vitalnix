@@ -1,0 +1,51 @@
+.TH "vxrandpw" "1" "2008-01-05" "Vitalnix" "Vitalnix User Management Suite"
+.SH "Name"
+.PP
+vxrandpw \(em generate random password
+.SH "Syntax"
+.PP
+\fBvxrandpw\fP [\fB\-01BCDJMZcr\fP] [\fB\-l\fP \fIlength\fP]
+.SH "Description"
+.PP
+\fBvxrandpw\fP is an interface to the Vitalnix password generator. The password
+is output once in plain and once in encrypted form. Various flags control the
+generation and encryption behavior.
+.SH "Options"
+.SS "Generation"
+.TP
+\fB\-0\fP
+Possibly have a digit in the password.
+.TP
+\fB\-1\fP
+Always have a digit in the password.
+.TP
+\fB\-C\fP
+Always have an uppercase character in the password.
+.TP
+\fB\-J\fP
+Use "GENPW_JP" generation method.
+.TP
+\fB\-Z\fP
+Use "GENPW_ZH" generation method.
+.TP
+\fB\-c\fP
+Possibly have an uppercase character in the password.
+.TP
+\fB\-l\fP \fIlength\fP
+Password length
+.TP
+\fB\-r\fP
+Use "random" generation method.
+.SS "Encryption"
+.TP
+\fB\-B\fP
+Use Blowfish encryption
+.TP
+\fB\-D\fP
+Use DES encryption (this might not be available on all platforms)
+.TP
+\fB\-M\fP
+Use MD5 encryption (this might not be available on all platforms)
+.SH "See also"
+.PP
+\fBvitalnix\fP(7)

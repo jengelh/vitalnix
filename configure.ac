@@ -141,6 +141,6 @@ else
 	ln -s ../../../config.h src/include/vitalnix/config.h;
 fi;
 
-AC_CONFIG_FILES([Makefile etc/Makefile share/Makefile src/Makefile
+AC_CONFIG_FILES([Makefile doc/Makefile etc/Makefile share/Makefile src/Makefile
 	src/doc/GNUmakefile src/include/Makefile vitalnix.pc])
 AC_OUTPUT

@@ -1,0 +1,37 @@
+.TH "vxuserdel" "8" "2008-01-05" "Vitalnix" "Vitalnix User Management Suite"
+.SH "Name"
+.PP
+vxuserdel \(em delete a user account
+.SH "Syntax"
+.PP
+\fBvxuserdel\fP [\fB\-Fr\fP] [\fB\-\-after\fP \fIcommand\fP] [\fB\-\-before\fP
+\fIcommand\fP] [\fB\-\-vxdb\fP \fIdatabase\fP] \fIlogin\fP
+.SH "Description"
+.PP
+\fBvxuserdel\fP deletes the specified user. The configuration file for
+vxuserdel is /etc/vitalnix/userdel.conf.
+.SH "Options"
+.TP
+\fB\-\-after\fP \fIcommand\fP
+Runs the specified command after the user was successfully added. If \-\-after
+is given, but with a zero\-length command string, the default command in the
+configuration file is not run.
+.TP
+\fB\-\-before\fP \fIcommand\fP
+Runs the specified command before the user is added. It is run always, even if
+adding fails. If \-\-before is given, but with a zero-length command string,
+the default command in the configuration file is not run.
+.TP
+\fB\-\-vxdb\fP \fIdatabase\fP
+Uses the specified database rather than the default one listed in the VXDB
+configuration file.
+.TP
+\fB\-F\fP
+Force deletion even if UID is zero or the username is "root".
+.TP
+\fB\-r\fP
+Removes the user's home directory including files located therein and its mail
+spool (assuming /var/mail/\fIuser\fP).
+.SH "See also"
+.PP
+\fBvitalnix\fP(7), \fBvxuseradd\fP(8), \fBvxusermod\fP(8)
