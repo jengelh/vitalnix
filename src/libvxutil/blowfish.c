@@ -5,7 +5,7 @@ libvxutil/blowfish.c - blowfish crypt algorithm
 #include <vitalnix/compiler.h>
 #include "libvxutil/blowfish.h"
 
-// This is crypt_blowfish-1.0.2.
+// This is crypt_blowfish-1.0.3.
 
 /* ----------------------------------------------------------------------------
  * This code comes from John the Ripper password cracker, with reentrant
