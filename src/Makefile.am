@@ -1,6 +1,5 @@
 # -*- Makefile -*-
 
-AUTOMAKE_OPTIONS = subdir-objects
 BUILT_SOURCES =
 CLEANFILES =
 
