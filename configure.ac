@@ -38,15 +38,6 @@ AC_CHECK_HEADERS([cups/backend.h ldap.h])
 AM_CONDITIONAL([HAVE_CUPS], [test "$ac_cv_header_cups_backend_h" == "yes"])
 AM_CONDITIONAL([HAVE_LDAP], [test "$ac_cv_header_ldap_h" == "yes"])
 
-#
-#	doc
-#
-AC_PATH_PROGS([PERL], [perl perl5])
-AC_PATH_PROGS([PHP], [php php5])
-
-AM_CONDITIONAL([GOT_TOOLS_FOR_DOC],
-	[$am_make -v | grep -q GNU && test -n "$PERL" -a -n "$PHP"])
-
 regular_CFLAGS="-D_FILE_OFFSET_BITS=64 \
 	-D_REENTRANT -Wall -Waggregate-return -Wmissing-declarations \
 	-Wmissing-prototypes -Wredundant-decls -Wshadow -Wstrict-prototypes \
@@ -142,5 +133,5 @@ else
 fi;
 
 AC_CONFIG_FILES([Makefile doc/Makefile etc/Makefile share/Makefile src/Makefile
-	src/doc/GNUmakefile src/include/Makefile vitalnix.pc])
+	src/include/Makefile vitalnix.pc])
 AC_OUTPUT

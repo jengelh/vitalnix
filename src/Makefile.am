@@ -3,10 +3,7 @@
 BUILT_SOURCES =
 CLEANFILES =
 
-SUBDIRS = . include
-if GOT_TOOLS_FOR_DOC
-SUBDIRS += doc
-endif
+SUBDIRS = include
 
 regular_DCONFIG = \
 	-DCONFIG_SYSCONFDIR='"${sysconfdir}"' \

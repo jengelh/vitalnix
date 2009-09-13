@@ -1,10 +1,5 @@
 # -*- Makefile -*-
 
-noinst_PROGRAMS += clutils/html2man
-clutils_html2man_SOURCES = clutils/html2man.c
-clutils_html2man_CFLAGS  = ${AM_CFLAGS} ${libxml_CFLAGS}
-clutils_html2man_LDADD   = ${libHX_LIBS} ${libxml_LIBS}
-
 noinst_PROGRAMS += clutils/ihlogon
 clutils_ihlogon_SOURCES = clutils/ihlogon.c
 clutils_ihlogon_CFLAGS  = ${AM_CFLAGS} -DSTANDALONE_DEBUG
