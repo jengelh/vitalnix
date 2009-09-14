@@ -1,0 +1,2493 @@
+#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\language english
+\inputencoding utf8
+\font_roman lmodern
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\paperfontsize 12
+\spacing single
+\use_hyperref true
+\pdf_bookmarks false
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder true
+\pdf_colorlinks false
+\pdf_backref page
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\cite_engine natbib_numerical
+\use_bibtopic false
+\paperorientation portrait
+\leftmargin 2cm
+\topmargin 2cm
+\rightmargin 2cm
+\bottommargin 2cm
+\secnumdepth 3
+\tocdepth 1
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Administrator Documentation
+\end_layout
+
+\begin_layout Date
+September 2009
+\begin_inset space ~
+\end_inset
+
+--- Vitalnix 3.3
+\end_layout
+
+\begin_layout Standard
+\noindent
+This work (Administrator Documentation) is made available under the Creative
+ Commons Sharealike 3.0 License (CC-BY-SA).
+\end_layout
+
+\begin_layout Standard
+\noindent
+See 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://creativecommons.org/licenses/by-sa/3.0/
+\end_layout
+
+\end_inset
+
+ for details.
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\series bold
+Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2009
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+The Vitalnix User Management Suite is a collection of programs for managing
+ UNIX users and groups in a multitude of databases.
+ Using a module plugin architecture, arbitrary storage methods can be interfaced
+ with; currently there is support for Shadow, LDAP and MySQL.
+\end_layout
+
+\begin_layout Standard
+The suite comes with 
+\family typewriter
+useradd
+\family default
+(8)-like command-line programs for single operations, programs for synchronizati
+on against another data source such as plain text files, web interface scripts,
+ login restriction plugins, and print accounting.
+\end_layout
+
+\begin_layout Subsection
+History
+\end_layout
+
+\begin_layout Standard
+A tool suite (now evolved to the Vitalnix Suite) was developed in 1997 at
+ the Otto-Hahn-Gymnasium Göttingen, Germany, to import user descriptions
+ from a text file dump from the secretary office and make ready-to-use UNIX
+ user accounts out of it, but also taking into account existing accounts.
+ The program updated the Unix passwd database with changes calculated from
+ that external text file.
+\end_layout
+
+\begin_layout Standard
+Database access has been modularized so that LDAP support would be easily
+ possible; the tool suite has also gained many more programs that relate
+ to the day-to-day administrative job in computer networks; predominantly
+ in the educational sector, but as LDAP emerges as a common technology in
+ any area, this tool suite will be helpful.
+\end_layout
+
+\begin_layout Subsection
+Authors
+\end_layout
+
+\begin_layout Standard
+The original Perl scripts were created by Eike Teiwes in 1997--1999.
+\end_layout
+
+\begin_layout Standard
+Jan Engelhardt has picked them up in fall 1999 keeping them up to date (includin
+g rewriting the tool suite to get it to new levels) and is the current maintaine
+r.
+\end_layout
+
+\begin_layout Standard
+I would like to thank the following people for their beta testing, suggestions
+ and contributions over the years: Cordula Petzold, Cristoph Thiel, Eberhard
+ Mönkeberg.
+\end_layout
+
+\begin_layout Subsection
+Limits of existing software
+\end_layout
+
+\begin_layout Standard
+A lot of user account maintenance programs I have come across use NSS (
+\begin_inset Quotes eld
+\end_inset
+
+getpwent
+\begin_inset Quotes erd
+\end_inset
+
+) for retrieving information and issue backend-specific (Shadow, LDAP) commands
+ for write operations, such as adding, modifying or deleting a user or group.
+\end_layout
+
+\begin_layout Standard
+The standard NSS API is neither thread-safe nor multi-use safe (a single
+ thread, but intertwined invocations of functions).
+ The GNU libc thread-safe extensions do not cover all functions, for example
+ 
+\family typewriter
+setpwent
+\family default
+.
+ Write support is totally absent from NSS
+\begin_inset space ~
+\end_inset
+
+--- libc has a mere 
+\family typewriter
+putpwent
+\family default
+ which requires a stdio file handle, which of course does not work with
+ other storage methods such as LDAP or MySQL.
+\end_layout
+
+\begin_layout Standard
+So most programs implement their own write handling, each coming with its
+ own bulk of bugs, limitations or configuration files (and Vitalnix is surely
+ no different).
+ Gluing programs together requires a tremendous amount of time and often
+ you just do not trust some programs when they ask for information that
+ would normally not be required to perform a given task.
+\end_layout
+
+\begin_layout Subsection
+Project status
+\end_layout
+
+\begin_layout Standard
+Vitalnix provides a library, 
+\family sans
+libvxdb
+\family default
+, which encapsulates away the underlying storage mechanism and provides
+ generalized methods of basic operations such as 
+\begin_inset Quotes eld
+\end_inset
+
+add a user
+\begin_inset Quotes erd
+\end_inset
+
+, modify, delete.
+ With regard to user\SpecialChar \slash{}
+group information retrieval, it is mostly equivalent
+ to NSS, but is designed with thread-safety and multi-use safety in mind
+ from the beginning.
+ I consider the API and code to be rather clean compared to NSS and pwdutils.
+\end_layout
+
+\begin_layout Standard
+Vitalnix is not the solution to everything.
+ For example, it does not allow you to add arbitrary attributes to a user
+ account, even if the underlying storage mechanisms could be adopted to
+ do so.
+ The primary focus on providing a simple (ideally) API and tools to get
+ a typical essential server system (e.
+\begin_inset space \thinspace{}
+\end_inset
+
+g.
+\begin_inset space \space{}
+\end_inset
+
+Windows network logon with SMB) working.
+\end_layout
+
+\begin_layout Standard
+The Vitalnix package is considered to be in beta stage.
+ It works for what we do with it, but it has yet to see widespread usage.
+\end_layout
+
+\begin_layout Standard
+Of course, there is a bit more than just libvxdb.
+ SAMBA Logon Time Restriction and Print Accounting are two parts for example,
+ which are not directly related to user management, but they were nonetheless
+ needed.
+\end_layout
+
+\begin_layout Subsection
+Resources
+\end_layout
+
+\begin_layout Standard
+As of this writing, the repository is located at
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://vitalnix.sf.net/
+\end_layout
+
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+--- home page (and link to tarballs)
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://freshmeat.net/projects/vitalnix/
+\end_layout
+
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+--- Freshmeat page (useful for subscription, i.
+\begin_inset space \thinspace{}
+\end_inset
+
+e.
+\begin_inset space \space{}
+\end_inset
+
+automatic notification of releases)
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+git://vitalnix.git.sf.net/gitroot/vitalnix/vitalnix
+\end_layout
+
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+--- clone URL
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://vitalnix.git.sf.net/
+\end_layout
+
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+--- gitweb interface
+\end_layout
+
+\begin_layout Subsection
+Basic components
+\end_layout
+
+\begin_layout Standard
+The most important parts of Vitalnix, the showcase plate used for advertising
+ so to speak:
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+libvxdb
+\family default
+, the user database frontend library
+\begin_inset Newline newline
+\end_inset
+
+Provides a unified user database management API.
+\end_layout
+
+\begin_layout Itemize
+underlying backend modules (a.
+\begin_inset space \thinspace{}
+\end_inset
+
+k.
+\begin_inset space \thinspace{}
+\end_inset
+
+a.
+\begin_inset space \space{}
+\end_inset
+
+
+\begin_inset Quotes eld
+\end_inset
+
+drivers
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family sans
+drv_shadow
+\family default
+: Shadow user database support (
+\family typewriter
+/etc/passwd
+\family default
+, 
+\family typewriter
+/etc/shadow
+\family default
+, 
+\family typewriter
+/etc/group
+\family default
+)
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+drv_ldap
+\family default
+: LDAP user databases support for RFC2307-style user accounts (
+\begin_inset Quotes eld
+\end_inset
+
+posixAccount
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+posixGroup
+\begin_inset Quotes erd
+\end_inset
+
+ object classes); Samba extensions supported (
+\begin_inset Quotes eld
+\end_inset
+
+sambaDomain
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+sambaNTPassword
+\begin_inset Quotes erd
+\end_inset
+
+ object classes)
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+drv_mysql
+\family default
+: MYSQL user database support for 
+\family sans
+nss_mysql
+\family default
+-style tables
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Shadow-style command-line tools for user management
+\begin_inset Newline newline
+\end_inset
+
+The programs' syntax follows that of pwdutils (i.
+\begin_inset space \thinspace{}
+\end_inset
+
+e.
+\begin_inset space \space{}
+\end_inset
+
+
+\family typewriter
+/usr/sbin/useradd
+\family default
+), but of course can use any database having a module for.
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+vxusersync
+\family default
+, a program to synchronize the user database with an external file
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+pam_ihlogon
+\family default
+, a PAM module for use with Samba's smbd to restrict users to a configurable
+ amount of simultaneous logins; the intention is to hinder knowingly passing
+ account credentials to 3rd party users.
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+lpacct
+\family default
+, a pseudo-driver for the Common Unix Printing System (CUPS) to analyze
+ Postscript streams and abstractly count the number of pixels and ink.
+\end_layout
+
+\begin_layout Itemize
+
+\family sans
+steelmill
+\family default
+, a GUI to encompass all the user and group management tasks.
+ (These things never get done.)
+\end_layout
+
+\begin_layout Subsection
+Program documentation
+\end_layout
+
+\begin_layout Standard
+Programs docs are kept in manpage format.
+ Please see your local installation for files.
+ An overview of available manpages can be retrieved using `
+\family typewriter
+man 7 vitalnix
+\family default
+`.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Part
+Setup
+\end_layout
+
+\begin_layout Section
+Installation
+\end_layout
+
+\begin_layout Standard
+It is recommended that you install Circumference by picking a suitable RPM/DEB
+ or other appropriate package with precompiled binaries.
+ There are however times when this is not possible, for example when there
+ is no such package.
+ In this case, we suggest to download a source tarball from the homepage.
+\end_layout
+
+\begin_layout Subsection
+Download from repository checkout
+\end_layout
+
+\begin_layout Standard
+Repository checkouts are usually only useful to those who know what to do
+ with it
+\begin_inset space ~
+\end_inset
+
+--- doing development on the project, walking its history, or other forms
+ that specifically require a repository.
+ The source code is managed using the Git version control system.
+ You will need to have it installed obviously; the package is called 
+\family sans
+git
+\family default
+ or 
+\family sans
+git\SpecialChar \nobreakdash-
+core
+\family default
+, depending on distribution.
+ It is recommended to use at least Git 1.6.x.
+ To download the repository, issue
+\end_layout
+
+\begin_layout LyX-Code
+git clone git://vitalnix.git.sf.net/gitroot/vitalnix/vitalnix
+\end_layout
+
+\begin_layout Standard
+As a basic rule, repositories should not carry any files that can be auto-genera
+ted, and so does ours.
+ It specifically does not come with a generated configure script.
+ To do so, make sure you have the following installed:
+\end_layout
+
+\begin_layout Itemize
+autoconf 2.63 or up
+\end_layout
+
+\begin_layout Itemize
+automake 1.10 or up
+\end_layout
+
+\begin_layout Itemize
+libtool 2.2 or up
+\end_layout
+
+\begin_layout Itemize
+pkg-config 0.23 or about
+\end_layout
+
+\begin_layout Standard
+Older versions might work, but were not specifically tested.
+ After these four components, of which the first three are collectively
+ referred to as autotools, you will be able to run 
+\family typewriter
+./autogen.sh
+\family default
+, which will build the 
+\family typewriter
+configure
+\family default
+ script.
+ From here on, continue with the next section.
+ 
+\end_layout
+
+\begin_layout Subsection
+From tarball
+\end_layout
+
+\begin_layout Standard
+After extraction of the tarball, or by having generated configure yourself,
+ you can run the latter.
+ Vitalnix has a number of prerequisites for it to be built:
+\end_layout
+
+\begin_layout Itemize
+GNU C Compiler
+\end_layout
+
+\begin_layout Itemize
+libHX 3.1
+\end_layout
+
+\begin_layout Itemize
+libldap-devel 2.3 or up (optional), for LDAP user database support
+\end_layout
+
+\begin_layout Itemize
+cups-devel 1.3 or up (optional), for print accounting support
+\end_layout
+
+\begin_layout Itemize
+libmysqlclient-devel 5.0 or up (optional), for MYSQL user database support
+\end_layout
+
+\begin_layout Itemize
+pam-devel 0.99 or up (optional), for the Multiple Login Restrictor
+\end_layout
+
+\begin_layout Itemize
+GNU C++ Compiler (optional), for the graphical user interface 
+\begin_inset Quotes eld
+\end_inset
+
+Steelmill
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+wxWindows 2.8 or up (optional), for 
+\begin_inset Quotes eld
+\end_inset
+
+Steelmill
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Compilation
+\end_layout
+
+\begin_layout Standard
+Vitalnix uses GNU autotools as a build environment, which means that all
+ you have to run as a end-user is the 
+\family typewriter
+configure
+\family default
+ with any options that you need, plus the usual 
+\family typewriter
+make
+\family default
+ and 
+\family typewriter
+make install
+\family default
+ as desired.
+\end_layout
+
+\begin_layout Standard
+You can specify where to put Vitalnix using the 
+\family typewriter
+--prefix
+\family default
+ option.
+ It would normally default to 
+\family typewriter
+/usr/local
+\family default
+, but as the main author I usually put it into a place sufficiently distinct
+ from the general filesystem hierarchy.
+\end_layout
+
+\begin_layout LyX-Code
+$ 
+\series bold
+./configure --prefix=/opt/vitalnix
+\end_layout
+
+\begin_layout Standard
+Note that configuration files will be directly put into 
+\family typewriter
+${
+\family default
+\shape italic
+sysconfdir
+\family typewriter
+\shape default
+}
+\family default
+.
+ People packaging the software for installation to system paths should therefore
+ specify 
+\family typewriter
+--sysconfdir=/etc/vitalnix
+\family default
+, not 
+\family typewriter
+--sysconfdir=/etc
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+It is also imperative that you specify the correct libdir when building
+ from source!
+\series default
+ Especially in 64\SpecialChar \nobreakdash-
+bit bi-arch environments such as AMD64 and sparc64 (but
+ not, for example, IA\SpecialChar \nobreakdash-
+64), you have to explicitly specify lib64 using something
+ like 
+\family typewriter
+--libdir='${
+\family default
+\shape italic
+prefix
+\family typewriter
+\shape default
+}/lib64'
+\family default
+, because autotools does not figure that one out on itself.
+ Failure to obey may result in overwriting previously existing 32\SpecialChar \nobreakdash-
+bit libraries
+ with 64\SpecialChar \nobreakdash-
+bit libraries by the same name, and thus making programs dependent
+ on those 32\SpecialChar \nobreakdash-
+bit libraries cease to work.
+\end_layout
+
+\begin_layout LyX-Code
+$ 
+\series bold
+./configure --libdir='${prefix}/lib64'
+\end_layout
+
+\begin_layout Standard
+Other libdir naming besides 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+lib
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+lib64
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ may be in use by different distributions, but are rarely seen (like 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+lib32
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Subsection
+Building 32\SpecialChar \nobreakdash-
+bit with a 64\SpecialChar \nobreakdash-
+bit bi-arch compiler
+\end_layout
+
+\begin_layout Standard
+Just tell the compiler and linker to use 32\SpecialChar \nobreakdash-
+bit mode:
+\end_layout
+
+\begin_layout LyX-Code
+./configure CFLAGS="-m32" CXXFLAGS="-m32" LDFLAGS="-m32"
+\end_layout
+
+\begin_layout Standard
+(But do not specify lib64 if compiling 32\SpecialChar \nobreakdash-
+bit libraries!) This requires that
+ the 32\SpecialChar \nobreakdash-
+bit parts of GCC are installed, which may not always be the case.
+ Ensure that you have a package named like 
+\begin_inset Quotes eld
+\end_inset
+
+gcc\SpecialChar \nobreakdash-
+32bit
+\begin_inset Quotes erd
+\end_inset
+
+ installed, and/or that you can call `
+\family typewriter
+gcc -m32 -xc /dev/null
+\family default
+` without getting a link-time error that it cannot find a suitable (32\SpecialChar \nobreakdash-
+bit)
+ libgcc.
+\end_layout
+
+\begin_layout LyX-Code
+/usr/lib64/gcc/x86_64-suse-linux/4.3/../../../../x86_64-suse-linux/bin/ld:
+\begin_inset Newline newline
+\end_inset
+
+skipping incompatible /usr/lib64/gcc/x86_64-suse-linux/4.3/libgcc.a
+\begin_inset Newline newline
+\end_inset
+
+when searching for -lgcc
+\begin_inset Newline newline
+\end_inset
+
+/usr/lib64/gcc/x86_64-suse-linux/4.3/../../../../x86_64-suse-linux/bin/ld:
+\begin_inset Newline newline
+\end_inset
+
+cannot find -lgcc collect2: ld returned 1 exit status
+\end_layout
+
+\begin_layout Standard
+If you get an error about the absence of 
+\begin_inset Quotes eld
+\end_inset
+
+main
+\begin_inset Quotes erd
+\end_inset
+
+ instead, everything is set up already.
+ 
+\end_layout
+
+\begin_layout Section
+Configuration
+\end_layout
+
+\begin_layout Subsection
+libvxdb
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+${
+\family default
+\shape italic
+sysconfdir
+\family typewriter
+\shape default
+}/libvxdb.conf
+\family default
+ is the global libvxdb configuration file.
+ To date, it only has one option:
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+DEFAULT_DATABASE
+\family default
+ Specifies the default configuration to read.
+ This may either be an absolute path name specifying a configuration file
+ (e.
+\begin_inset space \thinspace{}
+\end_inset
+
+g.
+\begin_inset space \space{}
+\end_inset
+
+
+\family typewriter
+/etc\SpecialChar \slash{}
+vitalnix\SpecialChar \slash{}
+db_mmd.conf
+\family default
+), or a shortname that will be expanded to 
+\family typewriter
+${
+\family default
+\shape italic
+sysconfdir
+\family typewriter
+\shape default
+}\SpecialChar \slash{}
+db_
+\family default
+\shape italic
+shortname
+\family typewriter
+\shape default
+.conf
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+One needs to be aware that 
+\family typewriter
+DEFAULT_\SpecialChar \-
+DATABASE
+\family default
+ does not actually specify the final database driver (the 
+\family typewriter
+.so
+\family default
+ shared library file on disk), but a database configuration file.
+ This is done so that one can have different configurations using the same
+ database driver.
+ For example, consider the default 
+\family typewriter
+db_ldap.conf
+\family default
+:
+\end_layout
+
+\begin_layout LyX-Code
+_DRIVER
+\series bold
+=
+\series default
+ldap
+\begin_inset Newline newline
+\end_inset
+
+URI
+\series bold
+=
+\series default
+ldap://localhost/
+\begin_inset Newline newline
+\end_inset
+
+USER_SUFFIX
+\series bold
+=
+\series default
+ou=users,o=corp
+\begin_inset Newline newline
+\end_inset
+
+[...]
+\end_layout
+
+\begin_layout Standard
+Once that file has been read, Vitalnix finally loads the database driver
+ that is specified in the 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+_DRIVER
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ variable, and the driver will be passed this configuration file, so it
+ can read its options (URI, etc.).
+\end_layout
+
+\begin_layout Standard
+A system administrator could now create a second configuration, 
+\family typewriter
+db_ldap2.conf
+\family default
+
+\begin_inset space ~
+\end_inset
+
+--- the name can be arbitrarily chosen
+\begin_inset space ~
+\end_inset
+
+--- to gain access to a second LDAP server:
+\end_layout
+
+\begin_layout LyX-Code
+_DRIVER
+\series bold
+=
+\series default
+ldap
+\begin_inset Newline newline
+\end_inset
+
+URI
+\series bold
+=
+\series default
+ldap://secondary.corp/
+\begin_inset Newline newline
+\end_inset
+
+USER_SUFFIX
+\series bold
+=
+\series default
+ou=users,o=corp
+\end_layout
+
+\begin_layout Standard
+One could then either test-query it using `
+\family typewriter
+vxdbdump -M ldap2
+\family default
+`, or, for example, add it as another read-side module to 
+\family typewriter
+db_mmd.conf
+\family default
+.
+\end_layout
+
+\begin_layout Subsection
+Automatic UID selection
+\end_layout
+
+\begin_layout Standard
+A program using the Vitalnix infrastructure (libraries) may ask libvxdb
+ to provide any next free numeric user and/or group ID.
+ Because operating systems, distributions and system administrators often
+ have a preference for how their UID space is subdivided, Vitalnix allows
+ to restrict the range from which free UIDs/GIDs are returned.
+ Usually, contemporary Linux distributions tend to do the following subdivision,
+ which Vitalnix provides as a default:
+\end_layout
+
+\begin_layout Itemize
+0: root
+\end_layout
+
+\begin_layout Itemize
+1--99: traditional system accounts 
+\end_layout
+
+\begin_layout Itemize
+100--999: contemporary system accounts.
+ In times of increasing privilege separation, the number of system users
+ is likely to exceed 99 at some point, thus some distributions increased
+ the upper bound of system account range to 999.
+\end_layout
+
+\begin_layout Itemize
+1000--65533: user accounts and groups
+\end_layout
+
+\begin_layout Itemize
+65534: the 
+\begin_inset Quotes eld
+\end_inset
+
+nogroup
+\begin_inset Quotes erd
+\end_inset
+
+ system group
+\end_layout
+
+\begin_layout Itemize
+65535: the 
+\begin_inset Quotes eld
+\end_inset
+
+nobody
+\begin_inset Quotes erd
+\end_inset
+
+ system account and 
+\begin_inset Quotes eld
+\end_inset
+
+nobody
+\begin_inset Quotes erd
+\end_inset
+
+ group
+\end_layout
+
+\begin_layout Itemize
+65536: probably unused
+\end_layout
+
+\begin_layout Itemize
+65537--: on systems that support 32\SpecialChar \nobreakdash-
+bit UIDs, and which do happen to have
+ many users (e.
+\begin_inset space \thinspace{}
+\end_inset
+
+g.
+\begin_inset space \space{}
+\end_inset
+
+Sourceforge), counting may continue at 65537.
+\end_layout
+
+\begin_layout Itemize
+4294967295: this value is specially treated by many programs (as it coincides
+ with 
+\family typewriter
+(uint32_t)-1
+\family default
+), and cannot be used.
+\end_layout
+
+\begin_layout Standard
+All database drivers supporting automatic UID selection also recognize the
+ following variables from 
+\family typewriter
+${
+\family default
+\shape italic
+sysconfdir
+\family typewriter
+\shape default
+}/autouid.conf
+\family default
+:
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+UID_MIN
+\family default
+
+\begin_inset Index
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+UID_MIN
+\end_layout
+
+\end_inset
+
+ The smallest UID value that will be returned.
+ The default is 1000.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+UID_MAX
+\family default
+
+\begin_inset Index
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+UID_MAX
+\end_layout
+
+\end_inset
+
+ The largest UID value that will be returned.
+ The default is 65500.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+GID_MIN
+\family default
+
+\begin_inset Index
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+GID_MIN
+\end_layout
+
+\end_inset
+
+ The smallest GID value that will be returned.
+ This also defaults to 1000.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+GID_MAX
+\family default
+
+\begin_inset Index
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+GID_MAX
+\end_layout
+
+\end_inset
+
+ The largest GID value that will be returned.
+ Defaults to 65500.
+\end_layout
+
+\begin_layout Standard
+Note that the aforementioned subdivision is just a recommendation
+\begin_inset space ~
+\end_inset
+
+--- Vitalnix will return IDs from the range if they are free, even if you
+ had other plans for it.
+ If, for example, there were no 
+\begin_inset Quotes eld
+\end_inset
+
+nobody
+\begin_inset Quotes erd
+\end_inset
+
+ account at UID 65535 and the range was configured to be 1000--4294967294,
+ 65535 can in fact be returned when a program asks for a free ID.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Part
+Database drivers
+\end_layout
+
+\begin_layout Section
+Shadow
+\end_layout
+
+\begin_layout Standard
+The 
+\family sans
+shadow
+\family default
+ driver handles plaintext user account databases following the traditional
+ UNIX file-based passwd scheme, that is, 
+\family typewriter
+/etc/passwd
+\family default
+, 
+\family typewriter
+/etc/shadow
+\family default
+ and 
+\family typewriter
+/etc/group
+\family default
+.
+ There is no support for gshadow, which seems to have been removed from
+ other shadow suite implementations too.
+ Additionally, our 
+\begin_inset Quotes eld
+\end_inset
+
+shadow
+\begin_inset Quotes erd
+\end_inset
+
+ driver supports Vitalnix-specific extension files used for keeping track
+ of deletion status or private-group membership.
+\end_layout
+
+\begin_layout Subsection
+Configuration file
+\end_layout
+
+\begin_layout Standard
+The following variables are recognized in the file:
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+_DRIVER
+\family default
+
+\begin_inset Index
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+_DRIVER
+\end_layout
+
+\end_inset
+
+ The value for this option must be 
+\begin_inset Quotes eld
+\end_inset
+
+shadow
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+PASSWD_DB
+\family default
+
+\begin_inset Index
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+PASSWD_DB
+\end_layout
+
+\end_inset
+
+ The path to the passwd(5) file, usually 
+\family typewriter
+/etc/passwd
+\family default
+.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+SHADOW_DB
+\family default
+
+\begin_inset Index
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+SHADOW_DB
+\end_layout
+
+\end_inset
+
+ The path to the shadow(5) file, usually 
+\family typewriter
+/etc/shadow
+\family default
+.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+GROUP_DB
+\family default
+
+\begin_inset Index
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+GROUP_DB
+\end_layout
+
+\end_inset
+
+ The path to the group(5) file, usually 
+\family typewriter
+/etc/group
+\family default
+.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+VXPASSWD_DB
+\family default
+
+\begin_inset Index
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+VXPASSWD_DB
+\end_layout
+
+\end_inset
+
+ The path to the vxpasswd file, usually 
+\family typewriter
+/etc/vxpasswd
+\family default
+.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+VXSHADOW_DB
+\family default
+
+\begin_inset Index
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+VXSHADOW_DB
+\end_layout
+
+\end_inset
+
+ The path to the vxshadow file, usually 
+\family typewriter
+/etc/vxshadow
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+The Shadow driver also reads 
+\family typewriter
+${
+\family default
+\shape italic
+sysconfdir
+\family typewriter
+\shape default
+}/autouid.conf
+\family default
+ to source UID/GID boundaries for automatic UID/GID generation.
+ 
+\end_layout
+
+\begin_layout Subsection
+Storage
+\end_layout
+
+\begin_layout Standard
+Within the Shadow storage mechanism, account data is spread over three plain-tex
+t files, 
+\family typewriter
+/etc/passwd
+\family default
+, 
+\family typewriter
+/etc/shadow
+\family default
+ and 
+\family typewriter
+/etc/group
+\family default
+.
+ Group shadow information in 
+\family typewriter
+/etc/gshadow
+\family default
+) has always been rarely used (the file disappeared from default installs
+ during the openSUSE Linux lifetime), and Vitalnix does not support it at
+ all.
+\end_layout
+
+\begin_layout Subsubsection
+passwd
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+/etc/passwd
+\family default
+ is a text file, comprising zero or more users, each separated by newline.
+ In each line, fields are separated by a colon (
+\family typewriter
+:
+\family default
+).
+ The different fields are:
+\end_layout
+
+\begin_layout Itemize
+login name
+\end_layout
+
+\begin_layout Itemize
+unused field (formerly password)
+\end_layout
+
+\begin_layout Itemize
+UID, numerical user id
+\end_layout
+
+\begin_layout Itemize
+GID, numerical id of the user's primary group
+\end_layout
+
+\begin_layout Itemize
+real name (and possibly custom data)
+\end_layout
+
+\begin_layout Itemize
+home directory
+\end_layout
+
+\begin_layout Itemize
+command interpreter (shell, e.
+\begin_inset space \thinspace{}
+\end_inset
+
+g.
+\begin_inset space \space{}
+\end_inset
+
+
+\family typewriter
+/bin/bash
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+In a typical Shadow
+\shape italic
+ 
+\shape default
+system, the 2nd field always contains an 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+x
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+, which indicates to look into 
+\family typewriter
+/etc/shadow
+\family default
+ for the password information instead.
+ Access to the shadow file is generally restricted.
+ Any fields after the command interpreter are marked as reserved.
+ The Shadow driver preserves them for you.
+\end_layout
+
+\begin_layout Standard
+The GECOS field itself can have multiple fields, separated by comma (
+\family typewriter
+,
+\family default
+).
+ You can freely assign any text to it, though it is normally used to store
+ the name of the user there.
+ Other details added there are Room Number, Work Phone, Home Phone and Other.
+ An other document says that the initial values for nice, umask and ulimit
+ can be set there, but usually no application will use these fields nowadays.
+ If the Command Interpreter field is empty, it is interpreted as 
+\family typewriter
+/bin/sh
+\family default
+, however, the empty string is preserved.
+\end_layout
+
+\begin_layout Standard
+Vitalnix does not care too much about the extra GECOS fields like room number,
+ but handles the whole GECOS field as one entity, like most other tools.
+ The only special handling of this field is in 
+\family typewriter
+vxfinger
+\family default
+(1), where there is an option to search only part or all of the GECOS field.
+\end_layout
+
+\begin_layout Standard
+A file entry from a passwd file might look like:
+\end_layout
+
+\begin_layout LyX-Code
+jengelh:x:25121:100:Jan Engelhardt:/home/jengelh:/bin/bash
+\end_layout
+
+\begin_layout Subsubsection
+shadow
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+/etc/shadow
+\family default
+ file, which is free to not exist, is also composed of newlines and colons:
+\end_layout
+
+\begin_layout Itemize
+login name
+\end_layout
+
+\begin_layout Itemize
+encrypted password
+\end_layout
+
+\begin_layout Itemize
+days since January 01 1970 that password was last changed
+\end_layout
+
+\begin_layout Itemize
+days before password may be changed
+\end_layout
+
+\begin_layout Itemize
+days after which password must be changed
+\end_layout
+
+\begin_layout Itemize
+days before password is to expire that user is warned
+\end_layout
+
+\begin_layout Itemize
+days after password expires that account is disabled
+\end_layout
+
+\begin_layout Itemize
+days since January 01 1970 that account is disabled
+\end_layout
+
+\begin_layout Standard
+A line from a shadow file might be:
+\end_layout
+
+\begin_layout LyX-Code
+jengelh:$6$up1kfZ0nZV1aFYgW$zuHN...Wut0:13051:0:10000:0:::
+\end_layout
+
+\begin_layout Subsubsection
+group
+\end_layout
+
+\begin_layout Standard
+The group database is also stored in a plain-text file, 
+\family typewriter
+/etc/group
+\family default
+.
+ Its fields are:
+\end_layout
+
+\begin_layout Itemize
+group name
+\end_layout
+
+\begin_layout Itemize
+unused field (probably was password, before that moved to gshadow, before
+ that got removed too)
+\end_layout
+
+\begin_layout Itemize
+numerical group ID
+\end_layout
+
+\begin_layout Itemize
+comma-separated list of members 
+\shape italic
+who have membership in this group as secondary\SpecialChar \slash{}
+supplemental group
+\shape default
+
+\begin_inset space ~
+\end_inset
+
+--- this is not their primary group
+\end_layout
+
+\begin_layout Standard
+A typical line is pretty unspectacular (this group has no extra users):
+\end_layout
+
+\begin_layout LyX-Code
+users:x:100:
+\end_layout
+
+\begin_layout Subsubsection
+vxshadow
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+/etc/vxshadow
+\family default
+ contains data specific to Vitalnix and is also not essential for the Shadow
+ VXDB driver to function properly.
+ It is also composed like the other files (i.
+\begin_inset space \thinspace{}
+\end_inset
+
+e.
+\begin_inset space \space{}
+\end_inset
+
+plain-text with newlines and colons); the fields are:
+\end_layout
+
+\begin_layout Itemize
+username
+\end_layout
+
+\begin_layout Itemize
+uuid
+\begin_inset space ~
+\end_inset
+
+--- external unique user identifier
+\end_layout
+
+\begin_layout Itemize
+pvgrp
+\begin_inset space ~
+\end_inset
+
+--- private group tag (user-defined string anyhow)
+\end_layout
+
+\begin_layout Itemize
+day on which the account was marked for deletion
+\end_layout
+
+\begin_layout Subsubsection
+Default permissions
+\end_layout
+
+\begin_layout Standard
+The recommended default permissions for the database files should be as
+ follows:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+/etc/passwd
+\family default
+ 0644(root,shadow)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+/etc/shadow
+\family default
+ 0640(root,shadow)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+/etc/group
+\family default
+ 0644(root,shadow)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+/etc/vxshadow
+\family default
+ 0640(root,shadow)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+LDAP
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+MySQL
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Other drivers
+\end_layout
+
+\begin_layout Subsection
+NSS
+\end_layout
+
+\begin_layout Standard
+The 
+\family sans
+nss
+\family default
+ and 
+\family sans
+nss1
+\family default
+ drivers solely exists for demonstration purposes and as a code example.
+ Because it uses libc's 
+\family typewriter
+getpwent
+\family default
+ and related functions to lookup users and groups, these module are neither
+ multi-thread-safe nor multi-use-safe (multiple instances in at least one
+ thread).
+\end_layout
+
+\begin_layout Standard
+The modules do not support adding, modifying or deleting users and/or groups,
+ and finding the next free UID/GID is not implemented either.
+\end_layout
+
+\begin_layout Subsection
+Dummy
+\end_layout
+
+\begin_layout Standard
+The 
+\family sans
+dummy
+\family default
+ does exactly what it name suggests.
+ It returns success where feasible, otherwise failure.
+ It is built into libvxdb and will be used as a fallback whenever a specific
+ database driver does not provide its own variant of the function.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+vxdb_modctl(VXDB_\SpecialChar \-
+COUNT_\SpecialChar \-
+USERS)
+\family default
+ and 
+\family typewriter
+VXDB_\SpecialChar \-
+COUNT_\SpecialChar \-
+GROUPS
+\family default
+ always returns 0
+\end_layout
+
+\begin_layout Itemize
+other modctls return 
+\family typewriter
+-ENOSYS
+\end_layout
+
+\begin_layout Itemize
+addition, modfiication and deletion of users and groups always returns 
+\family typewriter
+-EPERM
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Part
+Peripheral tools
+\end_layout
+
+\begin_layout Section
+Print accounting
+\end_layout
+
+\begin_layout Subsection
+Installation
+\begin_inset space ~
+\end_inset
+
+-- CUPS (Common Unix Printing System)
+\end_layout
+
+\begin_layout Standard
+Unlike other print accounting solutions, the Vitalnix lpacct hook is implemented
+ as a CUPS filter rather than as a CUPS backend.
+ Because CUPS lacks the feature to dynamically define filters (such as in
+ a text file) as of this writing, a patch to the CUPS source is necessary,
+ and this will most likely continue even after pre-filters are supported
+ in CUPS.
+ However, it has some advantages over backend-based accounting solutions:
+\end_layout
+
+\begin_layout Enumerate
+Backend accounting receives printer-specific language data.
+ Data needs to translated back into a simple raster format, or is at least
+ interpreted right away, i.e.
+ directly count ink coverage.
+ Either way, you need a decoder for this.
+ In the worst case, there is no decoder written yet, and in the other case,
+ the decoder must be kept updated\SpecialChar \slash{}
+in
+\begin_inset space ~
+\end_inset
+
+sync with the encoder.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Most likely you will get an intermediate Postscript file in the filtering
+ process as a result of mime conversions towards printer language.
+ For example, if you print an image from the command line using `
+\family typewriter
+lpr foo.png
+\family default
+`, the filter chain will be 
+\family sans
+image/png
+\family default
+
+\begin_inset Formula $\rightarrow$
+\end_inset
+
+
+\family sans
+application\SpecialChar \slash{}
+vnd.cups-postscript
+\family default
+
+\begin_inset Formula $\rightarrow$
+\end_inset
+
+
+\family sans
+printer/*
+\family default
+.
+ Since Vitalnix lpacct operates on Postscript, the lpacct filter can just
+ be inserted after the PNG-to-PS conversion has been done.
+ (It is probably not as fast as backend counting, but a lot less complex.)
+\end_layout
+
+\begin_layout Standard
+So you have to get CUPS's source tarball, extract, patch and compile it.
+ It is advised to use the distributions packaging methods, e.
+\begin_inset space \thinspace{}
+\end_inset
+
+g.
+\begin_inset space \space{}
+\end_inset
+
+
+\family typewriter
+.src.rpm
+\family default
+ for openSUSE/SLE* or Fedora/Redhat, to keep installation and upgrade relatively
+ easy.
+ Precompiled CUPS packages for openSUSE can be found on 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+http://jftp.medozas.de/
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Installation
+\begin_inset space ~
+\end_inset
+
+-- Syslog
+\end_layout
+
+\begin_layout Standard
+Usually there is no installation required.
+ However, you will need your own tools to extract it from syslog.
+ In its simplest form, lpacct will make a syslog entry for each print job
+ (in fact, every Vitalnix filter invocation) and another entry, if it was
+ successfully sent.
+ You can then grep them from 
+\family typewriter
+/var/log/messages
+\family default
+ and process them any way you like.
+ Beware of automatic system log rotation utilities.
+\end_layout
+
+\begin_layout Subsection
+Installation
+\begin_inset space ~
+\end_inset
+
+-- MySQL
+\end_layout
+
+\begin_layout Standard
+You will have to create a new database for Vitalnix accounting.
+ The required layout of the tables is given in the 
+\family typewriter
+lpacct_init.sql
+\family default
+ file in the 
+\family typewriter
+share/
+\family default
+ directory.
+ You may freely choose the database, but the table name is hardcoded in
+ a lot of places, as are (even more) the column names.
+ Only one table will ever be used, so you may put the required printlog
+ table into an already existing database.
+\end_layout
+
+\begin_layout Subsection
+
+\family typewriter
+lpacview
+\end_layout
+
+\begin_layout Standard
+
+\family sans
+lpacview
+\family default
+ is a web frontend PHP program for MySQL-stored print accounting information
+ that allows users to view their print jobs.
+ The administrator will have a complete overview of all users and is permitted
+ to delete entries.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Cleaning database
+\end_layout
+
+\begin_layout Standard
+As each user prints a document, details about it will be logged into a mysql
+ table.
+ The table will grow until entries are manually deleted by the administrator,
+ usually when the accounting period is over and it is time for cashing up.
+ As you will see, checkboxes for convenient deletion (per-job, per-user,
+ all users) are provided.
+\end_layout
+
+\begin_layout Subsubsection
+Cost preview
+\end_layout
+
+\begin_layout Standard
+Because accounting and analyzing is about the same job, the lpacct program
+ has a limited command-line debug interface with which the cost of a print
+ job can be analyzed before it is actually sent to the printer.
+\end_layout
+
+\begin_layout Standard
+Since the filter program is usually called by CUPS, only Postscript is supported.
+ An extra flag allows for PPM/PGMs to be passed, but that is really only
+ for debugging and optimizing and tuning the analyzer algorithms.
+\end_layout
+
+\begin_layout Standard
+Note that the default analysis precision (dots per inch) is hard-coded and
+ I do not know of a way to dynamically change it on a per-job basis from
+ within CUPS.
+ With the CLI, the 
+\family typewriter
+-d
+\family default
+ option may be used, but the results may differ slightly between different
+ DPI values.
+ 300 DPI is the current hardcoded default and is a good compromise between
+ precision and speed, slightly biased towards precision.
+\end_layout
+
+\begin_layout Subsubsection
+Accounting summary
+\end_layout
+
+\begin_layout Standard
+
+\family sans
+lpacview.php
+\family default
+ is a PHP script providing a web interface that allows a user to see what
+ print jobs were sent to the queue and what their cost in the unit 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $i\times\text{A4}$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ (intensity
+\begin_inset Formula $\times$
+\end_inset
+
+ISO A4) is.
+ Total page count is also displayed.
+ Detailed stats about exact CMYK ink usage can be selected.
+\end_layout
+
+\begin_layout Subsubsection
+Totals overview
+\end_layout
+
+\begin_layout Subsection
+Mode of operation
+\end_layout
+
+\begin_layout Standard
+vxlpacct, in its current form, is a non-enforcing system, which means it
+ does not stop a job from actually being printed.
+ With respect to this, vxlpacct was designed as being a post pay system.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\start_of_appendix
+EDS format specs
+\end_layout
+
+\begin_layout Subsection
+SDF
+\end_layout
+
+\begin_layout Standard
+An SDF file is a text file, where each object occupies one line.
+ Empty lines are ignored.
+ The structure of a User Object is similar to a CSV file; in SDF, the values
+ are separated by a semicolon.
+ Below is the schematic description is a real-world example.
+\end_layout
+
+\begin_layout LyX-Code
+[enum;]surname;firstname;bday;pvgrp
+\begin_inset Newline newline
+\end_inset
+
+(* one-line comment *)
+\begin_inset Newline newline
+\end_inset
+
+# new-style comment
+\begin_inset Newline newline
+\end_inset
+
+1;Engelhardt;Jan;12.3.45;Grade 13;
+\end_layout
+
+\begin_layout Standard
+The different fields are:
+\end_layout
+
+\begin_layout Itemize
+Enumeration number.
+ This value is generally unused.
+ It is usually an enumeration number within the pvgrp.
+ Some SDF export programs do not provide this field at all.
+\end_layout
+
+\begin_layout Itemize
+Surname
+\end_layout
+
+\begin_layout Itemize
+First name
+\end_layout
+
+\begin_layout Itemize
+Birth date.
+ A UUID is built from the name and this date to uniquely identify the user
+ within the Data Source.
+ Accepted date formats are DD.MM.YY, DD.MM.YYYY (German default), MM/DD/YYYY
+ (Old Imperial) and YYYY-MM-DD (ISO\SpecialChar \nobreakdash-
+8601).
+\end_layout
+
+\begin_layout Itemize
+pvgrp
+\begin_inset space ~
+\end_inset
+
+--- private group descriptor.
+ This can be anything you want, and is commonly used for school classes.
+ It will only ever be used for password printing in user interfaces, or
+ for custom applications that use it.
+\end_layout
+
+\begin_layout Subsubsection
+Comments
+\end_layout
+
+\begin_layout Standard
+Comments are Pascal-style or similar to shell and C, as shown in the syntax
+ above, they either begin with a hash mark in the first column, or start
+ with 
+\family typewriter
+(*
+\family default
+ and end with 
+\family typewriter
+*)
+\family default
+.
+ Both comment types only last for the particular line.
+ The hash-mark style comment may be unsupported within Kolleg.
+ Comments can only begin in the first column.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Portability issues
+\end_layout
+
+\begin_layout Standard
+The only application I know that exports SDF files is 
+\begin_inset Quotes eld
+\end_inset
+
+Kolleg
+\begin_inset Quotes erd
+\end_inset
+
+ (a secretary program for German schools).
+ It is a DOS/16 program and thus exports in CP437 encoding and CRLF mode.
+ Since it is just like CSV format, there is no indication of what fields
+ describe what.
+ If the SDF created by your Kolleg program varies from the spec above, you
+ need to change the parser to properly recognize it, or contact the Vitalnix
+ Project.
+\end_layout
+
+\begin_layout Standard
+StarOffice also seems to export something with the .sdf extension, but it
+ is not related! It is believed that 
+\begin_inset Quotes eld
+\end_inset
+
+SDF
+\begin_inset Quotes erd
+\end_inset
+
+ stands for 
+\begin_inset Quotes eld
+\end_inset
+
+Schülerdatenformat
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+XML
+\end_layout
+
+\begin_layout Standard
+The SDF format has a number of issues, such as having no clear identification
+ and layout description.
+ An alternative format based upon XML has therefore been described and can
+ be input to 
+\family sans
+libvxeds
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+The following keys are recognized:
+\end_layout
+
+\begin_layout Itemize
+surname
+\begin_inset space ~
+\end_inset
+
+-- last name.
+\end_layout
+
+\begin_layout Itemize
+firstname
+\begin_inset space ~
+\end_inset
+
+-- first name.
+ This field is mandatory.
+\end_layout
+
+\begin_layout Itemize
+pvgrp
+\begin_inset space ~
+\end_inset
+
+-- private group descriptor.
+ This can be anything you want, and is commonly used for school classes.
+ It will only ever be used for password printing in user interfaces, or
+ for custom applications that use it.
+\end_layout
+
+\begin_layout Itemize
+uuid
+\begin_inset space ~
+\end_inset
+
+-- an arbitrary string that uniquely identifies this user within the Data
+ Source.
+ It is preferred that it consists only of characters in [
+\family typewriter
+0-9A-Za-z_
+\family default
+], because this uuid might be copied to a 
+\family typewriter
+passwd
+\family default
+(5) style file.
+\end_layout
+
+\begin_layout Itemize
+bday
+\begin_inset space ~
+\end_inset
+
+-- birth date if no UUDI is given, create one based on name and this date
+ (commonly birth date).
+ Accepted formats are DD.MM.YYYY, MM/DD/YYYY and YYYY-MM-DD.
+\end_layout
+
+\begin_layout Standard
+Comments are allowed as far as XML allows them.
+ They are filtered out when parsing with libxml.
+ Unknown tags or fields will also be ignored.
+ Sample
+\end_layout
+
+\begin_layout LyX-Code
+<?xml version="1.0" encoding="UTF-8" ?>
+\begin_inset Newline newline
+\end_inset
+
+<VX3_xmlds>
+\begin_inset Newline newline
+\end_inset
+
+        <user surname="Engelhardt" firstname="Jan"
+\begin_inset Newline newline
+\end_inset
+
+              pvgrp="13" uuid="12345678" />
+\begin_inset Newline newline
+\end_inset
+
+</VX3_xmlds>
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset index_print
+LatexCommand printindex
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
