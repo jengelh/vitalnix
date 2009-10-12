@@ -102,6 +102,8 @@ static int vxldap_errno(int ld_errno)
 		case LDAP_LOOP_DETECT:			/* 54 */
 			return ELOOP;
 		default:
+			fprintf(stderr, "LDAP error %d: %s\n", ld_errno,
+			        ldap_err2string(ld_errno));
 			return 1600 + ld_errno;
 	}
 }
