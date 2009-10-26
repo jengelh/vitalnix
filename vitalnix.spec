@@ -1,6 +1,6 @@
 
 Name:		vitalnix
-Version:	3.3~beta1
+Version:	3.3~beta2
 Release:	0
 Group:		System/Base
 Summary:	Vitalnix User Management Suite and Essential Tools
@@ -11,13 +11,17 @@ URL:		http://vitalnix.sourceforge.net/
 Source:		vitalnix-%version.tar.bz2
 BuildRoot:	%_tmppath/%name-%version-build
 BuildRequires:	cups-devel >= 1.3, gcc-c++
-BuildRequires:	libHX-devel >= 3.0.1
+BuildRequires:	libHX-devel >= 3.2
 BuildRequires:	libmysqlclient-devel >= 5.0
 BuildRequires:	libxml2-devel >= 2.6
 BuildRequires:	openldap2-devel >= 2.3, openssl-devel >= 0.9.7
 BuildRequires:	pam-devel >= 0.99, perl >= 5.8.0, php >= 5.0
 BuildRequires:	pkg-config >= 0.19, w3m >= 0.5.1, wxGTK-devel >= 2.7.0
 %define pfx	/opt/%name-%version
+
+%if "%{?vendor_uuid}" != ""
+Provides:	%name(vendor=%vendor_uuid) = %version-%release
+%endif
 
 %description
 Vitalnix is a suite consisting of a library providing unified methods
@@ -110,8 +114,7 @@ done;
 %dir %pfx/share
 %dir %pfx/share/vitalnix
 %config(noreplace) %pfx/share/vitalnix/*
-%doc %_mandir/*/*.[178].*
-%doc src/doc/*.[178].html src/doc/*.css src/doc/*.png
+%doc %_mandir/*/*.[178]*
 
 %files devel
 %defattr(-,root,root)
@@ -119,7 +122,5 @@ done;
 %pfx/include
 %pfx/%_lib/lib*.so
 %pfx/%_lib/*.la
-%doc %_mandir/*/*.3.*
-%doc src/doc/*.3.html
 
 %changelog

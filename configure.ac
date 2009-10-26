@@ -8,7 +8,7 @@
 #	Foundation; either version 2.1 or 3 of the License.
 #
 
-AC_INIT([vitalnix], [3.2.0])
+AC_INIT([vitalnix], [3.3~beta2])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_PROG_INSTALL
@@ -58,7 +58,7 @@ AC_CHECK_MEMBERS(
 #
 #	openssl-devel, libxml-devel
 #
-PKG_CHECK_MODULES([libHX], [libHX >= 3.0.1])
+PKG_CHECK_MODULES([libHX], [libHX >= 3.2])
 PKG_CHECK_MODULES([libcrypto], [libcrypto >= 0.9.8])
 PKG_CHECK_MODULES([libxml], [libxml-2.0 >= 2.6])
 
