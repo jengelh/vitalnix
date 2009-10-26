@@ -8,3 +8,6 @@ includedir=@includedir@
 Name:		vitalnix
 Description:	Vitalnix User Management Suite
 Version:	@PACKAGE_VERSION_SIMPLE@
+Cflags:		-I${includedir}
+Libs:		-L${libdir}
+# libraries should be manually added in your makefile
