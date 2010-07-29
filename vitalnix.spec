@@ -20,7 +20,7 @@ BuildRequires:	pkg-config >= 0.19, w3m >= 0.5.1, wxGTK-devel >= 2.7.0
 %define pfx	/opt/%name-%version
 
 %if "%{?vendor_uuid}" != ""
-Provides:	%name(vendor=%vendor_uuid) = %version-%release
+Provides:	%name(vendor:%vendor_uuid) = %version-%release
 %endif
 
 %description
@@ -64,7 +64,7 @@ fi;
 	--libdir="%pfx/%_lib" \
 	--datadir="%pfx/share" \
 	--with-pkgconfigdir="%_libdir/pkgconfig";
-make %{?jobs:-j%jobs};
+make %{?_smp_mflags};
 
 %install
 b="%buildroot";
