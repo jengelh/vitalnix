@@ -1,6 +1,6 @@
 /*
  *	libvxutil/util.c - General functions
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2009
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2010
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -182,7 +182,7 @@ EXPORT_SYMBOL int vxutil_replace_run(const char *fmt,
 {
 	hxmc_t *cmd = NULL;
 	int ret;
-	HXformat_aprintf(catalog, &cmd, fmt);
+	HXformat2_aprintf(catalog, &cmd, fmt);
 	ret = system(cmd);
 	HXmc_free(cmd);
 	return ret;

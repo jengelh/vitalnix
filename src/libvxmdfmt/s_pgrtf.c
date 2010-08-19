@@ -1,6 +1,6 @@
 /*
  *	libvxmdfmt/s_pgrtf.c - text/rtf formatter
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2005 - 2009
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2005 - 2010
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -65,7 +65,7 @@ static void pgrtf_file_header(const struct pwlfmt_workspace *ws)
 	const struct pgrtf_data *priv = ws->style_data;
 	struct HXformat_map *catalog  = defcat_file_header(ws);
 
-	HXformat_fprintf(catalog, ws->output_fh, priv->tps_file_header);
+	HXformat2_fprintf(catalog, ws->output_fh, priv->tps_file_header);
 	HXformat_free(catalog);
 }
 
@@ -75,7 +75,7 @@ static void pgrtf_tbl_header(const struct pwlfmt_workspace *ws,
 	const struct pgrtf_data *priv = ws->style_data;
 	struct HXformat_map *catalog  = defcat_tbl_header(ws, data);
 
-	HXformat_fprintf(catalog, ws->output_fh, priv->tps_tbl_header);
+	HXformat2_fprintf(catalog, ws->output_fh, priv->tps_tbl_header);
 	HXformat_free(catalog);
 }
 
@@ -91,7 +91,7 @@ static void pgrtf_tbl_entry(const struct pwlfmt_workspace *ws,
 	             HXTYPE_STRING | HXFORMAT_IMMED);
 	HXformat_add(catalog, "FIRSTNAME", uni_firstname,
 	             HXTYPE_STRING | HXFORMAT_IMMED);
-	HXformat_fprintf(catalog, ws->output_fh, priv->tps_tbl_entry);
+	HXformat2_fprintf(catalog, ws->output_fh, priv->tps_tbl_entry);
 }
 
 static void pgrtf_tbl_footer(const struct pwlfmt_workspace *ws,
