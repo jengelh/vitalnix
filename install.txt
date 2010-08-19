@@ -1,1 +1,1 @@
-src/doc/install.txt
+doc/install.txt
