@@ -1073,118 +1073,6 @@ static hxmc_t *dn_group(const struct ldap_state *state, const char *name)
 	return ret;
 }
 
-static int vxldap_groupadd(struct vxdb_state *vp, const struct vxdb_group *rq)
-{
-	struct ldap_state *state = vp->state;
-	LDAPMod attr[4], *attr_ptrs[5];
-	unsigned int a = 0, i;
-	char s_gr_gid[HXSIZEOF_Z32];
-	hxmc_t *dn;
-	int ret;
-
-	if ((dn = dn_group(state, rq->gr_name)) == NULL)
-		return -ENOMEM;
-
-	attr[a++] = (LDAPMod){
-		.mod_op     = LDAP_MOD_ADD,
-		.mod_type   = "objectClass",
-		.mod_values = (char *[]){"groupOfNames", "posixGroup", NULL},
-	};
-	attr[a++] = (LDAPMod){
-		.mod_op     = LDAP_MOD_ADD,
-		.mod_type   = "cn",
-		.mod_values = (char *[]){rq->gr_name, NULL},
-	};
-
-	/* FIXME: Handle VXDB_AUTOGID */
-	snprintf(s_gr_gid, sizeof(s_gr_gid), "%u",
-	         static_cast(unsigned int, rq->gr_gid));
-	attr[a++] = (LDAPMod){
-		.mod_op     = LDAP_MOD_ADD,
-		.mod_type   = "gidNumber",
-		.mod_values = (char *[]){s_gr_gid, NULL},
-	};
-	/*
-	 * this dummy attribute seems required because groupOfNames has a
-	 * "MUST member" in its spec, yet we need to have this group
-	 * appear empty. (Resolving the "member" attribute will not yield
-	 * a posixAccount.)
-	 */
-	attr[a++] = (LDAPMod){
-		.mod_op     = LDAP_MOD_ADD,
-		.mod_type   = "member",
-		.mod_values = (char *[]){dn, NULL},
-	};
-
-	for (i = 0; i < a; ++i)
-		attr_ptrs[i] = &attr[i];
-	attr_ptrs[i] = NULL;
-	ret = ldap_add_ext_s(state->conn, dn, attr_ptrs, NULL, NULL);
-
-	HXmc_free(dn);
-	if (ret != LDAP_SUCCESS)
-		return vxldap_errno_sp(ret, "vxldap_groupadd");
-
-	return 1;
-}
-
-static int vxldap_groupmod(struct vxdb_state *vp, const char *name,
-    const struct vxdb_group *param)
-{
-	struct ldap_state *state = vp->state;
-	char s_gr_gid[HXSIZEOF_Z32];
-	LDAPMod attr[2], *attr_ptrs[3];
-	unsigned int a = 0, i;
-	hxmc_t *dn;
-	int ret;
-
-	if ((dn = dn_group(state, name)) == NULL)
-		return -ENOMEM;
-
-	if (param->gr_name != NULL)
-		attr[a++] = (LDAPMod){
-			.mod_op     = LDAP_MOD_REPLACE,
-			.mod_type   = "cn",
-			.mod_values = (char *[]){param->gr_name, NULL},
-		};
-	if (param->gr_gid != VXDB_NOGID) {
-		snprintf(s_gr_gid, sizeof(s_gr_gid), "%u",
-		         static_cast(unsigned int, param->gr_gid));
-		attr[a++] = (LDAPMod){
-			.mod_op     = LDAP_MOD_REPLACE,
-			.mod_type   = "gidNumber",
-			.mod_values = (char *[]){s_gr_gid, NULL},
-		};
-	}
-
-	for (i = 0; i < a; ++i)
-		attr_ptrs[i] = &attr[i];
-	attr_ptrs[i] = NULL;
-	ret = ldap_modify_ext_s(state->conn, dn, attr_ptrs, NULL, NULL);
-
-	HXmc_free(dn);
-	if (ret != LDAP_SUCCESS)
-		return vxldap_errno_sp(ret, "vxldap_groupmod");
-
-	return 1;
-}
-
-static int vxldap_groupdel(struct vxdb_state *vp, const char *name)
-{
-	struct ldap_state *state = vp->state;
-	hxmc_t *dn;
-	int ret;
-
-	dn  = dn_group(state, name);
-	ret = ldap_delete_ext_s(state->conn, dn, NULL, NULL);
-	HXmc_free(dn);
-	if (ret == LDAP_NO_SUCH_OBJECT)
-		return 0;
-	else if (ret != LDAP_SUCCESS)
-		return vxldap_errno_sp(ret, "vxldap_groupdel");
-	return 1;
-}
-
 static void vxldap_copy_group(struct vxdb_group *dest, LDAP *conn,
     LDAPMessage *entry)
 {
@@ -1242,6 +1130,7 @@ static int vxldap_getgrgid(struct vxdb_state *vp, unsigned int gid,
 {
 	char filter[48+HXSIZEOF_Z32];
 	int ret;
+
 	snprintf(filter, sizeof(filter),
 	         "(&(" F_POSIXGROUP ")(gidNumber=%u))", gid);
 	ret = vxldap_getgrx(vp->state, filter, dest);
@@ -1260,6 +1149,118 @@ static int vxldap_getgrnam(struct vxdb_state *vp, const char *user,
 	ret = vxldap_getgrx(vp->state, filter, dest);
 	HXmc_free(filter);
 	return (ret == -ENOENT) ? 0 : ret;
+}
+
+static int vxldap_groupadd(struct vxdb_state *vp, const struct vxdb_group *rq)
+{
+	struct ldap_state *state = vp->state;
+	LDAPMod attr[4], *attr_ptrs[5];
+	unsigned int a = 0, i;
+	char s_gr_gid[HXSIZEOF_Z32];
+	hxmc_t *dn;
+	int ret;
+
+	if ((dn = dn_group(state, rq->gr_name)) == NULL)
+		return -ENOMEM;
+
+	attr[a++] = (LDAPMod){
+		.mod_op     = LDAP_MOD_ADD,
+		.mod_type   = "objectClass",
+		.mod_values = (char *[]){"groupOfNames", "posixGroup", NULL},
+	};
+	attr[a++] = (LDAPMod){
+		.mod_op     = LDAP_MOD_ADD,
+		.mod_type   = "cn",
+		.mod_values = (char *[]){rq->gr_name, NULL},
+	};
+
+	/* FIXME: Handle VXDB_AUTOGID */
+	snprintf(s_gr_gid, sizeof(s_gr_gid), "%u",
+	         static_cast(unsigned int, rq->gr_gid));
+	attr[a++] = (LDAPMod){
+		.mod_op     = LDAP_MOD_ADD,
+		.mod_type   = "gidNumber",
+		.mod_values = (char *[]){s_gr_gid, NULL},
+	};
+	/*
+	 * this dummy attribute seems required because groupOfNames has a
+	 * "MUST member" in its spec, yet we need to have this group
+	 * appear empty. (Resolving the "member" attribute will not yield
+	 * a posixAccount.)
+	 */
+	attr[a++] = (LDAPMod){
+		.mod_op     = LDAP_MOD_ADD,
+		.mod_type   = "member",
+		.mod_values = (char *[]){dn, NULL},
+	};
+
+	for (i = 0; i < a; ++i)
+		attr_ptrs[i] = &attr[i];
+	attr_ptrs[i] = NULL;
+	ret = ldap_add_ext_s(state->conn, dn, attr_ptrs, NULL, NULL);
+
+	HXmc_free(dn);
+	if (ret != LDAP_SUCCESS)
+		return vxldap_errno_sp(ret, "vxldap_groupadd");
+
+	return 1;
+}
+
+static int vxldap_groupdel(struct vxdb_state *vp, const char *name)
+{
+	struct ldap_state *state = vp->state;
+	hxmc_t *dn;
+	int ret;
+
+	dn  = dn_group(state, name);
+	ret = ldap_delete_ext_s(state->conn, dn, NULL, NULL);
+	HXmc_free(dn);
+	if (ret == LDAP_NO_SUCH_OBJECT)
+		return 0;
+	else if (ret != LDAP_SUCCESS)
+		return vxldap_errno_sp(ret, "vxldap_groupdel");
+	return 1;
+}
+
+static int vxldap_groupmod(struct vxdb_state *vp, const char *name,
+    const struct vxdb_group *param)
+{
+	struct ldap_state *state = vp->state;
+	char s_gr_gid[HXSIZEOF_Z32];
+	LDAPMod attr[2], *attr_ptrs[3];
+	unsigned int a = 0, i;
+	hxmc_t *dn;
+	int ret;
+
+	if ((dn = dn_group(state, name)) == NULL)
+		return -ENOMEM;
+
+	if (param->gr_name != NULL)
+		attr[a++] = (LDAPMod){
+			.mod_op     = LDAP_MOD_REPLACE,
+			.mod_type   = "cn",
+			.mod_values = (char *[]){param->gr_name, NULL},
+		};
+	if (param->gr_gid != VXDB_NOGID) {
+		snprintf(s_gr_gid, sizeof(s_gr_gid), "%u",
+		         static_cast(unsigned int, param->gr_gid));
+		attr[a++] = (LDAPMod){
+			.mod_op     = LDAP_MOD_REPLACE,
+			.mod_type   = "gidNumber",
+			.mod_values = (char *[]){s_gr_gid, NULL},
+		};
+	}
+
+	for (i = 0; i < a; ++i)
+		attr_ptrs[i] = &attr[i];
+	attr_ptrs[i] = NULL;
+	ret = ldap_modify_ext_s(state->conn, dn, attr_ptrs, NULL, NULL);
+
+	HXmc_free(dn);
+	if (ret != LDAP_SUCCESS)
+		return vxldap_errno_sp(ret, "vxldap_groupmod");
+
+	return 1;
 }
 
 static void *vxldap_grouptrav_init(struct vxdb_state *vp)
