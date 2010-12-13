@@ -1222,25 +1222,52 @@ static int vxldap_groupdel(struct vxdb_state *vp, const char *name)
 	return 1;
 }
 
+static int vxldap_groupmov(struct vxdb_state *vp, const char *name,
+    const struct vxdb_group *param)
+{
+	struct vxdb_group tmp;
+	int ret;
+
+	ret = vxldap_getgrnam(vp, name, &tmp);
+	if (ret < 0)
+		return ret;
+	if (param->gr_name != NULL) {
+		/* Behavior specific to vxdb_group implementation */
+		HXmc_free(tmp.gr_name);
+		tmp.gr_name = HXmc_strinit(param->gr_name);
+		if (tmp.gr_name == NULL) {
+			ret = -errno;
+			goto out;
+		}
+	}
+	if (param->gr_gid != VXDB_NOGID)
+		tmp.gr_gid = param->gr_gid;
+
+	ret = vxldap_groupadd(vp, &tmp);
+	/* FIXME: Also move group members */
+	if (ret > 0)
+		ret = vxldap_groupdel(vp, name);
+ out:
+	vxdb_group_free(&tmp, false);
+	return ret;
+}
+
 static int vxldap_groupmod(struct vxdb_state *vp, const char *name,
     const struct vxdb_group *param)
 {
 	struct ldap_state *state = vp->state;
 	char s_gr_gid[HXSIZEOF_Z32];
-	LDAPMod attr[2], *attr_ptrs[3];
+	LDAPMod attr[1], *attr_ptrs[2];
 	unsigned int a = 0, i;
 	hxmc_t *dn;
 	int ret;
 
+	if (param->gr_name != NULL)
+		return vxldap_groupmov(vp, name, param);
+
 	if ((dn = dn_group(state, name)) == NULL)
 		return -ENOMEM;
 
-	if (param->gr_name != NULL)
-		attr[a++] = (LDAPMod){
-			.mod_op     = LDAP_MOD_REPLACE,
-			.mod_type   = "cn",
-			.mod_values = (char *[]){param->gr_name, NULL},
-		};
 	if (param->gr_gid != VXDB_NOGID) {
 		snprintf(s_gr_gid, sizeof(s_gr_gid), "%u",
 		         static_cast(unsigned int, param->gr_gid));
