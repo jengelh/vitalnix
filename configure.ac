@@ -38,12 +38,11 @@ AC_CHECK_HEADERS([cups/backend.h ldap.h])
 AM_CONDITIONAL([HAVE_CUPS], [test "$ac_cv_header_cups_backend_h" == "yes"])
 AM_CONDITIONAL([HAVE_LDAP], [test "$ac_cv_header_ldap_h" == "yes"])
 
-regular_CFLAGS="-D_FILE_OFFSET_BITS=64 \
-	-D_REENTRANT -Wall -Waggregate-return -Wmissing-declarations \
+regular_CPPFLAGS="-D_FILE_OFFSET_BITS=64 -D_REENTRANT"
+regular_CFLAGS="-Wall -Waggregate-return -Wmissing-declarations \
 	-Wmissing-prototypes -Wredundant-decls -Wshadow -Wstrict-prototypes \
 	-pipe";
-regular_CXXFLAGS="-D_FILE_OFFSET_BITS=64 \
-	-D_REENTRANT -Wall -Wno-pointer-arith -Wredundant-decls -pipe";
+regular_CXXFLAGS="-Wall -Wno-pointer-arith -Wredundant-decls -pipe";
 
 #
 #	libc
@@ -116,6 +115,7 @@ AC_SUBST([pkgconfigdir])
 
 CHECK_GCC_FVISIBILITY
 
+AC_SUBST([regular_CPPFLAGS])
 AC_SUBST([regular_CFLAGS])
 AC_SUBST([regular_CXXFLAGS])
 AC_SUBST([libmysql_CFLAGS])

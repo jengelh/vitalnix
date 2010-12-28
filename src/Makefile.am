@@ -5,16 +5,10 @@ CLEANFILES =
 
 SUBDIRS = include
 
-regular_DCONFIG = \
-	-DCONFIG_SYSCONFDIR='"${sysconfdir}"' \
-	-DCONFIG_LIBDIR='"${libdir}"'
-regular_INCLUDES = \
-	-Iinclude -I${srcdir}/include
-
-AM_CFLAGS   = ${regular_CFLAGS} ${GCC_FVISIBILITY_HIDDEN} \
-              ${regular_DCONFIG} ${regular_INCLUDES} ${libHX_CFLAGS}
-AM_CXXFLAGS = ${regular_CXXFLAGS} ${GCC_FVISIBILITY_HIDDEN} \
-              ${regular_DCONFIG} ${regular_INCLUDES} ${libHX_CFLAGS}
+AM_CPPFLAGS = ${regular_CPPFLAGS} -DCONFIG_SYSCONFDIR='"${sysconfdir}"' \
+              -DCONFIG_LIBDIR='"${libdir}"' -I${srcdir}/include
+AM_CFLAGS   = ${regular_CFLAGS} ${GCC_FVISIBILITY_HIDDEN} ${libHX_CFLAGS}
+AM_CXXFLAGS = ${regular_CXXFLAGS} ${GCC_FVISIBILITY_HIDDEN} ${libHX_CFLAGS}
 
 noinst_PROGRAMS    =
 bin_PROGRAMS       =
