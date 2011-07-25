@@ -10,11 +10,12 @@ extern "C" {
 #endif
 
 /*
- *      BLOWFISH.H
+ *	blowfish.c
  */
 extern char *_crypt_blowfish_rn(const char *, const char *, char *, int);
-extern char *_crypt_gensalt_blowfish_rn(unsigned long, const char *, int,
-	char *, int);
+extern char *_crypt_gensalt_blowfish_rn(const char *, unsigned long,
+	const char *, int, char *, int);
+extern int _crypt_output_magic(const char *, char *, int);
 
 #ifdef __cplusplus
 } /* extern "C" */
