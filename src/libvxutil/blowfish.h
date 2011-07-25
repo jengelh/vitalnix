@@ -17,7 +17,7 @@ extern char *_crypt_gensalt_blowfish_rn(unsigned long, const char *, int,
 	char *, int);
 
 #ifdef __cplusplus
-} // extern "C"
+} /* extern "C" */
 #endif
 
-#endif // _VITALNIX_LIBVXUTIL_BLOWFISH_H
+#endif /* _VITALNIX_LIBVXUTIL_BLOWFISH_H */

@@ -1,7 +1,7 @@
 #ifndef _VITALNIX_LIBVXUTIL_DEFINES_H
 #define _VITALNIX_LIBVXUTIL_DEFINES_H 1
 
-#ifndef _WIN32 // Win32 specific hacks/defines
+#ifndef _WIN32
 #	define stricmp strcasecmp
 #	define strnicmp strncasecmp
 #endif
