@@ -1,6 +1,6 @@
 /*
  *	fixuuid - Fix UUID of a user
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2006 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2006 - 2011
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <libHX/init.h>
 #include <libHX/option.h>
 #include <vitalnix/config.h>
 #include <vitalnix/libvxdb/libvxdb.h>
@@ -28,7 +29,7 @@ static char *rebuild_uuid(const struct mdf_priv *, struct vxdb_state *);
 static bool get_options(int *, const char ***, struct mdf_priv *);
 
 //-----------------------------------------------------------------------------
-int main(int argc, const char **argv)
+static int main2(int argc, const char **argv)
 {
 	struct vxdb_user mod_mask;
 	struct vxdb_state *db;
@@ -62,6 +63,17 @@ int main(int argc, const char **argv)
 	vxdb_close(db);
 	vxdb_unload(db);
 	return EXIT_SUCCESS;
+}
+
+int main(int argc, const char **argv)
+{
+	int ret;
+
+	if ((ret = HX_init()) <= 0)
+		abort();
+	ret = main2(argc, argv);
+	HX_exit();
+	return ret;
 }
 
 static char *rebuild_uuid(const struct mdf_priv *p, struct vxdb_state *db)

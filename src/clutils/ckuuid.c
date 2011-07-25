@@ -1,6 +1,6 @@
 /*
  *	ckuuid - find UUID similarities
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2006 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2006 - 2011
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -16,6 +16,7 @@
 #include <unistd.h>
 #include <libHX/defs.h>
 #include <libHX/deque.h>
+#include <libHX/init.h>
 #include <libHX/option.h>
 #include <libHX/string.h>
 #include <vitalnix/config.h>
@@ -389,6 +390,8 @@ int main(int argc, const char **argv)
 {
 	int ret;
 
+	if ((ret = HX_init()) <= 0)
+		abort();
 	ck_db_name = HX_strdup("*");
 	if (!get_options(&argc, &argv))
 		return EXIT_FAILURE;
@@ -397,5 +400,6 @@ int main(int argc, const char **argv)
 	free(ck_db_name);
 	free(ck_input_file);
 	free(ck_input_fmt);
+	HX_exit();
 	return ret;
 }

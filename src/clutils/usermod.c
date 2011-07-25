@@ -1,6 +1,6 @@
 /*
  *	usermod - User manipulation
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2009
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2011
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include <libHX/init.h>
 #include <libHX/option.h>
 #include <libHX/string.h>
 #include <vitalnix/config.h>
@@ -54,7 +55,7 @@ static void usermod_show_version(const struct HXoptcb *);
 static const char *usermod_strerror(int);
 
 //-----------------------------------------------------------------------------
-int main(int argc, const char **argv)
+static int usermod_main1(int argc, const char **argv)
 {
 	struct usermod_state state;
 	int ret;
@@ -74,6 +75,17 @@ int main(int argc, const char **argv)
 		        strerror(errno));
 
 	return (ret < 0) ? E_OTHER : ret;
+}
+
+int main(int argc, const char **argv)
+{
+	int ret;
+
+	if ((ret = HX_init()) <= 0)
+		abort();
+	ret = usermod_main1(argc, argv);
+	HX_exit();
+	return ret;
 }
 
 static int usermod_fill_defaults(struct usermod_state *sp)

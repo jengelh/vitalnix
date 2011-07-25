@@ -1,6 +1,6 @@
 /*
  *	tryauth - Helper program for authentication
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2006 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2006 - 2011
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -10,6 +10,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <libHX/init.h>
 #include <libHX/option.h>
 #include <libHX/string.h>
 #include <security/pam_appl.h>
@@ -28,6 +29,8 @@ int main(int argc, const char **argv)
 	hxmc_t *user = NULL, *pass = NULL;
 	int ret;
 
+	if ((ret = HX_init()) <= 0)
+		abort();
 	if (!get_options(&argc, &argv))
 		return 127;
 
@@ -42,6 +45,7 @@ int main(int argc, const char **argv)
 	if (ret < 0 && Verbose)
 		fprintf(stderr, "PAM error: %s\n", pam_strerror(NULL, -ret));
 
+	HX_exit();
 	return (ret > 0) ? EXIT_SUCCESS : -ret;
 }
 

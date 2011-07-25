@@ -1,6 +1,6 @@
 /*
  *	id - Show identification
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2007 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2007 - 2011
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -14,6 +14,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <libHX/defs.h>
+#include <libHX/init.h>
 #include <libHX/option.h>
 #include <vitalnix/config.h>
 #include <vitalnix/libvxdb/libvxdb.h>
@@ -28,7 +29,7 @@ static bool id(struct vxdb_state *, const char *);
 static char *Database = "*";
 
 //-----------------------------------------------------------------------------
-int main(int argc, const char **argv)
+static int main2(int argc, const char **argv)
 {
 	struct vxdb_state *db;
 	int ret;
@@ -65,6 +66,17 @@ static void show_version(const struct HXoptcb *cbi)
 {
 	printf("Vitalnix " PACKAGE_VERSION " id\n");
 	exit(EXIT_SUCCESS);
+}
+
+int main(int argc, const char **argv)
+{
+	int ret;
+
+	if ((ret = HX_init()) <= 0)
+		abort();
+	ret = main2(argc, argv);
+	HX_exit();
+	return ret;
 }
 
 static bool get_options(int *argc, const char ***argv)

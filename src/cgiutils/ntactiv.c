@@ -1,6 +1,6 @@
 /*
  *	ntactiv - activate NT password
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2007 - 2009
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2007 - 2011
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -10,6 +10,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <libHX/init.h>
 #include <libHX/map.h>
 #include <vitalnix/libvxcgi/libvxcgi.h>
 #include <vitalnix/libvxutil/libvxutil.h>
@@ -90,7 +91,7 @@ static bool update_ntpassword(const char *username, const char *password)
 	return true;
 }
 
-int main(int argc, const char **argv)
+static int main2(int argc, const char **argv)
 {
 	struct HXmap *data = vxcgi_split(vxcgi_read_data(argc, argv));
 	const char *username = vxutil_azstr(HXmap_get(data, "username"));
@@ -105,4 +106,15 @@ int main(int argc, const char **argv)
 	form(username);
 	HXmap_free(data);
 	return EXIT_SUCCESS;
+}
+
+int main(int argc, const char **argv)
+{
+	int ret;
+
+	if ((ret = HX_init()) <= 0)
+		abort();
+	ret = main2(argc, argv);
+	HX_exit();
+	return ret;
 }

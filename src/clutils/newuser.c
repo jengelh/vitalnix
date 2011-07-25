@@ -1,6 +1,6 @@
 /*
  *	newuser - MDSYNC-compatible single user add
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2009
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2011
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -16,6 +16,7 @@
 #include <unistd.h>
 #include <libHX/ctype_helper.h>
 #include <libHX/defs.h>
+#include <libHX/init.h>
 #include <libHX/map.h>
 #include <libHX/option.h>
 #include <vitalnix/config.h>
@@ -49,7 +50,7 @@ static bool get_options(int *, const char ***, struct private_info *);
 static void show_version(const struct HXoptcb *);
 
 //-----------------------------------------------------------------------------
-int main(int argc, const char **argv)
+static int main2(int argc, const char **argv)
 {
 	struct private_info priv;
 	int ret = EXIT_SUCCESS;
@@ -71,6 +72,17 @@ int main(int argc, const char **argv)
 		return EXIT_FAILURE;
 
 	single_cleanup(&priv);
+	return ret;
+}
+
+int main(int argc, const char **argv)
+{
+	int ret;
+
+	if ((ret = HX_init()) <= 0)
+		abort();
+	ret = main2(argc, argv);
+	HX_exit();
 	return ret;
 }
 

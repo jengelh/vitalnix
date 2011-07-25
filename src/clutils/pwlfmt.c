@@ -1,6 +1,6 @@
 /*
  *	pwlfmt - Format password lists
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2009
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2011
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <libHX/init.h>
 #include <libHX/option.h>
 #include <vitalnix/config.h>
 #include <vitalnix/libvxmdfmt/libvxmdfmt.h>
@@ -30,11 +31,14 @@ static unsigned int List_styles = 0;
 int main(int argc, const char **argv)
 {
 	struct pwlfmt_workspace i = {};
-	int ret = EXIT_SUCCESS;
+	int ret;
 
+	if ((ret = HX_init()) <= 0)
+		abort();
 	if (!get_options(&argc, &argv, &i))
 		return EXIT_FAILURE;
 
+	ret = EXIT_SUCCESS;
 	if (List_styles)
 		list_styles();
 	else if (pwlfmt(&i) <= 0)
@@ -44,6 +48,7 @@ int main(int argc, const char **argv)
 	free(i.input_file);
 	free(i.output_file);
 	free(i.template_file);
+	HX_exit();
 	return ret;
 }
 

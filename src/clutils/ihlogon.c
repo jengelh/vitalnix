@@ -1,6 +1,6 @@
 /*
  *	ihlogon.c -
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2007 - 2009
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2007 - 2011
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -21,6 +21,7 @@
 #include <security/pam_modules.h>
 #include <libHX/ctype_helper.h>
 #include <libHX/defs.h>
+#include <libHX/init.h>
 #include <vitalnix/compiler.h>
 #include <vitalnix/libvxdb/libvxdb.h>
 #include <vitalnix/libvxdb/xafunc.h>
@@ -195,8 +196,8 @@ static int ihlogon_init(const char *user, const char *rhost, unsigned int mask)
 	return ret;
 }
 
-PAM_EXTERN EXPORT_SYMBOL int pam_sm_acct_mgmt(pam_handle_t *pamh,
-    int flags, int argc, const char **argv)
+static int acct_mgmt(pam_handle_t *pamh, int flags, int argc,
+    const char **argv)
 {
 	const char *user = NULL, *rhost = NULL;
 	unsigned int mask = REASON_MULTILOGON;
@@ -230,13 +231,31 @@ PAM_EXTERN EXPORT_SYMBOL int pam_sm_acct_mgmt(pam_handle_t *pamh,
 	return ret;
 }
 
+PAM_EXTERN EXPORT_SYMBOL int pam_sm_acct_mgmt(pam_handle_t *pamh,
+    int flags, int argc, const char **argv)
+{
+	int ret;
+
+	if ((ret = HX_init()) <= 0)
+		abort();
+	ret = acct_mgmt(pamh, flags, argc, argv);
+	HX_exit();
+	return ret;
+}
+
 #ifdef STANDALONE_DEBUG
 int main(int argc, const char **argv)
 {
-	if (argc != 2) {
+	int ret;
+
+	if ((ret = HX_init()) <= 0)
+		abort();
+	ret = EXIT_FAILURE;
+	if (argc != 2)
 		fprintf(stderr, "%s: Need an username\n", *argv);
-		return 127;
-	}
-	return ihlogon_init(argv[1], "localhost", ~0U);
+	else
+		ret = ihlogon_init(argv[1], "localhost", ~0U);
+	HX_exit();
+	return ret;
 }
 #endif

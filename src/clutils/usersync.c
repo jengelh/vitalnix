@@ -1,6 +1,6 @@
 /*
  *	syncuser - Mass user synchronization
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2009
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2011
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -17,6 +17,7 @@
 #include <libHX/ctype_helper.h>
 #include <libHX/defs.h>
 #include <libHX/deque.h>
+#include <libHX/init.h>
 #include <libHX/map.h>
 #include <libHX/option.h>
 #include <vitalnix/config.h>
@@ -64,8 +65,10 @@ static inline bool time_limit(time_t *, time_t);
 int main(int argc, const char **argv)
 {
 	struct private_info priv;
-	int ret = EXIT_SUCCESS;
+	int ret;
 
+	if ((ret = HX_init()) <= 0)
+		abort();
 	memset(&priv, 0, sizeof(priv));
 	priv.db_name = HX_strdup("*");
 
@@ -75,6 +78,7 @@ int main(int argc, const char **argv)
 		ret = EXIT_FAILURE;
 
 	sync_cleanup(&priv);
+	HX_exit();
 	return ret;
 }
 

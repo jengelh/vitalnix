@@ -1,6 +1,6 @@
 /*
  *	groupmod - Group manipulation
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2009
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2011
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <libHX/defs.h>
+#include <libHX/init.h>
 #include <libHX/option.h>
 #include <vitalnix/config.h>
 #include <vitalnix/libvxdb/libvxdb.h>
@@ -54,7 +55,7 @@ static const char *database_name  = "*";
 static const char *group_name;
 
 //-----------------------------------------------------------------------------
-int main(int argc, const char **argv)
+static int groupmod_main1(int argc, const char **argv)
 {
 	struct vxdb_state *db;
 	int ret;
@@ -87,6 +88,17 @@ int main(int argc, const char **argv)
 
 	ret = groupmod_main2(db);
 	vxdb_unload(db);
+	return ret;
+}
+
+int main(int argc, const char **argv)
+{
+	int ret;
+
+	if ((ret = HX_init()) <= 0)
+		abort();
+	ret = groupmod_main1(argc, argv);
+	HX_exit();
 	return ret;
 }
 

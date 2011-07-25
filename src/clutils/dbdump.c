@@ -1,6 +1,6 @@
 /*
  *	dbdump - Dump database
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2004 - 2009
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2004 - 2011
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <libHX/defs.h>
+#include <libHX/init.h>
 #include <libHX/option.h>
 #include <libHX/string.h>
 #include <vitalnix/config.h>
@@ -65,7 +66,7 @@ static void (*Dump_functions[])(struct vxdb_state *) = {
 };
 
 //-----------------------------------------------------------------------------
-int main(int argc, const char **argv)
+static int main2(int argc, const char **argv)
 {
 	struct vxdb_state *db;
 	int ret;
@@ -89,6 +90,17 @@ int main(int argc, const char **argv)
 	vxdb_close(db);
 	vxdb_unload(db);
 	return EXIT_SUCCESS;
+}
+
+int main(int argc, const char **argv)
+{
+	int ret;
+
+	if ((ret = HX_init()) <= 0)
+		abort();
+	ret = main2(argc, argv);
+	HX_exit();
+	return ret;
 }
 
 //-----------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 /*
  *	groupbld - Build system groups from Vitalnix group tags
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2007 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2007 - 2011
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -14,6 +14,7 @@
 #include <time.h>
 #include <libHX/ctype_helper.h>
 #include <libHX/defs.h>
+#include <libHX/init.h>
 #include <libHX/misc.h>
 #include <libHX/option.h>
 #include <libHX/string.h>
@@ -40,7 +41,7 @@ static char *vg_prefix        = "vg-";
 static unsigned int vg_prefix_len;
 
 //-----------------------------------------------------------------------------
-int main(int argc, const char **argv)
+static int groupbld_main2(int argc, const char **argv)
 {
 	struct vxdb_state *db;
 	int ret;
@@ -77,6 +78,17 @@ int main(int argc, const char **argv)
 	ret = groupbld_loop(db, Limit_gid) ? EXIT_SUCCESS : EXIT_FAILURE;
 	vxdb_close(db);
 	vxdb_unload(db);
+	return ret;
+}
+
+int main(int argc, const char **argv)
+{
+	int ret;
+
+	if ((ret = HX_init()) <= 0)
+		abort();
+	ret = groupbld_main2(argc, argv);
+	HX_exit();
 	return ret;
 }
 

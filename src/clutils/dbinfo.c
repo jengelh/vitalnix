@@ -1,6 +1,6 @@
 /*
  *	dbinfo - Print database driver information
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2011
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <libHX/deque.h>
+#include <libHX/init.h>
 #include <libHX/misc.h>
 #include <libHX/option.h>
 #include <libHX/string.h>
@@ -38,7 +39,10 @@ static unsigned int OP_open = false;
 int main(int argc, const char **argv)
 {
 	struct HXdeque_node *cd;
+	int ret;
 
+	if ((ret = HX_init()) <= 0)
+		abort();
 	Dirs = HXdeque_init();
 	HXdeque_push(Dirs, ".");
 	read_ldso_conf();
@@ -81,6 +85,7 @@ int main(int argc, const char **argv)
 	printf("------------------------------------------------------------\n");
 	printf("Read %u modules\n", mcount);
 	HXdeque_free(Dirs);
+	HX_exit();
 	return EXIT_SUCCESS;
 }
 

@@ -1,6 +1,6 @@
 /*
  *	vwquota - Web interface for quota statistics
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2005 - 2009
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2005 - 2011
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -12,6 +12,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <libHX/defs.h>
+#include <libHX/init.h>
 #include <libHX/map.h>
 #include <libHX/string.h>
 #include <vitalnix/libvxcgi/libvxcgi.h>
@@ -28,7 +29,7 @@ static const char *const Wrong_auth =
 	"<p class=\"red\"><b>Wrong username and/or password!</b></p>";
 
 //-----------------------------------------------------------------------------
-int main(int argc, const char **argv)
+static int main2(int argc, const char **argv)
 {
 	struct HXmap *data = vxcgi_split(vxcgi_read_data(argc, argv));
 	const char *user = vxutil_azstr(HXmap_get(data, "user"));
@@ -49,6 +50,17 @@ int main(int argc, const char **argv)
 	printf("\n");
 	HXmap_free(data);
 	return EXIT_SUCCESS;
+}
+
+int main(int argc, const char **argv)
+{
+	int ret;
+
+	if ((ret = HX_init()) <= 0)
+		abort();
+	ret = main2(argc, argv);
+	HX_exit();
+	return ret;
 }
 
 static void do_quota(const char *user)

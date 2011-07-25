@@ -1,6 +1,6 @@
 /*
  *	finger - Search for user and display info
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2007 - 2008
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2007 - 2011
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -18,6 +18,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <libHX/defs.h>
+#include <libHX/init.h>
 #include <libHX/option.h>
 #include <libHX/string.h>
 #include <vitalnix/config.h>
@@ -55,7 +56,7 @@ static const char *grep_color = "1;31";
 static const char *stop_color = "0";
 
 //-----------------------------------------------------------------------------
-int main(int argc, const char **argv)
+static int main2(int argc, const char **argv)
 {
 	struct vxdb_state *db;
 	unsigned int uid;
@@ -100,6 +101,17 @@ int main(int argc, const char **argv)
 	vxdb_close(db);
 	vxdb_unload(db);
 	return EXIT_SUCCESS;
+}
+
+int main(int argc, const char **argv)
+{
+	int ret;
+
+	if ((ret = HX_init()) <= 0)
+		abort();
+	ret = main2(argc, argv);
+	HX_exit();
+	return ret;
 }
 
 static void show_version(const struct HXoptcb *cbi)

@@ -1,6 +1,6 @@
 /*
  *	useradd - User manipulation
- *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2009
+ *	Copyright © Jan Engelhardt <jengelh [at] medozas de>, 2003 - 2011
  *
  *	This file is part of Vitalnix. Vitalnix is free software; you
  *	can redistribute it and/or modify it under the terms of the GNU
@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <libHX/init.h>
 #include <libHX/map.h>
 #include <libHX/misc.h>
 #include <libHX/option.h>
@@ -59,7 +60,7 @@ static void useradd_show_version(const struct HXoptcb *);
 static const char *useradd_strerror(int);
 
 //-----------------------------------------------------------------------------
-int main(int argc, const char **argv)
+static int useradd_main1(int argc, const char **argv)
 {
 	struct useradd_state state;
 	struct vxdb_user *user = &state.config.defaults;
@@ -85,6 +86,17 @@ int main(int argc, const char **argv)
 		    	strerror(errno));
 
 	return (ret < 0) ? E_OTHER : ret;
+}
+
+int main(int argc, const char **argv)
+{
+	int ret;
+
+	if ((ret = HX_init()) <= 0)
+		abort();
+	ret = useradd_main1(argc, argv);
+	HX_exit();
+	return ret;
 }
 
 /**
