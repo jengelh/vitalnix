@@ -6,7 +6,6 @@ top_srcdir="${0%/*}";
 if [[ "$top_srcdir" == "$0" ]]; then
 	top_srcdir=".";
 fi;
-abs_top_srcdir=$(readlink -f "$top_srcdir");
 
 echo "May take a while";
 if [[ ! -e "$top_srcdir/configure" ]]; then
@@ -15,12 +14,7 @@ if [[ ! -e "$top_srcdir/configure" ]]; then
 	popd;
 fi;
 
-cflags="-ggdb3";
-ldflags="";
-for i in "$PWD/src"/lib*; do
-	ldflags="$ldflags -Wl,-rpath,$i/.libs";
-done;
-
+cflags="-O0 -ggdb3";
 exec "$top_srcdir/configure" CFLAGS="$cflags" CXXFLAGS="$cflags" \
-	LDFLAGS="$ldflags -lpthread" \
+	LDFLAGS="$ldflags" \
 	--libdir="$PWD/src/drivers/.libs" "$@";
