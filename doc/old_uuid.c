@@ -42,7 +42,6 @@ static void tw0_decode(const char *code, int *day, int *month, int *year)
 	*day   = (*day - 113) / 26;
 	*month = (*month - 113) / 73;
 	*year  = (*year - 113) / 29 + 75 + 1900;
-	return;
 }
 
 /*

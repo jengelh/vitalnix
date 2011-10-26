@@ -29,7 +29,6 @@ static inline int vxdb_unlock(struct vxdb_state *state)
 static inline void vxdb_close(struct vxdb_state *state)
 {
 	state->vtable->close(state);
-	return;
 }
 
 #define vxdb_modctl(state, command, args...) \

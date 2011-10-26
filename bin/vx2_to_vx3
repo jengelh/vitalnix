@@ -86,7 +86,6 @@ sub re_uuid
 
 	warn "Unknown UUID $uuid_v0 for user (realname) ".
 	     "\"$realname\": $uuid_v0\n";
-	return;
 }
 
 sub xmlencode

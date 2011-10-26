@@ -93,10 +93,8 @@ extern void initialize_images(void);
 		"\n",
 		"void initialize_images(void) {\n",
 		$main,
-		"	return;\n",
 		"}\n";
 	close CPP;
-	return;
 }
 
 sub encoded

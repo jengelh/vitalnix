@@ -85,7 +85,6 @@ sub create_cache
 	}
 
 	write_cache($list);
-	return;
 }
 
 sub load_cache
@@ -145,5 +144,4 @@ sub write_cache
 	}
 
 	close FH;
-	return;
 }
