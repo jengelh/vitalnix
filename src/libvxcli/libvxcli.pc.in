@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name:		libvxcli
+Description:	Vitalnix User Management Suite: CLI function library
+Version:	@PACKAGE_VERSION@
+Cflags:		-I${includedir}
+Libs:		-L${libdir} -lvxcli

@@ -133,5 +133,8 @@ else
 fi;
 
 AC_CONFIG_FILES([Makefile doc/Makefile etc/Makefile share/Makefile src/Makefile
-	src/include/Makefile vitalnix.pc])
+	src/include/Makefile src/libvxcgi/libvxcgi.pc src/libvxcli/libvxcli.pc
+	src/libvxcore/libvxcore.pc src/libvxdb/libvxdb.pc
+	src/libvxeds/libvxeds.pc src/libvxmdfmt/libvxmdfmt.pc
+	src/libvxmdsync/libvxmdsync.pc src/libvxutil/libvxutil.pc])
 AC_OUTPUT

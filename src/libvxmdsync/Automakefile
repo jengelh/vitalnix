@@ -7,3 +7,7 @@ libvxmdsync_libvxmdsync_la_SOURCES = \
 libvxmdsync_libvxmdsync_la_LIBADD = ${libHX_LIBS} libvxeds/libvxeds.la \
 	libvxdb/libvxdb.la libvxutil/libvxutil.la
 libvxmdsync_libvxmdsync_la_LDFLAGS = ${AM_LDFLAGS} -version-info 1:0:0
+
+pkgconfig_DATA += libvxmdsync/libvxmdsync.pc
+
+libvxmdsync/libvxmdsync.pc: ${top_builddir}/config.status

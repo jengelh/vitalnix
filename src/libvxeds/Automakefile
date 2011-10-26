@@ -6,3 +6,7 @@ libvxeds_libvxeds_la_SOURCES = \
 libvxeds_libvxeds_la_CFLAGS  = ${AM_CFLAGS} ${libxml_CFLAGS}
 libvxeds_libvxeds_la_LIBADD  = ${libHX_LIBS} ${libxml_LIBS} \
 	libvxcore/libvxcore.la libvxutil/libvxutil.la
+
+pkgconfig_DATA += libvxeds/libvxeds.pc
+
+libvxeds/libvxeds.pc: ${top_builddir}/config.status

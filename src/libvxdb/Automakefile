@@ -6,3 +6,7 @@ libvxdb_libvxdb_la_SOURCES = libvxdb/aux.c libvxdb/config.c \
 libvxdb_libvxdb_la_CFLAGS = ${AM_CFLAGS}
 libvxdb_libvxdb_la_LIBADD = ${libHX_LIBS} libvxcore/libvxcore.la \
 	libvxutil/libvxutil.la
+
+pkgconfig_DATA += libvxdb/libvxdb.pc
+
+libvxdb/libvxdb.pc: ${top_builddir}/config.status

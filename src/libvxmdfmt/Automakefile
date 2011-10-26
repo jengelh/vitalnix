@@ -12,3 +12,7 @@ libvxmdfmt_libvxmdfmt_la_SOURCES = \
 libvxmdfmt_libvxmdfmt_la_LIBADD = ${libHX_LIBS} libvxcore/libvxcore.la \
 	libvxutil/libvxutil.la
 libvxmdfmt_libvxmdfmt_la_LDFLAGS = ${AM_LDFLAGS} -version-info 1:0:0
+
+pkgconfig_DATA += libvxmdfmt/libvxmdfmt.pc
+
+libvxmdfmt/libvxmdfmt.pc: ${top_builddir}/config.status

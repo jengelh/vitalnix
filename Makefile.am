@@ -3,10 +3,6 @@
 ACLOCAL_AMFLAGS  = -I m4
 SUBDIRS          = doc etc share src
 
-pkgconfig_DATA = vitalnix.pc
-
-${pkgconfig_DATA}: ${top_builddir}/config.status
-
 tmpdir := $(shell mktemp -dtu)
 packer  = bzip2
 packext = .tar.bz2

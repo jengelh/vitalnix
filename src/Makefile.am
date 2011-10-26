@@ -16,6 +16,7 @@ bin_PROGRAMS       =
 sbin_PROGRAMS      =
 noinst_LTLIBRARIES =
 lib_LTLIBRARIES    =
+pkgconfig_DATA     =
 
 .PHONY: .FORCE
 

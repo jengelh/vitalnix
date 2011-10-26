@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name:		libvxdb
+Description:	Vitalnix User Management Suite: Database Access library
+Version:	@PACKAGE_VERSION@
+Cflags:		-I${includedir}
+Libs:		-L${libdir} -lvxdb

@@ -4,3 +4,7 @@ lib_LTLIBRARIES += libvxcore/libvxcore.la
 libvxcore_libvxcore_la_SOURCES = libvxcore/loader.c
 libvxcore_libvxcore_la_LIBADD  = ${libHX_LIBS}
 libvxcore_libvxcore_la_LDFLAGS = ${AM_LDFLAGS} -version-info 1:0:0
+
+pkgconfig_DATA += libvxcore/libvxcore.pc
+
+libvxcore/libvxcore.pc: ${top_builddir}/config.status

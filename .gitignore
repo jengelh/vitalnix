@@ -2,6 +2,7 @@
 *.la
 *.lo
 *.o
+*.pc
 Makefile
 Makefile.in
 .deps
@@ -20,6 +21,3 @@ Makefile.in
 /ltmain.sh
 /missing
 /stamp-h1
-
-# local
-/vitalnix.pc
