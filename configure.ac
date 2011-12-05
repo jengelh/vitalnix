@@ -57,7 +57,7 @@ AC_CHECK_MEMBERS(
 #
 #	openssl-devel, libxml-devel
 #
-PKG_CHECK_MODULES([libHX], [libHX >= 3.6])
+PKG_CHECK_MODULES([libHX], [libHX >= 3.12])
 PKG_CHECK_MODULES([libcrypto], [libcrypto >= 0.9.8])
 PKG_CHECK_MODULES([libxml], [libxml-2.0 >= 2.6])
 

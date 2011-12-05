@@ -103,7 +103,8 @@ static int lpacct_analyze_main(int argc, const char **argv)
 	};
 
 	lpacct_readconfig(p);
-	if (HX_getopt(options_table, &argc, &argv, HXOPT_USAGEONERR) <= 0)
+	if (HX_getopt(options_table, &argc, &argv, HXOPT_USAGEONERR) !=
+	    HXOPT_ERR_SUCCESS)
 		return EXIT_FAILURE;
 
 	if (input_file == NULL)

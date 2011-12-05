@@ -136,7 +136,8 @@ static bool get_options(int *argc, const char ***argv, struct mdf_priv *p)
 		HXOPT_TABLEEND,
 	};
 
-	if (HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) <= 0)
+	if (HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) !=
+	    HXOPT_ERR_SUCCESS)
 		return false;
 	if (p->username == NULL || (p->bday == NULL && p->realname == NULL)) {
 		fprintf(stderr, "You need to specify the -u option and at "

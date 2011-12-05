@@ -194,7 +194,8 @@ static bool groupdel_get_options(int *argc, const char ***argv)
 		HXOPT_TABLEEND,
 	};
 
-	return HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) > 0;
+	return HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) ==
+	       HXOPT_ERR_SUCCESS;
 }
 
 static bool groupdel_read_config(void)

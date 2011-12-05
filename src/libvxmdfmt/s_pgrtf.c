@@ -65,7 +65,7 @@ static void pgrtf_file_header(const struct pwlfmt_workspace *ws)
 	const struct pgrtf_data *priv = ws->style_data;
 	struct HXformat_map *catalog  = defcat_file_header(ws);
 
-	HXformat2_fprintf(catalog, ws->output_fh, priv->tps_file_header);
+	HXformat_fprintf(catalog, ws->output_fh, priv->tps_file_header);
 	HXformat_free(catalog);
 }
 
@@ -75,7 +75,7 @@ static void pgrtf_tbl_header(const struct pwlfmt_workspace *ws,
 	const struct pgrtf_data *priv = ws->style_data;
 	struct HXformat_map *catalog  = defcat_tbl_header(ws, data);
 
-	HXformat2_fprintf(catalog, ws->output_fh, priv->tps_tbl_header);
+	HXformat_fprintf(catalog, ws->output_fh, priv->tps_tbl_header);
 	HXformat_free(catalog);
 }
 
@@ -91,7 +91,7 @@ static void pgrtf_tbl_entry(const struct pwlfmt_workspace *ws,
 	             HXTYPE_STRING | HXFORMAT_IMMED);
 	HXformat_add(catalog, "FIRSTNAME", uni_firstname,
 	             HXTYPE_STRING | HXFORMAT_IMMED);
-	HXformat2_fprintf(catalog, ws->output_fh, priv->tps_tbl_entry);
+	HXformat_fprintf(catalog, ws->output_fh, priv->tps_tbl_entry);
 }
 
 static void pgrtf_tbl_footer(const struct pwlfmt_workspace *ws,

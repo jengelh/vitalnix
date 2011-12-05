@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
+#include <libHX/defs.h>
 #include <libHX/deque.h>
 #include <libHX/map.h>
 #include <libHX/misc.h>
@@ -478,10 +479,10 @@ static inline bool create_home(const struct mdsync_workspace *w, const char *d,
 {
 	const struct mdsync_config *c = &w->config;
 
-	if (HX_mkdir(d) <= 0)
+	if (HX_mkdir(d, S_IRWXUGO) <= 0)
 		return false;
 	lchown(d, uid, gid);
-	chmod(d, (S_IRWXU | S_IRWXG | S_IRWXO) & ~c->add_opts.umask);
+	chmod(d, S_IRWXUGO & ~c->add_opts.umask);
 	if (c->add_opts.skel_dir != NULL)
 		HX_copy_dir(c->add_opts.skel_dir, d,
 		            HXF_UID | HXF_GID | HXF_KEEP, uid, gid);

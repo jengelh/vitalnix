@@ -59,7 +59,7 @@ static void sb_tbl_entry(const struct pwlfmt_workspace *state,
     const struct pwl_data *data)
 {
 	struct HXformat_map *catalog = defcat_tbl_entry(state, data);
-	HXformat2_fprintf(catalog, state->output_fh, state->template_data);
+	HXformat_fprintf(catalog, state->output_fh, state->template_data);
 	fprintf(state->output_fh, "\\newpage\n");
 }
 

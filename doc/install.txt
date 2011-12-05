@@ -2,7 +2,7 @@
 Prerequisites:
 
 	- gcc-c++ >= 4.0 (may work with older ones)
-	- libHX >= 3.6
+	- libHX >= 3.12
 	- libxml2 >= 2.6
 	- openssl (libcrypto) >= 0.9.7
 	- pam >= 0.99

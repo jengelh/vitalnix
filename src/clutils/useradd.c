@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <libHX/defs.h>
 #include <libHX/init.h>
 #include <libHX/map.h>
 #include <libHX/misc.h>
@@ -199,7 +200,8 @@ static bool useradd_get_options(int *argc, const char ***argv,
 		HXOPT_TABLEEND,
 	};
 
-	if (HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) <= 0)
+	if (HX_getopt(options_table, argc, argv, HXOPT_USAGEONERR) !=
+	    HXOPT_ERR_SUCCESS)
 		return false;
 	if (conf->split_level > 2)
 		conf->split_level = 2;
@@ -347,7 +349,7 @@ static int useradd_run3(struct vxdb_state *db, struct useradd_state *state,
 		return E_UPDATE;
 
 	if (conf->create_home) {
-		if (HX_mkdir(user->pw_home) <= 0) {
+		if (HX_mkdir(user->pw_home, S_IRWXUGO) <= 0) {
 			/*
 			fprintf(stderr, "Warning: Could not create home "
 					"directory %s\n", strerror(errno));
@@ -356,7 +358,7 @@ static int useradd_run3(struct vxdb_state *db, struct useradd_state *state,
 		}
 
 		lchown(user->pw_home, user->pw_uid, user->pw_gid);
-		chmod(user->pw_home, 0755 & ~conf->umask);
+		chmod(user->pw_home, S_IRWXUGO & ~conf->umask);
 
 		if (conf->skel_dir != NULL && *conf->skel_dir != '\0')
 			HX_copy_dir(conf->skel_dir, user->pw_home,

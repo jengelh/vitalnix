@@ -182,7 +182,7 @@ EXPORT_SYMBOL int vxutil_replace_run(const char *fmt,
 {
 	hxmc_t *cmd = NULL;
 	int ret;
-	HXformat2_aprintf(catalog, &cmd, fmt);
+	HXformat_aprintf(catalog, &cmd, fmt);
 	ret = system(cmd);
 	HXmc_free(cmd);
 	return ret;
