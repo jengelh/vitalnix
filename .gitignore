@@ -5,14 +5,14 @@
 *.pc
 Makefile
 Makefile.in
-.deps
+.deps/
 .dirstamp
-.libs
+.libs/
 
 # build system
 /aclocal.m4
 /ar-lib
-/autom4te.cache
+/autom4te.cache/
 /compile
 /config.*
 /configure
