@@ -259,7 +259,7 @@ static void levd_p(struct levd_pair *pair, const struct ckentry *vxdb,
 
 	/*
 	 * Tests have shown that in medium-scale environments (testcase:
-	 * 1700 real users), small Leveshtian distances (e.g. < 10) are
+	 * 1700 real users), small Leveshtein distances (e.g. < 10) are
 	 * very common. But a distance of 2, e.g.  when going from "John
 	 * Atams" to "John Adamz" is much less likely than a distance of 1
 	 * (to "John Adams"). Weigh in name changes quadratically.
