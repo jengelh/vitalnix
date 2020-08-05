@@ -94,6 +94,8 @@ static bool update_ntpassword(const char *username, const char *password)
 static int main2(int argc, const char **argv)
 {
 	struct HXmap *data = vxcgi_split(vxcgi_read_data(argc, argv));
+	if (data == NULL)
+		return EXIT_FAILURE;
 	const char *username = vxutil_azstr(HXmap_get(data, "username"));
 	const char *password = vxutil_azstr(HXmap_get(data, "password"));
 

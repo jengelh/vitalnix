@@ -32,6 +32,8 @@ static const char *const Wrong_auth =
 static int main2(int argc, const char **argv)
 {
 	struct HXmap *data = vxcgi_split(vxcgi_read_data(argc, argv));
+	if (data == NULL)
+		return EXIT_FAILURE;
 	const char *user = vxutil_azstr(HXmap_get(data, "user"));
 	const char *pw   = vxutil_azstr(HXmap_get(data, "pw"));
 
